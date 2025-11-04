@@ -1,22 +1,15 @@
 import type { AppProps } from 'next/app';
-import { createPagesBrowserClient } from '@supabase/auth-helpers-nextjs';
-import { SessionContextProvider } from '@supabase/auth-helpers-react';
-import { useState } from 'react';
+import { AuthProvider } from '@/contexts/AuthContext';
+import '../styles/globals.css';
 
 /**
  * Custom App Component
- * Wraps all pages with Supabase authentication context
+ * Includes AuthProvider for authentication state management
  */
 export default function App({ Component, pageProps }: AppProps) {
-  // Create Supabase client once per app lifecycle
-  const [supabaseClient] = useState(() => createPagesBrowserClient());
-
   return (
-    <SessionContextProvider
-      supabaseClient={supabaseClient}
-      initialSession={pageProps.initialSession}
-    >
+    <AuthProvider>
       <Component {...pageProps} />
-    </SessionContextProvider>
+    </AuthProvider>
   );
 }

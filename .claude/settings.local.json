@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd:*)",
+      "Bash(git add package.json tsconfig.json .eslintrc.js .prettierrc.js .gitignore .env.example next.config.js jest.config.js playwright.config.ts public/manifest.json README.md)",
+      "Bash(git commit -m \"chore: initialize Next.js project with TypeScript and PWA\n\n- Add package.json with all dependencies\n- Configure TypeScript with strict mode\n- Set up ESLint and Prettier\n- Add PWA manifest and next-pwa config\n- Configure Jest and Playwright for testing\n- Add .gitignore and .env.example\")",
+      "Bash(git add docs/)",
+      "Bash(git commit -m \"docs: add comprehensive setup and architecture documentation\n\n- Add complete setup guide with step-by-step instructions\n- Add Supabase setup guide (dev + test projects)\n- Add Google OAuth Console setup guide\n- Add Razorpay setup and webhook configuration guide\n- Add migrations guide with rollback procedures\n- Add API endpoint documentation with examples\n- Add architecture overview and system design docs\")",
+      "Bash(cd /Users/simantparida/Desktop/Vibe\\ Coding/Automet && git add:*)",
+      "Bash(git commit -m \"migrations: add core database schema (001-004)\n\n- 001: Create core tables (organizations, users, clients, sites, assets)\n- 002: Create jobs and assignments tables with check-in/out tracking\n- 003: Create inventory tables with optional serial number support\n- 004: Add triggers (updated_at, audit logging, usage counters) and validation functions\n\nEach migration includes up and down (rollback) SQL files\")",
+      "Bash(git add migrations/)",
+      "Bash(git commit -m \"migrations: add RLS policies and payment/subscription tables (005-008)\n\n- 005: Add comprehensive RLS policies for org isolation and role-based access\n- 006: Add auth field enhancements and indexes\n- 007: Create subscription plans, billing customers, payments, and usage counters\n- 008: Add RLS policies for billing tables (owner-only access)\n\nAll migrations include rollback scripts\")",
+      "Bash(git add seeds/)",
+      "Bash(git commit -m \"seeds: add comprehensive demo data for Sharma Services\n\n- 001: Free and Pro subscription plans\n- 002: Demo organization (Sharma Services)\n- 003: 4 demo users (owner, coordinator, 2 technicians)\n- 004: Complete demo data (3 clients, 8 sites, 10 assets, 10 jobs with assignments, 8 inventory items)\n- 005: Billing setup with active Pro subscription and usage counters\n\nAll seed files are idempotent and include verification queries\")",
+      "Bash(chmod:*)",
+      "Bash(git add scripts/)",
+      "Bash(git commit -m \"chore: add development scripts for migrations, seeds, and setup\n\n- migrate.sh: Run database migrations with dry-run support\n- seed.sh: Run seed scripts to populate demo data\n- reset-db.sh: Destructive DB reset with confirmation\n- rollback.sh: Rollback last migration\n- dev.sh: One-command setup (install, migrate, seed, start)\n\nAll scripts include error handling and colored output\")",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(npm install)",
+      "Bash(npm cache clean:*)",
+      "Bash(sudo chown:*)",
+      "Bash(npm install --cache /tmp/.npm --prefer-offline)",
+      "Bash(lsof:*)",
+      "Bash(npm run dev)",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Bash(xargs ps:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseServer } from '@/lib/supabase-server';
+import { supabaseAdmin } from '@/lib/supabase-server';
 
 type HealthResponse = {
   status: 'ok' | 'error';
@@ -29,12 +29,11 @@ export default async function handler(
   }
 
   try {
-    // Test database connection
-    const { data, error } = await supabaseServer
+    // Test database connection using admin client (bypasses RLS)
+    const { error } = await supabaseAdmin
       .from('organizations')
-      .select('count')
-      .limit(1)
-      .single();
+      .select('id')
+      .limit(1);
 
     if (error) {
       throw error;

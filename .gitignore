@@ -66,3 +66,16 @@ Thumbs.db
 *.backup
 *.bak
 *.sql.backup
+
+# Test files (ad-hoc)
+test-*.js
+test-*.ts
+
+# Ad-hoc SQL scripts (use migrations/seeds instead)
+*_MANUAL.sql
+RUN_*.sql
+CREATE_AUTH_TRIGGER.sql
+
+# Claude Code cache/logs (keep config)
+.claude/cache/
+.claude/logs/

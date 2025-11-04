@@ -1,8 +1,9 @@
 # Automet - Project Context & Development Plan
 
-**Last Updated**: November 3, 2025
+**Last Updated**: November 4, 2025
 **Current Stage**: Module 3 - Landing Page & Pre-order System (In Progress)
 **Tech Stack**: Next.js 14.2.33 (Pages Router), TypeScript, Supabase, Tailwind CSS
+**Repository**: https://github.com/simantaparida/automet (Public)
 
 ---
 
@@ -61,9 +62,12 @@ Indian AMC vendors struggle with:
 
 ### Infrastructure
 - **Deployment**: Not yet deployed (local dev only)
+- **Version Control**: Git with GitHub (public repository)
+- **Branch Strategy**: Git Flow (`main` ← `develop` ← `feature/*`)
 - **Environment**:
   - Dev database: Supabase project (configured in `.env.local`)
   - Test database: Separate Supabase project (for testing)
+  - Production: Separate Supabase project (when ready)
 
 ### Key Architecture Decisions
 1. **Pages Router** (not App Router) - Stability and compatibility
@@ -74,6 +78,39 @@ Indian AMC vendors struggle with:
    - `/components` - Reusable UI components
    - `/src/lib` - Business logic (pure functions)
    - `/src/contexts` - React contexts for global state
+
+---
+
+## Open Source Approach
+
+### Why This Repository is Public
+
+**Automet** is developed as an open-source project while being commercially viable. This approach provides multiple benefits:
+
+**For the Project**:
+- **Portfolio Value**: Demonstrates real-world full-stack development skills
+- **Learning in Public**: Builds reputation and attracts opportunities
+- **Free GitHub Features**: Branch protection, environments, and security tools at no cost
+- **Community Feedback**: Potential for bug reports and feature suggestions
+
+**For Security**:
+- **Secrets Are Safe**: All API keys and credentials are in `.env.local` (gitignored)
+- **Data Is Protected**: Row Level Security (RLS) ensures multi-tenant isolation at database level
+- **No Vulnerabilities**: Code visibility helps identify security issues early
+- **Industry Standard**: Many successful SaaS products are open source (Ghost, Plausible, Cal.com, Supabase itself)
+
+**Business Model**:
+- Open source code doesn't mean free service
+- Commercial value comes from:
+  - Hosted service (deployment, maintenance, uptime)
+  - Customer data isolation (each org has separate data)
+  - Support and onboarding
+  - Premium features and integrations
+- Similar to successful open-source SaaS: GitLab, Supabase, PostHog
+
+**License**: MIT (permissive open-source license) - see [LICENSE](LICENSE) file
+
+**Contributions**: Community contributions welcome - see [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ---
 
@@ -521,14 +558,28 @@ All tables have Row Level Security enabled:
    - Pages: lowercase/kebab-case (Next.js convention)
 
 ### Git Workflow
-1. **Commit messages**: Use conventional commits
+1. **Branch Strategy**: Git Flow
+   - `main` - Production-ready code
+   - `develop` - Integration branch (default)
+   - `feature/*` - Feature branches (merge to develop)
+   - Protected branches: `main` and `develop` (require PR + approval)
+
+2. **Commit messages**: Use conventional commits
    ```
    feat: add ROI calculator with plan-driven sliders
    fix: resolve continuous reload issue in dev server
    docs: add comprehensive project context document
    chore: update dependencies
    ```
-2. **Never commit**:
+
+3. **Pull Request Flow**:
+   - Create feature branch from `develop`
+   - Make changes and commit
+   - Open PR to `develop` (requires 1 approval)
+   - Squash merge to keep history clean
+   - Branches auto-delete after merge
+
+4. **Never commit**:
    - `.env.local` (secrets)
    - `.next/` (build output)
    - `node_modules/`

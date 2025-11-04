@@ -1,513 +1,277 @@
-# GitHub Repository Setup Guide - Automet
+# GitHub Repository Setup Guide
 
-**Repository**: https://github.com/simantaparida/automet
-**Visibility**: Private
-**Created**: November 3, 2025
-**Branches**: `main` (production), `develop` (staging)
+**Repository**: [simantaparida/automet](https://github.com/simantaparida/automet)
+**Status**: Public
+**Last Updated**: November 4, 2025
+
+This guide walks through configuring your GitHub repository with branch protection, security features, and CI/CD environments.
 
 ---
 
 ## Table of Contents
+
 1. [General Settings](#1-general-settings)
 2. [Branch Configuration](#2-branch-configuration)
-3. [Rulesets Setup (Recommended)](#3-rulesets-setup-recommended)
-4. [Collaborators & Teams](#4-collaborators--teams)
-5. [GitHub Features](#5-github-features)
-6. [Security Settings](#6-security-settings)
-7. [Environments Setup](#7-environments-setup)
-8. [Secrets & Variables](#8-secrets--variables)
-9. [Webhooks & Integrations](#9-webhooks--integrations)
+3. [Branch Protection Rules](#3-branch-protection-rules)
+4. [Security Features](#4-security-features)
+5. [GitHub Environments](#5-github-environments)
+6. [Secrets & Variables](#6-secrets--variables)
+7. [Configuration Checklist](#7-configuration-checklist)
+8. [Testing Your Setup](#8-testing-your-setup)
 
 ---
 
 ## 1. General Settings
 
-### Access Settings Page
-1. Go to: https://github.com/simantaparida/automet
-2. Click **Settings** tab (top navigation)
+### Repository Basics
 
-### 1.1 Repository Details
+Navigate to **Settings** → **General**
 
-**Location**: Settings → General (top section)
-
-**Configure**:
-- ✅ **Description**: `Field service management platform for Indian AMC vendors - Next.js + Supabase + TypeScript`
-- ✅ **Website**: Leave blank for now (add when deployed)
-- ✅ **Topics**: Add these tags (click "Add topics"):
+#### Description & Topics
+- **Description**: "Field service management platform for Indian AMC vendors - Next.js, TypeScript, Supabase"
+- **Topics**: Add relevant tags:
   ```
-  nextjs
-  typescript
-  supabase
-  field-service-management
-  saas
-  pwa
-  india
-  facility-management
+  nextjs, typescript, supabase, field-service, saas, pwa, tailwindcss,
+  facility-management, amc-software, indian-market
   ```
 
-**Why topics matter**: They make your repo discoverable in GitHub search and help categorize your project.
+#### Features
+Enable these features:
+- ✅ Issues (for bug tracking and feature requests)
+- ✅ Discussions (optional - for community Q&A)
+- ❌ Projects (not needed yet)
+- ❌ Wiki (use README/docs instead)
+- ❌ Sponsorships (not needed)
 
----
-
-### 1.2 Features
-
-**Location**: Settings → General → Features section
-
-**Enable**:
-- ✅ **Wikis** - OFF (we use markdown docs in repo)
-- ✅ **Issues** - ON (for bug tracking and feature requests)
-- ✅ **Sponsorships** - OFF (not applicable)
-- ✅ **Preserve this repository** - OFF (GitHub Archive Program - optional)
-- ✅ **Discussions** - OFF for now (can enable later for Q&A)
-- ✅ **Projects** - ON (for kanban board/project management)
-
-**Screenshot location**: Scroll to "Features" section in General settings
-
----
-
-### 1.3 Pull Requests
-
-**Location**: Settings → General → Pull Requests section
-
-**Configure**:
-- ✅ **Allow merge commits** - ON
-  - ✅ Default message: "Default to pull request title"
-- ✅ **Allow squash merging** - ON (RECOMMENDED)
-  - ✅ Default message: "Default to pull request title and description"
-- ✅ **Allow rebase merging** - OFF (to avoid confusion)
-- ✅ **Always suggest updating pull request branches** - ON
-- ✅ **Allow auto-merge** - ON (useful for automated PRs)
-- ✅ **Automatically delete head branches** - ON (keeps repo clean)
-
-**Why squash merging**: Keeps `main` branch history clean with one commit per feature.
-
----
-
-### 1.4 Default Branch
-
-**Location**: Settings → General → Default branch section
-
-**Current default**: `main` (we'll change this to `develop`)
-
-**Steps to change**:
-1. Click the ⇄ (switch icon) next to "main"
-2. Select `develop` from dropdown
-3. Click "Update"
-4. Confirm with "I understand, update the default branch"
-
-**Why set `develop` as default**:
-- New PRs automatically target `develop` instead of `main`
-- Prevents accidental direct commits to production
-- Follows Git Flow best practices
+#### Pull Requests
+Configure PR settings:
+- ✅ **Allow squash merging** (recommended)
+  - Set default commit message to: "Pull request title"
+  - Keeps history clean
+- ❌ Allow merge commits (disable for clean history)
+- ❌ Allow rebase merging (disable to avoid confusion)
+- ✅ **Automatically delete head branches** (keeps repo clean)
+- ✅ **Allow auto-merge** (for Dependabot PRs)
 
 ---
 
 ## 2. Branch Configuration
 
-### 2.1 View Branches
+### Set Default Branch
 
-**Location**: Settings → Branches
+Navigate to **Settings** → **General** → **Default branch**
 
-You should see:
-- `main` - Production branch
-- `develop` - Staging/testing branch (soon to be default)
+1. Click "Switch default branch"
+2. Select `develop`
+3. Click "Update"
+4. Confirm the change
 
----
-
-## 3. Rulesets Setup (Recommended)
-
-**What are Rulesets?** Modern replacement for Branch Protection Rules with better features:
-- ✅ Multiple rulesets can apply simultaneously (layered protection)
-- ✅ More transparent (anyone with read access can view)
-- ✅ Can be set to "Evaluate" mode before enforcing
-- ✅ Better organization-wide governance
-- ✅ Can target multiple branches with patterns
-
-**Location**: Settings → Rules → Rulesets
+**Why `develop`?**
+- New PRs default to `develop` branch
+- `main` stays clean for production releases
+- Follows Git Flow methodology
 
 ---
 
-### 3.1 Create Ruleset for Production (`main` branch)
+## 3. Branch Protection Rules
 
-**Click**: "New ruleset" → "New branch ruleset"
+Navigate to **Settings** → **Branches** → **Add branch protection rule**
 
-#### **Ruleset 1: Production Branch Protection**
+### Rule 1: Protect `main` Branch
 
-**Name**: `production-branch-protection`
+**Branch name pattern**: `main`
 
-**Enforcement status**:
-- Start with: **Evaluate** (test mode - logs violations but doesn't block)
-- After testing 1 week: Switch to **Active** (enforces rules)
+Enable these rules:
+- ✅ **Require a pull request before merging**
+  - ✅ Require approvals: **1**
+  - ✅ Dismiss stale pull request approvals when new commits are pushed
+  - ✅ Require review from Code Owners (optional, needs CODEOWNERS file)
 
-**Target branches**:
-- Click "Add target"
-- Select "Include by pattern"
-- Pattern: `main`
+- ✅ **Require status checks to pass before merging**
+  - ✅ Require branches to be up to date before merging
+  - Add checks when you set up CI/CD (e.g., "build", "test")
 
-**Branch Protections** (scroll down to rules section):
+- ✅ **Require conversation resolution before merging**
+  - All PR comments must be resolved
 
-1. ✅ **Restrict deletions** - ON
-   - Prevents accidental deletion of `main` branch
+- ✅ **Require linear history**
+  - Prevents merge commits, enforces squash or rebase
 
-2. ✅ **Require a pull request before merging** - ON
-   - ✅ Required approvals: `1`
-   - ✅ Dismiss stale pull request approvals when new commits are pushed - ON
-   - ✅ Require review from Code Owners - OFF (no CODEOWNERS file yet)
-   - ✅ Require approval of the most recent reviewable push - ON
+- ✅ **Do not allow bypassing the above settings**
+  - Even admins must follow rules (recommended for discipline)
 
-3. ✅ **Require status checks to pass** - ON (enable later when CI/CD is set up)
-   - Status checks: (leave empty for now, add when GitHub Actions are configured)
-   - ✅ Require branches to be up to date before merging - ON
+- ✅ **Restrict who can push to matching branches**
+  - Leave empty (no one can push directly)
 
-4. ✅ **Block force pushes** - ON
-   - Prevents `git push --force` which rewrites history
+- ✅ **Allow force pushes**: ❌ (disabled)
+- ✅ **Allow deletions**: ❌ (disabled)
 
-5. ✅ **Require linear history** - OFF (we allow merge commits)
-
-6. ✅ **Require deployments to succeed** - OFF (enable when deployment is configured)
-
-7. ✅ **Require signed commits** - OFF (optional security feature)
-
-8. ✅ **Require conversation resolution before merging** - ON
-   - All review comments must be resolved before merge
-
-**Bypass list** (who can bypass these rules):
-- ⚠️ **Repository admins** - You (simantaparida) can bypass in emergencies
-- Click "Add bypass" → Select "Repository admin"
-
-**Click**: "Create" to save ruleset
+Click **Create** to save.
 
 ---
 
-### 3.2 Create Ruleset for Staging (`develop` branch)
+### Rule 2: Protect `develop` Branch
 
-**Click**: "New ruleset" → "New branch ruleset"
+**Branch name pattern**: `develop`
 
-#### **Ruleset 2: Staging Branch Protection**
+Enable these rules (slightly more relaxed than `main`):
+- ✅ **Require a pull request before merging**
+  - ✅ Require approvals: **1**
+  - ✅ Dismiss stale pull request approvals when new commits are pushed
 
-**Name**: `staging-branch-protection`
+- ✅ **Require conversation resolution before merging**
 
-**Enforcement status**: **Active** (can be less strict than production)
+- ✅ **Require linear history**
 
-**Target branches**:
-- Pattern: `develop`
+- ✅ **Allow force pushes**: ❌ (disabled)
+- ✅ **Allow deletions**: ❌ (disabled)
 
-**Branch Protections**:
-
-1. ✅ **Restrict deletions** - ON
-
-2. ✅ **Require a pull request before merging** - ON
-   - ✅ Required approvals: `0` (optional review, not mandatory)
-   - ✅ Dismiss stale pull request approvals - OFF
-   - ✅ Require review from Code Owners - OFF
-
-3. ✅ **Require status checks to pass** - OFF (faster development cycle)
-
-4. ✅ **Block force pushes** - ON
-
-5. ✅ **Require conversation resolution before merging** - ON
-
-**Bypass list**: Repository admins
-
-**Click**: "Create"
+Click **Create** to save.
 
 ---
 
-### 3.3 Create Ruleset for Feature Branches
+## 4. Security Features
 
-**Click**: "New ruleset" → "New branch ruleset"
+Navigate to **Settings** → **Code security and analysis**
 
-#### **Ruleset 3: Feature Branch Naming Convention**
+### Recommended Settings
 
-**Name**: `feature-branch-conventions`
+#### Dependency graph
+- ✅ **Enable** (should be enabled by default for public repos)
+- Allows GitHub to track dependencies
 
-**Enforcement status**: **Evaluate** (advisory only)
+#### Dependabot alerts
+- ✅ **Enable**
+- Notifies you of security vulnerabilities in dependencies
+- Configure notifications: Settings → Notifications → Dependabot alerts
 
-**Target branches**:
-- Pattern: `feature/*`
-- Pattern: `bugfix/*`
-- Pattern: `hotfix/*`
+#### Dependabot security updates
+- ✅ **Enable**
+- Automatically creates PRs to fix vulnerable dependencies
+- PRs will target `develop` branch
 
-**Branch Protections**:
+#### Dependabot version updates (Optional)
+- ⏳ **Configure later** (needs `.github/dependabot.yml`)
+- Automatically creates PRs for dependency updates
+- Can be noisy, recommend enabling after initial setup
 
-1. ✅ **Block force pushes** - OFF (developers need flexibility)
+#### Code scanning (Optional)
+- ⏳ **Configure later** with GitHub Actions
+- Scans code for security vulnerabilities
+- Recommended: Set up CodeQL analysis
 
-2. ✅ **Restrict deletions** - OFF (branches deleted after merge)
-
-**Metadata restrictions** (optional):
-- Can add rules like "branch name must match pattern"
-- Leave empty for now
-
-**Click**: "Create"
-
----
-
-### 3.4 View Active Rulesets
-
-After creating all 3 rulesets, you should see:
-
-```
-production-branch-protection  | Evaluate | main
-staging-branch-protection     | Active   | develop
-feature-branch-conventions    | Evaluate | feature/*, bugfix/*, hotfix/*
-```
-
-**Test the rules**:
-1. Try to push directly to `main` → Should see warning (Evaluate mode)
-2. Try to create a PR to `main` without review → Should see warning
-3. After 1 week of testing, change `production-branch-protection` to **Active**
+#### Secret scanning
+- ✅ **Enable** (should be enabled by default for public repos)
+- Prevents committing secrets (API keys, tokens)
+- Push protection enabled by default
 
 ---
 
-## 4. Collaborators & Teams
+## 5. GitHub Environments
 
-**Location**: Settings → Collaborators
+Environments allow you to configure deployment targets with protection rules and secrets.
 
-### 4.1 Invite Collaborators (When Needed)
+Navigate to **Settings** → **Environments**
 
-**Steps**:
-1. Click "Add people"
-2. Enter GitHub username or email
-3. Select role:
-   - **Admin** - Full control (for co-founders)
-   - **Write** - Can push code, create branches (for developers)
-   - **Read** - Can view code only (for stakeholders)
+### Environment 1: `staging`
 
-**Current**: Only you (simantaparida) as owner
-
----
-
-## 5. GitHub Features
-
-### 5.1 Enable GitHub Issues
-
-**Location**: Settings → General → Features → Issues (should already be ON)
-
-**Configure Issue Templates** (optional, do later):
-- Create `.github/ISSUE_TEMPLATE/bug_report.md`
-- Create `.github/ISSUE_TEMPLATE/feature_request.md`
-
-### 5.2 Enable GitHub Projects
-
-**Location**: Settings → General → Features → Projects (ON)
-
-**Create a Project Board**:
-1. Go to "Projects" tab in repo
-2. Click "New project"
-3. Template: "Board"
-4. Name: "Automet Development"
-5. Columns: "Backlog", "In Progress", "In Review", "Done"
-
----
-
-## 6. Security Settings
-
-**Location**: Settings → Security
-
-### 6.1 Security & Analysis
-
-**Enable these features**:
-
-1. ✅ **Dependency graph** - ON (automatically enabled for public repos)
-   - Shows package dependencies
-
-2. ✅ **Dependabot alerts** - ON
-   - Notifies you of vulnerable dependencies
-   - Click "Enable" if not already on
-
-3. ✅ **Dependabot security updates** - ON
-   - Automatically creates PRs to update vulnerable dependencies
-
-4. ✅ **Dependabot version updates** - OFF for now
-   - Creates PRs for all dependency updates (can be noisy)
-   - Enable later with a `dependabot.yml` config file
-
-5. ✅ **Code scanning** - OFF (GitHub Advanced Security - paid feature)
-   - Can enable with GitHub Actions later
-
-6. ✅ **Secret scanning** - ON (automatically enabled for private repos)
-   - Detects accidentally committed secrets (API keys, tokens)
-
----
-
-### 6.2 Deploy Keys (For CI/CD Later)
-
-**Location**: Settings → Deploy keys
-
-**What**: SSH keys that give read-only or read-write access to this single repo
-
-**When to use**: When setting up automated deployments (Vercel, AWS, etc.)
-
-**For now**: Leave empty
-
----
-
-## 7. Environments Setup
-
-**Location**: Settings → Environments
-
-**What are Environments?**: Named deployment targets with protection rules and secrets
-
-**Create 2 Environments**:
-
-### 7.1 Staging Environment
-
-**Steps**:
-1. Click "New environment"
+1. Click **New environment**
 2. Name: `staging`
-3. Click "Configure environment"
+3. Configure:
+   - ✅ **Required reviewers**: Leave empty (auto-deploy on merge to `develop`)
+   - ✅ **Wait timer**: 0 minutes (no delay)
+   - ✅ **Deployment branches**: `develop` only
+4. Click **Save protection rules**
 
-**Protection rules**:
-- ✅ **Required reviewers** - OFF (staging doesn't need approval)
-- ✅ **Wait timer** - OFF
-- ✅ **Deployment branches** - Selected branches only
-  - Add branch: `develop`
-
-**Environment secrets** (add these now or later):
-- Click "Add secret"
-  - Name: `NEXT_PUBLIC_SUPABASE_URL`
-  - Value: Your dev Supabase project URL
-- Add secret:
-  - Name: `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-  - Value: Your dev Supabase anon key
-- Add secret:
-  - Name: `SUPABASE_SERVICE_ROLE_KEY`
-  - Value: Your dev Supabase service role key
-
-**Click**: "Save protection rules"
+**Purpose**:
+- Linked to `develop` branch
+- Auto-deploys when PRs merge to `develop`
+- Used for testing before production
 
 ---
 
-### 7.2 Production Environment
+### Environment 2: `production`
 
-**Steps**:
-1. Click "New environment"
+1. Click **New environment**
 2. Name: `production`
-3. Click "Configure environment"
+3. Configure:
+   - ✅ **Required reviewers**: Add yourself
+   - ✅ **Wait timer**: 0 minutes
+   - ✅ **Deployment branches**: `main` only
+4. Click **Save protection rules**
 
-**Protection rules**:
-- ✅ **Required reviewers** - ON
-  - Add yourself as reviewer
-  - Requires manual approval before deployment
-- ✅ **Wait timer** - OFF (or set to 5 minutes for safety)
-- ✅ **Deployment branches** - Selected branches only
-  - Add branch: `main`
-
-**Environment secrets** (add when you create production Supabase project):
-- `NEXT_PUBLIC_SUPABASE_URL` (production project)
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` (production)
-- `SUPABASE_SERVICE_ROLE_KEY` (production)
-- `RAZORPAY_KEY_ID` (live mode)
-- `RAZORPAY_KEY_SECRET` (live mode)
-
-**Click**: "Save protection rules"
+**Purpose**:
+- Linked to `main` branch
+- Requires manual approval before deployment
+- Used for live customer-facing application
 
 ---
 
-## 8. Secrets & Variables
+## 6. Secrets & Variables
 
-**Location**: Settings → Secrets and variables → Actions
+Secrets are encrypted and used in GitHub Actions. Variables are plain text.
 
-### 8.1 Repository Secrets (Shared Across All Workflows)
+Navigate to **Settings** → **Secrets and variables** → **Actions**
 
-**Click**: "New repository secret"
+### Repository Secrets (Shared Across Environments)
 
-**Add these secrets** (for CI/CD when you set it up):
+Click **New repository secret** for each:
 
-1. `SUPABASE_ACCESS_TOKEN`
-   - Description: For running migrations in CI/CD
-   - Get from: Supabase Dashboard → Project Settings → API
+| Secret Name | Description | Example Value |
+|-------------|-------------|---------------|
+| `SUPABASE_ACCESS_TOKEN` | Supabase CLI access token | `sbp_xxx...` |
 
-2. `VERCEL_TOKEN` (when deploying to Vercel)
-   - Description: For automated deployments
-   - Get from: Vercel → Settings → Tokens
+### Environment-Specific Secrets
 
-**For now**: Can skip, add when needed for GitHub Actions
+#### Staging Environment Secrets
 
----
+Navigate to **Environments** → `staging` → **Add secret**
 
-### 8.2 Repository Variables (Non-Sensitive Config)
+| Secret Name | Description | Where to Get |
+|-------------|-------------|--------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Dev Supabase project URL | Supabase dashboard → Settings → API |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Dev Supabase anon key | Supabase dashboard → Settings → API |
+| `SUPABASE_SERVICE_ROLE_KEY` | Dev Supabase service key | Supabase dashboard → Settings → API |
+| `RAZORPAY_KEY_ID` | Razorpay test key | Razorpay dashboard (test mode) |
+| `RAZORPAY_KEY_SECRET` | Razorpay test secret | Razorpay dashboard (test mode) |
 
-**Click**: "Variables" tab → "New repository variable"
+#### Production Environment Secrets (When Ready)
 
-**Add these variables**:
+Navigate to **Environments** → `production` → **Add secret**
 
-1. `NODE_VERSION`
-   - Value: `18` or `20` (whatever version you're using)
-   - Used in: GitHub Actions workflows
+| Secret Name | Description | Where to Get |
+|-------------|-------------|--------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Prod Supabase project URL | Production Supabase dashboard |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Prod Supabase anon key | Production Supabase dashboard |
+| `SUPABASE_SERVICE_ROLE_KEY` | Prod Supabase service key | Production Supabase dashboard |
+| `RAZORPAY_KEY_ID` | Razorpay live key | Razorpay dashboard (live mode) |
+| `RAZORPAY_KEY_SECRET` | Razorpay live secret | Razorpay dashboard (live mode) |
 
-2. `NEXT_PUBLIC_APP_URL`
-   - Value: `https://automet.in` (when you have domain)
-   - Used in: Email templates, OAuth redirects
+### Environment Variables (Optional)
 
-**For now**: Can skip
-
----
-
-## 9. Webhooks & Integrations
-
-**Location**: Settings → Webhooks
-
-### 9.1 Webhooks (For Future Integrations)
-
-**What**: HTTP callbacks triggered by GitHub events (push, PR, etc.)
-
-**Common use cases**:
-- Trigger deployments on push
-- Notify Slack of new PRs
-- Update project management tools
-
-**For now**: No webhooks needed (Vercel/Netlify will add their own when you connect)
+For non-sensitive configuration, use **Variables** instead of secrets:
+- `NEXT_PUBLIC_APP_URL`: "https://staging.automet.app" or "https://automet.app"
+- `ENVIRONMENT`: "staging" or "production"
 
 ---
 
-### 9.2 GitHub Apps & Integrations
+## 7. Configuration Checklist
 
-**Location**: Settings → Integrations → GitHub Apps
+Use this checklist to ensure everything is set up correctly:
 
-**Recommended apps to install later**:
-1. **Vercel** - For automatic deployments
-2. **CodeCov** - For test coverage reports
-3. **Dependabot** - Already included in GitHub
-4. **Slack** - For team notifications
-
-**For now**: None needed
-
----
-
-## 10. Repository Insights
-
-**Location**: Insights tab (top navigation)
-
-**Useful features**:
-- **Pulse** - Activity summary (commits, PRs, issues)
-- **Contributors** - Who contributed code
-- **Traffic** - Views and clones (only visible to you)
-- **Commits** - Commit history visualization
-- **Code frequency** - Additions/deletions over time
-- **Network** - Branch and fork visualization
-
----
-
-## ✅ Configuration Checklist
-
-Use this checklist to verify your setup:
-
-### General Settings
-- [ ] Description added
-- [ ] Topics/tags added
+### Repository Basics
+- [ ] Description and topics added
 - [ ] Issues enabled
-- [ ] Projects enabled
-- [ ] Wikis disabled
-- [ ] Discussions disabled (for now)
+- [ ] PR settings configured (squash merge, auto-delete branches)
 - [ ] Default branch set to `develop`
-- [ ] Auto-delete head branches enabled
-- [ ] Squash merging enabled
 
-### Rulesets
-- [ ] Ruleset 1: `production-branch-protection` (main) - Evaluate mode
-- [ ] Ruleset 2: `staging-branch-protection` (develop) - Active mode
-- [ ] Ruleset 3: `feature-branch-conventions` (feature/*) - Evaluate mode
+### Branch Protection
+- [ ] `main` branch protected (requires PR + 1 approval)
+- [ ] `develop` branch protected (requires PR + 1 approval)
+- [ ] Direct pushes blocked to both branches
+- [ ] Force pushes disabled
+- [ ] Branch deletions disabled
+- [ ] Conversation resolution required
 
 ### Security
 - [ ] Dependabot alerts enabled
@@ -516,96 +280,149 @@ Use this checklist to verify your setup:
 
 ### Environments
 - [ ] `staging` environment created (linked to `develop`)
-- [ ] `production` environment created (linked to `main`)
-- [ ] Production environment requires approval
+- [ ] `production` environment created (linked to `main`, requires approval)
+- [ ] Staging secrets added
+- [ ] Production secrets added (when ready)
 
-### Branch Strategy
-- [ ] `main` branch protected
-- [ ] `develop` branch protected
-- [ ] `develop` is default branch
-
----
-
-## 📋 Testing Your Setup
-
-### Test 1: Try to Push Directly to Main
-
-```bash
-git checkout main
-echo "test" >> README.md
-git add README.md
-git commit -m "test: direct push to main"
-git push origin main
-```
-
-**Expected**: Warning in "Evaluate" mode, blocked in "Active" mode
+### Optional (For Later)
+- [ ] CI/CD workflow added (`.github/workflows/ci.yml`)
+- [ ] CodeQL code scanning enabled
+- [ ] Dependabot version updates configured
+- [ ] CODEOWNERS file created
+- [ ] Social preview image added (Settings → General)
 
 ---
 
-### Test 2: Create a Feature Branch & PR
+## 8. Testing Your Setup
 
+### Test 1: Verify Branch Protection on `main`
+
+1. Try to push directly to `main`:
+   ```bash
+   git checkout main
+   git commit --allow-empty -m "test: verify branch protection"
+   git push origin main
+   ```
+
+2. **Expected Result**: Push should be rejected with:
+   ```
+   remote: error: GH006: Protected branch update failed
+   ```
+
+3. If successful, branch protection is working! ✅
+
+---
+
+### Test 2: Verify PR Workflow
+
+1. Create a feature branch:
+   ```bash
+   git checkout develop
+   git checkout -b feature/test-pr-flow
+   ```
+
+2. Make a small change and commit:
+   ```bash
+   echo "# Test PR" >> TEST.md
+   git add TEST.md
+   git commit -m "test: verify PR workflow"
+   ```
+
+3. Push the branch:
+   ```bash
+   git push -u origin feature/test-pr-flow
+   ```
+
+4. Open a PR on GitHub:
+   - Go to repository → **Pull requests** → **New pull request**
+   - Base: `develop` ← Compare: `feature/test-pr-flow`
+   - Click **Create pull request**
+
+5. **Expected Result**:
+   - PR requires 1 approval
+   - "Squash and merge" button is available
+   - Cannot merge until approved
+
+6. Approve and merge the PR (you can approve your own PR for testing)
+
+7. **Verify**:
+   - Branch `feature/test-pr-flow` is automatically deleted
+   - Commit appears in `develop` with squashed message
+
+8. Clean up:
+   ```bash
+   git checkout develop
+   git pull origin develop
+   git branch -d feature/test-pr-flow
+   git push origin :feature/test-pr-flow  # if not auto-deleted
+   rm TEST.md
+   git add TEST.md
+   git commit -m "chore: remove test file"
+   git push origin develop
+   ```
+
+---
+
+### Test 3: Verify Dependabot Alerts
+
+1. Navigate to **Security** → **Dependabot alerts**
+2. If no alerts appear, your dependencies are secure! ✅
+3. If alerts appear, Dependabot will create PRs to fix them
+
+---
+
+## Next Steps
+
+### Immediate Tasks
+1. Complete this configuration checklist
+2. Test branch protection and PR workflow
+3. Add staging environment secrets
+4. Update documentation with your findings
+
+### Future Enhancements
+1. **CI/CD Pipeline**: Create `.github/workflows/ci.yml` for automated tests
+2. **Deployment Workflow**: Create `.github/workflows/deploy.yml` for Vercel/other platform
+3. **Code Scanning**: Enable CodeQL analysis
+4. **CODEOWNERS**: Create `.github/CODEOWNERS` for automatic review assignments
+5. **Issue Templates**: Create `.github/ISSUE_TEMPLATE/` for bug reports and features
+6. **PR Template**: Create `.github/PULL_REQUEST_TEMPLATE.md` for consistent PRs
+
+---
+
+## Troubleshooting
+
+### Problem: Can't enable branch protection
+**Solution**: Ensure repository is public. Branch protection is free on public repos.
+
+### Problem: Branch protection not enforcing
+**Solution**:
+1. Check that you're pushing to the protected branch
+2. Verify rules are saved (Settings → Branches)
+3. Ensure "Allow bypassing" is disabled
+
+### Problem: Dependabot PRs not appearing
+**Solution**:
+1. Ensure Dependabot alerts are enabled
+2. Check Security → Dependabot alerts for vulnerabilities
+3. If no vulnerabilities, no PRs will be created
+
+### Problem: Can't set default branch to `develop`
+**Solution**: Ensure `develop` branch exists on remote:
 ```bash
 git checkout develop
-git pull origin develop
-git checkout -b feature/test-pr
-echo "# Test Feature" >> test.md
-git add test.md
-git commit -m "feat: test feature"
-git push -u origin feature/test-pr
+git push -u origin develop
 ```
 
-Then on GitHub:
-1. Create PR: `feature/test-pr` → `develop`
-2. Verify: No issues, can merge freely
-3. Create PR: `develop` → `main`
-4. Verify: Requires approval, conversation resolution
+---
+
+## Resources
+
+- **GitHub Docs - Branch Protection**: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches
+- **GitHub Docs - Environments**: https://docs.github.com/en/actions/deployment/targeting-different-environments
+- **GitHub Docs - Dependabot**: https://docs.github.com/en/code-security/dependabot
+- **Supabase Branching Guide**: https://supabase.com/docs/guides/cli/managing-environments
 
 ---
 
-## 🚀 Next Steps After Configuration
-
-1. **Week 1**: Monitor rulesets in "Evaluate" mode
-   - Check "Insights" → "Rule insights" to see violations
-   - Adjust rules if needed
-
-2. **Week 2**: Switch `production-branch-protection` to "Active"
-
-3. **Module 4**: Set up GitHub Actions for CI/CD
-   - Create `.github/workflows/ci.yml`
-   - Create `.github/workflows/deploy-staging.yml`
-   - Create `.github/workflows/deploy-production.yml`
-
-4. **Before Launch**: Create production Supabase project and add secrets
-
----
-
-## 📚 Additional Resources
-
-- **GitHub Rulesets Docs**: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets
-- **Branch Protection**: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches
-- **Environments**: https://docs.github.com/en/actions/deployment/targeting-different-environments
-- **Secrets Management**: https://docs.github.com/en/actions/security-guides/encrypted-secrets
-
----
-
-## 🎯 Summary
-
-Your GitHub repository is now configured with:
-- ✅ Modern Rulesets (not legacy branch protection)
-- ✅ Two-environment setup (staging + production)
-- ✅ Security features enabled
-- ✅ Proper branch strategy (`main` ← `develop` ← `feature/*`)
-- ✅ Code review requirements
-- ✅ Clean git history with squash merging
-
-**This setup supports**:
-- Professional team collaboration
-- Safe production deployments
-- Automated CI/CD (when configured)
-- Industry-standard Git Flow workflow
-
----
-
-**Document Version**: 1.0
-**Last Updated**: November 3, 2025
-**Maintained By**: Simant Parida
+**End of Guide**
+*Last updated: November 4, 2025*

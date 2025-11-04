@@ -39,9 +39,9 @@ You should see: "Success. No rows returned"
 1. Go to **Authentication** → **Providers**
 2. Find **Google** and click to expand
 3. Toggle to **Enable**
-4. Enter your credentials from `.env.local`:
-   - **Client ID**: `624807770659-i9krlgc0134kku78ah8ihpj9or3dhqeq.apps.googleusercontent.com`
-   - **Client Secret**: `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`
+4. Enter your Google OAuth credentials:
+   - **Client ID**: Get from your `.env.local` file (NEXT_PUBLIC_GOOGLE_CLIENT_ID)
+   - **Client Secret**: Get from your `.env.local` file (GOOGLE_CLIENT_SECRET)
 5. Click **Save**
 
 **In Google Cloud Console:**

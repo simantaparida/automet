@@ -27,15 +27,15 @@ export default function Navigation({ onPreorderClick }: NavigationProps) {
     { href: '#features', label: 'Features' },
     { href: '#roi-calculator', label: 'ROI Calculator' },
     { href: '#pricing', label: 'Pricing' },
-    { href: '#blog', label: 'Blog' },
+    { href: '/blog', label: 'Blog' },
     { href: '#faq', label: 'FAQ' },
   ];
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 backdrop-blur-sm ${
         scrolled
-          ? 'bg-white shadow-md py-3'
+          ? 'bg-white/95 shadow-lg py-3 border-b border-primary/10'
           : 'bg-transparent py-4'
       }`}
     >
@@ -44,10 +44,10 @@ export default function Navigation({ onPreorderClick }: NavigationProps) {
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center space-x-2 text-2xl font-bold text-blue-600"
+            className="flex items-center space-x-2 text-2xl font-bold group transition-all duration-300"
           >
             <svg
-              className="w-8 h-8"
+              className="w-8 h-8 text-primary group-hover:text-secondary transition-colors duration-300"
               viewBox="0 0 32 32"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -68,38 +68,49 @@ export default function Navigation({ onPreorderClick }: NavigationProps) {
                 strokeLinejoin="round"
               />
             </svg>
-            <span>Automet</span>
+            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent group-hover:from-secondary group-hover:to-accent-pink transition-all duration-300">
+              Automet
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className={`text-sm font-medium transition-colors hover:text-blue-600 ${
-                  scrolled ? 'text-gray-700' : 'text-gray-900'
-                }`}
-              >
-                {link.label}
-              </a>
-            ))}
+            {navLinks.map((link) => {
+              const isExternal = link.href.startsWith('/');
+              const Component = isExternal ? Link : 'a';
+              const props = isExternal 
+                ? { href: link.href }
+                : { href: link.href };
+              
+              return (
+                <Component
+                  key={link.href}
+                  {...props}
+                  className={`text-sm font-medium transition-all duration-300 hover:text-secondary relative group ${
+                    scrolled ? 'text-gray-700' : 'text-gray-900'
+                  }`}
+                >
+                  {link.label}
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-300"></span>
+                </Component>
+              );
+            })}
           </div>
 
           {/* CTA Button */}
           <div className="hidden md:block">
             <button
               onClick={onPreorderClick}
-              className="px-6 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md"
+              className="px-6 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-lg font-medium hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
             >
-              Book Early Access
+              Join Waitlist
             </button>
           </div>
 
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-gray-700 hover:text-blue-600 transition-colors"
+            className="md:hidden p-2 text-gray-700 hover:text-primary transition-colors duration-300"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
@@ -136,26 +147,33 @@ export default function Navigation({ onPreorderClick }: NavigationProps) {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t border-gray-200 pt-4">
+          <div className="md:hidden mt-4 pb-4 border-t border-primary/20 pt-4 animate-slide-down">
             <div className="flex flex-col space-y-4">
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-                >
-                  {link.label}
-                </a>
-              ))}
+              {navLinks.map((link) => {
+                const isExternal = link.href.startsWith('/');
+                const Component = isExternal ? Link : 'a';
+                const props = isExternal 
+                  ? { href: link.href, onClick: () => setMobileMenuOpen(false) }
+                  : { href: link.href, onClick: () => setMobileMenuOpen(false) };
+                
+                return (
+                  <Component
+                    key={link.href}
+                    {...props}
+                    className="text-gray-700 hover:text-primary font-medium transition-colors duration-300"
+                  >
+                    {link.label}
+                  </Component>
+                );
+              })}
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
                   onPreorderClick();
                 }}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors text-center"
+                className="px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-lg font-medium hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 text-center shadow-md"
               >
-                Book Early Access
+                Join Waitlist
               </button>
             </div>
           </div>

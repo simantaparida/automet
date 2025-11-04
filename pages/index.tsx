@@ -7,10 +7,10 @@ import { useState } from 'react';
 import Head from 'next/head';
 import Navigation from '@/components/landing/Navigation';
 import Hero from '@/components/landing/Hero';
-import ProblemSolution from '@/components/landing/ProblemSolution';
 import Features from '@/components/landing/Features';
 import ROICalculator from '@/components/landing/roi/ROICalculator';
 import Pricing from '@/components/landing/Pricing';
+import Trust from '@/components/landing/Trust';
 import BlogPreview from '@/components/landing/BlogPreview';
 import FAQ from '@/components/landing/FAQ';
 import Footer from '@/components/landing/Footer';
@@ -35,11 +35,15 @@ export default function LandingPage() {
         <meta property="og:description" content="Built for Indian AMC vendors. Manage technicians, track jobs, and get paid faster." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://automet.in" />
+        <meta property="og:image" content="https://automet.in/og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Automet - Field Job Management Made Simple" />
         <meta name="twitter:description" content="Built for Indian AMC vendors. Manage technicians, track jobs, and get paid faster." />
+        <meta name="twitter:image" content="https://automet.in/og-image.png" />
 
         {/* Favicon */}
         <link rel="icon" href="/favicon.ico" />
@@ -52,9 +56,6 @@ export default function LandingPage() {
         {/* Hero Section */}
         <Hero onPreorderClick={() => setPreorderModalOpen(true)} />
 
-        {/* Problem-Solution Section */}
-        <ProblemSolution />
-
         {/* Features Section */}
         <Features />
 
@@ -63,6 +64,9 @@ export default function LandingPage() {
 
         {/* Pricing Section */}
         <Pricing onPreorderClick={() => setPreorderModalOpen(true)} />
+
+        {/* Trust Section */}
+        <Trust />
 
         {/* Blog Preview Section */}
         <BlogPreview />

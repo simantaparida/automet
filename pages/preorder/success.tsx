@@ -54,13 +54,13 @@ export default function PreorderSuccessPage() {
 
             {/* Heading */}
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Pre-order Submitted!
+              You're on the Waitlist! 🎉
             </h1>
 
             {/* Message */}
             <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-              Thank you for your interest in Automet. We've sent a confirmation email to{' '}
-              <span className="font-semibold text-blue-600">{email}</span>.
+              Thank you for joining! We've added{' '}
+              <span className="font-semibold text-blue-600">{email}</span> to our waitlist.
             </p>
 
             {/* What's Next */}
@@ -72,9 +72,9 @@ export default function PreorderSuccessPage() {
                     1
                   </span>
                   <div>
-                    <p className="font-semibold text-gray-900">Check your email</p>
+                    <p className="font-semibold text-gray-900">We'll notify you when we launch</p>
                     <p className="text-sm text-gray-600">
-                      Click the confirmation link we sent to verify your email address
+                      You'll be among the first to know when Automet is ready
                     </p>
                   </div>
                 </li>
@@ -83,9 +83,9 @@ export default function PreorderSuccessPage() {
                     2
                   </span>
                   <div>
-                    <p className="font-semibold text-gray-900">We'll be in touch</p>
+                    <p className="font-semibold text-gray-900">Get early access</p>
                     <p className="text-sm text-gray-600">
-                      Our team will contact you within 48 hours with onboarding details
+                      You'll be among the first to access Automet when we launch
                     </p>
                   </div>
                 </li>
@@ -94,9 +94,9 @@ export default function PreorderSuccessPage() {
                     3
                   </span>
                   <div>
-                    <p className="font-semibold text-gray-900">Get early access</p>
+                    <p className="font-semibold text-gray-900">Exclusive benefits</p>
                     <p className="text-sm text-gray-600">
-                      You'll be among the first to access Automet when we launch
+                      Special offers and priority support for early users
                     </p>
                   </div>
                 </li>
@@ -108,18 +108,22 @@ export default function PreorderSuccessPage() {
               <p className="text-sm font-semibold text-green-800 mb-3">
                 YOUR EARLY ACCESS BENEFITS:
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
                 <div>
-                  <p className="font-semibold text-gray-900 text-sm mb-1">50% Off Pro Plan</p>
-                  <p className="text-xs text-gray-600">First 3 months (save ₹4,500)</p>
+                  <p className="font-semibold text-gray-900 text-sm mb-1">🎯 First Access</p>
+                  <p className="text-xs text-gray-600">Try features before public launch</p>
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 text-sm mb-1">Priority Onboarding</p>
-                  <p className="text-xs text-gray-600">Dedicated support team</p>
+                  <p className="font-semibold text-gray-900 text-sm mb-1">💰 Special Offers</p>
+                  <p className="text-xs text-gray-600">Exclusive discounts for early users</p>
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 text-sm mb-1">Lifetime Priority</p>
-                  <p className="text-xs text-gray-600">Feature requests & support</p>
+                  <p className="font-semibold text-gray-900 text-sm mb-1">🚀 Priority Support</p>
+                  <p className="text-xs text-gray-600">Dedicated onboarding & setup help</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900 text-sm mb-1">📢 Shape the Product</p>
+                  <p className="text-xs text-gray-600">Your feedback helps us build better</p>
                 </div>
               </div>
             </div>
@@ -143,12 +147,12 @@ export default function PreorderSuccessPage() {
             {/* Contact Support */}
             <div className="mt-8 pt-8 border-t border-gray-200">
               <p className="text-sm text-gray-600">
-                Didn't receive the email?{' '}
+                Questions?{' '}
                 <a
                   href="mailto:support@automet.in"
                   className="text-blue-600 hover:text-blue-700 font-semibold"
                 >
-                  Contact support
+                  Contact us
                 </a>
               </p>
             </div>
@@ -157,7 +161,7 @@ export default function PreorderSuccessPage() {
           {/* Social Proof */}
           <div className="text-center mt-8">
             <p className="text-sm text-gray-600">
-              Join 100+ businesses already on the waitlist
+              Join businesses already on the waitlist
             </p>
           </div>
         </div>

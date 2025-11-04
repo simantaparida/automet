@@ -6,7 +6,7 @@
  */
 
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseAdmin } from '@/lib/supabase-server';
+import { supabaseAdmin, supabaseServer } from '@/lib/supabase-server';
 
 export default async function handler(
   req: NextApiRequest,
@@ -23,7 +23,11 @@ export default async function handler(
       return res.status(400).json({ error: 'Slug is required' });
     }
 
-    const { data, error } = await supabaseAdmin
+    // Use admin client if service role key is available, otherwise use server client (which respects RLS)
+    const hasServiceRoleKey = !!process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const client = hasServiceRoleKey ? supabaseAdmin : supabaseServer;
+
+    const { data, error } = await client
       .from('blog_posts')
       .select('*')
       .eq('slug', slug)
@@ -31,6 +35,7 @@ export default async function handler(
       .single();
 
     if (error || !data) {
+      console.error('Blog post fetch error:', error);
       return res.status(404).json({ error: 'Blog post not found' });
     }
 

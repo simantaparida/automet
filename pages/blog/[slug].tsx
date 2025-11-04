@@ -64,10 +64,10 @@ export default function BlogPostPage() {
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      'product-updates': 'bg-blue-100 text-blue-700 border-blue-200',
-      'industry-insights': 'bg-purple-100 text-purple-700 border-purple-200',
-      'best-practices': 'bg-green-100 text-green-700 border-green-200',
-      'case-studies': 'bg-orange-100 text-orange-700 border-orange-200',
+      'product-updates': 'bg-primary/10 text-primary border-primary/20',
+      'industry-insights': 'bg-secondary/10 text-secondary border-secondary/20',
+      'best-practices': 'bg-accent-pink/10 text-accent-pink border-accent-pink/20',
+      'case-studies': 'bg-accent-yellow/10 text-accent-yellow border-accent-yellow/20',
     };
     return colors[category] || 'bg-gray-100 text-gray-700 border-gray-200';
   };
@@ -116,7 +116,7 @@ export default function BlogPostPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          <div className="inline-block w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
           <p className="text-gray-600 mt-4">Loading post...</p>
         </div>
       </div>
@@ -135,7 +135,7 @@ export default function BlogPostPage() {
             <p className="text-lg text-gray-600 mb-6">Blog post not found</p>
             <Link
               href="/blog"
-              className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              className="inline-block px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-lg font-semibold hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 shadow-md hover:shadow-lg"
             >
               View All Posts
             </Link>
@@ -165,9 +165,9 @@ export default function BlogPostPage() {
         <header className="bg-white border-b border-gray-200 py-6">
           <div className="container mx-auto px-4 sm:px-6">
             <div className="flex items-center justify-between">
-              <Link href="/" className="flex items-center space-x-2 text-2xl font-bold text-blue-600">
+              <Link href="/" className="flex items-center space-x-2 text-2xl font-bold">
                 <svg
-                  className="w-8 h-8"
+                  className="w-8 h-8 text-primary"
                   viewBox="0 0 32 32"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -188,11 +188,11 @@ export default function BlogPostPage() {
                     strokeLinejoin="round"
                   />
                 </svg>
-                <span>Automet</span>
+                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Automet</span>
               </Link>
               <Link
                 href="/blog"
-                className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                className="text-sm text-gray-600 hover:text-primary transition-colors"
               >
                 ← All Posts
               </Link>
@@ -261,18 +261,18 @@ export default function BlogPostPage() {
               )}
 
               {/* CTA */}
-              <div className="mt-12 p-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
+              <div className="mt-12 p-8 bg-gradient-to-br from-primary/10 via-secondary/10 to-accent-pink/10 rounded-2xl border-2 border-primary/20">
                 <h3 className="text-2xl font-bold text-gray-900 mb-3">
                   Ready to transform your AMC business?
                 </h3>
                 <p className="text-gray-700 mb-6">
-                  Join 100+ businesses and book early access to Automet today.
+                  Join the waitlist and get early access to Automet when we launch.
                 </p>
                 <Link
                   href="/"
-                  className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg"
+                  className="inline-block px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-lg font-semibold hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                 >
-                  Book Early Access - ₹499
+                  Join Waitlist - Get Early Access
                 </Link>
               </div>
             </div>

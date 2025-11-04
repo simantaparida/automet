@@ -22,22 +22,33 @@ interface BlogPost {
 export default function BlogListPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   useEffect(() => {
     async function fetchPosts() {
+      setLoading(true);
+      setError(null);
       try {
         const url =
           selectedCategory === 'all'
             ? '/api/blog?limit=100'
             : `/api/blog?limit=100&category=${selectedCategory}`;
         const response = await fetch(url);
+        const data = await response.json();
+        
         if (response.ok) {
-          const data = await response.json();
           setPosts(data);
+          if (!data || data.length === 0) {
+            setError('No blog posts found. Check back later!');
+          }
+        } else {
+          setError(data.error || 'Failed to load blog posts');
+          console.error('Blog API error:', data);
         }
       } catch (error) {
         console.error('Failed to fetch blog posts:', error);
+        setError('Failed to load blog posts. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -57,10 +68,10 @@ export default function BlogListPage() {
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      'product-updates': 'bg-blue-100 text-blue-700 border-blue-200',
-      'industry-insights': 'bg-purple-100 text-purple-700 border-purple-200',
-      'best-practices': 'bg-green-100 text-green-700 border-green-200',
-      'case-studies': 'bg-orange-100 text-orange-700 border-orange-200',
+      'product-updates': 'bg-primary/10 text-primary border-primary/20',
+      'industry-insights': 'bg-secondary/10 text-secondary border-secondary/20',
+      'best-practices': 'bg-accent-pink/10 text-accent-pink border-accent-pink/20',
+      'case-studies': 'bg-accent-yellow/10 text-accent-yellow border-accent-yellow/20',
     };
     return colors[category] || 'bg-gray-100 text-gray-700 border-gray-200';
   };
@@ -96,9 +107,9 @@ export default function BlogListPage() {
         <header className="bg-white border-b border-gray-200 py-6">
           <div className="container mx-auto px-4 sm:px-6">
             <div className="flex items-center justify-between">
-              <Link href="/" className="flex items-center space-x-2 text-2xl font-bold text-blue-600">
+              <Link href="/" className="flex items-center space-x-2 text-2xl font-bold">
                 <svg
-                  className="w-8 h-8"
+                  className="w-8 h-8 text-primary"
                   viewBox="0 0 32 32"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -119,11 +130,11 @@ export default function BlogListPage() {
                     strokeLinejoin="round"
                   />
                 </svg>
-                <span>Automet</span>
+                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Automet</span>
               </Link>
               <Link
                 href="/"
-                className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                className="text-sm text-gray-600 hover:text-primary transition-colors"
               >
                 ← Back to Home
               </Link>
@@ -132,10 +143,10 @@ export default function BlogListPage() {
         </header>
 
         {/* Hero */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-16">
+        <div className="bg-gradient-to-r from-primary to-secondary text-white py-16">
           <div className="container mx-auto px-4 sm:px-6 text-center">
             <h1 className="text-4xl sm:text-5xl font-bold mb-4">Automet Blog</h1>
-            <p className="text-xl text-blue-100 max-w-2xl mx-auto">
+            <p className="text-xl text-white/90 max-w-2xl mx-auto">
               Industry insights, best practices, and product updates to help you grow your AMC
               business.
             </p>
@@ -150,9 +161,9 @@ export default function BlogListPage() {
                 <button
                   key={cat.value}
                   onClick={() => setSelectedCategory(cat.value)}
-                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
+                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 ${
                     selectedCategory === cat.value
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-md'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -167,8 +178,15 @@ export default function BlogListPage() {
         <div className="container mx-auto px-4 sm:px-6 py-12">
           {loading ? (
             <div className="text-center py-12">
-              <div className="inline-block w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+              <div className="inline-block w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
               <p className="text-gray-600 mt-4">Loading posts...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <div className="inline-block p-4 bg-red-50 border-2 border-red-200 rounded-lg">
+                <p className="text-red-600 font-semibold mb-2">Error loading posts</p>
+                <p className="text-red-500 text-sm">{error}</p>
+              </div>
             </div>
           ) : posts.length === 0 ? (
             <div className="text-center py-12">
@@ -180,10 +198,10 @@ export default function BlogListPage() {
                 <Link
                   key={post.id}
                   href={`/blog/${post.slug}`}
-                  className="group bg-white rounded-xl border-2 border-gray-200 overflow-hidden hover:border-blue-300 hover:shadow-xl transition-all duration-300"
+                  className="group bg-white rounded-xl border-2 border-gray-200 overflow-hidden hover:border-primary/40 hover:shadow-xl transition-all duration-300"
                 >
                   {/* Cover Image */}
-                  <div className="aspect-video bg-gradient-to-br from-blue-100 to-indigo-100 relative overflow-hidden">
+                  <div className="aspect-video bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden">
                     {post.cover_image_url ? (
                       <img
                         src={post.cover_image_url}
@@ -221,7 +239,7 @@ export default function BlogListPage() {
                     </span>
 
                     {/* Title */}
-                    <h2 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
+                    <h2 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors duration-300 line-clamp-2">
                       {post.title}
                     </h2>
 
@@ -237,10 +255,10 @@ export default function BlogListPage() {
                     </div>
 
                     {/* Read More Link */}
-                    <div className="mt-4 flex items-center text-blue-600 font-semibold text-sm group-hover:text-blue-700">
+                    <div className="mt-4 flex items-center text-primary font-semibold text-sm group-hover:text-secondary transition-colors duration-300">
                       Read Article
                       <svg
-                        className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform"
+                        className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"

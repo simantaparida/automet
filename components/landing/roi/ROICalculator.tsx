@@ -76,28 +76,54 @@ export default function ROICalculator() {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showWithAutomet, setShowWithAutomet] = useState(true); // Toggle state
 
-  const [inputs, setInputs] = useState<ROIInputs>({
-    ...selectedPlan.suggestedValues,
-    monthlyPlanCostINR: selectedPlan.price,
-  });
+  // Calculate admin hours automatically based on technicians and jobs
+  const calculateAdminHours = (techs: number, jobsPerTech: number): number => {
+    // Formula: Base admin time increases with scale
+    // More technicians and jobs = more admin work needed
+    const baseHours = 5; // Minimum admin hours
+    const scaleFactor = techs * jobsPerTech * 0.15; // 0.15 hours per job per technician
+    return Math.min(Math.max(Math.round(baseHours + scaleFactor), 5), 100);
+  };
 
-  const [results, setResults] = useState<ROIResult>(() => calculateROI(inputs));
+  const getInitialInputs = (plan: PlanPreset): ROIInputs => {
+    const adminHours = calculateAdminHours(plan.suggestedValues.technicians, plan.suggestedValues.jobsPerTechnicianPerMonth);
+    return {
+      technicians: plan.suggestedValues.technicians,
+      jobsPerTechnicianPerMonth: plan.suggestedValues.jobsPerTechnicianPerMonth,
+      avgRevenuePerJobINR: plan.suggestedValues.avgRevenuePerJobINR,
+      adminHoursPerWeekAllStaff: adminHours,
+      monthlyPlanCostINR: plan.price,
+    };
+  };
+
+  const [inputs, setInputs] = useState<ROIInputs>(getInitialInputs(selectedPlan));
+
+  // Calculate admin hours based on current inputs
+  const currentAdminHours = calculateAdminHours(inputs.technicians, inputs.jobsPerTechnicianPerMonth);
+  const inputsWithAdminHours = {
+    ...inputs,
+    adminHoursPerWeekAllStaff: currentAdminHours,
+  };
+
+  const [results, setResults] = useState<ROIResult>(() => calculateROI(inputsWithAdminHours));
 
   // Recalculate when inputs change
   useEffect(() => {
-    const newResults = calculateROI(inputs);
+    const adminHours = calculateAdminHours(inputs.technicians, inputs.jobsPerTechnicianPerMonth);
+    const updatedInputs = {
+      ...inputs,
+      adminHoursPerWeekAllStaff: adminHours,
+    };
+    const newResults = calculateROI(updatedInputs);
     setResults(newResults);
-  }, [inputs.technicians, inputs.jobsPerTechnicianPerMonth, inputs.avgRevenuePerJobINR, inputs.adminHoursPerWeekAllStaff, inputs.monthlyPlanCostINR]);
+  }, [inputs.technicians, inputs.jobsPerTechnicianPerMonth, inputs.avgRevenuePerJobINR, inputs.monthlyPlanCostINR]);
 
   // Handle plan selection - populate all sliders with presets
   const handlePlanChange = (planId: string) => {
     const plan = PLAN_PRESETS.find((p) => p.id === planId);
     if (plan) {
       setSelectedPlan(plan);
-      setInputs({
-        ...plan.suggestedValues,
-        monthlyPlanCostINR: plan.price,
-      });
+      setInputs(getInitialInputs(plan));
     }
   };
 
@@ -108,10 +134,7 @@ export default function ROICalculator() {
 
   // Reset to current plan defaults
   const handleReset = () => {
-    setInputs({
-      ...selectedPlan.suggestedValues,
-      monthlyPlanCostINR: selectedPlan.price,
-    });
+    setInputs(getInitialInputs(selectedPlan));
   };
 
   return (
@@ -145,22 +168,38 @@ export default function ROICalculator() {
             </div>
 
             <div className="space-y-4">
-              {/* Plan Selector */}
+              {/* Plan Selector - Radio Buttons */}
               <div>
-                <label className="block text-xs font-semibold text-gray-900 mb-1.5">
+                <label className="block text-xs font-semibold text-gray-900 mb-2">
                   Select Your Plan
                 </label>
-                <select
-                  value={selectedPlan.id}
-                  onChange={(e) => handlePlanChange(e.target.value)}
-                  className="w-full px-3 py-2 text-sm border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium text-gray-900 bg-blue-50"
-                >
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {PLAN_PRESETS.map((plan) => (
-                    <option key={plan.id} value={plan.id}>
-                      {plan.name} - ₹{plan.price.toLocaleString('en-IN')}/month
-                    </option>
+                    <label
+                      key={plan.id}
+                      className={`flex flex-col items-center p-2.5 rounded-lg border-2 cursor-pointer transition-all ${
+                        selectedPlan.id === plan.id
+                          ? 'border-primary bg-primary/5'
+                          : 'border-gray-200 bg-white hover:border-gray-300'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="plan"
+                        value={plan.id}
+                        checked={selectedPlan.id === plan.id}
+                        onChange={(e) => handlePlanChange(e.target.value)}
+                        className="w-4 h-4 text-primary focus:ring-primary focus:ring-2 mb-1.5"
+                      />
+                      <div className="text-center">
+                        <div className="text-xs font-semibold text-gray-900 mb-0.5">{plan.name}</div>
+                        <div className="text-[10px] font-medium text-gray-600">
+                          ₹{plan.price.toLocaleString('en-IN')}/mo
+                        </div>
+                      </div>
+                    </label>
                   ))}
-                </select>
+                </div>
               </div>
 
               {/* Technicians Slider */}
@@ -228,33 +267,36 @@ export default function ROICalculator() {
                 </div>
               </div>
 
-              {/* Admin Hours Slider */}
-              <div>
-                <div className="flex justify-between items-center mb-1">
-                  <label className="text-xs font-medium text-gray-700">Admin Hours/Week</label>
-                  <span className="text-sm font-bold text-blue-600">{inputs.adminHoursPerWeekAllStaff}h</span>
-                </div>
-                <input
-                  type="range"
-                  min="5"
-                  max="100"
-                  step="5"
-                  value={inputs.adminHoursPerWeekAllStaff}
-                  onChange={(e) => handleSliderChange('adminHoursPerWeekAllStaff', parseInt(e.target.value))}
-                  className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                />
-                <div className="flex justify-between text-[10px] text-gray-500 mt-0.5">
-                  <span>5h</span>
-                  <span>100h</span>
-                </div>
-              </div>
             </div>
           </div>
 
           {/* RIGHT - Results */}
           <div className="bg-white rounded-xl shadow-lg border-2 border-gray-200 p-4">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-2 mb-3">
+            {/* Header with Title, Toggle, and Info Button */}
+            <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-3 mb-3">
               <h3 className="text-base font-bold text-gray-900">Your Results</h3>
+              
+              {/* Toggle Switch */}
+              <div className="flex items-center gap-2">
+                <span className={`text-[10px] font-medium whitespace-nowrap ${!showWithAutomet ? 'text-gray-900' : 'text-gray-500'}`}>
+                  Without
+                </span>
+                <button
+                  onClick={() => setShowWithAutomet(!showWithAutomet)}
+                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors flex-shrink-0 ${
+                    showWithAutomet ? 'bg-primary' : 'bg-gray-300'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm ${
+                      showWithAutomet ? 'translate-x-4' : 'translate-x-0.5'
+                    }`}
+                  />
+                </button>
+                <span className={`text-[10px] font-medium whitespace-nowrap ${showWithAutomet ? 'text-gray-900' : 'text-gray-500'}`}>
+                  With
+                </span>
+              </div>
 
               {/* Tooltip Button */}
               <div className="relative">
@@ -262,7 +304,7 @@ export default function ROICalculator() {
                   onMouseEnter={() => setShowTooltip(true)}
                   onMouseLeave={() => setShowTooltip(false)}
                   onClick={() => setShowTooltip(!showTooltip)}
-                  className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded transition-colors"
+                  className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded transition-colors flex-shrink-0"
                 >
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -297,66 +339,56 @@ export default function ROICalculator() {
               </div>
             </div>
 
-            {/* Toggle Switch */}
-            <div className="flex items-center justify-center gap-2 mb-3 p-2 bg-gray-50 rounded-lg">
-              <span className={`text-xs font-medium ${!showWithAutomet ? 'text-gray-900' : 'text-gray-500'}`}>
-                Without Automet
-              </span>
-              <button
-                onClick={() => setShowWithAutomet(!showWithAutomet)}
-                className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors ${
-                  showWithAutomet ? 'bg-blue-600' : 'bg-gray-300'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    showWithAutomet ? 'translate-x-5' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-              <span className={`text-xs font-medium ${showWithAutomet ? 'text-gray-900' : 'text-gray-500'}`}>
-                With Automet
-              </span>
-            </div>
-
             {showWithAutomet ? (
               // WITH AUTOMET - Show Benefits
               <div className="space-y-3">
-                {/* Jobs & Revenue */}
+                {/* Compact 2x2 Grid */}
                 <div className="grid grid-cols-2 gap-2">
+                  {/* Jobs/Month */}
                   <div className="bg-gray-50 rounded-lg p-2">
                     <p className="text-[10px] font-medium text-gray-600 mb-0.5">Jobs/Month</p>
                     <p className="text-base font-bold text-gray-900">{results.jobsPerMonth}</p>
                   </div>
+                  
+                  {/* Monthly Revenue */}
                   <div className="bg-green-50 rounded-lg p-2 border border-green-200">
                     <p className="text-[10px] font-medium text-green-700 mb-0.5">Monthly Revenue</p>
                     <p className="text-sm font-bold text-gray-900">{formatCurrency(results.monthlyRevenueINR)}</p>
                     <p className="text-[9px] text-green-600">With Automet</p>
                   </div>
-                </div>
 
-                {/* Time Saved */}
-                <div className="bg-blue-50 rounded-lg p-2.5 border border-blue-200">
-                  <p className="text-[10px] font-medium text-blue-700 mb-0.5">Time Saved</p>
-                  <p className="text-lg font-bold text-gray-900">{results.timeSavedHoursPerMonth}h</p>
-                  <p className="text-[10px] text-blue-600">{formatCurrency(results.timeSavingsValueINR)}</p>
-                </div>
+                  {/* Time Saved */}
+                  <div className="bg-blue-50 rounded-lg p-2 border border-blue-200">
+                    <p className="text-[10px] font-medium text-blue-700 mb-0.5">Time Saved</p>
+                    <p className="text-sm font-bold text-gray-900">{results.timeSavedHoursPerMonth}h</p>
+                    <p className="text-[9px] text-blue-600">{formatCurrency(results.timeSavingsValueINR)}</p>
+                  </div>
 
-                {/* Revenue Gains */}
-                <div className="grid grid-cols-2 gap-2">
+                  {/* Recovered Revenue */}
                   <div className="bg-green-50 rounded-lg p-2 border border-green-200">
                     <p className="text-[10px] font-medium text-green-700 mb-0.5">Recovered</p>
                     <p className="text-sm font-bold text-gray-900">{formatCurrency(results.recoveredRevenueINR)}</p>
                     <p className="text-[9px] text-green-600">5%</p>
                   </div>
+                </div>
+
+                {/* Cashflow & ROI - 2x2 Grid Row 2 */}
+                <div className="grid grid-cols-2 gap-2">
+                  {/* Cashflow */}
                   <div className="bg-green-50 rounded-lg p-2 border border-green-200">
                     <p className="text-[10px] font-medium text-green-700 mb-0.5">Cashflow</p>
                     <p className="text-sm font-bold text-gray-900">{formatCurrency(results.cashflowGainINR)}</p>
                     <p className="text-[9px] text-green-600">5%</p>
                   </div>
+
+                  {/* 1-Year ROI */}
+                  <div className="bg-purple-50 rounded-lg p-2 border border-purple-200">
+                    <p className="text-[10px] font-medium text-purple-700 mb-0.5">1-Year ROI</p>
+                    <p className="text-lg font-bold text-gray-900">{results.roiPercent}%</p>
+                  </div>
                 </div>
 
-                {/* Net Benefit */}
+                {/* Net Monthly Benefit - Full Width */}
                 <div className={`rounded-lg p-2.5 border-2 ${results.netMonthlyBenefitINR > 0 ? 'bg-emerald-50 border-emerald-300' : 'bg-red-50 border-red-300'}`}>
                   <p className={`text-xs font-medium mb-0.5 ${results.netMonthlyBenefitINR > 0 ? 'text-emerald-700' : 'text-red-700'}`}>
                     Net Monthly Benefit
@@ -365,20 +397,6 @@ export default function ROICalculator() {
                   <p className={`text-[9px] ${results.netMonthlyBenefitINR > 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                     After ₹{selectedPlan.price.toLocaleString('en-IN')} plan cost
                   </p>
-                </div>
-
-                {/* ROI & Payback */}
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="bg-purple-50 rounded-lg p-2.5 border border-purple-200">
-                    <p className="text-[10px] font-medium text-purple-700 mb-0.5">1-Year ROI</p>
-                    <p className="text-xl font-bold text-gray-900">{results.roiPercent}%</p>
-                  </div>
-                  <div className="bg-purple-50 rounded-lg p-2.5 border border-purple-200">
-                    <p className="text-[10px] font-medium text-purple-700 mb-0.5">Payback</p>
-                    <p className="text-xl font-bold text-gray-900">
-                      {results.paybackMonths > 0 ? `${results.paybackMonths}mo` : 'N/A'}
-                    </p>
-                  </div>
                 </div>
               </div>
             ) : (
@@ -405,7 +423,7 @@ export default function ROICalculator() {
                   <ul className="space-y-1.5 text-[10px] text-gray-700">
                     <li className="flex items-start">
                       <span className="text-red-500 mr-1.5">✗</span>
-                      <span>Spending <strong>{inputs.adminHoursPerWeekAllStaff}h/week</strong> on manual admin work</span>
+                      <span>Spending <strong>{currentAdminHours}h/week</strong> on manual admin work</span>
                     </li>
                     <li className="flex items-start">
                       <span className="text-red-500 mr-1.5">✗</span>

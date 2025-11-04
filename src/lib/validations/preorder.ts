@@ -6,22 +6,11 @@
 import { z } from 'zod';
 
 /**
- * Pre-order form schema
- * Validates user input for pre-order booking
+ * Pre-order form schema (Waitlist signup)
+ * Simplified validation - only email and phone required
  */
 export const preorderSchema = z.object({
-  org_name: z
-    .string()
-    .trim()
-    .min(2, 'Organization name must be at least 2 characters')
-    .max(200, 'Organization name must be less than 200 characters'),
-
-  contact_name: z
-    .string()
-    .trim()
-    .min(2, 'Contact name must be at least 2 characters')
-    .max(100, 'Contact name must be less than 100 characters'),
-
+  // Required fields
   email: z
     .string()
     .trim()
@@ -31,7 +20,23 @@ export const preorderSchema = z.object({
   phone: z
     .string()
     .trim()
-    .regex(/^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/, 'Please enter a valid phone number')
+    .min(6, 'Please enter a valid phone number')
+    .regex(/^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]{6,}$/, 'Please enter a valid phone number'),
+
+  // Optional fields
+  contact_name: z
+    .string()
+    .trim()
+    .min(2, 'Name must be at least 2 characters')
+    .max(100, 'Name must be less than 100 characters')
+    .optional()
+    .or(z.literal('')),
+
+  org_name: z
+    .string()
+    .trim()
+    .min(2, 'Organization name must be at least 2 characters')
+    .max(200, 'Organization name must be less than 200 characters')
     .optional()
     .or(z.literal('')),
 
@@ -50,7 +55,7 @@ export const preorderSchema = z.object({
     .or(z.literal('')),
 
   plan_interest: z
-    .enum(['free', 'pro', 'enterprise'], {
+    .enum(['free', 'starter', 'growth', 'business', 'enterprise'], {
       errorMap: () => ({ message: 'Please select a valid plan' }),
     })
     .optional(),

@@ -1,6 +1,6 @@
 /**
- * Pre-order API endpoint
- * POST /api/preorder - Create new pre-order with email confirmation
+ * Pre-order API endpoint (Waitlist signup)
+ * POST /api/preorder - Create new waitlist entry
  *
  * @security Server-side validation with Zod
  * @security Duplicate email check
@@ -8,10 +8,8 @@
  */
 
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseAdmin } from '@/lib/supabase-server';
+import { supabaseAdmin, supabaseServer } from '@/lib/supabase-server';
 import { preorderSchema } from '@/lib/validations/preorder';
-import { sendPreorderConfirmation } from '@/lib/email';
-import { nanoid } from 'nanoid';
 
 export default async function handler(
   req: NextApiRequest,
@@ -35,50 +33,57 @@ export default async function handler(
 
     const data = validationResult.data;
 
+    // Use service role if properly configured, otherwise use anon key with public RLS policy
+    // The public RLS policy allows INSERT for anonymous users
+    const useServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY && 
+                          process.env.SUPABASE_SERVICE_ROLE_KEY.length > 20;
+    const supabase = useServiceRole ? supabaseAdmin : supabaseServer;
+
+    if (!useServiceRole) {
+      console.log('Using anon key with public RLS policy (service role not configured)');
+    }
+
     // Check for duplicate email
-    const { data: existingPreorder } = await supabaseAdmin
+    const { data: existingPreorder, error: checkError } = await supabase
       .from('preorders')
-      .select('id, email, email_confirmed')
+      .select('id, email')
       .eq('email', data.email)
       .single();
 
-    if (existingPreorder) {
-      // If email exists but not confirmed, resend confirmation
-      if (!existingPreorder.email_confirmed) {
-        return res.status(409).json({
-          error: 'Email already registered',
-          message: 'Please check your inbox for the confirmation email. Check spam folder if you don\'t see it.',
-          resend: true,
-        });
-      }
-
-      return res.status(409).json({
-        error: 'Email already registered',
-        message: 'This email has already been confirmed for early access.',
+    if (checkError && checkError.code !== 'PGRST116') {
+      // PGRST116 is "no rows returned" which is expected for new emails
+      console.error('Error checking duplicate email:', checkError);
+      return res.status(500).json({
+        error: 'Database error',
+        message: 'Failed to check existing entries. Please try again.',
+        details: process.env.NODE_ENV === 'development' ? checkError : undefined,
       });
     }
 
-    // Generate confirmation token (secure random string)
-    const confirmationToken = nanoid(32);
-    const tokenExpiresAt = new Date();
-    tokenExpiresAt.setDate(tokenExpiresAt.getDate() + 7); // 7 days expiry
+    if (existingPreorder) {
+      return res.status(409).json({
+        error: 'Email already registered',
+        message: 'This email is already on the waitlist. We\'ll notify you when we launch!',
+      });
+    }
 
-    // Insert pre-order into database
-    const { data: preorder, error: insertError } = await supabaseAdmin
+    // Insert waitlist entry into database
+    // Using public RLS policy - works with anon key
+    const { data: preorder, error: insertError } = await supabase
       .from('preorders')
       .insert({
-        org_name: data.org_name,
-        contact_name: data.contact_name,
+        org_name: data.org_name || null,
+        contact_name: data.contact_name || null,
         email: data.email,
-        phone: data.phone || null,
+        phone: data.phone,
         tech_count: data.tech_count || null,
         city: data.city || null,
-        plan_interest: data.plan_interest || 'pro',
-        payment_status: 'pending',
+        plan_interest: data.plan_interest || null,
+        payment_status: 'pending', // No payment required for waitlist
         amount_paid: 0,
-        email_confirmed: false,
-        confirmation_token: confirmationToken,
-        token_expires_at: tokenExpiresAt.toISOString(),
+        email_confirmed: true, // Auto-confirm for waitlist (no email confirmation needed)
+        confirmation_token: null, // No confirmation token needed
+        token_expires_at: null,
         utm_source: data.utm_source || null,
         utm_medium: data.utm_medium || null,
         utm_campaign: data.utm_campaign || null,
@@ -89,28 +94,27 @@ export default async function handler(
 
     if (insertError) {
       console.error('Database insert error:', insertError);
+      console.error('Error code:', insertError.code);
+      console.error('Error details:', insertError.details);
+      console.error('Error hint:', insertError.hint);
+      
+      // Return more detailed error message for debugging
       return res.status(500).json({
-        error: 'Failed to create pre-order',
-        message: 'Please try again or contact support.',
+        error: 'Failed to join waitlist',
+        message: insertError.message || 'Please try again or contact support.',
+        details: process.env.NODE_ENV === 'development' ? {
+          code: insertError.code,
+          message: insertError.message,
+          details: insertError.details,
+          hint: insertError.hint,
+        } : undefined,
       });
-    }
-
-    // Send confirmation email
-    const emailSent = await sendPreorderConfirmation(
-      preorder.email,
-      preorder.contact_name,
-      confirmationToken
-    );
-
-    if (!emailSent) {
-      console.error('Failed to send confirmation email to:', preorder.email);
-      // Don't fail the request - user can request resend later
     }
 
     // Return success response
     return res.status(201).json({
       success: true,
-      message: 'Pre-order created successfully! Please check your email to confirm.',
+      message: 'Successfully joined the waitlist! We\'ll notify you when Automet launches.',
       preorder: {
         id: preorder.id,
         email: preorder.email,

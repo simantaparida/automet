@@ -1,6 +1,6 @@
 /**
  * Pre-order Modal Component
- * Form with validation and Razorpay payment integration
+ * Simplified waitlist signup form
  */
 
 import { useState, FormEvent } from 'react';
@@ -11,10 +11,10 @@ interface PreorderModalProps {
 }
 
 interface FormData {
-  org_name: string;
   contact_name: string;
   email: string;
   phone: string;
+  org_name: string;
   tech_count: string;
   city: string;
   plan_interest: string;
@@ -24,19 +24,12 @@ interface FormErrors {
   [key: string]: string;
 }
 
-// Razorpay types
-declare global {
-  interface Window {
-    Razorpay: any;
-  }
-}
-
 export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
   const [formData, setFormData] = useState<FormData>({
-    org_name: '',
     contact_name: '',
     email: '',
     phone: '',
+    org_name: '',
     tech_count: '',
     city: '',
     plan_interest: 'starter',
@@ -50,23 +43,29 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
-    if (!formData.org_name.trim() || formData.org_name.length < 2) {
-      newErrors.org_name = 'Organization name is required (min 2 characters)';
-    }
-
-    if (!formData.contact_name.trim() || formData.contact_name.length < 2) {
-      newErrors.contact_name = 'Contact name is required (min 2 characters)';
-    }
-
+    // Email is required
     const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
     if (!formData.email.trim() || !emailRegex.test(formData.email)) {
       newErrors.email = 'Valid email is required';
     }
 
-    if (formData.phone && !/^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]{6,}$/.test(formData.phone)) {
-      newErrors.phone = 'Invalid phone number format';
+    // Phone is required
+    const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]{6,}$/;
+    if (!formData.phone.trim() || !phoneRegex.test(formData.phone)) {
+      newErrors.phone = 'Valid phone number is required';
     }
 
+    // Contact name is optional but if provided, must be valid
+    if (formData.contact_name && formData.contact_name.length < 2) {
+      newErrors.contact_name = 'Name must be at least 2 characters';
+    }
+
+    // Org name is optional but if provided, must be valid
+    if (formData.org_name && formData.org_name.length < 2) {
+      newErrors.org_name = 'Organization name must be at least 2 characters';
+    }
+
+    // Tech count is optional but if provided, must be valid
     if (formData.tech_count && (isNaN(Number(formData.tech_count)) || Number(formData.tech_count) <= 0)) {
       newErrors.tech_count = 'Must be a positive number';
     }
@@ -87,26 +86,33 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
     setSubmitting(true);
 
     try {
-      // Create pre-order
+      // Create waitlist entry
       const response = await fetch('/api/preorder', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...formData,
+          contact_name: formData.contact_name || undefined,
+          email: formData.email.trim().toLowerCase(),
+          phone: formData.phone.trim(),
+          org_name: formData.org_name || undefined,
           tech_count: formData.tech_count ? Number(formData.tech_count) : undefined,
+          city: formData.city || undefined,
+          plan_interest: formData.plan_interest || undefined,
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to create pre-order');
+        // Use the detailed message if available, otherwise fall back to error
+        const errorMessage = data.message || data.error || 'Failed to join waitlist';
+        throw new Error(errorMessage);
       }
 
-      // Success - redirect to success page with preorder ID
+      // Success - redirect to success page
       window.location.href = `/preorder/success?email=${encodeURIComponent(formData.email)}`;
     } catch (error: any) {
-      console.error('Pre-order submission error:', error);
+      console.error('Waitlist submission error:', error);
       setSubmitError(error.message || 'Something went wrong. Please try again.');
       setSubmitting(false);
     }
@@ -147,15 +153,15 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
           </button>
 
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-8 rounded-t-2xl">
+          <div className="bg-gradient-to-r from-primary to-secondary text-white p-8 rounded-t-2xl">
             <div className="flex items-center justify-center mb-3">
               <span className="inline-block px-4 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-sm font-bold border border-white/30">
-                👑 Founding Partner Program
+                Early Access
               </span>
             </div>
-            <h2 className="text-3xl font-bold mb-2">Claim Your Exclusive Spot</h2>
-            <p className="text-blue-100">
-              Only ₹499 • Limited to first 100 slots • Unlimited pre-orders after
+            <h2 className="text-3xl font-bold mb-2">Join the Waitlist</h2>
+            <p className="text-white/90">
+              Be among the first to access Automet when we launch
             </p>
           </div>
 
@@ -168,58 +174,78 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
               </div>
             )}
 
-            {/* Founding Partner Benefits */}
-            <div className="mb-6 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200">
-              <p className="text-sm font-bold text-blue-800 mb-3 uppercase tracking-wide">👑 Founding Partner Benefits</p>
+            {/* Early Access Benefits */}
+            <div className="mb-6 p-5 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl border-2 border-primary/20">
+              <p className="text-sm font-bold text-primary mb-3 uppercase tracking-wide">Early Access Benefits</p>
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-white rounded-lg p-3 border border-blue-100 shadow-sm">
-                  <p className="font-bold text-gray-900 text-sm mb-1">💰 50% OFF</p>
-                  <p className="text-xs text-gray-600">All paid plans for 3 months after launch</p>
+                <div className="bg-white rounded-lg p-3 border border-primary/20 shadow-sm">
+                  <p className="font-bold text-gray-900 text-sm mb-1">First Access</p>
+                  <p className="text-xs text-gray-600">Try features before public launch</p>
                 </div>
-                <div className="bg-white rounded-lg p-3 border border-blue-100 shadow-sm">
-                  <p className="font-bold text-gray-900 text-sm mb-1">🎯 Beta Access</p>
-                  <p className="text-xs text-gray-600">Test features before everyone else</p>
+                <div className="bg-white rounded-lg p-3 border border-primary/20 shadow-sm">
+                  <p className="font-bold text-gray-900 text-sm mb-1">Special Offers</p>
+                  <p className="text-xs text-gray-600">Exclusive discounts for early users</p>
                 </div>
-                <div className="bg-white rounded-lg p-3 border border-blue-100 shadow-sm">
-                  <p className="font-bold text-gray-900 text-sm mb-1">👑 Special Badge</p>
-                  <p className="text-xs text-gray-600">Recognition forever in your profile</p>
-                </div>
-                <div className="bg-white rounded-lg p-3 border border-blue-100 shadow-sm">
-                  <p className="font-bold text-gray-900 text-sm mb-1">🚀 Priority Support</p>
+                <div className="bg-white rounded-lg p-3 border border-primary/20 shadow-sm">
+                  <p className="font-bold text-gray-900 text-sm mb-1">Priority Support</p>
                   <p className="text-xs text-gray-600">Dedicated onboarding & setup help</p>
                 </div>
+                <div className="bg-white rounded-lg p-3 border border-primary/20 shadow-sm">
+                  <p className="font-bold text-gray-900 text-sm mb-1">Shape the Product</p>
+                  <p className="text-xs text-gray-600">Your feedback helps us build better</p>
+                </div>
               </div>
-              <p className="mt-3 text-center text-xs text-blue-700 font-medium">
-                ₹499 is a deposit towards your first subscription + discount voucher
-              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Organization Name */}
+              {/* Email - Required */}
               <div>
-                <label htmlFor="org_name" className="block text-sm font-medium text-gray-700 mb-2">
-                  Organization Name <span className="text-red-500">*</span>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  Email <span className="text-red-500">*</span>
                 </label>
                 <input
-                  type="text"
-                  id="org_name"
-                  name="org_name"
-                  value={formData.org_name}
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
                   onChange={handleChange}
                   className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.org_name ? 'border-red-500' : 'border-gray-300'
+                    errors.email ? 'border-red-500' : 'border-gray-300'
                   }`}
-                  placeholder="Kumar AC Services"
+                  placeholder="rajesh@kumarac.com"
+                  required
                 />
-                {errors.org_name && (
-                  <p className="mt-1 text-xs text-red-500">{errors.org_name}</p>
+                {errors.email && (
+                  <p className="mt-1 text-xs text-red-500">{errors.email}</p>
                 )}
               </div>
 
-              {/* Contact Name */}
+              {/* Phone - Required */}
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                  Phone Number <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    errors.phone ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="+91-9876543210"
+                  required
+                />
+                {errors.phone && (
+                  <p className="mt-1 text-xs text-red-500">{errors.phone}</p>
+                )}
+              </div>
+
+              {/* Contact Name - Optional */}
               <div>
                 <label htmlFor="contact_name" className="block text-sm font-medium text-gray-700 mb-2">
-                  Your Name <span className="text-red-500">*</span>
+                  Your Name
                 </label>
                 <input
                   type="text"
@@ -237,47 +263,27 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
                 )}
               </div>
 
-              {/* Email */}
+              {/* Organization Name - Optional */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  Email <span className="text-red-500">*</span>
+                <label htmlFor="org_name" className="block text-sm font-medium text-gray-700 mb-2">
+                  Organization Name
                 </label>
                 <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
+                  type="text"
+                  id="org_name"
+                  name="org_name"
+                  value={formData.org_name}
                   onChange={handleChange}
                   className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.email ? 'border-red-500' : 'border-gray-300'
+                    errors.org_name ? 'border-red-500' : 'border-gray-300'
                   }`}
-                  placeholder="rajesh@kumarac.com"
+                  placeholder="Kumar AC Services"
                 />
-                {errors.email && (
-                  <p className="mt-1 text-xs text-red-500">{errors.email}</p>
+                {errors.org_name && (
+                  <p className="mt-1 text-xs text-red-500">{errors.org_name}</p>
                 )}
               </div>
 
-              {/* Phone */}
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.phone ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="+91-9876543210"
-                />
-                {errors.phone && (
-                  <p className="mt-1 text-xs text-red-500">{errors.phone}</p>
-                )}
-              </div>
 
               {/* Number of Technicians */}
               <div>
@@ -345,10 +351,10 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
                 disabled={submitting}
                 className="w-full px-6 py-4 bg-blue-600 text-white rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {submitting ? 'Processing...' : 'Submit Pre-order'}
+                {submitting ? 'Joining Waitlist...' : 'Join Waitlist'}
               </button>
               <p className="mt-3 text-xs text-center text-gray-500">
-                You'll receive a confirmation email with next steps.
+                We'll notify you when Automet launches. No spam, we promise!
               </p>
             </div>
           </form>

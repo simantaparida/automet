@@ -1,26 +1,49 @@
-# Automet - Field Job & Asset Tracker
+<div align="center">
 
-A mobile-first Progressive Web App (PWA) for Indian AMC vendors to manage field jobs, track assets, and streamline operations.
+# Automet
+
+**Field Service Management Platform for Indian AMC Vendors**
+
+A mobile-first Progressive Web App (PWA) to manage field jobs, track assets, and streamline operations.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.1-blue)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-14.2-black)](https://nextjs.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-green)](https://supabase.com/)
+
+[Features](#-features) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [Contributing](#-contributing)
+
+</div>
+
+## ✨ Features
+
+- **Job Management**: Create, assign, and track field jobs with real-time updates
+- **Asset Tracking**: Maintain inventory of client equipment with maintenance history
+- **Technician Check-in/out**: GPS-based location tracking and time logging
+- **Offline Support**: PWA capabilities for reliable offline operation
+- **ROI Calculator**: Interactive calculator showing cost savings vs manual operations
+- **Multi-tenant**: Organization-level data isolation with Row Level Security
+- **Mobile-first**: Responsive design optimized for field technicians
+- **Blog System**: Built-in content management for announcements and guides
+
+---
 
 ## 🚀 Quick Start
 
 ```bash
 # Clone the repository
-git clone <your-repo-url>
-cd Automet
+git clone https://github.com/simantaparida/automet.git
+cd automet
 
 # Install dependencies
 npm install
 
 # Copy environment variables
 cp .env.example .env.local
+# Edit .env.local with your Supabase credentials
 
-# Follow setup guides in docs/ to configure:
-# - Supabase (dev + test projects)
-# - Google OAuth
-# - Razorpay
-
-# Run migrations and seeds
+# Run database migrations and seed demo data
+chmod +x scripts/*.sh
 ./scripts/migrate.sh
 ./scripts/seed.sh
 
@@ -28,44 +51,71 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Visit [http://localhost:3000](http://localhost:3000)
+Visit [http://localhost:3000](http://localhost:3000) to see the app.
+
+### Demo Account
+
+After running seeds, login with:
+- **Email**: `owner@sharmaservices.com`
+- **Password**: `sharma123`
+
+This demo account includes sample data: clients, sites, assets, and jobs.
 
 ## 📚 Documentation
 
-- **[Setup Guide](docs/SETUP.md)** - Complete environment setup
-- **[Supabase Setup](docs/SUPABASE_SETUP.md)** - Database and auth configuration
-- **[Google OAuth Setup](docs/GOOGLE_OAUTH_SETUP.md)** - OAuth provider configuration
-- **[Razorpay Setup](docs/RAZORPAY_SETUP.md)** - Payment gateway setup
-- **[Migrations Guide](docs/MIGRATIONS.md)** - Database migrations and rollback
-- **[API Documentation](docs/API.md)** - API endpoint reference
-- **[Architecture](docs/ARCHITECTURE.md)** - System design overview
+### For Developers
+- **[PROJECT_CONTEXT.md](PROJECT_CONTEXT.md)** - Comprehensive project overview and development guide
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Contribution guidelines and workflow
+- **[GITHUB_SETUP_GUIDE.md](GITHUB_SETUP_GUIDE.md)** - GitHub repository configuration
+
+### Setup Guides (in `/docs`)
+- **[01_setup_guide.md](docs/01_setup_guide.md)** - Complete environment setup
+- **[02_supabase_setup.md](docs/02_supabase_setup.md)** - Database and auth configuration
+- **[03_google_oauth_setup.md](docs/03_google_oauth_setup.md)** - OAuth provider configuration
+- **[04_razorpay_setup.md](docs/04_razorpay_setup.md)** - Payment gateway setup
+- **[05_migrations_guide.md](docs/05_migrations_guide.md)** - Database migrations and rollback
+- **[06_api_endpoints.md](docs/06_api_endpoints.md)** - API endpoint reference
+- **[07_architecture.md](docs/07_architecture.md)** - System design overview
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: Next.js 14, React 18, TypeScript
-- **Backend**: Next.js API Routes, Supabase (PostgreSQL)
-- **Auth**: Supabase Auth (Google OAuth + Email)
-- **Payments**: Razorpay
-- **Storage**: Supabase Storage
-- **Hosting**: Vercel
-- **Testing**: Jest, Playwright
-- **PWA**: next-pwa, Service Workers
+- **Framework**: [Next.js 14.2](https://nextjs.org/) (Pages Router)
+- **Language**: [TypeScript 5.1](https://www.typescriptlang.org/) (strict mode)
+- **Database**: [Supabase](https://supabase.com/) (PostgreSQL with RLS)
+- **Authentication**: Supabase Auth (Email/Password + OAuth ready)
+- **Styling**: [Tailwind CSS 3.x](https://tailwindcss.com/)
+- **PWA**: [next-pwa](https://github.com/shadowwalker/next-pwa)
+- **Payments**: [Razorpay](https://razorpay.com/) (for Indian market)
+- **Testing**: Jest (unit tests), Playwright (E2E)
+- **Deployment**: Vercel (planned)
 
 ## 🗂️ Project Structure
 
 ```
-/Automet
-├── docs/              # Documentation
-├── migrations/        # Database migrations (timestamped SQL)
-├── seeds/             # Demo data scripts
-├── scripts/           # Dev/deployment scripts
+automet/
+├── .claude/                  # Claude Code configuration
+├── components/               # React components
+│   └── landing/             # Landing page sections
+├── docs/                    # Setup and architecture guides
+├── migrations/              # Database migrations (001-011)
+├── pages/                   # Next.js pages (Pages Router)
+│   ├── api/                # API routes
+│   ├── auth/               # Auth pages (login, signup)
+│   ├── blog/               # Blog system
+│   └── [entities]/         # CRUD pages (clients, sites, assets, jobs)
+├── scripts/                 # Development scripts (migrate, seed, etc.)
+├── seeds/                   # Demo data SQL scripts
 ├── src/
-│   ├── lib/          # Supabase clients, utilities, validations
-│   └── types/        # TypeScript type definitions
-├── pages/
-│   └── api/          # API routes
-├── tests/            # Jest and Playwright tests
-└── public/           # Static assets, PWA manifest
+│   ├── components/         # Shared UI components
+│   ├── contexts/           # React contexts (Auth, etc.)
+│   └── lib/                # Business logic and utilities
+├── styles/                  # Global styles + Tailwind
+├── tests/                   # Jest tests
+├── CONTRIBUTING.md          # Contribution guidelines
+├── GITHUB_SETUP_GUIDE.md   # GitHub configuration guide
+├── LICENSE                  # MIT License
+├── PROJECT_CONTEXT.md       # Comprehensive project documentation
+└── README.md               # This file
 ```
 
 ## 🧪 Testing
@@ -83,12 +133,23 @@ npm run test:e2e
 
 ## 🔐 Security
 
-- Row Level Security (RLS) enabled on all tables
-- Service role key never exposed to client
-- Email verification required for critical actions
-- Webhook signature verification (Razorpay)
-- Signed upload URLs for storage (10-min TTL)
-- Environment variables managed via Vercel/GitHub Secrets
+### Database Security
+- **Row Level Security (RLS)**: Multi-tenant data isolation at database level
+- **Service Role Key**: Never exposed to client, only used in API routes
+- **Organization Isolation**: Users can only access their organization's data
+
+### Application Security
+- **Email Verification**: Required for critical actions
+- **Webhook Verification**: Razorpay webhook signature validation
+- **Signed URLs**: Time-limited (10 min TTL) for file uploads
+- **Environment Variables**: Secrets managed via `.env.local` (gitignored)
+
+### Open Source Security
+This repository is public, but:
+- All API keys and credentials are in `.env.local` (not committed)
+- Customer data is protected by RLS policies
+- Code visibility helps identify security issues early
+- Similar approach to successful open-source SaaS (Supabase, GitLab, Cal.com)
 
 ## 📦 Scripts
 
@@ -113,20 +174,70 @@ See [.env.example](.env.example) for required environment variables.
 
 ## 🤝 Contributing
 
-1. Create a feature branch: `git checkout -b feat/your-feature`
-2. Make changes and add tests
-3. Run linting and tests: `npm run lint && npm test`
-4. Commit with conventional commits: `feat: add new feature`
-5. Push and create a Pull Request
+We welcome contributions from the community! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
-## 📄 License
+### Quick Contribution Guide
 
-Proprietary - All rights reserved
+1. **Fork** the repository
+2. **Create a feature branch**: `git checkout -b feature/your-feature-name`
+3. **Make changes** and add tests
+4. **Run checks**: `npm run lint && npm test`
+5. **Commit** with conventional commits: `feat: add new feature`
+6. **Push** to your fork and create a **Pull Request**
 
-## 🙋 Support
+### Development Workflow
 
-For issues and questions, contact the development team or open an issue in the repository.
+- Branch: `main` (production) ← `develop` (staging) ← `feature/*` (development)
+- All PRs require 1 approval before merging
+- Squash merge for clean history
+- Branches auto-delete after merge
+
+See [GITHUB_SETUP_GUIDE.md](GITHUB_SETUP_GUIDE.md) for GitHub configuration details.
 
 ---
 
+## 📄 License
+
+[MIT License](LICENSE) - Open source and free to use.
+
+---
+
+## 🙋 Support
+
+- **Issues**: [GitHub Issues](https://github.com/simantaparida/automet/issues)
+- **Questions**: Open a discussion or contact via GitHub
+
+---
+
+## 🌟 Roadmap
+
+### Current (Module 3) - Landing Page & Pre-order
+- ✅ Landing page with all sections
+- ✅ ROI calculator with plan-driven sliders
+- ✅ Blog system
+- ✅ Authentication system
+- ⏳ Pre-order payment integration (Razorpay)
+
+### Next (Module 4) - Dashboard & Job Management
+- Dashboard with real-time updates
+- Job creation and assignment
+- Technician mobile interface
+- Photo capture and upload
+
+### Future Modules
+- **Module 5**: Mobile PWA (offline sync, GPS check-in)
+- **Module 6**: Inventory management
+- **Module 7**: Reporting and analytics
+- **Module 8**: Billing and invoicing
+
+See [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) for detailed roadmap.
+
+---
+
+<div align="center">
+
 **Built with ❤️ for Indian AMC vendors**
+
+[⬆ Back to Top](#automet)
+
+</div>

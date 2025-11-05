@@ -60,66 +60,64 @@ export async function sendEmail(params: SendEmailParams): Promise<boolean> {
 }
 
 /**
- * Send pre-order confirmation email with verification link
+ * Send welcome email to waitlist members
  */
-export async function sendPreorderConfirmation(
+export async function sendWaitlistWelcomeEmail(
   email: string,
-  contactName: string,
-  confirmationToken: string
+  contactName: string
 ): Promise<boolean> {
-  const confirmationUrl = `${APP_URL}/preorder/confirm?token=${confirmationToken}`;
-
   const html = `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Confirm your Automet pre-order</title>
+  <title>Welcome to Automet Waitlist</title>
 </head>
 <body style="font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
 
-  <div style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 30px; border-radius: 8px 8px 0 0; text-align: center;">
+  <div style="background: #EF7722; padding: 30px; border-radius: 8px 8px 0 0; text-align: center;">
     <h1 style="color: white; margin: 0; font-size: 28px;">Automet</h1>
     <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">Field Service Management</p>
   </div>
 
   <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px;">
-    <h2 style="color: #1f2937; margin-top: 0;">Confirm your pre-order</h2>
+    <h2 style="color: #1f2937; margin-top: 0;">You're on the Waitlist! 🎉</h2>
 
     <p>Hi ${contactName},</p>
 
-    <p>Thank you for reserving your spot for Automet early access! 🎉</p>
+    <p>Thank you for joining the Automet waitlist! We're excited to have you on board.</p>
 
-    <p style="background: white; padding: 20px; border-left: 4px solid #2563eb; border-radius: 4px;">
-      Click the button below to confirm your email address:
-    </p>
+    <div style="background: white; padding: 20px; border-left: 4px solid #EF7722; border-radius: 4px; margin: 20px 0;">
+      <p style="margin: 0; font-weight: 600; color: #1f2937;">What happens next?</p>
+    </div>
+
+    <ul style="color: #4b5563; padding-left: 20px;">
+      <li><strong>We'll notify you when we launch</strong> - You'll be among the first to know when Automet is ready</li>
+      <li><strong>Early access</strong> - You'll get beta access 2 weeks before public launch</li>
+      <li><strong>Priority support</strong> - Dedicated onboarding and setup help when we launch</li>
+      <li><strong>Exclusive benefits</strong> - Special offers and priority support for early users</li>
+    </ul>
+
+    <div style="background: #EF7722; color: white; padding: 20px; border-radius: 8px; margin: 30px 0; text-align: center;">
+      <h3 style="margin: 0 0 10px 0; font-size: 18px;">Your Early Access Benefits</h3>
+      <div style="text-align: left; display: inline-block;">
+        <p style="margin: 5px 0;">🎯 First access to new features</p>
+        <p style="margin: 5px 0;">💰 Exclusive discounts for early users</p>
+        <p style="margin: 5px 0;">🚀 Priority support & onboarding</p>
+        <p style="margin: 5px 0;">📢 Your feedback helps shape the product</p>
+      </div>
+    </div>
 
     <div style="text-align: center; margin: 30px 0;">
-      <a href="${confirmationUrl}" style="display: inline-block; background: #2563eb; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
-        Confirm Email →
+      <a href="${APP_URL}" style="display: inline-block; background: #EF7722; color: white; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+        Visit Our Website →
       </a>
     </div>
 
-    <p style="font-size: 14px; color: #6b7280;">
-      Or copy and paste this link into your browser:<br>
-      <a href="${confirmationUrl}" style="color: #2563eb; word-break: break-all;">${confirmationUrl}</a>
-    </p>
-
-    <p style="color: #ef4444; font-size: 14px;">
-      ⚠️ This link expires in 7 days.
-    </p>
-
     <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
 
-    <h3 style="color: #1f2937;">What happens next?</h3>
-    <ul style="color: #4b5563;">
-      <li>We'll keep you updated on our launch progress</li>
-      <li>You'll get beta access 2 weeks before public launch (Feb 2026)</li>
-      <li>Priority onboarding support when we launch</li>
-    </ul>
-
-    <p style="margin-top: 30px;">Questions? Just reply to this email.</p>
+    <p style="margin-top: 30px;">We'll keep you updated on our progress. If you have any questions, just reply to this email.</p>
 
     <p style="color: #6b7280; margin-top: 30px; margin-bottom: 0;">
       Best,<br>
@@ -140,23 +138,27 @@ export async function sendPreorderConfirmation(
 </html>`;
 
   const text = `
-Confirm your Automet pre-order
+You're on the Waitlist! 🎉
 
 Hi ${contactName},
 
-Thank you for reserving your spot for Automet early access!
+Thank you for joining the Automet waitlist! We're excited to have you on board.
 
-Click to confirm your email:
-${confirmationUrl}
+What happens next?
+- We'll notify you when we launch - You'll be among the first to know when Automet is ready
+- Early access - You'll get beta access 2 weeks before public launch
+- Priority support - Dedicated onboarding and setup help when we launch
+- Exclusive benefits - Special offers and priority support for early users
 
-This link expires in 7 days.
+Your Early Access Benefits:
+🎯 First access to new features
+💰 Exclusive discounts for early users
+🚀 Priority support & onboarding
+📢 Your feedback helps shape the product
 
-What happens next:
-- We'll keep you updated on our launch progress
-- You'll get beta access 2 weeks before public launch
-- Priority onboarding when we launch in Feb 2026
+Visit our website: ${APP_URL}
 
-Questions? Reply to this email.
+We'll keep you updated on our progress. If you have any questions, just reply to this email.
 
 Best,
 The Automet Team
@@ -167,7 +169,7 @@ ${APP_URL}
 
   return sendEmail({
     to: email,
-    subject: 'Confirm your Automet pre-order',
+    subject: 'Welcome to the Automet Waitlist! 🎉',
     html,
     text,
   });

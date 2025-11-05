@@ -5,9 +5,14 @@
 
 import { useState } from 'react';
 
-export default function FAQ() {
+interface FAQProps {
+  onContactClick?: () => void;
+}
+
+export default function FAQ({ onContactClick }: FAQProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
+  // Reduced to 4 most important FAQs
   const faqs = [
     {
       question: 'What is Automet and who is it for?',
@@ -17,22 +22,12 @@ export default function FAQ() {
     {
       question: 'How much does it cost?',
       answer:
-        'We have 4 pricing tiers: Free (forever, 1 site, 3 users), Starter (₹999/mo for 5 sites, 10 techs), Growth (₹2,999/mo for 20 sites, 50 techs), and Business (₹9,999/mo for unlimited sites, 200 techs). All paid plans include 20% discount on annual billing. Early access members get 50% off for 3 months after launch.',
+        'We have 4 pricing tiers: Free (forever, 1 site, 3 users), Starter (₹999/mo for 5 sites, 10 techs), Growth (₹2,999/mo for 20 sites, 50 techs), and Business (₹9,999/mo for unlimited sites, 200 techs). All paid plans include 20% discount on annual billing. Early access members get 50% off for 3 months after launch. Need an enterprise solution? Contact us.',
     },
     {
       question: 'What are the early access benefits?',
       answer:
         'By joining the waitlist, you get: (1) First access to Automet when we launch, (2) Exclusive early access benefits and special offers, (3) Priority onboarding with dedicated support, (4) Your feedback helps shape the product, and (5) Be among the first to streamline your AMC operations. No payment required - just join the waitlist!',
-    },
-    {
-      question: 'How does the waitlist work?',
-      answer:
-        'Simply join the waitlist with your email and phone number. We\'ll notify you when Automet launches, and you\'ll be among the first to access the platform. Early access members get priority onboarding, special offers, and the opportunity to provide feedback that shapes the product. No payment required - just sign up and we\'ll keep you updated!',
-    },
-    {
-      question: 'Is my data secure?',
-      answer:
-        'Absolutely. We use bank-grade encryption (256-bit SSL) for all data transmission and storage. Your data is backed up daily and stored in secure data centers in India. We are compliant with industry security standards and will never share your data with third parties.',
     },
     {
       question: 'When will Automet launch?',
@@ -58,7 +53,7 @@ export default function FAQ() {
           </h2>
           <p className="text-lg text-gray-600">
             Got questions? We've got answers.{' '}
-            <a href="mailto:support@automet.in" className="text-primary hover:text-secondary font-semibold transition-colors">
+            <a href="mailto:support@automet.in" className="text-primary hover:text-primary/80 font-semibold transition-colors">
               Contact us
             </a>
           </p>
@@ -121,12 +116,12 @@ export default function FAQ() {
             <p className="text-gray-600 text-sm mb-4">
               We're here to help. Reach out to our team.
             </p>
-            <a
-              href="mailto:support@automet.in"
-              className="inline-block px-6 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-lg font-semibold text-sm hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+            <button
+              onClick={onContactClick}
+              className="inline-block px-6 py-2.5 bg-primary text-white rounded-lg font-semibold text-sm hover:bg-primary/90 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
             >
               Contact Support
-            </a>
+            </button>
           </div>
         </div>
       </div>

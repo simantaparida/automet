@@ -9,14 +9,14 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950 text-gray-300 border-t border-primary/20">
+    <footer className="bg-gray-900 text-gray-300 border-t border-primary/20">
       <div className="container mx-auto px-4 sm:px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand */}
           <div className="col-span-1 animate-fade-in">
             <div className="flex items-center space-x-2 text-white mb-4">
               <svg
-                className="w-8 h-8 text-secondary animate-bounce-subtle"
+                className="w-8 h-8 text-primary animate-bounce-subtle"
                 viewBox="0 0 32 32"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -37,7 +37,7 @@ export default function Footer() {
                   strokeLinejoin="round"
                 />
               </svg>
-              <span className="text-xl font-bold bg-gradient-to-r from-secondary to-accent-pink bg-clip-text text-transparent">
+              <span className="text-xl font-bold text-primary">
                 Automet
               </span>
             </div>
@@ -51,22 +51,22 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Product</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="#features" className="hover:text-secondary transition-colors duration-300">
+                <a href="#features" className="hover:text-primary transition-colors duration-300">
                   Features
                 </a>
               </li>
               <li>
-                <a href="#pricing" className="hover:text-secondary transition-colors duration-300">
+                <a href="#pricing" className="hover:text-primary transition-colors duration-300">
                   Pricing
                 </a>
               </li>
               <li>
-                <a href="#how-it-works" className="hover:text-secondary transition-colors duration-300">
+                <a href="#how-it-works" className="hover:text-primary transition-colors duration-300">
                   How It Works
                 </a>
               </li>
               <li>
-                <a href="#faq" className="hover:text-secondary transition-colors duration-300">
+                <a href="#faq" className="hover:text-primary transition-colors duration-300">
                   FAQ
                 </a>
               </li>
@@ -78,17 +78,17 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Resources</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/blog" className="hover:text-secondary transition-colors duration-300">
+                <Link href="/blog" className="hover:text-primary transition-colors duration-300">
                   Blog
                 </Link>
               </li>
               <li>
-                <a href="mailto:support@automet.in" className="hover:text-secondary transition-colors duration-300">
+                <a href="mailto:support@automet.in" className="hover:text-primary transition-colors duration-300">
                   Support
                 </a>
               </li>
               <li>
-                <a href="mailto:support@automet.in" className="hover:text-secondary transition-colors duration-300">
+                <a href="mailto:support@automet.in" className="hover:text-primary transition-colors duration-300">
                   Contact Us
                 </a>
               </li>
@@ -100,17 +100,17 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Company</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="mailto:support@automet.in" className="hover:text-secondary transition-colors duration-300">
+                <a href="mailto:support@automet.in" className="hover:text-primary transition-colors duration-300">
                   Contact
                 </a>
               </li>
               <li>
-                <a href="mailto:support@automet.in?subject=Privacy Policy" className="hover:text-secondary transition-colors duration-300">
+                <a href="mailto:support@automet.in?subject=Privacy Policy" className="hover:text-primary transition-colors duration-300">
                   Privacy Policy
                 </a>
               </li>
               <li>
-                <a href="mailto:support@automet.in?subject=Terms of Service" className="hover:text-secondary transition-colors duration-300">
+                <a href="mailto:support@automet.in?subject=Terms of Service" className="hover:text-primary transition-colors duration-300">
                   Terms of Service
                 </a>
               </li>
@@ -129,7 +129,7 @@ export default function Footer() {
             <div className="flex space-x-6">
               <a
                 href="mailto:support@automet.in"
-                className="text-gray-400 hover:text-secondary transition-all duration-300 transform hover:scale-110"
+                className="text-gray-400 hover:text-primary transition-all duration-300 transform hover:scale-110"
                 aria-label="Email"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -138,7 +138,7 @@ export default function Footer() {
               </a>
               <a
                 href="mailto:support@automet.in"
-                className="text-gray-400 hover:text-secondary transition-all duration-300 transform hover:scale-110"
+                className="text-gray-400 hover:text-primary transition-all duration-300 transform hover:scale-110"
                 aria-label="LinkedIn"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">

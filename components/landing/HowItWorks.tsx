@@ -53,11 +53,11 @@ export default function HowItWorks() {
   ];
 
   return (
-    <section id="how-it-works" className="py-20 bg-gradient-to-b from-gray-50 to-white">
+    <section id="how-it-works" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4 sm:px-6">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in">
-          <span className="inline-block px-4 py-2 bg-secondary/10 text-secondary rounded-full text-sm font-medium mb-4 animate-slide-down">
+          <span className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4 animate-slide-down">
             HOW IT WORKS
           </span>
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 animate-slide-up">
@@ -72,7 +72,7 @@ export default function HowItWorks() {
         <div className="max-w-5xl mx-auto">
           <div className="relative">
             {/* Connecting Line (Desktop) */}
-            <div className="hidden lg:block absolute top-24 left-0 right-0 h-0.5 bg-gradient-to-r from-primary/30 via-secondary/30 to-accent-pink/30" style={{ top: '6rem' }} />
+            <div className="hidden lg:block absolute top-24 left-0 right-0 h-0.5 bg-primary/30" style={{ top: '6rem' }} />
 
             {/* Steps Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 relative">
@@ -81,7 +81,7 @@ export default function HowItWorks() {
                   {/* Step Card */}
                   <div className="bg-white rounded-xl border-2 border-primary/20 p-8 hover:border-primary/40 hover:shadow-lg transition-all duration-300 backdrop-blur-sm">
                     {/* Step Number Badge */}
-                    <div className="absolute -top-6 left-8 w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg animate-scale-in">
+                    <div className="absolute -top-6 left-8 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg animate-scale-in">
                       {step.number}
                     </div>
 
@@ -105,7 +105,7 @@ export default function HowItWorks() {
                       {step.details.map((detail, idx) => (
                         <li key={idx} className="flex items-center text-sm text-gray-700">
                           <svg
-                            className="w-5 h-5 text-accent-pink mr-2 flex-shrink-0"
+                            className="w-5 h-5 text-primary mr-2 flex-shrink-0"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -139,7 +139,7 @@ export default function HowItWorks() {
 
         {/* Bottom CTA */}
         <div className="text-center mt-16 animate-fade-in">
-          <div className="inline-block bg-gradient-to-br from-primary/10 via-secondary/10 to-accent-pink/10 rounded-2xl p-8 border-2 border-primary/20 shadow-lg hover:shadow-xl transition-all duration-300">
+          <div className="inline-block bg-primary/10 rounded-2xl p-8 border-2 border-primary/20 shadow-lg hover:shadow-xl transition-all duration-300">
             <h3 className="text-2xl font-bold text-gray-900 mb-4">
               Ready to get started?
             </h3>
@@ -149,7 +149,7 @@ export default function HowItWorks() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
                 href="#pricing"
-                className="px-8 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-lg font-semibold hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                className="px-8 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
               >
                 View Pricing
               </a>

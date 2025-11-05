@@ -207,6 +207,56 @@ The users table has these columns:
 
 ---
 
+## 🎨 Color Palette
+
+The Automet design system uses a color palette inspired by the flag colors. All colors are defined in `tailwind.config.js` and should be used consistently across the application.
+
+### Primary Colors
+
+- **Primary**: `#EF7722` (Vibrant Orange)
+  - Used for: Primary buttons, links, highlights, brand elements
+  - Tailwind class: `bg-primary`, `text-primary`, `border-primary`
+  - Full scale available: `primary-50` through `primary-950`
+
+- **Secondary**: `#FFB84D` (Lighter Golden Orange)
+  - Used for: Secondary accents, hover states, complementary elements
+  - Tailwind class: `bg-secondary`, `text-secondary`, `border-secondary`
+  - Full scale available: `secondary-50` through `secondary-950`
+
+- **Accent Blue**: `#3B82F6` (Medium Blue)
+  - Used for: Accent elements, informational highlights
+  - Tailwind class: `bg-accent-blue`, `text-accent-blue`, `accent-blue`
+
+### Usage Guidelines
+
+1. **No Gradients**: All buttons and UI elements use solid colors (no `bg-gradient-to-r` classes)
+2. **Primary for CTAs**: Use `bg-primary` for all primary call-to-action buttons
+3. **Consistent Hover States**: Use `hover:bg-primary/90` or `hover:text-primary/80` for interactive elements
+4. **Accessibility**: Ensure sufficient contrast ratios (WCAG AA minimum)
+
+### Example Usage
+
+```tsx
+// Primary button
+<button className="bg-primary text-white hover:bg-primary/90">
+  Join Waitlist
+</button>
+
+// Primary link
+<a className="text-primary hover:text-primary/80">
+  Learn More
+</a>
+
+// Secondary accent
+<div className="bg-secondary/10 text-secondary">
+  New Feature
+</div>
+```
+
+**Color Configuration**: See `tailwind.config.js` for the complete color scale definitions.
+
+---
+
 ## 🎉 What's Working
 
 ✅ Email/Password authentication

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseAdmin } from '@/lib/supabase-server';
+import { getSupabaseAdmin } from '@/lib/supabase-server';
 
 type HealthResponse = {
   status: 'ok' | 'error';
@@ -30,6 +30,16 @@ export default async function handler(
 
   try {
     // Test database connection using admin client (bypasses RLS)
+    const supabaseAdmin = getSupabaseAdmin();
+    if (!supabaseAdmin) {
+      return res.status(503).json({
+        status: 'error',
+        timestamp: new Date().toISOString(),
+        database: 'error',
+        error: 'Admin client not available. Check SUPABASE_SERVICE_ROLE_KEY.',
+      });
+    }
+    
     const { error } = await supabaseAdmin
       .from('organizations')
       .select('id')

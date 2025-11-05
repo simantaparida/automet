@@ -8,8 +8,9 @@
  */
 
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseAdmin, supabaseServer } from '@/lib/supabase-server';
+import { getSupabaseAdmin, supabaseServer } from '@/lib/supabase-server';
 import { preorderSchema } from '@/lib/validations/preorder';
+import { sendWaitlistWelcomeEmail } from '@/lib/email';
 
 export default async function handler(
   req: NextApiRequest,
@@ -33,33 +34,49 @@ export default async function handler(
 
     const data = validationResult.data;
 
-    // Use service role if properly configured, otherwise use anon key with public RLS policy
-    // The public RLS policy allows INSERT for anonymous users
-    const useServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY && 
-                          process.env.SUPABASE_SERVICE_ROLE_KEY.length > 20;
-    const supabase = useServiceRole ? supabaseAdmin : supabaseServer;
-
+    // Get admin client lazily (ensures fresh env vars are used)
+    // Always use admin client if available (bypasses RLS completely)
+    const adminClient = getSupabaseAdmin();
+    const supabase = adminClient || supabaseServer;
+    const useServiceRole = adminClient !== null;
+    
     if (!useServiceRole) {
-      console.log('Using anon key with public RLS policy (service role not configured)');
+      const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '';
+      console.error('⚠️ SUPABASE_SERVICE_ROLE_KEY issue detected:');
+      console.error('   - Service Role Key:', serviceRoleKey ? `Set (${serviceRoleKey.length} chars)` : 'NOT SET');
+      console.error('   - Supabase URL:', supabaseUrl || 'NOT SET');
+      console.error('   - Admin Client:', 'NULL - falling back to server client');
+      console.error('⚠️ Using anon key - may encounter RLS permission issues.');
+      console.error('⚠️ Add SUPABASE_SERVICE_ROLE_KEY to .env.local to bypass RLS');
     }
 
-    // Check for duplicate email
-    const { data: existingPreorder, error: checkError } = await supabase
-      .from('preorders')
-      .select('id, email')
-      .eq('email', data.email)
-      .single();
+    // Try to check for duplicate email, but don't fail if check fails
+    // We'll rely on database unique constraint if check fails
+    let existingPreorder = null;
+    try {
+      const { data: existingData, error: checkError } = await supabase
+        .from('preorders')
+        .select('id, email')
+        .eq('email', data.email.toLowerCase())
+        .maybeSingle();
 
-    if (checkError && checkError.code !== 'PGRST116') {
-      // PGRST116 is "no rows returned" which is expected for new emails
-      console.error('Error checking duplicate email:', checkError);
-      return res.status(500).json({
-        error: 'Database error',
-        message: 'Failed to check existing entries. Please try again.',
-        details: process.env.NODE_ENV === 'development' ? checkError : undefined,
-      });
+      if (checkError) {
+        // Log error but continue - database unique constraint will catch duplicates
+        console.warn('Duplicate check failed (will rely on DB constraint):', checkError.code, checkError.message);
+        // If it's a permission error and we don't have service role, log warning
+        if (checkError.code === '42501' && !useServiceRole) {
+          console.warn('⚠️ RLS permission denied. Consider setting SUPABASE_SERVICE_ROLE_KEY in .env.local');
+        }
+      } else {
+        existingPreorder = existingData;
+      }
+    } catch (err) {
+      // Catch any unexpected errors during duplicate check
+      console.warn('Duplicate check threw exception (will rely on DB constraint):', err);
     }
 
+    // If we found a duplicate, return early
     if (existingPreorder) {
       return res.status(409).json({
         error: 'Email already registered',
@@ -68,21 +85,21 @@ export default async function handler(
     }
 
     // Insert waitlist entry into database
-    // Using public RLS policy - works with anon key
+    // Using admin client if available (bypasses RLS), otherwise using public RLS policy
     const { data: preorder, error: insertError } = await supabase
       .from('preorders')
       .insert({
         org_name: data.org_name || null,
         contact_name: data.contact_name || null,
-        email: data.email,
+        email: data.email.toLowerCase(), // Normalize email to lowercase
         phone: data.phone,
         tech_count: data.tech_count || null,
         city: data.city || null,
         plan_interest: data.plan_interest || null,
         payment_status: 'pending', // No payment required for waitlist
         amount_paid: 0,
-        email_confirmed: true, // Auto-confirm for waitlist (no email confirmation needed)
-        confirmation_token: null, // No confirmation token needed
+        email_confirmed: true, // No email verification required
+        confirmation_token: null,
         token_expires_at: null,
         utm_source: data.utm_source || null,
         utm_medium: data.utm_medium || null,
@@ -97,6 +114,31 @@ export default async function handler(
       console.error('Error code:', insertError.code);
       console.error('Error details:', insertError.details);
       console.error('Error hint:', insertError.hint);
+      console.error('Using client:', useServiceRole ? 'Admin (should bypass RLS)' : 'Server (respects RLS)');
+      
+      // Handle permission denied errors
+      if (insertError.code === '42501' || insertError.message?.includes('permission denied')) {
+        console.error('❌ RLS Permission Denied Error!');
+        console.error('   This means the admin client is not working properly.');
+        console.error('   Check: SUPABASE_SERVICE_ROLE_KEY in .env.local');
+        return res.status(500).json({
+          error: 'Permission denied',
+          message: 'Database permission error. Please check server configuration.',
+          details: process.env.NODE_ENV === 'development' ? {
+            code: insertError.code,
+            message: insertError.message,
+            hint: 'Make sure SUPABASE_SERVICE_ROLE_KEY is set correctly in .env.local',
+          } : undefined,
+        });
+      }
+      
+      // Handle duplicate email error from database unique constraint
+      if (insertError.code === '23505' || insertError.message?.includes('duplicate') || insertError.message?.includes('unique')) {
+        return res.status(409).json({
+          error: 'Email already registered',
+          message: 'This email is already on the waitlist. We\'ll notify you when we launch!',
+        });
+      }
       
       // Return more detailed error message for debugging
       return res.status(500).json({
@@ -109,6 +151,17 @@ export default async function handler(
           hint: insertError.hint,
         } : undefined,
       });
+    }
+
+    // Send welcome email (don't fail if email fails)
+    try {
+      await sendWaitlistWelcomeEmail(
+        preorder.email,
+        preorder.contact_name || 'there'
+      );
+    } catch (emailError) {
+      console.error('Failed to send welcome email:', emailError);
+      // Don't fail the request if email fails - user is still added to waitlist
     }
 
     // Return success response

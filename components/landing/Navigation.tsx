@@ -28,7 +28,7 @@ export default function Navigation({ onPreorderClick }: NavigationProps) {
     { href: '#roi-calculator', label: 'ROI Calculator' },
     { href: '#pricing', label: 'Pricing' },
     { href: '/blog', label: 'Blog' },
-    { href: '#faq', label: 'FAQ' },
+    { href: '/about', label: 'About' },
   ];
 
   return (
@@ -68,7 +68,7 @@ export default function Navigation({ onPreorderClick }: NavigationProps) {
                 strokeLinejoin="round"
               />
             </svg>
-            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent group-hover:from-secondary group-hover:to-accent-pink transition-all duration-300">
+            <span className="text-primary group-hover:text-primary/80 transition-all duration-300">
               Automet
             </span>
           </Link>
@@ -86,12 +86,12 @@ export default function Navigation({ onPreorderClick }: NavigationProps) {
                 <Component
                   key={link.href}
                   {...props}
-                  className={`text-sm font-medium transition-all duration-300 hover:text-secondary relative group ${
+                  className={`text-sm font-medium transition-all duration-300 hover:text-primary relative group ${
                     scrolled ? 'text-gray-700' : 'text-gray-900'
                   }`}
                 >
                   {link.label}
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-300"></span>
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
                 </Component>
               );
             })}
@@ -101,7 +101,7 @@ export default function Navigation({ onPreorderClick }: NavigationProps) {
           <div className="hidden md:block">
             <button
               onClick={onPreorderClick}
-              className="px-6 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-lg font-medium hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+              className="px-6 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
             >
               Join Waitlist
             </button>
@@ -171,7 +171,7 @@ export default function Navigation({ onPreorderClick }: NavigationProps) {
                   setMobileMenuOpen(false);
                   onPreorderClick();
                 }}
-                className="px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-lg font-medium hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 text-center shadow-md"
+                className="px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-all duration-300 text-center shadow-md"
               >
                 Join Waitlist
               </button>

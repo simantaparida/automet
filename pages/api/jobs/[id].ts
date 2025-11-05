@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseAdmin } from '@/lib/supabase-server';
+import { getSupabaseAdmin } from '@/lib/supabase-server';
 
 /**
  * Individual Job API Route
@@ -39,6 +39,11 @@ export default async function handler(
  * GET /api/jobs/[id]
  */
 async function handleGetJob(id: string, res: NextApiResponse) {
+  const supabaseAdmin = getSupabaseAdmin();
+  if (!supabaseAdmin) {
+    return res.status(500).json({ error: 'Server configuration error' });
+  }
+  
   const { data, error } = await supabaseAdmin
     .from('jobs')
     .select(`
@@ -77,6 +82,11 @@ async function handleUpdateJob(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const supabaseAdmin = getSupabaseAdmin();
+  if (!supabaseAdmin) {
+    return res.status(500).json({ error: 'Server configuration error' });
+  }
+  
   const updates = req.body;
 
   // Don't allow updating org_id or id
@@ -109,6 +119,11 @@ async function handleUpdateJob(
  * DELETE /api/jobs/[id]
  */
 async function handleDeleteJob(id: string, res: NextApiResponse) {
+  const supabaseAdmin = getSupabaseAdmin();
+  if (!supabaseAdmin) {
+    return res.status(500).json({ error: 'Server configuration error' });
+  }
+  
   const { error } = await supabaseAdmin
     .from('jobs')
     .delete()

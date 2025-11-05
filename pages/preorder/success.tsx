@@ -31,14 +31,14 @@ export default function PreorderSuccessPage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50 flex items-center justify-center px-4">
         <div className="max-w-2xl w-full">
           {/* Success Card */}
           <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 text-center">
             {/* Success Icon */}
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-full mb-6">
               <svg
-                className="w-10 h-10 text-green-600"
+                className="w-10 h-10 text-primary"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -60,15 +60,22 @@ export default function PreorderSuccessPage() {
             {/* Message */}
             <p className="text-lg text-gray-700 mb-6 leading-relaxed">
               Thank you for joining! We've added{' '}
-              <span className="font-semibold text-blue-600">{email}</span> to our waitlist.
+              <span className="font-semibold text-primary">{email}</span> to our waitlist.
             </p>
+            
+            {/* Email Notice */}
+            <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 mb-6">
+              <p className="text-sm text-gray-700">
+                <strong className="text-primary">📧 Check your email!</strong> We've sent a welcome email to <span className="font-semibold">{email}</span> with details about your waitlist status.
+              </p>
+            </div>
 
             {/* What's Next */}
-            <div className="bg-blue-50 rounded-xl p-6 mb-8 text-left">
+            <div className="bg-primary/10 rounded-xl p-6 mb-8 text-left border border-primary/20">
               <h2 className="text-xl font-bold text-gray-900 mb-4">What happens next?</h2>
               <ol className="space-y-3">
                 <li className="flex items-start">
-                  <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-600 text-white rounded-full text-sm font-bold mr-3 flex-shrink-0">
+                  <span className="inline-flex items-center justify-center w-6 h-6 bg-primary text-white rounded-full text-sm font-bold mr-3 flex-shrink-0">
                     1
                   </span>
                   <div>
@@ -79,7 +86,7 @@ export default function PreorderSuccessPage() {
                   </div>
                 </li>
                 <li className="flex items-start">
-                  <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-600 text-white rounded-full text-sm font-bold mr-3 flex-shrink-0">
+                  <span className="inline-flex items-center justify-center w-6 h-6 bg-primary text-white rounded-full text-sm font-bold mr-3 flex-shrink-0">
                     2
                   </span>
                   <div>
@@ -90,7 +97,7 @@ export default function PreorderSuccessPage() {
                   </div>
                 </li>
                 <li className="flex items-start">
-                  <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-600 text-white rounded-full text-sm font-bold mr-3 flex-shrink-0">
+                  <span className="inline-flex items-center justify-center w-6 h-6 bg-primary text-white rounded-full text-sm font-bold mr-3 flex-shrink-0">
                     3
                   </span>
                   <div>
@@ -132,7 +139,7 @@ export default function PreorderSuccessPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/"
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg"
+                className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors shadow-md hover:shadow-lg"
               >
                 Back to Home
               </Link>
@@ -150,7 +157,7 @@ export default function PreorderSuccessPage() {
                 Questions?{' '}
                 <a
                   href="mailto:support@automet.in"
-                  className="text-blue-600 hover:text-blue-700 font-semibold"
+                  className="text-primary hover:text-primary/80 font-semibold"
                 >
                   Contact us
                 </a>

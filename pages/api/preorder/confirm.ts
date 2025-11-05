@@ -8,7 +8,7 @@
  */
 
 import type { NextApiRequest, NextApiResponse} from 'next';
-import { supabaseAdmin } from '@/lib/supabase-server';
+import { getSupabaseAdmin } from '@/lib/supabase-server';
 import { confirmationSchema } from '@/lib/validations/preorder';
 
 export default async function handler(
@@ -34,6 +34,15 @@ export default async function handler(
     }
 
     const { token } = validationResult.data;
+
+    // Get admin client (required for this operation)
+    const supabaseAdmin = getSupabaseAdmin();
+    if (!supabaseAdmin) {
+      return res.status(500).json({
+        error: 'Server configuration error',
+        message: 'Admin client not available. Check SUPABASE_SERVICE_ROLE_KEY.',
+      });
+    }
 
     // Find pre-order by confirmation token
     const { data: preorder, error: fetchError } = await supabaseAdmin

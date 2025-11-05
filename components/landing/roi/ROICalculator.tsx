@@ -138,11 +138,11 @@ export default function ROICalculator() {
   };
 
   return (
-    <section id="roi-calculator" className="py-12 bg-gradient-to-br from-gray-50 to-blue-50">
+    <section id="roi-calculator" className="py-12 bg-gray-50">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header */}
         <div className="text-center mb-6">
-          <span className="inline-block px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium mb-2">
+          <span className="inline-block px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium mb-2">
             ROI CALCULATOR
           </span>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
@@ -189,7 +189,7 @@ export default function ROICalculator() {
                         value={plan.id}
                         checked={selectedPlan.id === plan.id}
                         onChange={(e) => handlePlanChange(e.target.value)}
-                        className="w-4 h-4 text-primary focus:ring-primary focus:ring-2 mb-1.5"
+                        className="w-4 h-4 accent-primary text-primary focus:ring-primary focus:ring-2 mb-1.5"
                       />
                       <div className="text-center">
                         <div className="text-xs font-semibold text-gray-900 mb-0.5">{plan.name}</div>
@@ -206,7 +206,7 @@ export default function ROICalculator() {
               <div>
                 <div className="flex justify-between items-center mb-1">
                   <label className="text-xs font-medium text-gray-700">Technicians</label>
-                  <span className="text-sm font-bold text-blue-600">{inputs.technicians}</span>
+                  <span className="text-sm font-bold text-primary">{inputs.technicians}</span>
                 </div>
                 <input
                   type="range"
@@ -215,7 +215,7 @@ export default function ROICalculator() {
                   step="1"
                   value={inputs.technicians}
                   onChange={(e) => handleSliderChange('technicians', parseInt(e.target.value))}
-                  className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                  className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
                 />
                 <div className="flex justify-between text-[10px] text-gray-500 mt-0.5">
                   <span>1</span>
@@ -227,7 +227,7 @@ export default function ROICalculator() {
               <div>
                 <div className="flex justify-between items-center mb-1">
                   <label className="text-xs font-medium text-gray-700">Jobs/Tech/Month</label>
-                  <span className="text-sm font-bold text-blue-600">{inputs.jobsPerTechnicianPerMonth}</span>
+                  <span className="text-sm font-bold text-primary">{inputs.jobsPerTechnicianPerMonth}</span>
                 </div>
                 <input
                   type="range"
@@ -236,7 +236,7 @@ export default function ROICalculator() {
                   step="1"
                   value={inputs.jobsPerTechnicianPerMonth}
                   onChange={(e) => handleSliderChange('jobsPerTechnicianPerMonth', parseInt(e.target.value))}
-                  className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                  className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
                 />
                 <div className="flex justify-between text-[10px] text-gray-500 mt-0.5">
                   <span>10</span>
@@ -248,7 +248,7 @@ export default function ROICalculator() {
               <div>
                 <div className="flex justify-between items-center mb-1">
                   <label className="text-xs font-medium text-gray-700">Avg Revenue/Job</label>
-                  <span className="text-sm font-bold text-blue-600">
+                  <span className="text-sm font-bold text-primary">
                     ₹{inputs.avgRevenuePerJobINR.toLocaleString('en-IN')}
                   </span>
                 </div>
@@ -259,7 +259,7 @@ export default function ROICalculator() {
                   step="100"
                   value={inputs.avgRevenuePerJobINR}
                   onChange={(e) => handleSliderChange('avgRevenuePerJobINR', parseInt(e.target.value))}
-                  className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                  className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
                 />
                 <div className="flex justify-between text-[10px] text-gray-500 mt-0.5">
                   <span>₹500</span>
@@ -279,7 +279,7 @@ export default function ROICalculator() {
               {/* Toggle Switch */}
               <div className="flex items-center gap-2">
                 <span className={`text-[10px] font-medium whitespace-nowrap ${!showWithAutomet ? 'text-gray-900' : 'text-gray-500'}`}>
-                  Without
+                  Without Automet
                 </span>
                 <button
                   onClick={() => setShowWithAutomet(!showWithAutomet)}
@@ -294,7 +294,7 @@ export default function ROICalculator() {
                   />
                 </button>
                 <span className={`text-[10px] font-medium whitespace-nowrap ${showWithAutomet ? 'text-gray-900' : 'text-gray-500'}`}>
-                  With
+                  With Automet
                 </span>
               </div>
 
@@ -317,19 +317,19 @@ export default function ROICalculator() {
                   <div className="absolute right-0 top-full mt-2 w-72 bg-gray-900 text-white text-[10px] rounded-lg shadow-xl p-3 z-50">
                     <div className="space-y-2">
                       <div>
-                        <p className="font-semibold text-blue-300 mb-0.5">Time Saved:</p>
+                        <p className="font-semibold text-primary/80 mb-0.5">Time Saved:</p>
                         <p className="text-gray-300">50% reduction in admin time via automation at ₹200/hour.</p>
                       </div>
                       <div>
-                        <p className="font-semibold text-green-300 mb-0.5">Recovered Revenue (5%):</p>
+                        <p className="font-semibold text-green-400 mb-0.5">Recovered Revenue (5%):</p>
                         <p className="text-gray-300">Better tracking prevents missed billing.</p>
                       </div>
                       <div>
-                        <p className="font-semibold text-green-300 mb-0.5">Cashflow Gain (5%):</p>
+                        <p className="font-semibold text-green-400 mb-0.5">Cashflow Gain (5%):</p>
                         <p className="text-gray-300">Faster invoicing = earlier payments.</p>
                       </div>
                       <div>
-                        <p className="font-semibold text-purple-300 mb-0.5">ROI:</p>
+                        <p className="font-semibold text-secondary/80 mb-0.5">ROI:</p>
                         <p className="text-gray-300">Annual benefit ÷ annual cost × 100.</p>
                       </div>
                     </div>
@@ -358,10 +358,10 @@ export default function ROICalculator() {
                   </div>
 
                   {/* Time Saved */}
-                  <div className="bg-blue-50 rounded-lg p-2 border border-blue-200">
-                    <p className="text-[10px] font-medium text-blue-700 mb-0.5">Time Saved</p>
+                  <div className="bg-primary/10 rounded-lg p-2 border border-primary/20">
+                    <p className="text-[10px] font-medium text-primary mb-0.5">Time Saved</p>
                     <p className="text-sm font-bold text-gray-900">{results.timeSavedHoursPerMonth}h</p>
-                    <p className="text-[9px] text-blue-600">{formatCurrency(results.timeSavingsValueINR)}</p>
+                    <p className="text-[9px] text-primary">{formatCurrency(results.timeSavingsValueINR)}</p>
                   </div>
 
                   {/* Recovered Revenue */}
@@ -382,8 +382,8 @@ export default function ROICalculator() {
                   </div>
 
                   {/* 1-Year ROI */}
-                  <div className="bg-purple-50 rounded-lg p-2 border border-purple-200">
-                    <p className="text-[10px] font-medium text-purple-700 mb-0.5">1-Year ROI</p>
+                  <div className="bg-secondary/10 rounded-lg p-2 border border-secondary/20">
+                    <p className="text-[10px] font-medium text-secondary mb-0.5">1-Year ROI</p>
                     <p className="text-lg font-bold text-gray-900">{results.roiPercent}%</p>
                   </div>
                 </div>
@@ -453,7 +453,7 @@ export default function ROICalculator() {
                 <div className="text-center pt-2">
                   <button
                     onClick={() => setShowWithAutomet(true)}
-                    className="w-full px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                    className="w-full px-4 py-2 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-primary/90 transition-colors"
                   >
                     See Benefits With Automet →
                   </button>

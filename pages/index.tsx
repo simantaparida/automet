@@ -7,17 +7,19 @@ import { useState } from 'react';
 import Head from 'next/head';
 import Navigation from '@/components/landing/Navigation';
 import Hero from '@/components/landing/Hero';
+import ProblemSolution from '@/components/landing/ProblemSolution';
 import Features from '@/components/landing/Features';
 import ROICalculator from '@/components/landing/roi/ROICalculator';
 import Pricing from '@/components/landing/Pricing';
 import Trust from '@/components/landing/Trust';
-import BlogPreview from '@/components/landing/BlogPreview';
 import FAQ from '@/components/landing/FAQ';
 import Footer from '@/components/landing/Footer';
 import PreorderModal from '@/components/landing/PreorderModal';
+import ContactSupportModal from '@/components/landing/ContactSupportModal';
 
 export default function LandingPage() {
   const [preorderModalOpen, setPreorderModalOpen] = useState(false);
+  const [contactModalOpen, setContactModalOpen] = useState(false);
 
   return (
     <>
@@ -56,23 +58,23 @@ export default function LandingPage() {
         {/* Hero Section */}
         <Hero onPreorderClick={() => setPreorderModalOpen(true)} />
 
+        {/* Problem-Solution Section */}
+        <ProblemSolution onPreorderClick={() => setPreorderModalOpen(true)} />
+
         {/* Features Section */}
         <Features />
-
-        {/* ROI Calculator Section */}
-        <ROICalculator />
 
         {/* Pricing Section */}
         <Pricing onPreorderClick={() => setPreorderModalOpen(true)} />
 
+        {/* ROI Calculator Section - Moved after Pricing */}
+        <ROICalculator />
+
         {/* Trust Section */}
         <Trust />
 
-        {/* Blog Preview Section */}
-        <BlogPreview />
-
         {/* FAQ Section */}
-        <FAQ />
+        <FAQ onContactClick={() => setContactModalOpen(true)} />
 
         {/* Footer */}
         <Footer />
@@ -81,6 +83,12 @@ export default function LandingPage() {
         <PreorderModal
           isOpen={preorderModalOpen}
           onClose={() => setPreorderModalOpen(false)}
+        />
+
+        {/* Contact Support Modal */}
+        <ContactSupportModal
+          isOpen={contactModalOpen}
+          onClose={() => setContactModalOpen(false)}
         />
       </div>
     </>

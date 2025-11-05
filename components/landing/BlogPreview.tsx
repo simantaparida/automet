@@ -51,9 +51,9 @@ export default function BlogPreview() {
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
       'product-updates': 'bg-primary/10 text-primary',
-      'industry-insights': 'bg-secondary/10 text-secondary',
-      'best-practices': 'bg-accent-pink/10 text-accent-pink',
-      'case-studies': 'bg-accent-yellow/10 text-accent-yellow',
+      'industry-insights': 'bg-primary/10 text-primary',
+      'best-practices': 'bg-primary/10 text-primary',
+      'case-studies': 'bg-secondary/10 text-secondary',
     };
     return colors[category] || 'bg-gray-100 text-gray-700';
   };
@@ -82,11 +82,11 @@ export default function BlogPreview() {
   }
 
   return (
-    <section id="blog" className="py-20 bg-gradient-to-b from-gray-50 to-white">
+    <section id="blog" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4 sm:px-6">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in">
-          <span className="inline-block px-4 py-2 bg-secondary/10 text-secondary rounded-full text-sm font-medium mb-4 animate-slide-down">
+          <span className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4 animate-slide-down">
             BLOG
           </span>
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 animate-slide-up">
@@ -107,7 +107,7 @@ export default function BlogPreview() {
               style={{ animationDelay: `${index * 100}ms` }}
             >
               {/* Cover Image */}
-              <div className="aspect-video bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden">
+              <div className="aspect-video bg-primary/10 relative overflow-hidden">
                 {post.cover_image_url ? (
                   <img
                     src={post.cover_image_url}
@@ -161,7 +161,7 @@ export default function BlogPreview() {
                 </div>
 
                 {/* Read More Link */}
-                <div className="mt-4 flex items-center text-primary font-semibold text-sm group-hover:text-secondary transition-colors duration-300">
+                <div className="mt-4 flex items-center text-primary font-semibold text-sm group-hover:text-primary/80 transition-colors duration-300">
                   Read Article
                   <svg
                     className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300"
@@ -186,7 +186,7 @@ export default function BlogPreview() {
         <div className="text-center mt-12 animate-fade-in">
           <Link
             href="/blog"
-            className="inline-block px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-lg font-semibold hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+            className="inline-block px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
           >
             View All Articles
           </Link>

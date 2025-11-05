@@ -182,7 +182,10 @@ export default function JobDetailPage() {
       const response = await fetch(`/api/jobs/${id}/checkin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ assignment_id: assignmentId, action: 'checkin' }),
+        body: JSON.stringify({
+          assignment_id: assignmentId,
+          action: 'checkin',
+        }),
       });
 
       if (response.ok) {
@@ -222,21 +225,31 @@ export default function JobDetailPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'scheduled': return '#3b82f6';
-      case 'in_progress': return '#f59e0b';
-      case 'completed': return '#10b981';
-      case 'cancelled': return '#ef4444';
-      default: return '#6b7280';
+      case 'scheduled':
+        return '#3b82f6';
+      case 'in_progress':
+        return '#f59e0b';
+      case 'completed':
+        return '#10b981';
+      case 'cancelled':
+        return '#ef4444';
+      default:
+        return '#6b7280';
     }
   };
 
   const getPriorityIcon = (priority: string) => {
     switch (priority) {
-      case 'urgent': return '🔴';
-      case 'high': return '🟠';
-      case 'medium': return '🟡';
-      case 'low': return '🟢';
-      default: return '⚪';
+      case 'urgent':
+        return '🔴';
+      case 'high':
+        return '🟠';
+      case 'medium':
+        return '🟡';
+      case 'low':
+        return '🟢';
+      default:
+        return '⚪';
     }
   };
 
@@ -259,31 +272,40 @@ export default function JobDetailPage() {
 
   const handleNavigate = () => {
     if (job?.site?.gps_lat && job?.site?.gps_lng) {
-      window.open(`https://www.google.com/maps/dir/?api=1&destination=${job.site.gps_lat},${job.site.gps_lng}`, '_blank');
+      window.open(
+        `https://www.google.com/maps/dir/?api=1&destination=${job.site.gps_lat},${job.site.gps_lng}`,
+        '_blank'
+      );
     }
   };
 
   if (loading) {
     return (
       <ProtectedRoute>
-        <div style={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#f5f5f5'
-        }}>
-          <div style={{
-            width: '40px',
-            height: '40px',
-            border: '4px solid #e5e7eb',
-            borderTopColor: '#2563eb',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite'
-          }}></div>
+        <div
+          style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#f5f5f5',
+          }}
+        >
+          <div
+            style={{
+              width: '40px',
+              height: '40px',
+              border: '4px solid #e5e7eb',
+              borderTopColor: '#2563eb',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+            }}
+          ></div>
           <style jsx>{`
             @keyframes spin {
-              to { transform: rotate(360deg); }
+              to {
+                transform: rotate(360deg);
+              }
             }
           `}</style>
         </div>
@@ -294,16 +316,20 @@ export default function JobDetailPage() {
   if (!job) {
     return (
       <ProtectedRoute>
-        <div style={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          gap: '1rem',
-          padding: '1rem'
-        }}>
-          <p style={{ fontSize: '1.125rem', color: '#6b7280' }}>Job not found</p>
+        <div
+          style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            gap: '1rem',
+            padding: '1rem',
+          }}
+        >
+          <p style={{ fontSize: '1.125rem', color: '#6b7280' }}>
+            Job not found
+          </p>
           <button
             onClick={() => router.push('/jobs')}
             style={{
@@ -314,7 +340,7 @@ export default function JobDetailPage() {
               borderRadius: '8px',
               fontSize: '1rem',
               cursor: 'pointer',
-              minHeight: '44px'
+              minHeight: '44px',
             }}
           >
             Back to Jobs
@@ -326,23 +352,34 @@ export default function JobDetailPage() {
 
   return (
     <ProtectedRoute>
-      <div style={{
-        minHeight: '100vh',
-        backgroundColor: '#f5f5f5',
-        paddingBottom: '80px',
-        fontFamily: 'system-ui, -apple-system, sans-serif'
-      }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: '#f5f5f5',
+          paddingBottom: '80px',
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+        }}
+      >
         {/* Mobile Header */}
-        <header style={{
-          backgroundColor: '#2563eb',
-          color: 'white',
-          padding: '1rem',
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.75rem' }}>
+        <header
+          style={{
+            backgroundColor: '#2563eb',
+            color: 'white',
+            padding: '1rem',
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '1rem',
+              marginBottom: '0.75rem',
+            }}
+          >
             <button
               onClick={() => router.push('/jobs')}
               style={{
@@ -353,13 +390,15 @@ export default function JobDetailPage() {
                 cursor: 'pointer',
                 padding: '0.25rem',
                 minWidth: '44px',
-                minHeight: '44px'
+                minHeight: '44px',
               }}
             >
               ←
             </button>
             <div style={{ flex: 1 }}>
-              <h1 style={{ fontSize: '1.125rem', fontWeight: '600', margin: 0 }}>
+              <h1
+                style={{ fontSize: '1.125rem', fontWeight: '600', margin: 0 }}
+              >
                 Job Details
               </h1>
             </div>
@@ -367,28 +406,32 @@ export default function JobDetailPage() {
               {getPriorityIcon(job.priority)}
             </span>
           </div>
-          <div style={{
-            display: 'inline-block',
-            padding: '0.25rem 0.75rem',
-            backgroundColor: 'rgba(255,255,255,0.2)',
-            borderRadius: '999px',
-            fontSize: '0.75rem',
-            fontWeight: '600',
-            textTransform: 'uppercase'
-          }}>
+          <div
+            style={{
+              display: 'inline-block',
+              padding: '0.25rem 0.75rem',
+              backgroundColor: 'rgba(255,255,255,0.2)',
+              borderRadius: '999px',
+              fontSize: '0.75rem',
+              fontWeight: '600',
+              textTransform: 'uppercase',
+            }}
+          >
             {job.status.replace('_', ' ')}
           </div>
         </header>
 
         {/* Quick Actions */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '0.75rem',
-          padding: '1rem',
-          backgroundColor: 'white',
-          borderBottom: '1px solid #e5e7eb'
-        }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '0.75rem',
+            padding: '1rem',
+            backgroundColor: 'white',
+            borderBottom: '1px solid #e5e7eb',
+          }}
+        >
           <button
             onClick={() => router.push(`/jobs/${id}/edit`)}
             style={{
@@ -404,7 +447,7 @@ export default function JobDetailPage() {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '0.5rem',
-              minHeight: '44px'
+              minHeight: '44px',
             }}
           >
             <span>✏️</span> Edit Job
@@ -425,7 +468,7 @@ export default function JobDetailPage() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '0.5rem',
-                minHeight: '44px'
+                minHeight: '44px',
               }}
             >
               <span>📞</span> Call Client
@@ -447,7 +490,7 @@ export default function JobDetailPage() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '0.5rem',
-                minHeight: '44px'
+                minHeight: '44px',
               }}
             >
               <span>🗺️</span> Navigate
@@ -457,15 +500,30 @@ export default function JobDetailPage() {
 
         {/* Status Actions */}
         {job.status !== 'completed' && job.status !== 'cancelled' && (
-          <div style={{
-            padding: '1rem',
-            backgroundColor: 'white',
-            borderBottom: '8px solid #f5f5f5'
-          }}>
-            <p style={{ fontSize: '0.875rem', fontWeight: '600', marginBottom: '0.75rem', color: '#1f2937' }}>
+          <div
+            style={{
+              padding: '1rem',
+              backgroundColor: 'white',
+              borderBottom: '8px solid #f5f5f5',
+            }}
+          >
+            <p
+              style={{
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                marginBottom: '0.75rem',
+                color: '#1f2937',
+              }}
+            >
               Update Status
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+              }}
+            >
               {job.status === 'scheduled' && (
                 <button
                   onClick={() => updateJobStatus('in_progress')}
@@ -480,7 +538,7 @@ export default function JobDetailPage() {
                     fontWeight: '600',
                     cursor: updating ? 'not-allowed' : 'pointer',
                     minHeight: '48px',
-                    opacity: updating ? 0.6 : 1
+                    opacity: updating ? 0.6 : 1,
                   }}
                 >
                   {updating ? 'Updating...' : '▶️ Start Job'}
@@ -500,7 +558,7 @@ export default function JobDetailPage() {
                     fontWeight: '600',
                     cursor: updating ? 'not-allowed' : 'pointer',
                     minHeight: '48px',
-                    opacity: updating ? 0.6 : 1
+                    opacity: updating ? 0.6 : 1,
                   }}
                 >
                   {updating ? 'Updating...' : '✅ Mark Completed'}
@@ -519,7 +577,7 @@ export default function JobDetailPage() {
                   fontWeight: '500',
                   cursor: updating ? 'not-allowed' : 'pointer',
                   minHeight: '44px',
-                  opacity: updating ? 0.6 : 1
+                  opacity: updating ? 0.6 : 1,
                 }}
               >
                 {updating ? 'Updating...' : '❌ Cancel Job'}
@@ -531,24 +589,72 @@ export default function JobDetailPage() {
         {/* Main Content */}
         <main style={{ padding: '0' }}>
           {/* Job Info Card */}
-          <div style={{ backgroundColor: 'white', padding: '1rem', marginBottom: '8px' }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: '600', margin: '0 0 0.5rem 0', color: '#1f2937' }}>
+          <div
+            style={{
+              backgroundColor: 'white',
+              padding: '1rem',
+              marginBottom: '8px',
+            }}
+          >
+            <h2
+              style={{
+                fontSize: '1.25rem',
+                fontWeight: '600',
+                margin: '0 0 0.5rem 0',
+                color: '#1f2937',
+              }}
+            >
               {job.title}
             </h2>
-            <p style={{ fontSize: '0.875rem', color: '#6b7280', lineHeight: '1.5', margin: 0 }}>
+            <p
+              style={{
+                fontSize: '0.875rem',
+                color: '#6b7280',
+                lineHeight: '1.5',
+                margin: 0,
+              }}
+            >
               {job.description}
             </p>
           </div>
 
           {/* Client Info */}
           {job.client && (
-            <div style={{ backgroundColor: 'white', padding: '1rem', marginBottom: '8px' }}>
-              <h3 style={{ fontSize: '0.875rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
+            <div
+              style={{
+                backgroundColor: 'white',
+                padding: '1rem',
+                marginBottom: '8px',
+              }}
+            >
+              <h3
+                style={{
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom: '0.75rem',
+                }}
+              >
                 Client
               </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem',
+                }}
+              >
                 <div>
-                  <div style={{ fontSize: '1rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.25rem' }}>
+                  <div
+                    style={{
+                      fontSize: '1rem',
+                      fontWeight: '600',
+                      color: '#1f2937',
+                      marginBottom: '0.25rem',
+                    }}
+                  >
                     {job.client.name}
                   </div>
                   <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
@@ -558,7 +664,14 @@ export default function JobDetailPage() {
                 {job.client.contact_email && (
                   <a
                     href={`mailto:${job.client.contact_email}`}
-                    style={{ fontSize: '0.875rem', color: '#2563eb', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                    style={{
+                      fontSize: '0.875rem',
+                      color: '#2563eb',
+                      textDecoration: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                    }}
                   >
                     <span>📧</span> {job.client.contact_email}
                   </a>
@@ -566,7 +679,14 @@ export default function JobDetailPage() {
                 {job.client.contact_phone && (
                   <a
                     href={`tel:${job.client.contact_phone}`}
-                    style={{ fontSize: '0.875rem', color: '#2563eb', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                    style={{
+                      fontSize: '0.875rem',
+                      color: '#2563eb',
+                      textDecoration: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                    }}
                   >
                     <span>📞</span> {job.client.contact_phone}
                   </a>
@@ -577,13 +697,41 @@ export default function JobDetailPage() {
 
           {/* Site Info */}
           {job.site && (
-            <div style={{ backgroundColor: 'white', padding: '1rem', marginBottom: '8px' }}>
-              <h3 style={{ fontSize: '0.875rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
+            <div
+              style={{
+                backgroundColor: 'white',
+                padding: '1rem',
+                marginBottom: '8px',
+              }}
+            >
+              <h3
+                style={{
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom: '0.75rem',
+                }}
+              >
                 Site Location
               </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem',
+                }}
+              >
                 <div>
-                  <div style={{ fontSize: '1rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.25rem' }}>
+                  <div
+                    style={{
+                      fontSize: '1rem',
+                      fontWeight: '600',
+                      color: '#1f2937',
+                      marginBottom: '0.25rem',
+                    }}
+                  >
                     {job.site.name}
                   </div>
                   <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
@@ -606,7 +754,7 @@ export default function JobDetailPage() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: '0.5rem',
-                      minHeight: '44px'
+                      minHeight: '44px',
                     }}
                   >
                     <span>🗺️</span> Open in Maps
@@ -618,24 +766,66 @@ export default function JobDetailPage() {
 
           {/* Asset Info */}
           {job.asset && (
-            <div style={{ backgroundColor: 'white', padding: '1rem', marginBottom: '8px' }}>
-              <h3 style={{ fontSize: '0.875rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
+            <div
+              style={{
+                backgroundColor: 'white',
+                padding: '1rem',
+                marginBottom: '8px',
+              }}
+            >
+              <h3
+                style={{
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom: '0.75rem',
+                }}
+              >
                 Asset
               </h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', fontSize: '0.875rem' }}>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '0.75rem',
+                  fontSize: '0.875rem',
+                }}
+              >
                 <div>
-                  <div style={{ color: '#6b7280', marginBottom: '0.25rem' }}>Type</div>
-                  <div style={{ fontWeight: '600', color: '#1f2937', textTransform: 'capitalize' }}>
+                  <div style={{ color: '#6b7280', marginBottom: '0.25rem' }}>
+                    Type
+                  </div>
+                  <div
+                    style={{
+                      fontWeight: '600',
+                      color: '#1f2937',
+                      textTransform: 'capitalize',
+                    }}
+                  >
                     {job.asset.asset_type.replace('_', ' ')}
                   </div>
                 </div>
                 <div>
-                  <div style={{ color: '#6b7280', marginBottom: '0.25rem' }}>Model</div>
-                  <div style={{ fontWeight: '600', color: '#1f2937' }}>{job.asset.model}</div>
+                  <div style={{ color: '#6b7280', marginBottom: '0.25rem' }}>
+                    Model
+                  </div>
+                  <div style={{ fontWeight: '600', color: '#1f2937' }}>
+                    {job.asset.model}
+                  </div>
                 </div>
                 <div style={{ gridColumn: '1 / -1' }}>
-                  <div style={{ color: '#6b7280', marginBottom: '0.25rem' }}>Serial Number</div>
-                  <div style={{ fontWeight: '600', color: '#1f2937', fontFamily: 'monospace' }}>
+                  <div style={{ color: '#6b7280', marginBottom: '0.25rem' }}>
+                    Serial Number
+                  </div>
+                  <div
+                    style={{
+                      fontWeight: '600',
+                      color: '#1f2937',
+                      fontFamily: 'monospace',
+                    }}
+                  >
                     {job.asset.serial_number}
                   </div>
                 </div>
@@ -644,24 +834,62 @@ export default function JobDetailPage() {
           )}
 
           {/* Schedule Info */}
-          <div style={{ backgroundColor: 'white', padding: '1rem', marginBottom: '8px' }}>
-            <h3 style={{ fontSize: '0.875rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
+          <div
+            style={{
+              backgroundColor: 'white',
+              padding: '1rem',
+              marginBottom: '8px',
+            }}
+          >
+            <h3
+              style={{
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                color: '#6b7280',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                marginBottom: '0.75rem',
+              }}
+            >
               Schedule
             </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.875rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem',
+                fontSize: '0.875rem',
+              }}
+            >
+              <div
+                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+              >
                 <span>⏰</span>
                 <div>
-                  <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>Scheduled</div>
-                  <div style={{ fontWeight: '600', color: '#1f2937' }}>{formatDate(job.scheduled_at)}</div>
+                  <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>
+                    Scheduled
+                  </div>
+                  <div style={{ fontWeight: '600', color: '#1f2937' }}>
+                    {formatDate(job.scheduled_at)}
+                  </div>
                 </div>
               </div>
               {job.completed_at && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                  }}
+                >
                   <span>✅</span>
                   <div>
-                    <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>Completed</div>
-                    <div style={{ fontWeight: '600', color: '#1f2937' }}>{formatDate(job.completed_at)}</div>
+                    <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>
+                      Completed
+                    </div>
+                    <div style={{ fontWeight: '600', color: '#1f2937' }}>
+                      {formatDate(job.completed_at)}
+                    </div>
                   </div>
                 </div>
               )}
@@ -669,9 +897,31 @@ export default function JobDetailPage() {
           </div>
 
           {/* Assigned Technicians */}
-          <div style={{ backgroundColor: 'white', padding: '1rem', marginBottom: '8px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-              <h3 style={{ fontSize: '0.875rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
+          <div
+            style={{
+              backgroundColor: 'white',
+              padding: '1rem',
+              marginBottom: '8px',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '0.75rem',
+              }}
+            >
+              <h3
+                style={{
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  margin: 0,
+                }}
+              >
                 Assigned Technicians
               </h3>
               <button
@@ -692,7 +942,13 @@ export default function JobDetailPage() {
               </button>
             </div>
             {job.assignments && job.assignments.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem',
+                }}
+              >
                 {job.assignments.map((assignment) => (
                   <div
                     key={assignment.id}
@@ -700,15 +956,35 @@ export default function JobDetailPage() {
                       padding: '0.75rem',
                       backgroundColor: '#f9fafb',
                       borderRadius: '8px',
-                      border: '1px solid #e5e7eb'
+                      border: '1px solid #e5e7eb',
                     }}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '0.5rem' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'start',
+                        marginBottom: '0.5rem',
+                      }}
+                    >
                       <div>
-                        <div style={{ fontSize: '0.875rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.25rem' }}>
+                        <div
+                          style={{
+                            fontSize: '0.875rem',
+                            fontWeight: '600',
+                            color: '#1f2937',
+                            marginBottom: '0.25rem',
+                          }}
+                        >
                           {assignment.user.email}
                         </div>
-                        <div style={{ fontSize: '0.75rem', color: '#6b7280', textTransform: 'capitalize' }}>
+                        <div
+                          style={{
+                            fontSize: '0.75rem',
+                            color: '#6b7280',
+                            textTransform: 'capitalize',
+                          }}
+                        >
                           {assignment.user.role}
                         </div>
                       </div>
@@ -729,11 +1005,19 @@ export default function JobDetailPage() {
 
                     {assignment.started_at ? (
                       <>
-                        <div style={{ fontSize: '0.75rem', color: '#10b981', marginBottom: '0.5rem' }}>
+                        <div
+                          style={{
+                            fontSize: '0.75rem',
+                            color: '#10b981',
+                            marginBottom: '0.5rem',
+                          }}
+                        >
                           ✓ Checked in: {formatDate(assignment.started_at)}
                         </div>
                         {assignment.completed_at ? (
-                          <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                          <div
+                            style={{ fontSize: '0.75rem', color: '#6b7280' }}
+                          >
                             Completed: {formatDate(assignment.completed_at)}
                           </div>
                         ) : (
@@ -777,7 +1061,17 @@ export default function JobDetailPage() {
                     )}
 
                     {assignment.notes && (
-                      <div style={{ fontSize: '0.875rem', color: '#374151', marginTop: '0.5rem', fontStyle: 'italic', padding: '0.5rem', backgroundColor: 'white', borderRadius: '4px' }}>
+                      <div
+                        style={{
+                          fontSize: '0.875rem',
+                          color: '#374151',
+                          marginTop: '0.5rem',
+                          fontStyle: 'italic',
+                          padding: '0.5rem',
+                          backgroundColor: 'white',
+                          borderRadius: '4px',
+                        }}
+                      >
                         "{assignment.notes}"
                       </div>
                     )}
@@ -793,7 +1087,13 @@ export default function JobDetailPage() {
 
           {/* Actions */}
           <div style={{ backgroundColor: 'white', padding: '1rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '0.75rem',
+              }}
+            >
               <button
                 onClick={() => router.push(`/jobs/${id}/edit`)}
                 style={{
@@ -805,7 +1105,7 @@ export default function JobDetailPage() {
                   fontSize: '0.875rem',
                   fontWeight: '500',
                   cursor: 'pointer',
-                  minHeight: '44px'
+                  minHeight: '44px',
                 }}
               >
                 ✏️ Edit
@@ -821,7 +1121,7 @@ export default function JobDetailPage() {
                   fontSize: '0.875rem',
                   fontWeight: '500',
                   cursor: 'pointer',
-                  minHeight: '44px'
+                  minHeight: '44px',
                 }}
               >
                 🗑️ Delete
@@ -858,7 +1158,13 @@ export default function JobDetailPage() {
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>
+              <h2
+                style={{
+                  fontSize: '1.25rem',
+                  fontWeight: '600',
+                  marginBottom: '1rem',
+                }}
+              >
                 Assign Technician
               </h2>
               <select
@@ -876,7 +1182,7 @@ export default function JobDetailPage() {
                 }}
               >
                 <option value="">Select a technician...</option>
-                {users.map(user => (
+                {users.map((user) => (
                   <option key={user.id} value={user.id}>
                     {user.email} ({user.role})
                   </option>

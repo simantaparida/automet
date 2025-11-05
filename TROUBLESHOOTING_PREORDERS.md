@@ -6,8 +6,8 @@ If you're getting "permission denied for table preorders", run this SQL in your 
 
 ```sql
 -- Step 1: Check if RLS is enabled
-SELECT tablename, rowsecurity 
-FROM pg_tables 
+SELECT tablename, rowsecurity
+FROM pg_tables
 WHERE tablename = 'preorders';
 
 -- Step 2: Drop existing policies (if any)
@@ -34,7 +34,7 @@ CREATE POLICY "Public can view preorders"
   USING (true);
 
 -- Step 6: Verify policies were created
-SELECT 
+SELECT
   schemaname,
   tablename,
   policyname,
@@ -75,6 +75,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGci...  # This should start with eyJ
 After running the SQL:
 
 1. Restart your dev server:
+
    ```bash
    npm run dev
    ```
@@ -88,17 +89,20 @@ After running the SQL:
 ## Common Issues
 
 ### Issue 1: Service Role Key Not Set
+
 **Error:** "Service role key not configured"
 **Fix:** Add `SUPABASE_SERVICE_ROLE_KEY` to your `.env.local` file
 
 ### Issue 2: RLS Policy Syntax Error
+
 **Error:** "permission denied for table preorders"
 **Fix:** Run the SQL above to recreate the policies correctly
 
 ### Issue 3: Policy Not Applied
+
 **Error:** Still getting permission denied
-**Fix:** 
+**Fix:**
+
 1. Verify policies exist: Run the check query in Step 6 above
 2. Make sure you saved the SQL in Supabase
 3. Try disabling RLS temporarily to test
-

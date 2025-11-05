@@ -43,6 +43,7 @@ Visit [https://console.cloud.google.com](https://console.cloud.google.com)
 ### 2.2 Verify Other APIs
 
 The following should be enabled by default:
+
 - **Google Identity Toolkit API** (for auth)
 - **Cloud Resource Manager API**
 
@@ -67,16 +68,16 @@ This is what users see when they sign in with Google.
 
 #### OAuth consent screen tab:
 
-| Field | Value |
-|-------|-------|
-| **App name** | `Automet` |
-| **User support email** | `admin@automet.dev` (or your email) |
-| **App logo** | (Optional - upload a 120x120px logo) |
-| **Application home page** | `http://localhost:3000` (dev) or `https://automet.app` (prod) |
-| **Application privacy policy link** | (Optional - add later) |
-| **Application terms of service link** | (Optional - add later) |
-| **Authorized domains** | Add: `automet.app` (when you have a domain) |
-| **Developer contact information** | `admin@automet.dev` |
+| Field                                 | Value                                                         |
+| ------------------------------------- | ------------------------------------------------------------- |
+| **App name**                          | `Automet`                                                     |
+| **User support email**                | `admin@automet.dev` (or your email)                           |
+| **App logo**                          | (Optional - upload a 120x120px logo)                          |
+| **Application home page**             | `http://localhost:3000` (dev) or `https://automet.app` (prod) |
+| **Application privacy policy link**   | (Optional - add later)                                        |
+| **Application terms of service link** | (Optional - add later)                                        |
+| **Authorized domains**                | Add: `automet.app` (when you have a domain)                   |
+| **Developer contact information**     | `admin@automet.dev`                                           |
 
 Click **"Save and Continue"**
 
@@ -125,8 +126,8 @@ In development mode, only test users can sign in.
 2. Select **Application type**: **"Web application"**
 3. Fill in:
 
-| Field | Value |
-|-------|-------|
+| Field    | Value                |
+| -------- | -------------------- |
 | **Name** | `Automet Web Client` |
 
 #### Authorized JavaScript origins:
@@ -153,6 +154,7 @@ https://<your-supabase-project-id>.supabase.co/auth/v1/callback
 **Important:** Replace `<your-supabase-project-id>` with your actual Supabase project reference ID.
 
 **To find your Supabase project reference ID:**
+
 1. Go to Supabase Dashboard → Settings → General
 2. Copy the **Reference ID** (e.g., `abcdefghijklm`)
 3. The callback URL will be: `https://abcdefghijklm.supabase.co/auth/v1/callback`
@@ -162,6 +164,7 @@ https://<your-supabase-project-id>.supabase.co/auth/v1/callback
 ### 4.3 Save Your Credentials
 
 A dialog will appear with:
+
 - **Client ID**: `123456789-xxxxx.apps.googleusercontent.com`
 - **Client Secret**: `GOCSPX-xxxxx...`
 
@@ -237,6 +240,7 @@ npm run dev
 In your app, click the "Sign in with Google" button.
 
 **Expected flow:**
+
 1. Redirects to Google consent screen
 2. Shows "Automet wants to access your Google Account"
 3. Lists requested scopes (email, profile)
@@ -262,6 +266,7 @@ In your app, click the "Sign in with Google" button.
 **Cause:** The redirect URI doesn't match what's configured in Google Console.
 
 **Fix:**
+
 1. Check the error message for the exact URI being used
 2. Go to Google Console → Credentials → Edit OAuth client
 3. Add the exact URI (including `https://`, port, and path)
@@ -272,6 +277,7 @@ In your app, click the "Sign in with Google" button.
 **Cause:** OAuth consent screen not configured properly.
 
 **Fix:**
+
 1. Go to OAuth consent screen
 2. Ensure "User support email" is filled
 3. Add at least one authorized domain
@@ -286,6 +292,7 @@ In your app, click the "Sign in with Google" button.
 3. Continue sign-in
 
 **To remove warning (later):**
+
 - Submit app for Google verification (requires domain ownership, privacy policy, etc.)
 
 ### Users not in test list can't sign in
@@ -293,12 +300,14 @@ In your app, click the "Sign in with Google" button.
 **Expected** in Testing mode.
 
 **Options:**
+
 1. Add them to Test Users list (OAuth consent screen → Test users)
 2. OR publish the app (requires verification)
 
 ### User data not syncing to Supabase
 
 **Check:**
+
 1. Supabase Auth logs: **Logs** → **Auth Logs**
 2. Verify Google provider is enabled in Supabase
 3. Check that Client ID/Secret are correct in Supabase
@@ -309,6 +318,7 @@ In your app, click the "Sign in with Google" button.
 ## Security Best Practices
 
 ✅ **DO:**
+
 - Keep Client Secret in server environment only (never expose to client)
 - Use HTTPS in production
 - Rotate secrets periodically
@@ -316,6 +326,7 @@ In your app, click the "Sign in with Google" button.
 - Limit scopes to only what's needed (email, profile, openid)
 
 ❌ **DON'T:**
+
 - Commit `.env.local` to Git
 - Share Client Secret publicly
 - Use same credentials for dev and production (create separate OAuth clients)
@@ -330,6 +341,7 @@ In your app, click the "Sign in with Google" button.
 - ✅ Test users can sign in
 
 **Continue to:**
+
 - [Razorpay Setup](./RAZORPAY_SETUP.md)
 - [Complete Setup Guide](./SETUP.md)
 

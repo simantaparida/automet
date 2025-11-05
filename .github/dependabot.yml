@@ -45,4 +45,3 @@ updates:
       - 'automated'
     commit-message:
       prefix: 'ci'
-

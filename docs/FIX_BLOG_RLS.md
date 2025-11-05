@@ -39,7 +39,7 @@ Run this query to verify the policy exists:
 
 ```sql
 -- Check if policy exists
-SELECT 
+SELECT
   schemaname,
   tablename,
   policyname,
@@ -52,6 +52,7 @@ WHERE tablename = 'blog_posts';
 ```
 
 You should see a policy named "Public can view published posts" with:
+
 - `roles`: `{public}`
 - `cmd`: `SELECT`
 
@@ -75,22 +76,25 @@ If you need a quick temporary fix while setting up the RLS policy:
 ### Still getting "permission denied"?
 
 1. **Check if RLS is enabled:**
+
    ```sql
-   SELECT tablename, rowsecurity 
-   FROM pg_tables 
+   SELECT tablename, rowsecurity
+   FROM pg_tables
    WHERE schemaname = 'public' AND tablename = 'blog_posts';
    ```
+
    `rowsecurity` should be `true`
 
 2. **Check if policy exists:**
+
    ```sql
    SELECT * FROM pg_policies WHERE tablename = 'blog_posts';
    ```
 
 3. **Verify policy allows public role:**
    ```sql
-   SELECT policyname, roles, cmd, qual 
-   FROM pg_policies 
+   SELECT policyname, roles, cmd, qual
+   FROM pg_policies
    WHERE tablename = 'blog_posts';
    ```
    `roles` should include `public` or be empty (which means all roles)
@@ -98,6 +102,7 @@ If you need a quick temporary fix while setting up the RLS policy:
 ### Policy exists but still not working?
 
 1. **Drop and recreate the policy:**
+
    ```sql
    DROP POLICY IF EXISTS "Public can view published posts" ON blog_posts;
    CREATE POLICY "Public can view published posts"
@@ -115,6 +120,7 @@ If you need a quick temporary fix while setting up the RLS policy:
 ### Environment variables not set?
 
 Make sure your `.env.local` has:
+
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
@@ -124,4 +130,3 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key  # Optional but recommended
 ---
 
 **Last Updated:** November 2025
-

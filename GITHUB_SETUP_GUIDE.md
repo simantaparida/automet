@@ -28,6 +28,7 @@ This guide walks through configuring your GitHub repository with branch protecti
 Navigate to **Settings** → **General**
 
 #### Description & Topics
+
 - **Description**: "Field service management platform for Indian AMC vendors - Next.js, TypeScript, Supabase"
 - **Topics**: Add relevant tags:
   ```
@@ -36,7 +37,9 @@ Navigate to **Settings** → **General**
   ```
 
 #### Features
+
 Enable these features:
+
 - ✅ Issues (for bug tracking and feature requests)
 - ✅ Discussions (optional - for community Q&A)
 - ❌ Projects (not needed yet)
@@ -44,7 +47,9 @@ Enable these features:
 - ❌ Sponsorships (not needed)
 
 #### Pull Requests
+
 Configure PR settings:
+
 - ✅ **Allow squash merging** (recommended)
   - Set default commit message to: "Pull request title"
   - Keeps history clean
@@ -67,6 +72,7 @@ Navigate to **Settings** → **General** → **Default branch**
 4. Confirm the change
 
 **Why `develop`?**
+
 - New PRs default to `develop` branch
 - `main` stays clean for production releases
 - Follows Git Flow methodology
@@ -82,6 +88,7 @@ Navigate to **Settings** → **Branches** → **Add branch protection rule**
 **Branch name pattern**: `main`
 
 Enable these rules:
+
 - ✅ **Require a pull request before merging**
   - ✅ Require approvals: **1**
   - ✅ Dismiss stale pull request approvals when new commits are pushed
@@ -124,6 +131,7 @@ Click **Create** to save.
 **Branch name pattern**: `develop`
 
 Enable these rules (slightly more relaxed than `main`):
+
 - ✅ **Require a pull request before merging**
   - ✅ Require approvals: **1**
   - ✅ Dismiss stale pull request approvals when new commits are pushed
@@ -179,6 +187,7 @@ Click **Create** to save.
    - The merge button will be disabled until CI passes
 
 **Troubleshooting**:
+
 - If you don't see status checks, ensure the CI workflow has run at least once
 - Check that the workflow file is named `ci.yml` and located in `.github/workflows/`
 - Verify the workflow triggers on `push` and `pull_request` events
@@ -192,30 +201,36 @@ Navigate to **Settings** → **Code security and analysis**
 ### Recommended Settings
 
 #### Dependency graph
+
 - ✅ **Enable** (should be enabled by default for public repos)
 - Allows GitHub to track dependencies
 
 #### Dependabot alerts
+
 - ✅ **Enable**
 - Notifies you of security vulnerabilities in dependencies
 - Configure notifications: Settings → Notifications → Dependabot alerts
 
 #### Dependabot security updates
+
 - ✅ **Enable**
 - Automatically creates PRs to fix vulnerable dependencies
 - PRs will target `develop` branch
 
 #### Dependabot version updates (Optional)
+
 - ⏳ **Configure later** (needs `.github/dependabot.yml`)
 - Automatically creates PRs for dependency updates
 - Can be noisy, recommend enabling after initial setup
 
 #### Code scanning (Optional)
+
 - ⏳ **Configure later** with GitHub Actions
 - Scans code for security vulnerabilities
 - Recommended: Set up CodeQL analysis
 
 #### Secret scanning
+
 - ✅ **Enable** (should be enabled by default for public repos)
 - Prevents committing secrets (API keys, tokens)
 - Push protection enabled by default
@@ -239,6 +254,7 @@ Navigate to **Settings** → **Environments**
 4. Click **Save protection rules**
 
 **Purpose**:
+
 - Linked to `develop` branch
 - Auto-deploys when PRs merge to `develop`
 - Used for testing before production
@@ -256,6 +272,7 @@ Navigate to **Settings** → **Environments**
 4. Click **Save protection rules**
 
 **Purpose**:
+
 - Linked to `main` branch
 - Requires manual approval before deployment
 - Used for live customer-facing application
@@ -272,9 +289,9 @@ Navigate to **Settings** → **Secrets and variables** → **Actions**
 
 Click **New repository secret** for each:
 
-| Secret Name | Description | Example Value |
-|-------------|-------------|---------------|
-| `SUPABASE_ACCESS_TOKEN` | Supabase CLI access token | `sbp_xxx...` |
+| Secret Name             | Description               | Example Value |
+| ----------------------- | ------------------------- | ------------- |
+| `SUPABASE_ACCESS_TOKEN` | Supabase CLI access token | `sbp_xxx...`  |
 
 ### Environment-Specific Secrets
 
@@ -282,29 +299,30 @@ Click **New repository secret** for each:
 
 Navigate to **Environments** → `staging` → **Add secret**
 
-| Secret Name | Description | Where to Get |
-|-------------|-------------|--------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Dev Supabase project URL | Supabase dashboard → Settings → API |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Dev Supabase anon key | Supabase dashboard → Settings → API |
-| `SUPABASE_SERVICE_ROLE_KEY` | Dev Supabase service key | Supabase dashboard → Settings → API |
-| `RAZORPAY_KEY_ID` | Razorpay test key | Razorpay dashboard (test mode) |
-| `RAZORPAY_KEY_SECRET` | Razorpay test secret | Razorpay dashboard (test mode) |
+| Secret Name                     | Description              | Where to Get                        |
+| ------------------------------- | ------------------------ | ----------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Dev Supabase project URL | Supabase dashboard → Settings → API |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Dev Supabase anon key    | Supabase dashboard → Settings → API |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Dev Supabase service key | Supabase dashboard → Settings → API |
+| `RAZORPAY_KEY_ID`               | Razorpay test key        | Razorpay dashboard (test mode)      |
+| `RAZORPAY_KEY_SECRET`           | Razorpay test secret     | Razorpay dashboard (test mode)      |
 
 #### Production Environment Secrets (When Ready)
 
 Navigate to **Environments** → `production` → **Add secret**
 
-| Secret Name | Description | Where to Get |
-|-------------|-------------|--------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Prod Supabase project URL | Production Supabase dashboard |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Prod Supabase anon key | Production Supabase dashboard |
-| `SUPABASE_SERVICE_ROLE_KEY` | Prod Supabase service key | Production Supabase dashboard |
-| `RAZORPAY_KEY_ID` | Razorpay live key | Razorpay dashboard (live mode) |
-| `RAZORPAY_KEY_SECRET` | Razorpay live secret | Razorpay dashboard (live mode) |
+| Secret Name                     | Description               | Where to Get                   |
+| ------------------------------- | ------------------------- | ------------------------------ |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Prod Supabase project URL | Production Supabase dashboard  |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Prod Supabase anon key    | Production Supabase dashboard  |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Prod Supabase service key | Production Supabase dashboard  |
+| `RAZORPAY_KEY_ID`               | Razorpay live key         | Razorpay dashboard (live mode) |
+| `RAZORPAY_KEY_SECRET`           | Razorpay live secret      | Razorpay dashboard (live mode) |
 
 ### Environment Variables (Optional)
 
 For non-sensitive configuration, use **Variables** instead of secrets:
+
 - `NEXT_PUBLIC_APP_URL`: "https://staging.automet.app" or "https://automet.app"
 - `ENVIRONMENT`: "staging" or "production"
 
@@ -315,12 +333,14 @@ For non-sensitive configuration, use **Variables** instead of secrets:
 Use this checklist to ensure everything is set up correctly:
 
 ### Repository Basics
+
 - [ ] Description and topics added
 - [ ] Issues enabled
 - [ ] PR settings configured (squash merge, auto-delete branches)
 - [ ] Default branch set to `develop`
 
 ### Branch Protection
+
 - [ ] `main` branch protected (requires PR + 1 approval)
 - [ ] `develop` branch protected (requires PR + 1 approval)
 - [ ] Direct pushes blocked to both branches
@@ -329,22 +349,26 @@ Use this checklist to ensure everything is set up correctly:
 - [ ] Conversation resolution required
 
 ### Security
+
 - [ ] Dependabot alerts enabled
 - [ ] Dependabot security updates enabled
 - [ ] Secret scanning enabled
 
 ### Environments
+
 - [ ] `staging` environment created (linked to `develop`)
 - [ ] `production` environment created (linked to `main`, requires approval)
 - [ ] Staging secrets added
 - [ ] Production secrets added (when ready)
 
 ### CI/CD
+
 - [x] CI workflow added (`.github/workflows/ci.yml`)
 - [ ] CI status checks enabled on branch protection (see below)
 - [ ] Test CI workflow by creating a PR
 
 ### Optional (For Later)
+
 - [ ] CodeQL code scanning enabled
 - [ ] Dependabot version updates configured
 - [ ] CODEOWNERS file created
@@ -357,6 +381,7 @@ Use this checklist to ensure everything is set up correctly:
 ### Test 1: Verify Branch Protection on `main`
 
 1. Try to push directly to `main`:
+
    ```bash
    git checkout main
    git commit --allow-empty -m "test: verify branch protection"
@@ -364,6 +389,7 @@ Use this checklist to ensure everything is set up correctly:
    ```
 
 2. **Expected Result**: Push should be rejected with:
+
    ```
    remote: error: GH006: Protected branch update failed
    ```
@@ -375,12 +401,14 @@ Use this checklist to ensure everything is set up correctly:
 ### Test 2: Verify PR Workflow
 
 1. Create a feature branch:
+
    ```bash
    git checkout develop
    git checkout -b feature/test-pr-flow
    ```
 
 2. Make a small change and commit:
+
    ```bash
    echo "# Test PR" >> TEST.md
    git add TEST.md
@@ -388,6 +416,7 @@ Use this checklist to ensure everything is set up correctly:
    ```
 
 3. Push the branch:
+
    ```bash
    git push -u origin feature/test-pr-flow
    ```
@@ -433,12 +462,14 @@ Use this checklist to ensure everything is set up correctly:
 ## Next Steps
 
 ### Immediate Tasks
+
 1. Complete this configuration checklist
 2. Test branch protection and PR workflow
 3. Add staging environment secrets
 4. Update documentation with your findings
 
 ### Future Enhancements
+
 1. **CI/CD Pipeline**: Create `.github/workflows/ci.yml` for automated tests
 2. **Deployment Workflow**: Create `.github/workflows/deploy.yml` for Vercel/other platform
 3. **Code Scanning**: Enable CodeQL analysis
@@ -451,22 +482,29 @@ Use this checklist to ensure everything is set up correctly:
 ## Troubleshooting
 
 ### Problem: Can't enable branch protection
+
 **Solution**: Ensure repository is public. Branch protection is free on public repos.
 
 ### Problem: Branch protection not enforcing
+
 **Solution**:
+
 1. Check that you're pushing to the protected branch
 2. Verify rules are saved (Settings → Branches)
 3. Ensure "Allow bypassing" is disabled
 
 ### Problem: Dependabot PRs not appearing
+
 **Solution**:
+
 1. Ensure Dependabot alerts are enabled
 2. Check Security → Dependabot alerts for vulnerabilities
 3. If no vulnerabilities, no PRs will be created
 
 ### Problem: Can't set default branch to `develop`
+
 **Solution**: Ensure `develop` branch exists on remote:
+
 ```bash
 git checkout develop
 git push -u origin develop
@@ -484,4 +522,4 @@ git push -u origin develop
 ---
 
 **End of Guide**
-*Last updated: November 4, 2025*
+_Last updated: November 4, 2025_

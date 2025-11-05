@@ -35,12 +35,13 @@ export default function DashboardPage() {
     const fetchStats = async () => {
       try {
         // Fetch jobs by status to get accurate counts
-        const [scheduledRes, inProgressRes, completedRes, verifyRes] = await Promise.all([
-          fetch('/api/jobs?status=scheduled'),
-          fetch('/api/jobs?status=in_progress'),
-          fetch('/api/jobs?status=completed'),
-          fetch('/api/verify-data'),
-        ]);
+        const [scheduledRes, inProgressRes, completedRes, verifyRes] =
+          await Promise.all([
+            fetch('/api/jobs?status=scheduled'),
+            fetch('/api/jobs?status=in_progress'),
+            fetch('/api/jobs?status=completed'),
+            fetch('/api/verify-data'),
+          ]);
 
         const scheduled = await scheduledRes.json();
         const inProgress = await inProgressRes.json();
@@ -70,32 +71,44 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute>
-      <div style={{
-        minHeight: '100vh',
-        backgroundColor: '#f5f5f5',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        paddingBottom: '80px', // Space for bottom nav
-      }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: '#f5f5f5',
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+          paddingBottom: '80px', // Space for bottom nav
+        }}
+      >
         {/* Sticky Header */}
-        <header style={{
-          backgroundColor: '#2563eb',
-          color: 'white',
-          padding: '1rem',
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        }}>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}>
+        <header
+          style={{
+            backgroundColor: '#2563eb',
+            color: 'white',
+            padding: '1rem',
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
             <div>
               <h1 style={{ fontSize: '1.25rem', fontWeight: '600', margin: 0 }}>
                 Dashboard
               </h1>
-              <p style={{ fontSize: '0.75rem', margin: '0.25rem 0 0 0', opacity: 0.9 }}>
+              <p
+                style={{
+                  fontSize: '0.75rem',
+                  margin: '0.25rem 0 0 0',
+                  opacity: 0.9,
+                }}
+              >
                 {user?.email}
               </p>
             </div>
@@ -121,14 +134,22 @@ export default function DashboardPage() {
         {/* Main Content */}
         <main style={{ padding: '1rem' }}>
           {/* Welcome Card */}
-          <div style={{
-            backgroundColor: 'white',
-            padding: '1rem',
-            borderRadius: '8px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            marginBottom: '1rem',
-          }}>
-            <h2 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+          <div
+            style={{
+              backgroundColor: 'white',
+              padding: '1rem',
+              borderRadius: '8px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+              marginBottom: '1rem',
+            }}
+          >
+            <h2
+              style={{
+                fontSize: '1.125rem',
+                fontWeight: '600',
+                marginBottom: '0.5rem',
+              }}
+            >
               Welcome! 👋
             </h2>
             <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: 0 }}>
@@ -137,12 +158,14 @@ export default function DashboardPage() {
           </div>
 
           {/* Job Status Stats - Clickable Cards */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '1rem',
-            marginBottom: '1rem',
-          }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '1rem',
+              marginBottom: '1rem',
+            }}
+          >
             {/* Scheduled Jobs */}
             <button
               onClick={() => router.push('/jobs?status=scheduled')}
@@ -157,32 +180,38 @@ export default function DashboardPage() {
                 textAlign: 'left',
               }}
             >
-              <div style={{
-                width: '40px',
-                height: '40px',
-                backgroundColor: '#dbeafe',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '1.5rem',
-                marginBottom: '0.5rem',
-              }}>
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  backgroundColor: '#dbeafe',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '1.5rem',
+                  marginBottom: '0.5rem',
+                }}
+              >
                 📅
               </div>
-              <p style={{
-                fontSize: '1.5rem',
-                fontWeight: '600',
-                color: '#1f2937',
-                margin: '0 0 0.25rem 0',
-              }}>
+              <p
+                style={{
+                  fontSize: '1.5rem',
+                  fontWeight: '600',
+                  color: '#1f2937',
+                  margin: '0 0 0.25rem 0',
+                }}
+              >
                 {loading ? '...' : stats.scheduledJobs}
               </p>
-              <p style={{
-                fontSize: '0.75rem',
-                color: '#6b7280',
-                margin: 0,
-              }}>
+              <p
+                style={{
+                  fontSize: '0.75rem',
+                  color: '#6b7280',
+                  margin: 0,
+                }}
+              >
                 Scheduled
               </p>
             </button>
@@ -201,32 +230,38 @@ export default function DashboardPage() {
                 textAlign: 'left',
               }}
             >
-              <div style={{
-                width: '40px',
-                height: '40px',
-                backgroundColor: '#fef3c7',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '1.5rem',
-                marginBottom: '0.5rem',
-              }}>
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  backgroundColor: '#fef3c7',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '1.5rem',
+                  marginBottom: '0.5rem',
+                }}
+              >
                 🔧
               </div>
-              <p style={{
-                fontSize: '1.5rem',
-                fontWeight: '600',
-                color: '#1f2937',
-                margin: '0 0 0.25rem 0',
-              }}>
+              <p
+                style={{
+                  fontSize: '1.5rem',
+                  fontWeight: '600',
+                  color: '#1f2937',
+                  margin: '0 0 0.25rem 0',
+                }}
+              >
                 {loading ? '...' : stats.inProgressJobs}
               </p>
-              <p style={{
-                fontSize: '0.75rem',
-                color: '#6b7280',
-                margin: 0,
-              }}>
+              <p
+                style={{
+                  fontSize: '0.75rem',
+                  color: '#6b7280',
+                  margin: 0,
+                }}
+              >
                 In Progress
               </p>
             </button>
@@ -245,32 +280,38 @@ export default function DashboardPage() {
                 textAlign: 'left',
               }}
             >
-              <div style={{
-                width: '40px',
-                height: '40px',
-                backgroundColor: '#d1fae5',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '1.5rem',
-                marginBottom: '0.5rem',
-              }}>
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  backgroundColor: '#d1fae5',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '1.5rem',
+                  marginBottom: '0.5rem',
+                }}
+              >
                 ✅
               </div>
-              <p style={{
-                fontSize: '1.5rem',
-                fontWeight: '600',
-                color: '#1f2937',
-                margin: '0 0 0.25rem 0',
-              }}>
+              <p
+                style={{
+                  fontSize: '1.5rem',
+                  fontWeight: '600',
+                  color: '#1f2937',
+                  margin: '0 0 0.25rem 0',
+                }}
+              >
                 {loading ? '...' : stats.completedJobs}
               </p>
-              <p style={{
-                fontSize: '0.75rem',
-                color: '#6b7280',
-                margin: 0,
-              }}>
+              <p
+                style={{
+                  fontSize: '0.75rem',
+                  color: '#6b7280',
+                  margin: 0,
+                }}
+              >
                 Completed
               </p>
             </button>
@@ -286,49 +327,69 @@ export default function DashboardPage() {
                 textAlign: 'left',
               }}
             >
-              <div style={{
-                width: '40px',
-                height: '40px',
-                backgroundColor: '#e0e7ff',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '1.5rem',
-                marginBottom: '0.5rem',
-              }}>
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  backgroundColor: '#e0e7ff',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '1.5rem',
+                  marginBottom: '0.5rem',
+                }}
+              >
                 👥
               </div>
-              <p style={{
-                fontSize: '1.5rem',
-                fontWeight: '600',
-                color: '#1f2937',
-                margin: '0 0 0.25rem 0',
-              }}>
+              <p
+                style={{
+                  fontSize: '1.5rem',
+                  fontWeight: '600',
+                  color: '#1f2937',
+                  margin: '0 0 0.25rem 0',
+                }}
+              >
                 {loading ? '...' : stats.totalClients}
               </p>
-              <p style={{
-                fontSize: '0.75rem',
-                color: '#6b7280',
-                margin: 0,
-              }}>
+              <p
+                style={{
+                  fontSize: '0.75rem',
+                  color: '#6b7280',
+                  margin: 0,
+                }}
+              >
                 Clients
               </p>
             </div>
           </div>
 
           {/* Quick Actions */}
-          <div style={{
-            backgroundColor: 'white',
-            padding: '1rem',
-            borderRadius: '8px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            marginBottom: '1rem',
-          }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '0.75rem' }}>
+          <div
+            style={{
+              backgroundColor: 'white',
+              padding: '1rem',
+              borderRadius: '8px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+              marginBottom: '1rem',
+            }}
+          >
+            <h3
+              style={{
+                fontSize: '1rem',
+                fontWeight: '600',
+                marginBottom: '0.75rem',
+              }}
+            >
               Quick Actions
             </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+              }}
+            >
               <button
                 onClick={() => router.push('/jobs/new')}
                 style={{
@@ -373,15 +434,18 @@ export default function DashboardPage() {
           </div>
 
           {/* Info Card */}
-          <div style={{
-            backgroundColor: '#eff6ff',
-            padding: '1rem',
-            borderRadius: '8px',
-            border: '1px solid #bfdbfe',
-          }}>
+          <div
+            style={{
+              backgroundColor: '#eff6ff',
+              padding: '1rem',
+              borderRadius: '8px',
+              border: '1px solid #bfdbfe',
+            }}
+          >
             <p style={{ fontSize: '0.875rem', color: '#1e40af', margin: 0 }}>
-              <strong>Mobile-First PWA Ready!</strong> You can use this app on any device.
-              Tap the job status cards above to filter jobs by status.
+              <strong>Mobile-First PWA Ready!</strong> You can use this app on
+              any device. Tap the job status cards above to filter jobs by
+              status.
             </p>
           </div>
         </main>

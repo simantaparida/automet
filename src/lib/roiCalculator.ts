@@ -101,14 +101,14 @@ export function calculateROI(inputs: ROIInputs): ROIResult {
   // Formula: (weekly admin hours × 60) ÷ (jobs per month ÷ weeks per month)
   // This spreads the weekly admin burden across all jobs in a week
   const jobsPerWeek = jobsPerMonth / CONSTANTS.WEEKS_PER_MONTH;
-  const currentAdminMinutesPerJob = jobsPerWeek > 0
-    ? (inputs.adminHoursPerWeekAllStaff * 60) / jobsPerWeek
-    : 0;
+  const currentAdminMinutesPerJob =
+    jobsPerWeek > 0 ? (inputs.adminHoursPerWeekAllStaff * 60) / jobsPerWeek : 0;
 
   // 4. Calculate minutes saved per job with Automet
   // Formula: current admin time × 50% reduction
   // Automet reduces admin overhead by half through automation
-  const minutesSavedPerJob = currentAdminMinutesPerJob * CONSTANTS.ADMIN_TIME_REDUCTION;
+  const minutesSavedPerJob =
+    currentAdminMinutesPerJob * CONSTANTS.ADMIN_TIME_REDUCTION;
 
   // 5. Calculate total time saved per month (in hours)
   // Formula: (jobs per month × minutes saved per job) ÷ 60
@@ -137,7 +137,8 @@ export function calculateROI(inputs: ROIInputs): ROIResult {
 
   // 9. Calculate total gain from switching to Automet
   // Formula: time savings + recovered revenue + cashflow gain
-  const totalGainINR = timeSavingsValueINR + recoveredRevenueINR + cashflowGainINR;
+  const totalGainINR =
+    timeSavingsValueINR + recoveredRevenueINR + cashflowGainINR;
 
   // 10. Calculate net monthly benefit
   // Formula: total gain - monthly plan cost
@@ -150,17 +151,17 @@ export function calculateROI(inputs: ROIInputs): ROIResult {
   // 12. Calculate ROI percentage
   // Formula: (annual benefit ÷ annual cost) × 100
   const annualCost = inputs.monthlyPlanCostINR * 12;
-  const roiPercent = annualCost > 0
-    ? Math.round((netAnnualBenefitINR / annualCost) * 100)
-    : 0;
+  const roiPercent =
+    annualCost > 0 ? Math.round((netAnnualBenefitINR / annualCost) * 100) : 0;
 
   // 13. Calculate payback period in months
   // Formula: plan cost ÷ (monthly time savings ÷ 12)
   // Note: Using time savings value as the primary benefit driver
   const monthlyTimeSavings = timeSavingsValueINR / 12;
-  const paybackMonths = monthlyTimeSavings > 0
-    ? Math.round((inputs.monthlyPlanCostINR / monthlyTimeSavings) * 10) / 10
-    : 0;
+  const paybackMonths =
+    monthlyTimeSavings > 0
+      ? Math.round((inputs.monthlyPlanCostINR / monthlyTimeSavings) * 10) / 10
+      : 0;
 
   return {
     jobsPerMonth: Math.round(jobsPerMonth),

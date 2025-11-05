@@ -20,7 +20,11 @@ export default function NewInventoryPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.item_name || !formData.category || !formData.unit_of_measure) {
+    if (
+      !formData.item_name ||
+      !formData.category ||
+      !formData.unit_of_measure
+    ) {
       alert('Item name, category, and unit of measure are required');
       return;
     }
@@ -36,8 +40,12 @@ export default function NewInventoryPage() {
           category: formData.category,
           sku: formData.sku || null,
           unit_of_measure: formData.unit_of_measure,
-          quantity_available: formData.quantity_available ? parseInt(formData.quantity_available) : 0,
-          reorder_level: formData.reorder_level ? parseInt(formData.reorder_level) : 0,
+          quantity_available: formData.quantity_available
+            ? parseInt(formData.quantity_available)
+            : 0,
+          reorder_level: formData.reorder_level
+            ? parseInt(formData.reorder_level)
+            : 0,
           unit_cost: formData.unit_cost ? parseFloat(formData.unit_cost) : null,
           notes: formData.notes || null,
         }),
@@ -60,22 +68,26 @@ export default function NewInventoryPage() {
 
   return (
     <ProtectedRoute>
-      <div style={{
-        minHeight: '100vh',
-        backgroundColor: '#f5f5f5',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        paddingBottom: '80px',
-      }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: '#f5f5f5',
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+          paddingBottom: '80px',
+        }}
+      >
         {/* Sticky Header */}
-        <header style={{
-          backgroundColor: '#2563eb',
-          color: 'white',
-          padding: '1rem',
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        }}>
+        <header
+          style={{
+            backgroundColor: '#2563eb',
+            color: 'white',
+            padding: '1rem',
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button
               onClick={() => router.back()}
@@ -100,28 +112,35 @@ export default function NewInventoryPage() {
 
         {/* Form */}
         <main style={{ padding: '1rem' }}>
-          <form onSubmit={handleSubmit} style={{
-            backgroundColor: 'white',
-            padding: '1.5rem',
-            borderRadius: '8px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-          }}>
+          <form
+            onSubmit={handleSubmit}
+            style={{
+              backgroundColor: 'white',
+              padding: '1.5rem',
+              borderRadius: '8px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            }}
+          >
             {/* Item Name */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '0.5rem',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  color: '#374151',
+                  marginBottom: '0.5rem',
+                }}
+              >
                 Item Name <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <input
                 type="text"
                 required
                 value={formData.item_name}
-                onChange={(e) => setFormData({ ...formData, item_name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, item_name: e.target.value })
+                }
                 placeholder="e.g., Ethernet Cable 5m"
                 style={{
                   width: '100%',
@@ -137,20 +156,24 @@ export default function NewInventoryPage() {
 
             {/* Category */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '0.5rem',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  color: '#374151',
+                  marginBottom: '0.5rem',
+                }}
+              >
                 Category <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <input
                 type="text"
                 required
                 value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, category: e.target.value })
+                }
                 placeholder="e.g., Cables, Tools, Parts"
                 style={{
                   width: '100%',
@@ -166,19 +189,23 @@ export default function NewInventoryPage() {
 
             {/* SKU */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '0.5rem',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  color: '#374151',
+                  marginBottom: '0.5rem',
+                }}
+              >
                 SKU (Stock Keeping Unit)
               </label>
               <input
                 type="text"
                 value={formData.sku}
-                onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, sku: e.target.value })
+                }
                 placeholder="e.g., ETH-CAB-5M"
                 style={{
                   width: '100%',
@@ -194,20 +221,24 @@ export default function NewInventoryPage() {
 
             {/* Unit of Measure */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '0.5rem',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  color: '#374151',
+                  marginBottom: '0.5rem',
+                }}
+              >
                 Unit of Measure <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <input
                 type="text"
                 required
                 value={formData.unit_of_measure}
-                onChange={(e) => setFormData({ ...formData, unit_of_measure: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, unit_of_measure: e.target.value })
+                }
                 placeholder="e.g., pcs, kg, m, liters"
                 style={{
                   width: '100%',
@@ -223,20 +254,27 @@ export default function NewInventoryPage() {
 
             {/* Quantity Available */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '0.5rem',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  color: '#374151',
+                  marginBottom: '0.5rem',
+                }}
+              >
                 Initial Quantity
               </label>
               <input
                 type="number"
                 min="0"
                 value={formData.quantity_available}
-                onChange={(e) => setFormData({ ...formData, quantity_available: e.target.value })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    quantity_available: e.target.value,
+                  })
+                }
                 placeholder="0"
                 style={{
                   width: '100%',
@@ -252,20 +290,24 @@ export default function NewInventoryPage() {
 
             {/* Reorder Level */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '0.5rem',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  color: '#374151',
+                  marginBottom: '0.5rem',
+                }}
+              >
                 Reorder Level
               </label>
               <input
                 type="number"
                 min="0"
                 value={formData.reorder_level}
-                onChange={(e) => setFormData({ ...formData, reorder_level: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, reorder_level: e.target.value })
+                }
                 placeholder="0"
                 style={{
                   width: '100%',
@@ -277,24 +319,28 @@ export default function NewInventoryPage() {
                   boxSizing: 'border-box',
                 }}
               />
-              <p style={{
-                fontSize: '0.75rem',
-                color: '#6b7280',
-                margin: '0.25rem 0 0 0',
-              }}>
+              <p
+                style={{
+                  fontSize: '0.75rem',
+                  color: '#6b7280',
+                  margin: '0.25rem 0 0 0',
+                }}
+              >
                 Alert when stock falls below this level
               </p>
             </div>
 
             {/* Unit Cost */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '0.5rem',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  color: '#374151',
+                  marginBottom: '0.5rem',
+                }}
+              >
                 Unit Cost (₹)
               </label>
               <input
@@ -302,7 +348,9 @@ export default function NewInventoryPage() {
                 step="0.01"
                 min="0"
                 value={formData.unit_cost}
-                onChange={(e) => setFormData({ ...formData, unit_cost: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, unit_cost: e.target.value })
+                }
                 placeholder="0.00"
                 style={{
                   width: '100%',
@@ -318,18 +366,22 @@ export default function NewInventoryPage() {
 
             {/* Notes */}
             <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '0.5rem',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  color: '#374151',
+                  marginBottom: '0.5rem',
+                }}
+              >
                 Notes
               </label>
               <textarea
                 value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
                 placeholder="Additional information..."
                 rows={4}
                 style={{
@@ -345,11 +397,13 @@ export default function NewInventoryPage() {
             </div>
 
             {/* Buttons */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '0.75rem',
-            }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '0.75rem',
+              }}
+            >
               <button
                 type="button"
                 onClick={() => router.back()}

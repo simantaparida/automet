@@ -9,7 +9,7 @@ export default async function handler(
   if (!supabaseAdmin) {
     return res.status(500).json({ error: 'Server configuration error' });
   }
-  
+
   const { id } = req.query;
 
   if (req.method !== 'POST') {
@@ -20,11 +20,15 @@ export default async function handler(
     const { assignment_id, action, notes } = req.body;
 
     if (!assignment_id || !action) {
-      return res.status(400).json({ error: 'assignment_id and action are required' });
+      return res
+        .status(400)
+        .json({ error: 'assignment_id and action are required' });
     }
 
     if (action !== 'checkin' && action !== 'checkout') {
-      return res.status(400).json({ error: 'action must be "checkin" or "checkout"' });
+      return res
+        .status(400)
+        .json({ error: 'action must be "checkin" or "checkout"' });
     }
 
     const updates: any = {
@@ -45,13 +49,15 @@ export default async function handler(
       .update(updates)
       .eq('id', assignment_id)
       .eq('job_id', id)
-      .select(`
+      .select(
+        `
         id,
         started_at,
         completed_at,
         notes,
         user:users(id, email, role)
-      `)
+      `
+      )
       .single();
 
     if (error) throw error;

@@ -9,7 +9,9 @@ interface ROICalculatorPresetsProps {
   onLoadPreset: (values: ROIInputs) => void;
 }
 
-export default function ROICalculatorPresets({ onLoadPreset }: ROICalculatorPresetsProps) {
+export default function ROICalculatorPresets({
+  onLoadPreset,
+}: ROICalculatorPresetsProps) {
   return (
     <div className="bg-white rounded-xl p-5 border-2 border-gray-200">
       <p className="text-sm font-semibold text-gray-900 mb-3">

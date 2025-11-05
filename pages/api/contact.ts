@@ -127,13 +127,15 @@ This message was sent from the Automet contact form on the website.
       console.error('Failed to send contact form email');
       return res.status(500).json({
         error: 'Failed to send message',
-        message: 'Unable to send your message. Please try again later or email us directly at support@automet.in',
+        message:
+          'Unable to send your message. Please try again later or email us directly at support@automet.in',
       });
     }
 
     return res.status(200).json({
       success: true,
-      message: 'Your message has been sent successfully. We\'ll get back to you within 24 hours.',
+      message:
+        "Your message has been sent successfully. We'll get back to you within 24 hours.",
     });
   } catch (error) {
     console.error('Contact form API error:', error);
@@ -143,4 +145,3 @@ This message was sent from the Automet contact form on the website.
     });
   }
 }
-

@@ -42,8 +42,8 @@ export default async function handler(
       // Filter low stock items if requested
       let filteredData = data || [];
       if (low_stock === 'true' && filteredData.length > 0) {
-        filteredData = filteredData.filter(item =>
-          item.quantity_available <= (item.reorder_level || 0)
+        filteredData = filteredData.filter(
+          (item) => item.quantity_available <= (item.reorder_level || 0)
         );
       }
 
@@ -69,12 +69,12 @@ export default async function handler(
         quantity_available,
         reorder_level,
         unit_cost,
-        notes
+        notes,
       } = req.body;
 
       if (!item_name || !category || !unit_of_measure) {
         return res.status(400).json({
-          error: 'item_name, category, and unit_of_measure are required'
+          error: 'item_name, category, and unit_of_measure are required',
         });
       }
 

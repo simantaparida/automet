@@ -9,7 +9,7 @@ export default async function handler(
   if (!supabaseAdmin) {
     return res.status(500).json({ error: 'Server configuration error' });
   }
-  
+
   try {
     // Check organizations
     const { data: orgs, error: orgsError } = await supabaseAdmin
@@ -43,11 +43,11 @@ export default async function handler(
         users: usersError?.message,
         jobs: jobsError?.message,
         clients: clientsError?.message,
-      }
+      },
     });
   } catch (error) {
     return res.status(500).json({
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 }

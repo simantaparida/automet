@@ -7,6 +7,7 @@ This guide helps you deploy **only the landing page** with the waitlist form, wh
 ## Current Setup
 
 ### Public Routes (Safe to Deploy)
+
 - ✅ `/` - Landing page
 - ✅ `/blog` - Blog listing
 - ✅ `/blog/[slug]` - Blog posts
@@ -16,6 +17,7 @@ This guide helps you deploy **only the landing page** with the waitlist form, wh
 - ✅ `/api/blog` - Blog API
 
 ### Protected Routes (Will Redirect to Login)
+
 - 🔒 `/dashboard` - Dashboard
 - 🔒 `/jobs` - Job management
 - 🔒 `/clients` - Client management
@@ -30,30 +32,36 @@ This guide helps you deploy **only the landing page** with the waitlist form, wh
 ## Supabase Setup Strategy
 
 ### Option 1: Use Current Dev Supabase (Simplest)
+
 **Recommended for quick launch**
 
 Your current dev Supabase already has:
+
 - ✅ `preorders` table with public RLS policies
 - ✅ `blog_posts` table with public read policies
 - ✅ All other tables protected by RLS
 
 **Pros:**
+
 - Quick to deploy
 - No additional setup needed
 - Can migrate data later
 
 **Cons:**
+
 - Dev database exposed to public (but RLS protects sensitive data)
 - Need to be careful with migrations
 
 ### Option 2: Separate Supabase Projects (Recommended Long-term)
 
 **Structure:**
+
 1. **Supabase (Dev)** - Current setup, for local development
 2. **Supabase (Public)** - New project, only for landing page
 3. **Supabase (Test)** - For automated testing
 
 **Public Project Setup:**
+
 ```sql
 -- Only these tables needed:
 - preorders (with public INSERT policy)
@@ -78,6 +86,7 @@ NODE_ENV=production
 ```
 
 **If using Option 1 (Dev Supabase):**
+
 - Use your current dev Supabase credentials
 - All other tables are protected by RLS anyway
 
@@ -87,8 +96,8 @@ Run this in Supabase SQL Editor to verify:
 
 ```sql
 -- Check preorders policies
-SELECT policyname, cmd, roles 
-FROM pg_policies 
+SELECT policyname, cmd, roles
+FROM pg_policies
 WHERE tablename = 'preorders';
 
 -- Should show:
@@ -96,8 +105,8 @@ WHERE tablename = 'preorders';
 -- "Public can view preorders" | SELECT | {public}
 
 -- Check blog_posts policies
-SELECT policyname, cmd, roles 
-FROM pg_policies 
+SELECT policyname, cmd, roles
+FROM pg_policies
 WHERE tablename = 'blog_posts';
 
 -- Should show:
@@ -107,11 +116,13 @@ WHERE tablename = 'blog_posts';
 ### Step 3: Deploy to Vercel
 
 1. **Install Vercel CLI:**
+
    ```bash
    npm i -g vercel
    ```
 
 2. **Deploy:**
+
    ```bash
    vercel --prod
    ```
@@ -136,6 +147,7 @@ WHERE tablename = 'blog_posts';
 ## Security Checklist
 
 ### ✅ Database Security
+
 - [x] RLS enabled on all tables
 - [x] `preorders` has public INSERT policy (only for waitlist)
 - [x] `blog_posts` has public SELECT policy (only for published posts)
@@ -143,12 +155,14 @@ WHERE tablename = 'blog_posts';
 - [x] Service role key never exposed to client
 
 ### ✅ Route Security
+
 - [x] Protected routes use `ProtectedRoute` component
 - [x] Protected routes redirect to `/login` if not authenticated
 - [x] API routes check authentication for sensitive operations
 - [x] Landing page and blog are public (intentional)
 
 ### ✅ API Security
+
 - [x] `/api/preorder` - Public (for waitlist signup)
 - [x] `/api/blog` - Public (for blog content)
 - [x] All other API routes require authentication
@@ -156,9 +170,10 @@ WHERE tablename = 'blog_posts';
 ## Monitoring
 
 ### Track Waitlist Signups
+
 ```sql
 -- In Supabase SQL Editor
-SELECT 
+SELECT
   COUNT(*) as total_signups,
   COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '24 hours') as last_24h,
   COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '7 days') as last_7d
@@ -166,9 +181,10 @@ FROM preorders;
 ```
 
 ### Export Waitlist Data
+
 ```sql
 -- Export all waitlist entries
-SELECT 
+SELECT
   email,
   phone,
   contact_name,
@@ -193,16 +209,21 @@ ORDER BY created_at DESC;
 ## Troubleshooting
 
 ### Issue: Protected routes accessible
+
 **Fix:** Check that `ProtectedRoute` component is working and redirecting
 
 ### Issue: Form submission fails
-**Fix:** 
+
+**Fix:**
+
 1. Verify RLS policies on `preorders` table
 2. Check service role key is set in environment variables
 3. Check server logs for detailed error
 
 ### Issue: Blog posts not showing
-**Fix:** 
+
+**Fix:**
+
 1. Verify RLS policy on `blog_posts` table
 2. Check posts are marked as `is_published = true`
 
@@ -212,4 +233,3 @@ ORDER BY created_at DESC;
 - Core app remains **private** and protected by authentication
 - You can launch the landing page **now** and add the core app later
 - All sensitive data is protected by RLS policies
-

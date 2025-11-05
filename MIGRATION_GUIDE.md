@@ -15,6 +15,7 @@ The `clients` table is missing a `notes` column that is needed for full function
    - Click "New query"
 
 3. **Run this SQL**
+
    ```sql
    -- Add notes column to clients table
    ALTER TABLE clients ADD COLUMN IF NOT EXISTS notes TEXT;
@@ -45,26 +46,31 @@ Once you've added the column, you need to update the API code to include it:
 **File: `pages/api/clients/index.ts`**
 
 Change line 17 from:
+
 ```typescript
 .select('id, name, contact_email, contact_phone, address')
 ```
 
 To:
+
 ```typescript
 .select('id, name, contact_email, contact_phone, address, notes')
 ```
 
 Also update line 36 to include notes:
+
 ```typescript
 const { name, contact_email, contact_phone, address, notes } = req.body;
 ```
 
 And add it to the insert (after line 49):
+
 ```typescript
 notes: notes || null,
 ```
 
 And in the select (line 53):
+
 ```typescript
 .select('id, name, contact_email, contact_phone, address, notes')
 ```
@@ -72,6 +78,7 @@ And in the select (line 53):
 **File: `pages/api/clients/[id].ts`**
 
 Update line 26:
+
 ```typescript
 .select('id, name, contact_email, contact_phone, address, notes, created_at')
 ```
@@ -91,6 +98,7 @@ ALTER TABLE clients DROP COLUMN IF EXISTS notes;
 ```
 
 Or use the rollback file:
+
 ```bash
 psql "$DATABASE_URL" -f migrations/20251102_009_add_clients_notes_column.down.sql
 ```

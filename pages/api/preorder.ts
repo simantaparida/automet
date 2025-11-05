@@ -39,16 +39,25 @@ export default async function handler(
     const adminClient = getSupabaseAdmin();
     const supabase = adminClient || supabaseServer;
     const useServiceRole = adminClient !== null;
-    
+
     if (!useServiceRole) {
       const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '';
+      const supabaseUrl =
+        process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '';
       console.error('⚠️ SUPABASE_SERVICE_ROLE_KEY issue detected:');
-      console.error('   - Service Role Key:', serviceRoleKey ? `Set (${serviceRoleKey.length} chars)` : 'NOT SET');
+      console.error(
+        '   - Service Role Key:',
+        serviceRoleKey ? `Set (${serviceRoleKey.length} chars)` : 'NOT SET'
+      );
       console.error('   - Supabase URL:', supabaseUrl || 'NOT SET');
-      console.error('   - Admin Client:', 'NULL - falling back to server client');
+      console.error(
+        '   - Admin Client:',
+        'NULL - falling back to server client'
+      );
       console.error('⚠️ Using anon key - may encounter RLS permission issues.');
-      console.error('⚠️ Add SUPABASE_SERVICE_ROLE_KEY to .env.local to bypass RLS');
+      console.error(
+        '⚠️ Add SUPABASE_SERVICE_ROLE_KEY to .env.local to bypass RLS'
+      );
     }
 
     // Try to check for duplicate email, but don't fail if check fails
@@ -63,24 +72,34 @@ export default async function handler(
 
       if (checkError) {
         // Log error but continue - database unique constraint will catch duplicates
-        console.warn('Duplicate check failed (will rely on DB constraint):', checkError.code, checkError.message);
+        console.warn(
+          'Duplicate check failed (will rely on DB constraint):',
+          checkError.code,
+          checkError.message
+        );
         // If it's a permission error and we don't have service role, log warning
         if (checkError.code === '42501' && !useServiceRole) {
-          console.warn('⚠️ RLS permission denied. Consider setting SUPABASE_SERVICE_ROLE_KEY in .env.local');
+          console.warn(
+            '⚠️ RLS permission denied. Consider setting SUPABASE_SERVICE_ROLE_KEY in .env.local'
+          );
         }
       } else {
         existingPreorder = existingData;
       }
     } catch (err) {
       // Catch any unexpected errors during duplicate check
-      console.warn('Duplicate check threw exception (will rely on DB constraint):', err);
+      console.warn(
+        'Duplicate check threw exception (will rely on DB constraint):',
+        err
+      );
     }
 
     // If we found a duplicate, return early
     if (existingPreorder) {
       return res.status(409).json({
         error: 'Email already registered',
-        message: 'This email is already on the waitlist. We\'ll notify you when we launch!',
+        message:
+          "This email is already on the waitlist. We'll notify you when we launch!",
       });
     }
 
@@ -114,42 +133,62 @@ export default async function handler(
       console.error('Error code:', insertError.code);
       console.error('Error details:', insertError.details);
       console.error('Error hint:', insertError.hint);
-      console.error('Using client:', useServiceRole ? 'Admin (should bypass RLS)' : 'Server (respects RLS)');
-      
+      console.error(
+        'Using client:',
+        useServiceRole ? 'Admin (should bypass RLS)' : 'Server (respects RLS)'
+      );
+
       // Handle permission denied errors
-      if (insertError.code === '42501' || insertError.message?.includes('permission denied')) {
+      if (
+        insertError.code === '42501' ||
+        insertError.message?.includes('permission denied')
+      ) {
         console.error('❌ RLS Permission Denied Error!');
-        console.error('   This means the admin client is not working properly.');
+        console.error(
+          '   This means the admin client is not working properly.'
+        );
         console.error('   Check: SUPABASE_SERVICE_ROLE_KEY in .env.local');
         return res.status(500).json({
           error: 'Permission denied',
-          message: 'Database permission error. Please check server configuration.',
-          details: process.env.NODE_ENV === 'development' ? {
-            code: insertError.code,
-            message: insertError.message,
-            hint: 'Make sure SUPABASE_SERVICE_ROLE_KEY is set correctly in .env.local',
-          } : undefined,
+          message:
+            'Database permission error. Please check server configuration.',
+          details:
+            process.env.NODE_ENV === 'development'
+              ? {
+                  code: insertError.code,
+                  message: insertError.message,
+                  hint: 'Make sure SUPABASE_SERVICE_ROLE_KEY is set correctly in .env.local',
+                }
+              : undefined,
         });
       }
-      
+
       // Handle duplicate email error from database unique constraint
-      if (insertError.code === '23505' || insertError.message?.includes('duplicate') || insertError.message?.includes('unique')) {
+      if (
+        insertError.code === '23505' ||
+        insertError.message?.includes('duplicate') ||
+        insertError.message?.includes('unique')
+      ) {
         return res.status(409).json({
           error: 'Email already registered',
-          message: 'This email is already on the waitlist. We\'ll notify you when we launch!',
+          message:
+            "This email is already on the waitlist. We'll notify you when we launch!",
         });
       }
-      
+
       // Return more detailed error message for debugging
       return res.status(500).json({
         error: 'Failed to join waitlist',
         message: insertError.message || 'Please try again or contact support.',
-        details: process.env.NODE_ENV === 'development' ? {
-          code: insertError.code,
-          message: insertError.message,
-          details: insertError.details,
-          hint: insertError.hint,
-        } : undefined,
+        details:
+          process.env.NODE_ENV === 'development'
+            ? {
+                code: insertError.code,
+                message: insertError.message,
+                details: insertError.details,
+                hint: insertError.hint,
+              }
+            : undefined,
       });
     }
 
@@ -167,7 +206,8 @@ export default async function handler(
     // Return success response
     return res.status(201).json({
       success: true,
-      message: 'Successfully joined the waitlist! We\'ll notify you when Automet launches.',
+      message:
+        "Successfully joined the waitlist! We'll notify you when Automet launches.",
       preorder: {
         id: preorder.id,
         email: preorder.email,

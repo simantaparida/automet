@@ -9,7 +9,7 @@ export default async function handler(
   if (!supabaseAdmin) {
     return res.status(500).json({ error: 'Server configuration error' });
   }
-  
+
   const { id } = req.query;
 
   if (req.method === 'GET') {
@@ -17,7 +17,9 @@ export default async function handler(
       // Fetch client with related data
       const { data: client, error: clientError } = await supabaseAdmin
         .from('clients')
-        .select('id, name, contact_email, contact_phone, address, notes, created_at')
+        .select(
+          'id, name, contact_email, contact_phone, address, notes, created_at'
+        )
         .eq('id', id)
         .single();
 
@@ -97,7 +99,8 @@ export default async function handler(
 
       if (sites && sites.length > 0) {
         return res.status(400).json({
-          error: 'Cannot delete client with associated sites. Please delete sites first.',
+          error:
+            'Cannot delete client with associated sites. Please delete sites first.',
         });
       }
 
@@ -110,7 +113,8 @@ export default async function handler(
 
       if (jobs && jobs.length > 0) {
         return res.status(400).json({
-          error: 'Cannot delete client with associated jobs. Please delete jobs first.',
+          error:
+            'Cannot delete client with associated jobs. Please delete jobs first.',
         });
       }
 

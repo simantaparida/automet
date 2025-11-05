@@ -5,6 +5,7 @@
 This PR addresses **severe security vulnerabilities** that made the application completely unsuitable for production deployment.
 
 ### Issues Fixed
+
 1. ❌ **ZERO API authentication** - Anyone could access ALL endpoints
 2. ❌ **Broken multi-tenancy** - Hardcoded organization IDs
 3. ❌ **RLS bypassed** - Service role used in API routes
@@ -16,6 +17,7 @@ This PR addresses **severe security vulnerabilities** that made the application 
 ## 🔐 Security Changes
 
 ### 1. API Authentication Middleware
+
 **New File**: `src/lib/auth-middleware.ts`
 
 - ✅ Created `withAuth()` function for session verification
@@ -25,21 +27,24 @@ This PR addresses **severe security vulnerabilities** that made the application 
 - ✅ Added `requireRole()` helper for role-based authorization
 
 ### 2. Protected API Routes (6 routes updated)
+
 All core API routes now require authentication and enforce RLS:
 
-| Route | Changes |
-|-------|---------|
-| `/api/clients` | ✅ Auth required, uses user's org_id |
-| `/api/assets` | ✅ Auth required, uses user's org_id |
-| `/api/sites` | ✅ Auth required, uses user's org_id |
+| Route            | Changes                              |
+| ---------------- | ------------------------------------ |
+| `/api/clients`   | ✅ Auth required, uses user's org_id |
+| `/api/assets`    | ✅ Auth required, uses user's org_id |
+| `/api/sites`     | ✅ Auth required, uses user's org_id |
 | `/api/inventory` | ✅ Auth required, uses user's org_id |
-| `/api/jobs` | ✅ Auth required, uses user's org_id |
+| `/api/jobs`      | ✅ Auth required, uses user's org_id |
 
 **Before**: Used `supabaseAdmin` (bypasses RLS)
 **After**: Uses `createServerSupabaseClient` (enforces RLS)
 
 ### 3. Multi-tenant Isolation Fixed
+
 Removed 4 instances of hardcoded organization IDs:
+
 - `pages/api/clients/index.ts:45`
 - `pages/api/assets/index.ts:70`
 - `pages/api/sites/index.ts:62`
@@ -49,7 +54,9 @@ Removed 4 instances of hardcoded organization IDs:
 **After**: `org_id: user.org_id` (from authenticated session)
 
 ### 4. Role-Based Authorization
+
 Only `owner` and `coordinator` roles can create/modify resources:
+
 - Technicians: Read-only access
 - Coordinators: Create/modify access
 - Owners: Full access
@@ -59,6 +66,7 @@ Only `owner` and `coordinator` roles can create/modify resources:
 ## 🛡️ Quality Improvements
 
 ### 5. Global Error Boundary
+
 **New File**: `src/components/ErrorBoundary.tsx`
 **Updated**: `pages/_app.tsx`
 
@@ -68,6 +76,7 @@ Only `owner` and `coordinator` roles can create/modify resources:
 - ✅ Provides "Refresh" and "Go Home" recovery options
 
 ### 6. Environment Variable Validation
+
 **New File**: `src/lib/env.ts`
 
 - ✅ Validates all required env vars at runtime using Zod
@@ -80,12 +89,14 @@ Only `owner` and `coordinator` roles can create/modify resources:
 ## 🎨 Configuration Fixes
 
 ### 7. PWA Manifest Theme Color
+
 **File**: `public/manifest.json`
 
 - Fixed theme color: `#2563eb` (blue) → `#450693` (purple)
 - Now matches brand identity from Tailwind config
 
 ### 8. Cleanup
+
 - ✅ Deleted `test.txt` artifact file
 - ✅ Created `PWA_ICONS_SETUP.md` with icon generation guide
 
@@ -93,22 +104,23 @@ Only `owner` and `coordinator` roles can create/modify resources:
 
 ## 📊 Impact Summary
 
-| Metric | Before | After |
-|--------|--------|-------|
-| **Authentication** | ❌ None | ✅ Required |
-| **Multi-tenancy** | ❌ Broken | ✅ Working |
-| **RLS Enforcement** | ❌ Bypassed | ✅ Enforced |
-| **Org Isolation** | ❌ None | ✅ Complete |
-| **Role-based Access** | ❌ None | ✅ Implemented |
-| **Error Handling** | ❌ None | ✅ Global Boundary |
-| **Env Validation** | ❌ None | ✅ Zod Schema |
-| **Security Grade** | 🔴 F | 🟡 B- |
+| Metric                | Before      | After              |
+| --------------------- | ----------- | ------------------ |
+| **Authentication**    | ❌ None     | ✅ Required        |
+| **Multi-tenancy**     | ❌ Broken   | ✅ Working         |
+| **RLS Enforcement**   | ❌ Bypassed | ✅ Enforced        |
+| **Org Isolation**     | ❌ None     | ✅ Complete        |
+| **Role-based Access** | ❌ None     | ✅ Implemented     |
+| **Error Handling**    | ❌ None     | ✅ Global Boundary |
+| **Env Validation**    | ❌ None     | ✅ Zod Schema      |
+| **Security Grade**    | 🔴 F        | 🟡 B-              |
 
 ---
 
 ## 🔄 Breaking Changes
 
 ### API Routes Now Require Authentication
+
 ```typescript
 // ❌ Before: Anyone could access
 GET /api/clients → Returns all clients
@@ -119,6 +131,7 @@ GET /api/clients → Returns only user's org clients (if logged in)
 ```
 
 ### Frontend Changes Required
+
 1. All API calls must include session cookies
 2. Handle 401 responses (redirect to login)
 3. Handle 403 responses (show permission denied)
@@ -129,12 +142,14 @@ GET /api/clients → Returns only user's org clients (if logged in)
 ## 📝 Files Changed
 
 ### New Files (4)
+
 - `src/lib/auth-middleware.ts` - Authentication middleware
 - `src/lib/env.ts` - Environment validation
 - `src/components/ErrorBoundary.tsx` - Error boundary component
 - `PWA_ICONS_SETUP.md` - Icon setup documentation
 
 ### Modified Files (7)
+
 - `pages/_app.tsx` - Added ErrorBoundary wrapper
 - `pages/api/clients/index.ts` - Auth + org_id fix
 - `pages/api/assets/index.ts` - Auth + org_id fix
@@ -144,6 +159,7 @@ GET /api/clients → Returns only user's org clients (if logged in)
 - `public/manifest.json` - Theme color fix
 
 ### Deleted Files (1)
+
 - `test.txt` - Removed artifact
 
 **Total: 12 files changed (+555 additions, -61 deletions)**
@@ -153,6 +169,7 @@ GET /api/clients → Returns only user's org clients (if logged in)
 ## ⚠️ Known Limitations
 
 ### Still Need to Fix (Not in this PR)
+
 1. **13 additional API routes** still unprotected:
    - `/api/clients/[id].ts`
    - `/api/assets/[id].ts`
@@ -177,6 +194,7 @@ GET /api/clients → Returns only user's org clients (if logged in)
 ## 🧪 Testing Done
 
 ### Manual Testing
+
 - ✅ Unauthenticated API access returns 401
 - ✅ Authenticated users see only their org's data
 - ✅ Role-based permissions work correctly
@@ -184,6 +202,7 @@ GET /api/clients → Returns only user's org clients (if logged in)
 - ✅ Environment validation works at startup
 
 ### What Should Be Tested
+
 1. Login → Access API routes → Verify org isolation
 2. Try accessing API without login → Should get 401
 3. Technician role → Try creating client → Should get 403
@@ -203,6 +222,7 @@ GET /api/clients → Returns only user's org clients (if logged in)
 ## 🚀 Deployment Notes
 
 ### Before Merging
+
 1. ✅ Review all security changes
 2. ✅ Test authentication flow
 3. ⚠️ Update frontend to handle auth errors
@@ -210,6 +230,7 @@ GET /api/clients → Returns only user's org clients (if logged in)
 5. ⚠️ Verify environment variables are set
 
 ### After Merging
+
 1. Deploy to staging first
 2. Test multi-tenant isolation
 3. Verify no users can access other orgs' data

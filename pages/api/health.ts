@@ -39,7 +39,7 @@ export default async function handler(
         error: 'Admin client not available. Check SUPABASE_SERVICE_ROLE_KEY.',
       });
     }
-    
+
     const { error } = await supabaseAdmin
       .from('organizations')
       .select('id')

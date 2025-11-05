@@ -22,7 +22,9 @@ Authorization: Bearer <supabase_access_token>
 Get the access token from Supabase Auth:
 
 ```typescript
-const { data: { session } } = await supabase.auth.getSession();
+const {
+  data: { session },
+} = await supabase.auth.getSession();
 const token = session?.access_token;
 ```
 
@@ -37,6 +39,7 @@ Check API and database connectivity.
 **Authentication:** None required
 
 **Response:**
+
 ```json
 {
   "status": "ok",
@@ -46,6 +49,7 @@ Check API and database connectivity.
 ```
 
 **Status Codes:**
+
 - `200` - Service healthy
 - `503` - Service unavailable
 
@@ -69,12 +73,14 @@ List jobs for authenticated user's organization.
 | `offset` | integer | Pagination offset |
 
 **Example Request:**
+
 ```http
 GET /api/v1/jobs?status=in_progress&limit=10
 Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "jobs": [
@@ -109,6 +115,7 @@ Authorization: Bearer <token>
 ```
 
 **Status Codes:**
+
 - `200` - Success
 - `401` - Unauthorized
 - `403` - Forbidden (not in org)
@@ -123,6 +130,7 @@ Create a new job.
 **Authentication:** Required (role: `owner` or `coordinator`)
 
 **Request Body:**
+
 ```json
 {
   "client_id": "uuid",
@@ -138,12 +146,14 @@ Create a new job.
 ```
 
 **Validation:**
+
 - `title`: 1-200 characters
 - `description`: max 2000 characters
 - Email must be verified
 - Subscription usage limits enforced (free plan: 50 jobs/month)
 
 **Example Request:**
+
 ```http
 POST /api/v1/jobs
 Content-Type: application/json
@@ -160,6 +170,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "job": {
@@ -172,6 +183,7 @@ Authorization: Bearer <token>
 ```
 
 **Status Codes:**
+
 - `201` - Created
 - `400` - Validation error
 - `401` - Unauthorized
@@ -187,10 +199,12 @@ Update a job (status, assignee, etc.).
 **Authentication:** Required
 
 **Permissions:**
+
 - `owner`, `coordinator`: Can update any field
 - `technician`: Can only update assigned jobs (status, notes)
 
 **Request Body:**
+
 ```json
 {
   "status": "in_progress",
@@ -199,9 +213,12 @@ Update a job (status, assignee, etc.).
 ```
 
 **Response:**
+
 ```json
 {
-  "job": { /* updated job object */ }
+  "job": {
+    /* updated job object */
+  }
 }
 ```
 
@@ -222,6 +239,7 @@ List inventory items for org.
 | `serialized` | boolean | Filter serialized items |
 
 **Response:**
+
 ```json
 {
   "items": [
@@ -247,6 +265,7 @@ Issue inventory to a technician or site.
 **Authentication:** Required (role: `owner` or `coordinator`)
 
 **Request Body:**
+
 ```json
 {
   "item_id": "uuid",
@@ -258,11 +277,13 @@ Issue inventory to a technician or site.
 ```
 
 **Validation:**
+
 - Must specify either `issued_to_user` or `issued_to_site`
 - Quantity must be available in stock
 - Creates audit log entry
 
 **Response:**
+
 ```json
 {
   "issuance": {
@@ -276,6 +297,7 @@ Issue inventory to a technician or site.
 ```
 
 **Status Codes:**
+
 - `201` - Issued successfully
 - `400` - Insufficient stock
 - `403` - Permission denied
@@ -291,11 +313,13 @@ Run seed scripts to populate database with demo data.
 **Authentication:** Service role key required
 
 **Headers:**
+
 ```http
 Authorization: Bearer <SUPABASE_SERVICE_ROLE_KEY>
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Seeds completed successfully",
@@ -312,6 +336,7 @@ Authorization: Bearer <SUPABASE_SERVICE_ROLE_KEY>
 ```
 
 **Status Codes:**
+
 - `200` - Success
 - `401` - Unauthorized (invalid service key)
 - `500` - Seed script failed
@@ -327,12 +352,14 @@ Razorpay webhook handler.
 **Authentication:** Signature verification (not token-based)
 
 **Headers:**
+
 ```http
 Content-Type: application/json
 X-Razorpay-Signature: <hmac_sha256_signature>
 ```
 
 **Supported Events:**
+
 - `payment.captured`
 - `payment.failed`
 - `subscription.activated`
@@ -340,6 +367,7 @@ X-Razorpay-Signature: <hmac_sha256_signature>
 - `subscription.charged`
 
 **Example Payload (payment.captured):**
+
 ```json
 {
   "event": "payment.captured",
@@ -359,6 +387,7 @@ X-Razorpay-Signature: <hmac_sha256_signature>
 ```
 
 **Response:**
+
 ```json
 {
   "status": "processed"
@@ -366,6 +395,7 @@ X-Razorpay-Signature: <hmac_sha256_signature>
 ```
 
 **Status Codes:**
+
 - `200` - Webhook processed
 - `400` - Invalid signature
 - `500` - Processing error
@@ -391,25 +421,27 @@ All errors follow this format:
 
 ### Error Codes
 
-| Code | HTTP Status | Description |
-|------|-------------|-------------|
-| `VALIDATION_ERROR` | 400 | Invalid request data |
-| `UNAUTHORIZED` | 401 | Missing or invalid auth token |
-| `FORBIDDEN` | 403 | Insufficient permissions |
-| `NOT_FOUND` | 404 | Resource not found |
-| `USAGE_LIMIT_EXCEEDED` | 403 | Subscription limit reached |
-| `EMAIL_NOT_VERIFIED` | 403 | Email verification required |
-| `INTERNAL_ERROR` | 500 | Server error |
+| Code                   | HTTP Status | Description                   |
+| ---------------------- | ----------- | ----------------------------- |
+| `VALIDATION_ERROR`     | 400         | Invalid request data          |
+| `UNAUTHORIZED`         | 401         | Missing or invalid auth token |
+| `FORBIDDEN`            | 403         | Insufficient permissions      |
+| `NOT_FOUND`            | 404         | Resource not found            |
+| `USAGE_LIMIT_EXCEEDED` | 403         | Subscription limit reached    |
+| `EMAIL_NOT_VERIFIED`   | 403         | Email verification required   |
+| `INTERNAL_ERROR`       | 500         | Server error                  |
 
 ---
 
 ## Rate Limiting
 
 **Current limits (subject to change):**
+
 - Free plan: 100 requests/minute
 - Pro plan: 1000 requests/minute
 
 **Headers:**
+
 ```http
 X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 95
@@ -417,6 +449,7 @@ X-RateLimit-Reset: 1698826200
 ```
 
 **429 Response:**
+
 ```json
 {
   "error": {
@@ -433,14 +466,18 @@ X-RateLimit-Reset: 1698826200
 List endpoints support cursor-based pagination:
 
 **Request:**
+
 ```http
 GET /api/v1/jobs?limit=20&offset=40
 ```
 
 **Response includes:**
+
 ```json
 {
-  "jobs": [ /* ... */ ],
+  "jobs": [
+    /* ... */
+  ],
   "total": 150,
   "limit": 20,
   "offset": 40,

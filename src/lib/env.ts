@@ -13,7 +13,10 @@ const envSchema = z.object({
   SUPABASE_ANON_KEY: z.string().min(20, 'SUPABASE_ANON_KEY is required'),
   SUPABASE_SERVICE_ROLE_KEY: z
     .string()
-    .min(20, 'SUPABASE_SERVICE_ROLE_KEY is required for server-side operations'),
+    .min(
+      20,
+      'SUPABASE_SERVICE_ROLE_KEY is required for server-side operations'
+    ),
 
   // Google OAuth (Required for OAuth login)
   GOOGLE_CLIENT_ID: z.string().min(10, 'GOOGLE_CLIENT_ID is required'),
@@ -29,7 +32,9 @@ const envSchema = z.object({
 
   // Email Service (Required for notifications)
   RESEND_API_KEY: z.string().min(10, 'RESEND_API_KEY is required'),
-  SENDGRID_FROM_EMAIL: z.string().email('SENDGRID_FROM_EMAIL must be a valid email'),
+  SENDGRID_FROM_EMAIL: z
+    .string()
+    .email('SENDGRID_FROM_EMAIL must be a valid email'),
 
   // Email Confirmation
   EMAIL_TOKEN_SECRET: z

@@ -9,7 +9,7 @@ export default async function handler(
   if (!supabaseAdmin) {
     return res.status(500).json({ error: 'Server configuration error' });
   }
-  
+
   const { id } = req.query;
 
   if (req.method === 'GET') {
@@ -43,12 +43,12 @@ export default async function handler(
         quantity_available,
         reorder_level,
         unit_cost,
-        notes
+        notes,
       } = req.body;
 
       if (!item_name || !category || !unit_of_measure) {
         return res.status(400).json({
-          error: 'item_name, category, and unit_of_measure are required'
+          error: 'item_name, category, and unit_of_measure are required',
         });
       }
 
@@ -87,7 +87,9 @@ export default async function handler(
 
       if (error) throw error;
 
-      return res.status(200).json({ message: 'Inventory item deleted successfully' });
+      return res
+        .status(200)
+        .json({ message: 'Inventory item deleted successfully' });
     } catch (error: any) {
       console.error('Error deleting inventory item:', error);
       return res.status(500).json({ error: error.message });

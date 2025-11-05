@@ -20,10 +20,14 @@ export default async function handler(
     const { limit = '10', category } = req.query;
 
     // Check environment variables (support both NEXT_PUBLIC_ and non-prefixed versions)
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '';
+    const supabaseUrl =
+      process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '';
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '';
-    
+    const anonKey =
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+      process.env.SUPABASE_ANON_KEY ||
+      '';
+
     const hasServiceRoleKey = serviceRoleKey.length > 0;
     const hasAnonKey = anonKey.length > 0;
     const hasSupabaseUrl = supabaseUrl.length > 0;
@@ -44,18 +48,27 @@ export default async function handler(
     } else if (hasAnonKey) {
       client = supabaseServer;
     } else {
-      console.error('Neither SUPABASE_SERVICE_ROLE_KEY nor SUPABASE_ANON_KEY is set');
+      console.error(
+        'Neither SUPABASE_SERVICE_ROLE_KEY nor SUPABASE_ANON_KEY is set'
+      );
       return res.status(500).json({ error: 'Server configuration error' });
     }
-    
+
     // Log which client is being used (only in development)
     if (process.env.NODE_ENV === 'development') {
-      console.log('Blog API - Using client:', adminClient ? 'supabaseAdmin (bypasses RLS)' : 'supabaseServer (respects RLS)');
+      console.log(
+        'Blog API - Using client:',
+        adminClient
+          ? 'supabaseAdmin (bypasses RLS)'
+          : 'supabaseServer (respects RLS)'
+      );
     }
 
     let query = client
       .from('blog_posts')
-      .select('id, slug, title, excerpt, category, tags, author_name, published_at, cover_image_url')
+      .select(
+        'id, slug, title, excerpt, category, tags, author_name, published_at, cover_image_url'
+      )
       .eq('published', true)
       .order('published_at', { ascending: false })
       .limit(parseInt(limit as string));
@@ -75,9 +88,10 @@ export default async function handler(
         details: error.details,
         hint: error.hint,
       });
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: 'Failed to fetch blog posts',
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        details:
+          process.env.NODE_ENV === 'development' ? error.message : undefined,
       });
     }
 
@@ -88,9 +102,12 @@ export default async function handler(
     return res.status(200).json(data || []);
   } catch (error) {
     console.error('Blog API error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      details:
+        process.env.NODE_ENV === 'development'
+          ? (error as Error).message
+          : undefined,
     });
   }
 }

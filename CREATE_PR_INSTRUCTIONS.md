@@ -3,11 +3,13 @@
 ## Quick Links
 
 ### Option 1: Auto-Create PR (Fastest)
+
 **Click this link to create the PR automatically:**
 
 🔗 **[Create Pull Request on GitHub](https://github.com/simantaparida/automet/compare/main...claude/audit-files-folders-011CUp4DqZ5G1LsnrUpkZFgH?expand=1)**
 
 > If "main" branch doesn't exist, try these alternatives:
+>
 > - [PR to develop branch](https://github.com/simantaparida/automet/compare/develop...claude/audit-files-folders-011CUp4DqZ5G1LsnrUpkZFgH?expand=1)
 > - [PR to master branch](https://github.com/simantaparida/automet/compare/master...claude/audit-files-folders-011CUp4DqZ5G1LsnrUpkZFgH?expand=1)
 > - [Let GitHub choose](https://github.com/simantaparida/automet/pull/new/claude/audit-files-folders-011CUp4DqZ5G1LsnrUpkZFgH)
@@ -17,11 +19,13 @@
 ## 📋 PR Details to Use
 
 ### Title
+
 ```
 🔒 Security: Implement API Authentication and Fix Critical Vulnerabilities
 ```
 
 ### Description
+
 Copy the entire content from: `.github/PR_DESCRIPTION.md`
 
 Or use this summary:
@@ -30,12 +34,14 @@ Or use this summary:
 ## 🚨 Critical Security Fixes
 
 This PR fixes **severe security vulnerabilities**:
+
 - ❌ Zero API authentication → ✅ Required authentication
 - ❌ Broken multi-tenancy → ✅ Working organization isolation
 - ❌ RLS bypassed → ✅ Row Level Security enforced
 - ❌ No error handling → ✅ Global error boundary
 
 ## Changes
+
 - ✅ Added authentication middleware
 - ✅ Protected 6 core API routes
 - ✅ Fixed hardcoded org_id (4 instances)
@@ -50,6 +56,7 @@ See full description in `.github/PR_DESCRIPTION.md`
 ```
 
 ### Labels to Add
+
 - `security` 🔒
 - `critical` 🚨
 - `breaking-change` ⚠️
@@ -142,19 +149,24 @@ If you have a closed PR for this branch:
 ## ✅ After Creating the PR
 
 ### 1. Add Reviewers
+
 Assign team members who should review:
+
 - Security expert (if available)
 - Backend developer
 - Frontend developer (for integration)
 
 ### 2. Add Labels
+
 - `security` - Security fix
 - `critical` - Critical priority
 - `breaking-change` - Frontend changes needed
 - `enhancement` - Improvement
 
 ### 3. Link Issues (if applicable)
+
 If you have GitHub issues tracking these problems:
+
 ```markdown
 Fixes #1
 Fixes #2
@@ -162,10 +174,13 @@ Closes #3
 ```
 
 ### 4. Set Milestone (optional)
+
 - e.g., "v1.0 Security Hardening"
 
 ### 5. Enable Auto-merge (optional)
+
 If your repo has required reviews:
+
 - Click "Enable auto-merge"
 - Select "Squash and merge"
 
@@ -209,19 +224,25 @@ claude/audit-files-folders-011CUp4DqZ5G1LsnrUpkZFgH → main
 ## ⚠️ If You Get Errors
 
 ### Error: "No common base branch"
+
 **Solution**: Try different base branches
+
 - Try `develop` instead of `main`
 - Try `master` instead of `main`
 - Use the "Let GitHub choose" link above
 
 ### Error: "Branch not found"
+
 **Solution**: Push branch to remote
+
 ```bash
 git push -u origin claude/audit-files-folders-011CUp4DqZ5G1LsnrUpkZFgH
 ```
 
 ### Error: "Conflicts detected"
+
 **Solution**: Merge base branch first
+
 ```bash
 git checkout claude/audit-files-folders-011CUp4DqZ5G1LsnrUpkZFgH
 git merge main  # or develop
@@ -270,6 +291,7 @@ git push origin claude/audit-files-folders-011CUp4DqZ5G1LsnrUpkZFgH
 ---
 
 **Need Help?**
+
 - Check GitHub Docs: https://docs.github.com/en/pull-requests
 - Ask in your team's Slack/Discord
 - Tag reviewers in PR comments

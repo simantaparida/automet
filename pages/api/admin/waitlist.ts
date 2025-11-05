@@ -39,7 +39,8 @@ export default async function handler(
     if (!adminClient) {
       return res.status(500).json({
         error: 'Admin access required',
-        message: 'Service role key not configured. This endpoint requires admin access.',
+        message:
+          'Service role key not configured. This endpoint requires admin access.',
       });
     }
 
@@ -59,8 +60,9 @@ export default async function handler(
 
     // Get summary statistics
     const total = preorders?.length || 0;
-    const confirmed = preorders?.filter(p => p.email_confirmed).length || 0;
-    const paid = preorders?.filter(p => p.payment_status === 'paid').length || 0;
+    const confirmed = preorders?.filter((p) => p.email_confirmed).length || 0;
+    const paid =
+      preorders?.filter((p) => p.payment_status === 'paid').length || 0;
 
     return res.status(200).json({
       success: true,
@@ -79,4 +81,3 @@ export default async function handler(
     });
   }
 }
-

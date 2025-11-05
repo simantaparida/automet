@@ -9,11 +9,17 @@ This document summarizes what has been built in Module 1 of the Automet MVP.
 ## 📦 Deliverables Summary
 
 ### ✅ Files Created: **50+ files**
+
 ### ✅ Lines of Code: **~4,500 LOC**
+
 ### ✅ Git Commits: **6 atomic commits**
+
 ### ✅ Migrations: **8 migrations** (16 files with up/down)
+
 ### ✅ Seed Scripts: **5 seed files**
+
 ### ✅ Documentation: **6 comprehensive guides**
+
 ### ✅ Dev Scripts: **5 shell scripts**
 
 ---
@@ -86,6 +92,7 @@ This document summarizes what has been built in Module 1 of the Automet MVP.
 ### **Tables Created: 18 tables**
 
 #### Core Tables (Migration 001)
+
 - ✅ `organizations` - Vendor companies
 - ✅ `users` - Application users (extends auth.users)
 - ✅ `clients` - AMC customers
@@ -93,18 +100,21 @@ This document summarizes what has been built in Module 1 of the Automet MVP.
 - ✅ `assets` - Equipment being serviced
 
 #### Job Management (Migration 002)
+
 - ✅ `jobs` - Work orders/tasks
 - ✅ `job_assignments` - Assignment history
 - ✅ `job_media` - Photos/videos/documents
 - ✅ `job_check_events` - Check-in/check-out tracking
 
 #### Inventory (Migration 003)
+
 - ✅ `inventory_items` - Consumables/tools
 - ✅ `inventory_instances` - Serial number tracking (opt-in)
 - ✅ `inventory_issuances` - Issuance records
 - ✅ `inventory_audit_log` - Audit trail
 
 #### Payments & Subscriptions (Migration 007)
+
 - ✅ `subscription_plans` - Free & Pro plans
 - ✅ `billing_customers` - Razorpay customer records
 - ✅ `org_subscriptions` - Active subscriptions
@@ -116,6 +126,7 @@ This document summarizes what has been built in Module 1 of the Automet MVP.
 ## 🔒 Security Features Implemented
 
 ### Row Level Security (RLS)
+
 - ✅ **All 18 tables** have RLS enabled
 - ✅ **Org isolation** - Users can only see data from their org
 - ✅ **Role-based access control**:
@@ -125,6 +136,7 @@ This document summarizes what has been built in Module 1 of the Automet MVP.
 - ✅ **Email verification gates** - Critical actions require verified email
 
 ### Other Security
+
 - ✅ SQL injection prevention (parameterized queries)
 - ✅ Service role key server-side only
 - ✅ Webhook signature verification (placeholders)
@@ -135,6 +147,7 @@ This document summarizes what has been built in Module 1 of the Automet MVP.
 ## 🚀 Demo Data Created
 
 ### Sharma Services Demo Org
+
 - **Organization**: Sharma Services
 - **Users**:
   - `admin@automet.dev` (owner)
@@ -167,34 +180,44 @@ This document summarizes what has been built in Module 1 of the Automet MVP.
 All scripts are **executable** and include **error handling** and **colored output**.
 
 ### `./scripts/dev.sh`
+
 One-command setup:
+
 ```bash
 ./scripts/dev.sh        # Install deps, migrate, seed, start server
 ./scripts/dev.sh start  # Just start server
 ```
 
 ### `./scripts/migrate.sh`
+
 Run database migrations:
+
 ```bash
 ./scripts/migrate.sh             # Apply all migrations
 ./scripts/migrate.sh --dry-run   # Preview changes
 ```
 
 ### `./scripts/seed.sh`
+
 Populate database with demo data:
+
 ```bash
 ./scripts/seed.sh
 ```
 
 ### `./scripts/rollback.sh`
+
 Rollback last migration:
+
 ```bash
 ./scripts/rollback.sh                           # Rollback last
 ./scripts/rollback.sh 20251101_003_inventory    # Rollback specific
 ```
 
 ### `./scripts/reset-db.sh`
+
 ⚠️ **DESTRUCTIVE** - Reset entire database:
+
 ```bash
 ./scripts/reset-db.sh   # Prompts for confirmation
 ```
@@ -206,6 +229,7 @@ Rollback last migration:
 To run the app, you need to set these in `.env.local`:
 
 ### Required
+
 ```bash
 # Supabase (Dev)
 SUPABASE_URL=https://xxxxx.supabase.co
@@ -229,6 +253,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
 ### Optional
+
 ```bash
 # Supabase (Test) - for CI
 SUPABASE_TEST_URL=...
@@ -255,6 +280,7 @@ SENTRY_DSN=...
 ## ⏳ What's Next (Module 2 / Phase 2)
 
 ### Immediate Next Steps:
+
 1. **Supabase Client Libraries** (`src/lib/supabase.ts`, `src/lib/supabase-server.ts`)
 2. **Razorpay SDK Wrapper** (`src/lib/razorpay.ts`)
 3. **Validation Schemas** (Zod schemas for jobs, inventory, auth)
@@ -276,24 +302,25 @@ SENTRY_DSN=...
 
 ## 📊 Module 1 Metrics
 
-| Metric | Count |
-|--------|-------|
-| **Files Created** | 50+ |
-| **Lines of Code** | ~4,500 |
-| **Migrations** | 8 (16 with rollbacks) |
-| **Seed Scripts** | 5 |
-| **Documentation Pages** | 7 |
-| **Dev Scripts** | 5 |
-| **Database Tables** | 18 |
-| **RLS Policies** | 40+ |
-| **Triggers & Functions** | 4 |
-| **Git Commits** | 6 |
+| Metric                   | Count                 |
+| ------------------------ | --------------------- |
+| **Files Created**        | 50+                   |
+| **Lines of Code**        | ~4,500                |
+| **Migrations**           | 8 (16 with rollbacks) |
+| **Seed Scripts**         | 5                     |
+| **Documentation Pages**  | 7                     |
+| **Dev Scripts**          | 5                     |
+| **Database Tables**      | 18                    |
+| **RLS Policies**         | 40+                   |
+| **Triggers & Functions** | 4                     |
+| **Git Commits**          | 6                     |
 
 ---
 
 ## 🎯 How to Get Started
 
 ### Step 1: Prerequisites
+
 - Node.js 20+
 - npm 10+
 - Git
@@ -302,12 +329,15 @@ SENTRY_DSN=...
 - Razorpay account (free for test mode)
 
 ### Step 2: Setup External Services
+
 Follow these guides in order:
+
 1. [Supabase Setup](docs/SUPABASE_SETUP.md) - Create dev + test projects
 2. [Google OAuth Setup](docs/GOOGLE_OAUTH_SETUP.md) - Configure OAuth
 3. [Razorpay Setup](docs/RAZORPAY_SETUP.md) - Set up payments
 
 ### Step 3: Local Setup
+
 ```bash
 # Clone repo (if not already)
 cd Automet
@@ -324,7 +354,9 @@ cp .env.example .env.local
 ```
 
 ### Step 4: Create Auth Users
+
 In Supabase Dashboard → Authentication → Users:
+
 1. Click "Add user" → Email
 2. Email: `admin@automet.dev`
 3. Password: (your choice)
@@ -352,6 +384,7 @@ Now you can log in with `admin@automet.dev`!
 ## 💡 Tips & Best Practices
 
 ### Running Migrations
+
 ```bash
 # Always test migrations locally first
 ./scripts/migrate.sh
@@ -364,6 +397,7 @@ pg_dump $DATABASE_URL > backup_$(date +%Y%m%d).sql
 ```
 
 ### Rollback
+
 ```bash
 # If migration fails, rollback immediately
 ./scripts/rollback.sh
@@ -373,6 +407,7 @@ pg_dump $DATABASE_URL > backup_$(date +%Y%m%d).sql
 ```
 
 ### Debugging
+
 ```bash
 # Connect to database directly
 psql $DATABASE_URL
@@ -392,6 +427,7 @@ psql $DATABASE_URL
 ## 🙏 Acknowledgments
 
 Built with:
+
 - **Next.js 14** - React framework
 - **Supabase** - Backend-as-a-Service (Auth, Database, Storage)
 - **PostgreSQL** - Database
@@ -404,6 +440,7 @@ Built with:
 ## 📧 Support
 
 For questions or issues:
+
 1. Check [docs/](docs/) folder
 2. Review [README.md](README.md)
 3. Check migration files for schema details

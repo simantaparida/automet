@@ -53,7 +53,7 @@ export default function BlogListPage() {
             : `/api/blog?limit=100&category=${selectedCategory}`;
         const response = await fetch(url);
         const data = await response.json();
-        
+
         if (response.ok) {
           setPosts(data);
           if (!data || data.length === 0) {
@@ -141,14 +141,22 @@ export default function BlogListPage() {
     })
     .sort((a, b) => {
       if (sortBy === 'oldest') {
-        return new Date(a.published_at).getTime() - new Date(b.published_at).getTime();
+        return (
+          new Date(a.published_at).getTime() -
+          new Date(b.published_at).getTime()
+        );
       }
-      return new Date(b.published_at).getTime() - new Date(a.published_at).getTime();
+      return (
+        new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
+      );
     });
 
   const categoryCounts = categories.map((cat) => ({
     ...cat,
-    count: cat.value === 'all' ? posts.length : posts.filter((p) => p.category === cat.value).length,
+    count:
+      cat.value === 'all'
+        ? posts.length
+        : posts.filter((p) => p.category === cat.value).length,
   }));
 
   return (
@@ -182,8 +190,10 @@ export default function BlogListPage() {
 
               {/* Sub-heading */}
               <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 mb-8 leading-relaxed">
-                Industry insights, best practices, and product updates to help you grow your{' '}
-                <span className="text-primary font-semibold">AMC business</span>.
+                Industry insights, best practices, and product updates to help
+                you grow your{' '}
+                <span className="text-primary font-semibold">AMC business</span>
+                .
               </p>
             </div>
           </div>
@@ -202,7 +212,12 @@ export default function BlogListPage() {
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
                   </svg>
                   <input
                     type="text"
@@ -216,8 +231,18 @@ export default function BlogListPage() {
                       onClick={() => setSearchQuery('')}
                       className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
                       </svg>
                     </button>
                   )}
@@ -242,11 +267,17 @@ export default function BlogListPage() {
                       }`}
                     >
                       <span className="hidden sm:inline">{cat.label}</span>
-                      <span className="sm:hidden">{cat.label.split(' ')[0]}</span>
+                      <span className="sm:hidden">
+                        {cat.label.split(' ')[0]}
+                      </span>
                       {cat.count > 0 && (
-                        <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] sm:text-xs ${
-                          selectedCategory === cat.value ? 'bg-white/20' : 'bg-gray-100'
-                        }`}>
+                        <span
+                          className={`ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] sm:text-xs ${
+                            selectedCategory === cat.value
+                              ? 'bg-white/20'
+                              : 'bg-gray-100'
+                          }`}
+                        >
                           {cat.count}
                         </span>
                       )}
@@ -256,10 +287,14 @@ export default function BlogListPage() {
 
                 {/* Sort Dropdown */}
                 <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <label className="text-xs sm:text-sm text-gray-600 whitespace-nowrap">Sort:</label>
+                  <label className="text-xs sm:text-sm text-gray-600 whitespace-nowrap">
+                    Sort:
+                  </label>
                   <select
                     value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as 'newest' | 'oldest')}
+                    onChange={(e) =>
+                      setSortBy(e.target.value as 'newest' | 'oldest')
+                    }
                     className="flex-1 sm:flex-none px-3 py-2 border border-gray-300 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-primary focus:border-transparent bg-white"
                   >
                     <option value="newest">Newest First</option>
@@ -274,12 +309,22 @@ export default function BlogListPage() {
                   <p className="text-sm text-gray-600">
                     {searchQuery ? (
                       <>
-                        Found <span className="font-semibold text-gray-900">{filteredAndSortedPosts.length}</span> article{filteredAndSortedPosts.length !== 1 ? 's' : ''} matching "{searchQuery}"
+                        Found{' '}
+                        <span className="font-semibold text-gray-900">
+                          {filteredAndSortedPosts.length}
+                        </span>{' '}
+                        article{filteredAndSortedPosts.length !== 1 ? 's' : ''}{' '}
+                        matching "{searchQuery}"
                       </>
                     ) : (
                       <>
-                        Showing <span className="font-semibold text-gray-900">{filteredAndSortedPosts.length}</span> article{filteredAndSortedPosts.length !== 1 ? 's' : ''}
-                        {selectedCategory !== 'all' && ` in ${categories.find((c) => c.value === selectedCategory)?.label}`}
+                        Showing{' '}
+                        <span className="font-semibold text-gray-900">
+                          {filteredAndSortedPosts.length}
+                        </span>{' '}
+                        article{filteredAndSortedPosts.length !== 1 ? 's' : ''}
+                        {selectedCategory !== 'all' &&
+                          ` in ${categories.find((c) => c.value === selectedCategory)?.label}`}
                       </>
                     )}
                   </p>
@@ -314,7 +359,9 @@ export default function BlogListPage() {
             ) : error ? (
               <div className="text-center py-12">
                 <div className="inline-block p-6 bg-red-50 border-2 border-red-200 rounded-xl">
-                  <p className="text-red-600 font-semibold mb-2">Error loading posts</p>
+                  <p className="text-red-600 font-semibold mb-2">
+                    Error loading posts
+                  </p>
                   <p className="text-red-500 text-sm">{error}</p>
                 </div>
               </div>
@@ -327,10 +374,17 @@ export default function BlogListPage() {
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    {searchQuery ? 'No articles found' : 'No posts in this category'}
+                    {searchQuery
+                      ? 'No articles found'
+                      : 'No posts in this category'}
                   </h3>
                   <p className="text-gray-600 mb-4">
                     {searchQuery
@@ -429,16 +483,30 @@ export default function BlogListPage() {
                       {/* Meta - Compact with Reading Time */}
                       <div className="flex items-center justify-between text-[10px] text-gray-500 mb-2 flex-wrap gap-1">
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="truncate max-w-[80px]">{post.author_name}</span>
+                          <span className="truncate max-w-[80px]">
+                            {post.author_name}
+                          </span>
                           <span>•</span>
                           <span className="flex items-center whitespace-nowrap">
-                            <svg className="w-3 h-3 mr-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            <svg
+                              className="w-3 h-3 mr-0.5 flex-shrink-0"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
                             </svg>
                             {calculateReadingTime(post.excerpt)} min read
                           </span>
                         </div>
-                        <span className="whitespace-nowrap">{formatDate(post.published_at)}</span>
+                        <span className="whitespace-nowrap">
+                          {formatDate(post.published_at)}
+                        </span>
                       </div>
 
                       {/* Read More Link - Smaller */}

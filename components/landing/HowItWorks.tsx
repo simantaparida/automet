@@ -8,45 +8,78 @@ export default function HowItWorks() {
     {
       number: '1',
       title: 'Sign Up & Set Up',
-      description: 'Create your account, add your team, clients, and existing assets. Takes just 30 minutes.',
+      description:
+        'Create your account, add your team, clients, and existing assets. Takes just 30 minutes.',
       details: [
         'Import existing client data',
         'Add your technicians',
         'Configure your services',
       ],
       icon: (
-        <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+        <svg
+          className="w-12 h-12"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+          />
         </svg>
       ),
     },
     {
       number: '2',
       title: 'Create & Assign Jobs',
-      description: 'Start creating jobs, assign them to technicians, and track everything in real-time.',
+      description:
+        'Start creating jobs, assign them to technicians, and track everything in real-time.',
       details: [
         'Create jobs in seconds',
         'Assign to technicians instantly',
         'Get live status updates',
       ],
       icon: (
-        <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+        <svg
+          className="w-12 h-12"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+          />
         </svg>
       ),
     },
     {
       number: '3',
       title: 'Get Paid & Grow',
-      description: 'Invoice automatically, accept payments online, and watch your business grow with clear insights.',
+      description:
+        'Invoice automatically, accept payments online, and watch your business grow with clear insights.',
       details: [
         'Auto-generate invoices',
         'Accept UPI & card payments',
         'Track revenue & growth',
       ],
       icon: (
-        <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+        <svg
+          className="w-12 h-12"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+          />
         </svg>
       ),
     },
@@ -72,12 +105,19 @@ export default function HowItWorks() {
         <div className="max-w-5xl mx-auto">
           <div className="relative">
             {/* Connecting Line (Desktop) */}
-            <div className="hidden lg:block absolute top-24 left-0 right-0 h-0.5 bg-primary/30" style={{ top: '6rem' }} />
+            <div
+              className="hidden lg:block absolute top-24 left-0 right-0 h-0.5 bg-primary/30"
+              style={{ top: '6rem' }}
+            />
 
             {/* Steps Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 relative">
               {steps.map((step, index) => (
-                <div key={index} className="relative animate-slide-up" style={{ animationDelay: `${index * 150}ms` }}>
+                <div
+                  key={index}
+                  className="relative animate-slide-up"
+                  style={{ animationDelay: `${index * 150}ms` }}
+                >
                   {/* Step Card */}
                   <div className="bg-white rounded-xl border-2 border-primary/20 p-8 hover:border-primary/40 hover:shadow-lg transition-all duration-300 backdrop-blur-sm">
                     {/* Step Number Badge */}
@@ -86,9 +126,7 @@ export default function HowItWorks() {
                     </div>
 
                     {/* Icon */}
-                    <div className="text-primary mb-6 mt-4">
-                      {step.icon}
-                    </div>
+                    <div className="text-primary mb-6 mt-4">{step.icon}</div>
 
                     {/* Title */}
                     <h3 className="text-2xl font-bold text-gray-900 mb-3">
@@ -103,7 +141,10 @@ export default function HowItWorks() {
                     {/* Details List */}
                     <ul className="space-y-2">
                       {step.details.map((detail, idx) => (
-                        <li key={idx} className="flex items-center text-sm text-gray-700">
+                        <li
+                          key={idx}
+                          className="flex items-center text-sm text-gray-700"
+                        >
                           <svg
                             className="w-5 h-5 text-primary mr-2 flex-shrink-0"
                             fill="none"
@@ -126,8 +167,18 @@ export default function HowItWorks() {
                   {/* Arrow (Desktop) */}
                   {index < steps.length - 1 && (
                     <div className="hidden lg:block absolute top-24 -right-6 text-primary/30">
-                      <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      <svg
+                        className="w-12 h-12"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
                       </svg>
                     </div>
                   )}
@@ -144,7 +195,8 @@ export default function HowItWorks() {
               Ready to get started?
             </h3>
             <p className="text-gray-600 mb-6 max-w-xl">
-              Join the waitlist now and be among the first to access Automet when we launch. Get early access benefits and priority onboarding.
+              Join the waitlist now and be among the first to access Automet
+              when we launch. Get early access benefits and priority onboarding.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a

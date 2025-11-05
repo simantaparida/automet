@@ -9,7 +9,7 @@ export default async function handler(
   if (!supabaseAdmin) {
     return res.status(500).json({ error: 'Server configuration error' });
   }
-  
+
   const { id } = req.query;
 
   if (req.method === 'GET') {
@@ -17,7 +17,8 @@ export default async function handler(
       // Fetch asset with related data
       const { data: asset, error: assetError } = await supabaseAdmin
         .from('assets')
-        .select(`
+        .select(
+          `
           id,
           asset_type,
           model,
@@ -32,7 +33,8 @@ export default async function handler(
             address,
             client:clients(id, name, contact_email, contact_phone)
           )
-        `)
+        `
+        )
         .eq('id', id)
         .single();
 
@@ -64,10 +66,19 @@ export default async function handler(
 
   if (req.method === 'PATCH') {
     try {
-      const { asset_type, model, serial_number, purchase_date, warranty_expiry, notes } = req.body;
+      const {
+        asset_type,
+        model,
+        serial_number,
+        purchase_date,
+        warranty_expiry,
+        notes,
+      } = req.body;
 
       if (!asset_type || !model) {
-        return res.status(400).json({ error: 'asset_type and model are required' });
+        return res
+          .status(400)
+          .json({ error: 'asset_type and model are required' });
       }
 
       const { data, error } = await supabaseAdmin
@@ -82,7 +93,9 @@ export default async function handler(
           updated_at: new Date().toISOString(),
         })
         .eq('id', id)
-        .select('id, asset_type, model, serial_number, purchase_date, warranty_expiry, notes')
+        .select(
+          'id, asset_type, model, serial_number, purchase_date, warranty_expiry, notes'
+        )
         .single();
 
       if (error) throw error;
@@ -105,7 +118,8 @@ export default async function handler(
 
       if (jobs && jobs.length > 0) {
         return res.status(400).json({
-          error: 'Cannot delete asset with associated jobs. Please delete jobs first.',
+          error:
+            'Cannot delete asset with associated jobs. Please delete jobs first.',
         });
       }
 

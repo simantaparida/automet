@@ -29,7 +29,8 @@ export default async function handler(
       // RLS policies automatically filter by user's org_id
       let query = supabase
         .from('assets')
-        .select(`
+        .select(
+          `
           id,
           asset_type,
           model,
@@ -38,7 +39,8 @@ export default async function handler(
           warranty_expiry,
           notes,
           site:sites(id, name, client:clients(id, name))
-        `)
+        `
+        )
         .order('asset_type', { ascending: true });
 
       if (site_id) {
@@ -55,8 +57,8 @@ export default async function handler(
       // Filter by client_id if provided (since we join through site)
       let filteredData = data || [];
       if (client_id && filteredData.length > 0) {
-        filteredData = filteredData.filter(asset =>
-          asset.site?.client?.id === client_id
+        filteredData = filteredData.filter(
+          (asset) => asset.site?.client?.id === client_id
         );
       }
 
@@ -74,10 +76,20 @@ export default async function handler(
     if (!requireRole(user, ['owner', 'coordinator'], res)) return;
 
     try {
-      const { site_id, asset_type, model, serial_number, purchase_date, warranty_expiry, notes } = req.body;
+      const {
+        site_id,
+        asset_type,
+        model,
+        serial_number,
+        purchase_date,
+        warranty_expiry,
+        notes,
+      } = req.body;
 
       if (!site_id || !asset_type || !model) {
-        return res.status(400).json({ error: 'site_id, asset_type, and model are required' });
+        return res
+          .status(400)
+          .json({ error: 'site_id, asset_type, and model are required' });
       }
 
       // RLS policies automatically enforce org_id from authenticated user
@@ -93,7 +105,8 @@ export default async function handler(
           warranty_expiry: warranty_expiry || null,
           notes: notes || null,
         })
-        .select(`
+        .select(
+          `
           id,
           asset_type,
           model,
@@ -102,7 +115,8 @@ export default async function handler(
           warranty_expiry,
           notes,
           site_id
-        `)
+        `
+        )
         .single();
 
       if (error) {

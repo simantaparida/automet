@@ -4,14 +4,22 @@
  */
 
 import { useState } from 'react';
-import { ROIInputs, ROIResults, generateSummary, generateCSV } from './roiCalculatorUtils';
+import {
+  ROIInputs,
+  ROIResults,
+  generateSummary,
+  generateCSV,
+} from './roiCalculatorUtils';
 
 interface ROICalculatorExportProps {
   inputs: ROIInputs;
   results: ROIResults;
 }
 
-export default function ROICalculatorExport({ inputs, results }: ROICalculatorExportProps) {
+export default function ROICalculatorExport({
+  inputs,
+  results,
+}: ROICalculatorExportProps) {
   const [copiedSummary, setCopiedSummary] = useState(false);
 
   const handleCopySummary = async () => {
@@ -47,14 +55,29 @@ export default function ROICalculatorExport({ inputs, results }: ROICalculatorEx
       >
         {copiedSummary ? (
           <>
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
             </svg>
             Copied!
           </>
         ) : (
           <>
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -72,7 +95,12 @@ export default function ROICalculatorExport({ inputs, results }: ROICalculatorEx
         onClick={handleDownloadCSV}
         className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-gray-700 border-2 border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition-all hover:border-gray-400"
       >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"

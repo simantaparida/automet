@@ -66,7 +66,10 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
     }
 
     // Tech count is optional but if provided, must be valid
-    if (formData.tech_count && (isNaN(Number(formData.tech_count)) || Number(formData.tech_count) <= 0)) {
+    if (
+      formData.tech_count &&
+      (isNaN(Number(formData.tech_count)) || Number(formData.tech_count) <= 0)
+    ) {
       newErrors.tech_count = 'Must be a positive number';
     }
 
@@ -95,7 +98,9 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
           email: formData.email.trim().toLowerCase(),
           phone: formData.phone.trim(),
           org_name: formData.org_name || undefined,
-          tech_count: formData.tech_count ? Number(formData.tech_count) : undefined,
+          tech_count: formData.tech_count
+            ? Number(formData.tech_count)
+            : undefined,
           city: formData.city || undefined,
           plan_interest: formData.plan_interest || undefined,
         }),
@@ -105,7 +110,8 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
 
       if (!response.ok) {
         // Use the detailed message if available, otherwise fall back to error
-        const errorMessage = data.message || data.error || 'Failed to join waitlist';
+        const errorMessage =
+          data.message || data.error || 'Failed to join waitlist';
         throw new Error(errorMessage);
       }
 
@@ -113,13 +119,17 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
       window.location.href = `/preorder/success?email=${encodeURIComponent(formData.email)}`;
     } catch (error: any) {
       console.error('Waitlist submission error:', error);
-      setSubmitError(error.message || 'Something went wrong. Please try again.');
+      setSubmitError(
+        error.message || 'Something went wrong. Please try again.'
+      );
       setSubmitting(false);
     }
   };
 
   // Handle input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     // Clear error for this field
@@ -155,8 +165,18 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
               className="absolute top-3 right-3 text-white hover:text-white/80 transition-colors"
               aria-label="Close"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
             <div className="flex items-center justify-center mb-2">
@@ -181,23 +201,41 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
 
             {/* Early Access Benefits - Single Row */}
             <div className="mb-5 p-4 bg-primary/10 rounded-xl border-2 border-primary/20">
-              <p className="text-xs font-bold text-primary mb-3 uppercase tracking-wide">Early Access Benefits</p>
+              <p className="text-xs font-bold text-primary mb-3 uppercase tracking-wide">
+                Early Access Benefits
+              </p>
               <div className="grid grid-cols-4 gap-2 overflow-x-auto">
                 <div className="bg-white rounded-lg p-2.5 border border-primary/20 shadow-sm">
-                  <p className="font-bold text-gray-900 text-xs mb-0.5">First Access</p>
-                  <p className="text-xs text-gray-600 leading-tight">Try features before public launch</p>
+                  <p className="font-bold text-gray-900 text-xs mb-0.5">
+                    First Access
+                  </p>
+                  <p className="text-xs text-gray-600 leading-tight">
+                    Try features before public launch
+                  </p>
                 </div>
                 <div className="bg-white rounded-lg p-2.5 border border-primary/20 shadow-sm">
-                  <p className="font-bold text-gray-900 text-xs mb-0.5">Special Offers</p>
-                  <p className="text-xs text-gray-600 leading-tight">Exclusive discounts for early users</p>
+                  <p className="font-bold text-gray-900 text-xs mb-0.5">
+                    Special Offers
+                  </p>
+                  <p className="text-xs text-gray-600 leading-tight">
+                    Exclusive discounts for early users
+                  </p>
                 </div>
                 <div className="bg-white rounded-lg p-2.5 border border-primary/20 shadow-sm">
-                  <p className="font-bold text-gray-900 text-xs mb-0.5">Priority Support</p>
-                  <p className="text-xs text-gray-600 leading-tight">Dedicated onboarding & setup help</p>
+                  <p className="font-bold text-gray-900 text-xs mb-0.5">
+                    Priority Support
+                  </p>
+                  <p className="text-xs text-gray-600 leading-tight">
+                    Dedicated onboarding & setup help
+                  </p>
                 </div>
                 <div className="bg-white rounded-lg p-2.5 border border-primary/20 shadow-sm">
-                  <p className="font-bold text-gray-900 text-xs mb-0.5">Shape the Product</p>
-                  <p className="text-xs text-gray-600 leading-tight">Your feedback helps us build better</p>
+                  <p className="font-bold text-gray-900 text-xs mb-0.5">
+                    Shape the Product
+                  </p>
+                  <p className="text-xs text-gray-600 leading-tight">
+                    Your feedback helps us build better
+                  </p>
                 </div>
               </div>
             </div>
@@ -205,7 +243,10 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Email - Required */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Email <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -227,7 +268,10 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
 
               {/* Phone - Required */}
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Phone Number <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -249,7 +293,10 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
 
               {/* Contact Name - Optional */}
               <div>
-                <label htmlFor="contact_name" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="contact_name"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Your Name
                 </label>
                 <input
@@ -264,13 +311,18 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
                   placeholder="Rajesh Kumar"
                 />
                 {errors.contact_name && (
-                  <p className="mt-1 text-xs text-red-500">{errors.contact_name}</p>
+                  <p className="mt-1 text-xs text-red-500">
+                    {errors.contact_name}
+                  </p>
                 )}
               </div>
 
               {/* Organization Name - Optional */}
               <div>
-                <label htmlFor="org_name" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="org_name"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Organization Name
                 </label>
                 <input
@@ -289,10 +341,12 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
                 )}
               </div>
 
-
               {/* Number of Technicians */}
               <div>
-                <label htmlFor="tech_count" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="tech_count"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Number of Technicians
                 </label>
                 <input
@@ -308,13 +362,18 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
                   min="1"
                 />
                 {errors.tech_count && (
-                  <p className="mt-1 text-xs text-red-500">{errors.tech_count}</p>
+                  <p className="mt-1 text-xs text-red-500">
+                    {errors.tech_count}
+                  </p>
                 )}
               </div>
 
               {/* City */}
               <div>
-                <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="city"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   City
                 </label>
                 <input
@@ -336,11 +395,13 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
               </label>
               <div className="space-y-2">
                 {/* Free Plan */}
-                <label className={`flex items-center p-2.5 border-2 rounded-lg cursor-pointer transition-all ${
-                  formData.plan_interest === 'free' 
-                    ? 'border-primary bg-primary/5' 
-                    : 'border-gray-200 hover:border-gray-300 bg-white'
-                }`}>
+                <label
+                  className={`flex items-center p-2.5 border-2 rounded-lg cursor-pointer transition-all ${
+                    formData.plan_interest === 'free'
+                      ? 'border-primary bg-primary/5'
+                      : 'border-gray-200 hover:border-gray-300 bg-white'
+                  }`}
+                >
                   <input
                     type="radio"
                     name="plan_interest"
@@ -350,15 +411,19 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
                     className="mr-3"
                   />
                   <span className="font-semibold text-gray-900 mr-2">Free</span>
-                  <span className="text-sm text-gray-600">₹0/forever • 1 site, 3 users</span>
+                  <span className="text-sm text-gray-600">
+                    ₹0/forever • 1 site, 3 users
+                  </span>
                 </label>
 
                 {/* Starter Plan */}
-                <label className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
-                  formData.plan_interest === 'starter' 
-                    ? 'border-primary bg-primary/5' 
-                    : 'border-gray-200 hover:border-gray-300 bg-white'
-                }`}>
+                <label
+                  className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                    formData.plan_interest === 'starter'
+                      ? 'border-primary bg-primary/5'
+                      : 'border-gray-200 hover:border-gray-300 bg-white'
+                  }`}
+                >
                   <input
                     type="radio"
                     name="plan_interest"
@@ -367,19 +432,25 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
                     onChange={handleRadioChange}
                     className="mr-3"
                   />
-                  <span className="font-semibold text-gray-900 mr-2">Starter</span>
-                  <span className="text-sm text-gray-600">₹999/mo • 5 sites, 10 techs</span>
+                  <span className="font-semibold text-gray-900 mr-2">
+                    Starter
+                  </span>
+                  <span className="text-sm text-gray-600">
+                    ₹999/mo • 5 sites, 10 techs
+                  </span>
                   <span className="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-primary/10 text-primary">
                     ⭐ MOST POPULAR
                   </span>
                 </label>
 
                 {/* Growth Plan */}
-                <label className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
-                  formData.plan_interest === 'growth' 
-                    ? 'border-primary bg-primary/5' 
-                    : 'border-gray-200 hover:border-gray-300 bg-white'
-                }`}>
+                <label
+                  className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                    formData.plan_interest === 'growth'
+                      ? 'border-primary bg-primary/5'
+                      : 'border-gray-200 hover:border-gray-300 bg-white'
+                  }`}
+                >
                   <input
                     type="radio"
                     name="plan_interest"
@@ -388,16 +459,22 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
                     onChange={handleRadioChange}
                     className="mr-3"
                   />
-                  <span className="font-semibold text-gray-900 mr-2">Growth</span>
-                  <span className="text-sm text-gray-600">₹2,999/mo • 20 sites, 50 techs</span>
+                  <span className="font-semibold text-gray-900 mr-2">
+                    Growth
+                  </span>
+                  <span className="text-sm text-gray-600">
+                    ₹2,999/mo • 20 sites, 50 techs
+                  </span>
                 </label>
 
                 {/* Business Plan */}
-                <label className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
-                  formData.plan_interest === 'business' 
-                    ? 'border-primary bg-primary/5' 
-                    : 'border-gray-200 hover:border-gray-300 bg-white'
-                }`}>
+                <label
+                  className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                    formData.plan_interest === 'business'
+                      ? 'border-primary bg-primary/5'
+                      : 'border-gray-200 hover:border-gray-300 bg-white'
+                  }`}
+                >
                   <input
                     type="radio"
                     name="plan_interest"
@@ -406,16 +483,22 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
                     onChange={handleRadioChange}
                     className="mr-3"
                   />
-                  <span className="font-semibold text-gray-900 mr-2">Business</span>
-                  <span className="text-sm text-gray-600">₹9,999/mo • Unlimited sites, 200 techs</span>
+                  <span className="font-semibold text-gray-900 mr-2">
+                    Business
+                  </span>
+                  <span className="text-sm text-gray-600">
+                    ₹9,999/mo • Unlimited sites, 200 techs
+                  </span>
                 </label>
 
                 {/* Enterprise Plan */}
-                <label className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
-                  formData.plan_interest === 'enterprise' 
-                    ? 'border-primary bg-primary/5' 
-                    : 'border-gray-200 hover:border-gray-300 bg-white'
-                }`}>
+                <label
+                  className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                    formData.plan_interest === 'enterprise'
+                      ? 'border-primary bg-primary/5'
+                      : 'border-gray-200 hover:border-gray-300 bg-white'
+                  }`}
+                >
                   <input
                     type="radio"
                     name="plan_interest"
@@ -424,8 +507,12 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
                     onChange={handleRadioChange}
                     className="mr-3"
                   />
-                  <span className="font-semibold text-gray-900 mr-2">Enterprise</span>
-                  <span className="text-sm text-gray-600">Custom pricing • 200+ techs, dedicated support</span>
+                  <span className="font-semibold text-gray-900 mr-2">
+                    Enterprise
+                  </span>
+                  <span className="text-sm text-gray-600">
+                    Custom pricing • 200+ techs, dedicated support
+                  </span>
                 </label>
               </div>
             </div>

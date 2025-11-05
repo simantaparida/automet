@@ -7,11 +7,13 @@ This guide helps you diagnose and fix common deployment failures.
 ### 1. Missing Secrets Error
 
 **Error Message:**
+
 ```
 Error: Secret 'VERCEL_TOKEN' is not set
 ```
 
 **Solution:**
+
 1. Go to **GitHub Repository** → **Settings** → **Secrets and variables** → **Actions**
 2. Add the following **Repository Secrets**:
    - `VERCEL_TOKEN` - Get from [Vercel Dashboard](https://vercel.com/account/tokens)
@@ -27,11 +29,13 @@ Error: Secret 'VERCEL_TOKEN' is not set
 ### 2. Build Failure - Missing Environment Variables
 
 **Error Message:**
+
 ```
 Error: Environment variable NEXT_PUBLIC_SUPABASE_URL is not set
 ```
 
 **Solution:**
+
 - Ensure all required environment variables are set in the **staging environment secrets**
 - Check that the secrets are spelled correctly (case-sensitive)
 - Verify the workflow is using the correct environment name
@@ -39,11 +43,13 @@ Error: Environment variable NEXT_PUBLIC_SUPABASE_URL is not set
 ### 3. Type Check Failure
 
 **Error Message:**
+
 ```
 Type error: ...
 ```
 
 **Solution:**
+
 1. Run locally to identify the error:
    ```bash
    npm run typecheck
@@ -54,11 +60,13 @@ Type error: ...
 ### 4. Test Failure
 
 **Error Message:**
+
 ```
 Test suite failed to run
 ```
 
 **Solution:**
+
 1. Run tests locally:
    ```bash
    npm run test:ci
@@ -69,12 +77,14 @@ Test suite failed to run
 ### 5. Vercel Deployment Failure
 
 **Error Message:**
+
 ```
 Error: Vercel deployment failed
 ```
 
 **Possible Causes:**
-1. **Invalid Vercel Token**: 
+
+1. **Invalid Vercel Token**:
    - Go to [Vercel Account Tokens](https://vercel.com/account/tokens)
    - Create a new token
    - Update `VERCEL_TOKEN` secret
@@ -96,11 +106,13 @@ Error: Vercel deployment failed
 ### 6. Environment Not Configured
 
 **Error Message:**
+
 ```
 Environment 'staging' not found
 ```
 
 **Solution:**
+
 1. Go to **GitHub Repository** → **Settings** → **Environments**
 2. Click **"New environment"**
 3. Name it `staging`
@@ -110,11 +122,13 @@ Environment 'staging' not found
 ### 7. Build Timeout
 
 **Error Message:**
+
 ```
 Job timed out after 20 minutes
 ```
 
 **Solution:**
+
 1. Check build logs for slow operations
 2. Optimize build process (reduce dependencies, optimize images)
 3. Increase timeout in workflow file:
@@ -172,6 +186,7 @@ Job timed out after 20 minutes
 5. Add as `VERCEL_PROJECT_ID` secret in GitHub
 
 **Note:** If you don't have a Vercel project yet:
+
 1. Run `vercel` locally to create one
 2. Or create it via Vercel Dashboard
 
@@ -209,6 +224,7 @@ npm run test:ci
 ### Issue: Workflow doesn't trigger on push
 
 **Check:**
+
 - Branch name matches: `develop` (for staging) or `main` (for production)
 - Workflow file is in `.github/workflows/` directory
 - Workflow file has correct YAML syntax
@@ -216,6 +232,7 @@ npm run test:ci
 ### Issue: Secrets are empty
 
 **Check:**
+
 - Secrets are added in the correct location (repository vs environment)
 - Secret names match exactly (case-sensitive)
 - No extra spaces in secret names or values
@@ -223,6 +240,7 @@ npm run test:ci
 ### Issue: Vercel action fails
 
 **Check:**
+
 - Vercel project exists and is linked
 - Vercel token has correct permissions
 - Project ID and Org ID are correct
@@ -241,4 +259,3 @@ If you're still stuck:
 ---
 
 **Last Updated:** November 2025
-

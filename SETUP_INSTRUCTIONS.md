@@ -105,6 +105,7 @@ Run `ADD_DEMO_USERS_MANUAL.sql` in Supabase SQL Editor to add 4 demo users.
 ## 🔐 Test Authentication
 
 ### Test Login
+
 1. Go to http://localhost:3000
 2. You'll be redirected to `/login`
 3. Enter your credentials
@@ -112,17 +113,20 @@ Run `ADD_DEMO_USERS_MANUAL.sql` in Supabase SQL Editor to add 4 demo users.
 5. Should redirect to `/dashboard`
 
 ### Test Google OAuth (if configured)
+
 1. Go to http://localhost:3000/login
 2. Click "Continue with Google"
 3. Select your Google account
 4. Should redirect to `/dashboard`
 
 ### Test Protected Routes
+
 1. Open http://localhost:3000/dashboard
 2. If not logged in, should redirect to `/login`
 3. After logging in, you can access `/dashboard`
 
 ### Test Sign Out
+
 1. Click "Sign Out" button on dashboard
 2. Should redirect to `/login`
 3. Try accessing `/dashboard` again - should redirect to login
@@ -172,20 +176,26 @@ Automet/
 ## 🔧 Troubleshooting
 
 ### Issue: Can't log in after signup
+
 **Solution**: Check if email confirmation is required. Either:
+
 - Disable it in Supabase Dashboard → Authentication → Settings
 - Or check your email for confirmation link
 
 ### Issue: Google OAuth not working
+
 **Check**:
+
 - Google provider is enabled in Supabase Dashboard
 - Redirect URI in Google Console matches: `https://dogzgbppyiokvipvsgln.supabase.co/auth/v1/callback`
 - Client ID and Secret are correct in Supabase
 
 ### Issue: User created but can't access data
+
 **Solution**: Make sure you ran `CREATE_AUTH_TRIGGER.sql`. This creates the `public.users` record automatically.
 
 ### Issue: "org_id cannot be null" error
+
 **Solution**: The trigger automatically assigns new users to org_id `10000000-0000-0000-0000-000000000001`. If you see this error, the trigger wasn't run properly.
 
 ---
@@ -193,6 +203,7 @@ Automet/
 ## 📊 Database Schema
 
 The users table has these columns:
+
 - `id` - UUID (matches auth.users.id)
 - `email` - Text (unique, email format)
 - `email_confirmed` - Boolean

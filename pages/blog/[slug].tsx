@@ -43,8 +43,10 @@ export default function BlogPostPage() {
 
     const updateScrollProgress = () => {
       const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight - windowHeight;
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const documentHeight =
+        document.documentElement.scrollHeight - windowHeight;
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
       const progress = (scrollTop / documentHeight) * 100;
       const progressBar = document.getElementById('scroll-progress');
       if (progressBar) {
@@ -151,12 +153,24 @@ export default function BlogPostPage() {
     let html = markdown;
 
     // Headers
-    html = html.replace(/^### (.*$)/gim, '<h3 class="text-2xl font-bold text-gray-900 mb-4 mt-8">$1</h3>');
-    html = html.replace(/^## (.*$)/gim, '<h2 class="text-3xl font-bold text-gray-900 mb-4 mt-8">$1</h2>');
-    html = html.replace(/^# (.*$)/gim, '<h1 class="text-4xl font-bold text-gray-900 mb-4 mt-8">$1</h1>');
+    html = html.replace(
+      /^### (.*$)/gim,
+      '<h3 class="text-2xl font-bold text-gray-900 mb-4 mt-8">$1</h3>'
+    );
+    html = html.replace(
+      /^## (.*$)/gim,
+      '<h2 class="text-3xl font-bold text-gray-900 mb-4 mt-8">$1</h2>'
+    );
+    html = html.replace(
+      /^# (.*$)/gim,
+      '<h1 class="text-4xl font-bold text-gray-900 mb-4 mt-8">$1</h1>'
+    );
 
     // Bold
-    html = html.replace(/\*\*(.*?)\*\*/gim, '<strong class="font-semibold">$1</strong>');
+    html = html.replace(
+      /\*\*(.*?)\*\*/gim,
+      '<strong class="font-semibold">$1</strong>'
+    );
 
     // Italic
     html = html.replace(/\*(.*?)\*/gim, '<em class="italic">$1</em>');
@@ -166,14 +180,23 @@ export default function BlogPostPage() {
     html = html.replace(/^- (.*$)/gim, '<li class="ml-6 mb-2">$1</li>');
 
     // Wrap consecutive <li> in <ul>
-    html = html.replace(/(<li.*<\/li>)/gim, '<ul class="list-disc space-y-2 mb-4">$1</ul>');
+    html = html.replace(
+      /(<li.*<\/li>)/gim,
+      '<ul class="list-disc space-y-2 mb-4">$1</ul>'
+    );
 
     // Paragraphs
-    html = html.replace(/\n\n/g, '</p><p class="text-gray-700 leading-relaxed mb-4">');
+    html = html.replace(
+      /\n\n/g,
+      '</p><p class="text-gray-700 leading-relaxed mb-4">'
+    );
     html = `<p class="text-gray-700 leading-relaxed mb-4">${html}</p>`;
 
     // Blockquotes
-    html = html.replace(/^&gt; (.*$)/gim, '<blockquote class="border-l-4 border-blue-500 pl-4 italic text-gray-600 my-4">$1</blockquote>');
+    html = html.replace(
+      /^&gt; (.*$)/gim,
+      '<blockquote class="border-l-4 border-blue-500 pl-4 italic text-gray-600 my-4">$1</blockquote>'
+    );
 
     return html;
   };
@@ -222,7 +245,9 @@ export default function BlogPostPage() {
         <meta property="og:title" content={post.title} />
         <meta property="og:description" content={post.excerpt} />
         <meta property="og:type" content="article" />
-        {post.cover_image_url && <meta property="og:image" content={post.cover_image_url} />}
+        {post.cover_image_url && (
+          <meta property="og:image" content={post.cover_image_url} />
+        )}
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -274,18 +299,26 @@ export default function BlogPostPage() {
               <nav className="mb-6 text-sm text-gray-600">
                 <ol className="flex items-center space-x-2">
                   <li>
-                    <Link href="/" className="hover:text-primary transition-colors">
+                    <Link
+                      href="/"
+                      className="hover:text-primary transition-colors"
+                    >
                       Home
                     </Link>
                   </li>
                   <li>/</li>
                   <li>
-                    <Link href="/blog" className="hover:text-primary transition-colors">
+                    <Link
+                      href="/blog"
+                      className="hover:text-primary transition-colors"
+                    >
                       Blog
                     </Link>
                   </li>
                   <li>/</li>
-                  <li className="text-gray-900 truncate max-w-xs">{post.title}</li>
+                  <li className="text-gray-900 truncate max-w-xs">
+                    {post.title}
+                  </li>
                 </ol>
               </nav>
 
@@ -312,8 +345,18 @@ export default function BlogPostPage() {
                 <span>{formatDate(post.published_at)}</span>
                 <span>•</span>
                 <span className="flex items-center">
-                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-4 h-4 mr-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   {calculateReadingTime(post.content)} min read
                 </span>
@@ -327,15 +370,35 @@ export default function BlogPostPage() {
                 >
                   {shareCopied ? (
                     <>
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      <svg
+                        className="w-4 h-4 mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
                       </svg>
                       Link Copied!
                     </>
                   ) : (
                     <>
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                      <svg
+                        className="w-4 h-4 mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                        />
                       </svg>
                       Share Article
                     </>
@@ -357,13 +420,17 @@ export default function BlogPostPage() {
               {/* Content - Better Typography */}
               <div
                 className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-4 prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900 prose-ul:list-disc prose-ol:list-decimal prose-li:mb-2 prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600"
-                dangerouslySetInnerHTML={{ __html: renderMarkdown(post.content) }}
+                dangerouslySetInnerHTML={{
+                  __html: renderMarkdown(post.content),
+                }}
               />
 
               {/* Tags */}
               {post.tags && post.tags.length > 0 && (
                 <div className="mt-12 pt-8 border-t border-gray-200">
-                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Tags</h3>
+                  <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                    Tags
+                  </h3>
                   <div className="flex flex-wrap gap-2">
                     {post.tags.map((tag, index) => (
                       <span
@@ -383,7 +450,8 @@ export default function BlogPostPage() {
                   Ready to transform your AMC business?
                 </h3>
                 <p className="text-gray-700 mb-6">
-                  Join the waitlist and get early access to Automet when we launch.
+                  Join the waitlist and get early access to Automet when we
+                  launch.
                 </p>
                 <button
                   onClick={() => setPreorderModalOpen(true)}
@@ -403,8 +471,18 @@ export default function BlogPostPage() {
             className="fixed bottom-8 right-8 z-50 p-3 bg-primary text-white rounded-full shadow-lg hover:bg-primary/90 transition-all duration-300 hover:scale-110"
             aria-label="Scroll to top"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 10l7-7m0 0l7 7m-7-7v18"
+              />
             </svg>
           </button>
         )}

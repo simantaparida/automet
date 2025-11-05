@@ -24,29 +24,37 @@ export default function ProfilePage() {
   const getUserRole = () => {
     if (!user) return 'User';
     // You can extend this based on user metadata
-    return user.email?.includes('owner') ? 'Owner' :
-           user.email?.includes('coordinator') ? 'Coordinator' :
-           user.email?.includes('tech') ? 'Technician' : 'User';
+    return user.email?.includes('owner')
+      ? 'Owner'
+      : user.email?.includes('coordinator')
+        ? 'Coordinator'
+        : user.email?.includes('tech')
+          ? 'Technician'
+          : 'User';
   };
 
   return (
     <ProtectedRoute>
-      <div style={{
-        minHeight: '100vh',
-        backgroundColor: '#f5f5f5',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        paddingBottom: '80px',
-      }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: '#f5f5f5',
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+          paddingBottom: '80px',
+        }}
+      >
         {/* Sticky Header */}
-        <header style={{
-          backgroundColor: '#2563eb',
-          color: 'white',
-          padding: '1rem',
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        }}>
+        <header
+          style={{
+            backgroundColor: '#2563eb',
+            color: 'white',
+            padding: '1rem',
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <h1 style={{ fontSize: '1.25rem', fontWeight: '600', margin: 0 }}>
               Profile
@@ -57,116 +65,142 @@ export default function ProfilePage() {
         {/* Main Content */}
         <main style={{ padding: '1rem' }}>
           {/* User Info Card */}
-          <div style={{
-            backgroundColor: 'white',
-            padding: '1.5rem',
-            borderRadius: '8px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            marginBottom: '1rem',
-          }}>
-            {/* Avatar */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
+          <div
+            style={{
+              backgroundColor: 'white',
+              padding: '1.5rem',
+              borderRadius: '8px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
               marginBottom: '1rem',
-            }}>
-              <div style={{
-                width: '80px',
-                height: '80px',
-                borderRadius: '50%',
-                backgroundColor: '#2563eb',
+            }}
+          >
+            {/* Avatar */}
+            <div
+              style={{
                 display: 'flex',
-                alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '2rem',
-                color: 'white',
-              }}>
+                marginBottom: '1rem',
+              }}
+            >
+              <div
+                style={{
+                  width: '80px',
+                  height: '80px',
+                  borderRadius: '50%',
+                  backgroundColor: '#2563eb',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '2rem',
+                  color: 'white',
+                }}
+              >
                 {user?.email?.charAt(0).toUpperCase() || '👤'}
               </div>
             </div>
 
             {/* User Details */}
             <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-              <h2 style={{
-                fontSize: '1.25rem',
-                fontWeight: '600',
-                marginBottom: '0.5rem',
-                color: '#1f2937',
-              }}>
+              <h2
+                style={{
+                  fontSize: '1.25rem',
+                  fontWeight: '600',
+                  marginBottom: '0.5rem',
+                  color: '#1f2937',
+                }}
+              >
                 {user?.email?.split('@')[0] || 'User'}
               </h2>
-              <p style={{
-                fontSize: '0.875rem',
-                color: '#6b7280',
-                marginBottom: '0.25rem',
-              }}>
+              <p
+                style={{
+                  fontSize: '0.875rem',
+                  color: '#6b7280',
+                  marginBottom: '0.25rem',
+                }}
+              >
                 {user?.email}
               </p>
-              <div style={{
-                display: 'inline-block',
-                backgroundColor: '#dbeafe',
-                color: '#1e40af',
-                padding: '0.25rem 0.75rem',
-                borderRadius: '999px',
-                fontSize: '0.75rem',
-                fontWeight: '500',
-                marginTop: '0.5rem',
-              }}>
+              <div
+                style={{
+                  display: 'inline-block',
+                  backgroundColor: '#dbeafe',
+                  color: '#1e40af',
+                  padding: '0.25rem 0.75rem',
+                  borderRadius: '999px',
+                  fontSize: '0.75rem',
+                  fontWeight: '500',
+                  marginTop: '0.5rem',
+                }}
+              >
                 {getUserRole()}
               </div>
             </div>
 
             {/* Organization Info */}
-            <div style={{
-              borderTop: '1px solid #e5e7eb',
-              paddingTop: '1rem',
-            }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.75rem',
-                marginBottom: '0.75rem',
-              }}>
+            <div
+              style={{
+                borderTop: '1px solid #e5e7eb',
+                paddingTop: '1rem',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                  marginBottom: '0.75rem',
+                }}
+              >
                 <span style={{ fontSize: '1.25rem' }}>🏢</span>
                 <div>
-                  <p style={{
-                    fontSize: '0.75rem',
-                    color: '#6b7280',
-                    margin: 0,
-                  }}>
+                  <p
+                    style={{
+                      fontSize: '0.75rem',
+                      color: '#6b7280',
+                      margin: 0,
+                    }}
+                  >
                     Organization
                   </p>
-                  <p style={{
-                    fontSize: '0.875rem',
-                    fontWeight: '500',
-                    color: '#1f2937',
-                    margin: 0,
-                  }}>
+                  <p
+                    style={{
+                      fontSize: '0.875rem',
+                      fontWeight: '500',
+                      color: '#1f2937',
+                      margin: 0,
+                    }}
+                  >
                     {orgName}
                   </p>
                 </div>
               </div>
 
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.75rem',
-              }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                }}
+              >
                 <span style={{ fontSize: '1.25rem' }}>📱</span>
                 <div>
-                  <p style={{
-                    fontSize: '0.75rem',
-                    color: '#6b7280',
-                    margin: 0,
-                  }}>
+                  <p
+                    style={{
+                      fontSize: '0.75rem',
+                      color: '#6b7280',
+                      margin: 0,
+                    }}
+                  >
                     App Version
                   </p>
-                  <p style={{
-                    fontSize: '0.875rem',
-                    fontWeight: '500',
-                    color: '#1f2937',
-                    margin: 0,
-                  }}>
+                  <p
+                    style={{
+                      fontSize: '0.875rem',
+                      fontWeight: '500',
+                      color: '#1f2937',
+                      margin: 0,
+                    }}
+                  >
                     1.0.0 (MVP)
                   </p>
                 </div>
@@ -175,13 +209,15 @@ export default function ProfilePage() {
           </div>
 
           {/* Quick Links */}
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            marginBottom: '1rem',
-            overflow: 'hidden',
-          }}>
+          <div
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '8px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+              marginBottom: '1rem',
+              overflow: 'hidden',
+            }}
+          >
             <button
               onClick={() => router.push('/settings')}
               disabled
@@ -199,11 +235,21 @@ export default function ProfilePage() {
                 minHeight: '56px',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                }}
+              >
                 <span style={{ fontSize: '1.25rem' }}>⚙️</span>
-                <span style={{ fontSize: '0.875rem', color: '#1f2937' }}>Settings</span>
+                <span style={{ fontSize: '0.875rem', color: '#1f2937' }}>
+                  Settings
+                </span>
               </div>
-              <span style={{ color: '#9ca3af', fontSize: '0.75rem' }}>(Coming Soon)</span>
+              <span style={{ color: '#9ca3af', fontSize: '0.75rem' }}>
+                (Coming Soon)
+              </span>
             </button>
 
             <button
@@ -222,11 +268,21 @@ export default function ProfilePage() {
                 minHeight: '56px',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                }}
+              >
                 <span style={{ fontSize: '1.25rem' }}>❓</span>
-                <span style={{ fontSize: '0.875rem', color: '#1f2937' }}>Help & Support</span>
+                <span style={{ fontSize: '0.875rem', color: '#1f2937' }}>
+                  Help & Support
+                </span>
               </div>
-              <span style={{ color: '#9ca3af', fontSize: '0.75rem' }}>(Coming Soon)</span>
+              <span style={{ color: '#9ca3af', fontSize: '0.75rem' }}>
+                (Coming Soon)
+              </span>
             </button>
           </div>
 
@@ -252,19 +308,23 @@ export default function ProfilePage() {
           </button>
 
           {/* Info */}
-          <div style={{
-            marginTop: '1rem',
-            padding: '1rem',
-            backgroundColor: '#eff6ff',
-            borderRadius: '8px',
-            border: '1px solid #bfdbfe',
-          }}>
-            <p style={{
-              fontSize: '0.75rem',
-              color: '#1e40af',
-              margin: 0,
-              textAlign: 'center',
-            }}>
+          <div
+            style={{
+              marginTop: '1rem',
+              padding: '1rem',
+              backgroundColor: '#eff6ff',
+              borderRadius: '8px',
+              border: '1px solid #bfdbfe',
+            }}
+          >
+            <p
+              style={{
+                fontSize: '0.75rem',
+                color: '#1e40af',
+                margin: 0,
+                textAlign: 'center',
+              }}
+            >
               Automet Field Service Management
             </p>
           </div>

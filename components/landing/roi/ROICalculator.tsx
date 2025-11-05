@@ -4,7 +4,12 @@
  */
 
 import { useState, useEffect } from 'react';
-import { calculateROI, ROIInputs, ROIResult, formatCurrency } from '@/lib/roiCalculator';
+import {
+  calculateROI,
+  ROIInputs,
+  ROIResult,
+  formatCurrency,
+} from '@/lib/roiCalculator';
 
 // Plan presets based on pricing tiers
 interface PlanPreset {
@@ -86,7 +91,10 @@ export default function ROICalculator() {
   };
 
   const getInitialInputs = (plan: PlanPreset): ROIInputs => {
-    const adminHours = calculateAdminHours(plan.suggestedValues.technicians, plan.suggestedValues.jobsPerTechnicianPerMonth);
+    const adminHours = calculateAdminHours(
+      plan.suggestedValues.technicians,
+      plan.suggestedValues.jobsPerTechnicianPerMonth
+    );
     return {
       technicians: plan.suggestedValues.technicians,
       jobsPerTechnicianPerMonth: plan.suggestedValues.jobsPerTechnicianPerMonth,
@@ -96,27 +104,42 @@ export default function ROICalculator() {
     };
   };
 
-  const [inputs, setInputs] = useState<ROIInputs>(getInitialInputs(selectedPlan));
+  const [inputs, setInputs] = useState<ROIInputs>(
+    getInitialInputs(selectedPlan)
+  );
 
   // Calculate admin hours based on current inputs
-  const currentAdminHours = calculateAdminHours(inputs.technicians, inputs.jobsPerTechnicianPerMonth);
+  const currentAdminHours = calculateAdminHours(
+    inputs.technicians,
+    inputs.jobsPerTechnicianPerMonth
+  );
   const inputsWithAdminHours = {
     ...inputs,
     adminHoursPerWeekAllStaff: currentAdminHours,
   };
 
-  const [results, setResults] = useState<ROIResult>(() => calculateROI(inputsWithAdminHours));
+  const [results, setResults] = useState<ROIResult>(() =>
+    calculateROI(inputsWithAdminHours)
+  );
 
   // Recalculate when inputs change
   useEffect(() => {
-    const adminHours = calculateAdminHours(inputs.technicians, inputs.jobsPerTechnicianPerMonth);
+    const adminHours = calculateAdminHours(
+      inputs.technicians,
+      inputs.jobsPerTechnicianPerMonth
+    );
     const updatedInputs = {
       ...inputs,
       adminHoursPerWeekAllStaff: adminHours,
     };
     const newResults = calculateROI(updatedInputs);
     setResults(newResults);
-  }, [inputs.technicians, inputs.jobsPerTechnicianPerMonth, inputs.avgRevenuePerJobINR, inputs.monthlyPlanCostINR]);
+  }, [
+    inputs.technicians,
+    inputs.jobsPerTechnicianPerMonth,
+    inputs.avgRevenuePerJobINR,
+    inputs.monthlyPlanCostINR,
+  ]);
 
   // Handle plan selection - populate all sliders with presets
   const handlePlanChange = (planId: string) => {
@@ -128,7 +151,10 @@ export default function ROICalculator() {
   };
 
   // Handle individual slider changes
-  const handleSliderChange = (field: keyof Omit<ROIInputs, 'monthlyPlanCostINR'>, value: number) => {
+  const handleSliderChange = (
+    field: keyof Omit<ROIInputs, 'monthlyPlanCostINR'>,
+    value: number
+  ) => {
     setInputs((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -158,7 +184,9 @@ export default function ROICalculator() {
           {/* LEFT - Inputs */}
           <div className="bg-white rounded-xl shadow-lg border-2 border-gray-200 p-4">
             <div className="flex items-center justify-between border-b border-gray-100 pb-2 mb-4">
-              <h3 className="text-base font-bold text-gray-900">Your Business</h3>
+              <h3 className="text-base font-bold text-gray-900">
+                Your Business
+              </h3>
               <button
                 onClick={handleReset}
                 className="px-2 py-1 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded transition-colors"
@@ -192,7 +220,9 @@ export default function ROICalculator() {
                         className="w-4 h-4 accent-primary text-primary focus:ring-primary focus:ring-2 mb-1.5"
                       />
                       <div className="text-center">
-                        <div className="text-xs font-semibold text-gray-900 mb-0.5">{plan.name}</div>
+                        <div className="text-xs font-semibold text-gray-900 mb-0.5">
+                          {plan.name}
+                        </div>
                         <div className="text-[10px] font-medium text-gray-600">
                           ₹{plan.price.toLocaleString('en-IN')}/mo
                         </div>
@@ -205,8 +235,12 @@ export default function ROICalculator() {
               {/* Technicians Slider */}
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="text-xs font-medium text-gray-700">Technicians</label>
-                  <span className="text-sm font-bold text-primary">{inputs.technicians}</span>
+                  <label className="text-xs font-medium text-gray-700">
+                    Technicians
+                  </label>
+                  <span className="text-sm font-bold text-primary">
+                    {inputs.technicians}
+                  </span>
                 </div>
                 <input
                   type="range"
@@ -214,7 +248,9 @@ export default function ROICalculator() {
                   max={selectedPlan.maxTechs}
                   step="1"
                   value={inputs.technicians}
-                  onChange={(e) => handleSliderChange('technicians', parseInt(e.target.value))}
+                  onChange={(e) =>
+                    handleSliderChange('technicians', parseInt(e.target.value))
+                  }
                   className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
                 />
                 <div className="flex justify-between text-[10px] text-gray-500 mt-0.5">
@@ -226,8 +262,12 @@ export default function ROICalculator() {
               {/* Jobs per Tech Slider */}
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="text-xs font-medium text-gray-700">Jobs/Tech/Month</label>
-                  <span className="text-sm font-bold text-primary">{inputs.jobsPerTechnicianPerMonth}</span>
+                  <label className="text-xs font-medium text-gray-700">
+                    Jobs/Tech/Month
+                  </label>
+                  <span className="text-sm font-bold text-primary">
+                    {inputs.jobsPerTechnicianPerMonth}
+                  </span>
                 </div>
                 <input
                   type="range"
@@ -235,7 +275,12 @@ export default function ROICalculator() {
                   max="50"
                   step="1"
                   value={inputs.jobsPerTechnicianPerMonth}
-                  onChange={(e) => handleSliderChange('jobsPerTechnicianPerMonth', parseInt(e.target.value))}
+                  onChange={(e) =>
+                    handleSliderChange(
+                      'jobsPerTechnicianPerMonth',
+                      parseInt(e.target.value)
+                    )
+                  }
                   className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
                 />
                 <div className="flex justify-between text-[10px] text-gray-500 mt-0.5">
@@ -247,7 +292,9 @@ export default function ROICalculator() {
               {/* Revenue per Job Slider */}
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="text-xs font-medium text-gray-700">Avg Revenue/Job</label>
+                  <label className="text-xs font-medium text-gray-700">
+                    Avg Revenue/Job
+                  </label>
                   <span className="text-sm font-bold text-primary">
                     ₹{inputs.avgRevenuePerJobINR.toLocaleString('en-IN')}
                   </span>
@@ -258,7 +305,12 @@ export default function ROICalculator() {
                   max="5000"
                   step="100"
                   value={inputs.avgRevenuePerJobINR}
-                  onChange={(e) => handleSliderChange('avgRevenuePerJobINR', parseInt(e.target.value))}
+                  onChange={(e) =>
+                    handleSliderChange(
+                      'avgRevenuePerJobINR',
+                      parseInt(e.target.value)
+                    )
+                  }
                   className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
                 />
                 <div className="flex justify-between text-[10px] text-gray-500 mt-0.5">
@@ -266,7 +318,6 @@ export default function ROICalculator() {
                   <span>₹5k</span>
                 </div>
               </div>
-
             </div>
           </div>
 
@@ -274,11 +325,15 @@ export default function ROICalculator() {
           <div className="bg-white rounded-xl shadow-lg border-2 border-gray-200 p-4">
             {/* Header with Title, Toggle, and Info Button */}
             <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-3 mb-3">
-              <h3 className="text-base font-bold text-gray-900">Your Results</h3>
-              
+              <h3 className="text-base font-bold text-gray-900">
+                Your Results
+              </h3>
+
               {/* Toggle Switch */}
               <div className="flex items-center gap-2">
-                <span className={`text-[10px] font-medium whitespace-nowrap ${!showWithAutomet ? 'text-gray-900' : 'text-gray-500'}`}>
+                <span
+                  className={`text-[10px] font-medium whitespace-nowrap ${!showWithAutomet ? 'text-gray-900' : 'text-gray-500'}`}
+                >
                   Without Automet
                 </span>
                 <button
@@ -293,7 +348,9 @@ export default function ROICalculator() {
                     }`}
                   />
                 </button>
-                <span className={`text-[10px] font-medium whitespace-nowrap ${showWithAutomet ? 'text-gray-900' : 'text-gray-500'}`}>
+                <span
+                  className={`text-[10px] font-medium whitespace-nowrap ${showWithAutomet ? 'text-gray-900' : 'text-gray-500'}`}
+                >
                   With Automet
                 </span>
               </div>
@@ -306,8 +363,18 @@ export default function ROICalculator() {
                   onClick={() => setShowTooltip(!showTooltip)}
                   className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded transition-colors flex-shrink-0"
                 >
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-3 h-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   How?
                 </button>
@@ -317,20 +384,37 @@ export default function ROICalculator() {
                   <div className="absolute right-0 top-full mt-2 w-72 bg-gray-900 text-white text-[10px] rounded-lg shadow-xl p-3 z-50">
                     <div className="space-y-2">
                       <div>
-                        <p className="font-semibold text-primary/80 mb-0.5">Time Saved:</p>
-                        <p className="text-gray-300">50% reduction in admin time via automation at ₹200/hour.</p>
+                        <p className="font-semibold text-primary/80 mb-0.5">
+                          Time Saved:
+                        </p>
+                        <p className="text-gray-300">
+                          50% reduction in admin time via automation at
+                          ₹200/hour.
+                        </p>
                       </div>
                       <div>
-                        <p className="font-semibold text-green-400 mb-0.5">Recovered Revenue (5%):</p>
-                        <p className="text-gray-300">Better tracking prevents missed billing.</p>
+                        <p className="font-semibold text-green-400 mb-0.5">
+                          Recovered Revenue (5%):
+                        </p>
+                        <p className="text-gray-300">
+                          Better tracking prevents missed billing.
+                        </p>
                       </div>
                       <div>
-                        <p className="font-semibold text-green-400 mb-0.5">Cashflow Gain (5%):</p>
-                        <p className="text-gray-300">Faster invoicing = earlier payments.</p>
+                        <p className="font-semibold text-green-400 mb-0.5">
+                          Cashflow Gain (5%):
+                        </p>
+                        <p className="text-gray-300">
+                          Faster invoicing = earlier payments.
+                        </p>
                       </div>
                       <div>
-                        <p className="font-semibold text-secondary/80 mb-0.5">ROI:</p>
-                        <p className="text-gray-300">Annual benefit ÷ annual cost × 100.</p>
+                        <p className="font-semibold text-secondary/80 mb-0.5">
+                          ROI:
+                        </p>
+                        <p className="text-gray-300">
+                          Annual benefit ÷ annual cost × 100.
+                        </p>
                       </div>
                     </div>
                     <div className="absolute -top-1 right-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
@@ -346,28 +430,46 @@ export default function ROICalculator() {
                 <div className="grid grid-cols-2 gap-2">
                   {/* Jobs/Month */}
                   <div className="bg-gray-50 rounded-lg p-2">
-                    <p className="text-[10px] font-medium text-gray-600 mb-0.5">Jobs/Month</p>
-                    <p className="text-base font-bold text-gray-900">{results.jobsPerMonth}</p>
+                    <p className="text-[10px] font-medium text-gray-600 mb-0.5">
+                      Jobs/Month
+                    </p>
+                    <p className="text-base font-bold text-gray-900">
+                      {results.jobsPerMonth}
+                    </p>
                   </div>
-                  
+
                   {/* Monthly Revenue */}
                   <div className="bg-green-50 rounded-lg p-2 border border-green-200">
-                    <p className="text-[10px] font-medium text-green-700 mb-0.5">Monthly Revenue</p>
-                    <p className="text-sm font-bold text-gray-900">{formatCurrency(results.monthlyRevenueINR)}</p>
+                    <p className="text-[10px] font-medium text-green-700 mb-0.5">
+                      Monthly Revenue
+                    </p>
+                    <p className="text-sm font-bold text-gray-900">
+                      {formatCurrency(results.monthlyRevenueINR)}
+                    </p>
                     <p className="text-[9px] text-green-600">With Automet</p>
                   </div>
 
                   {/* Time Saved */}
                   <div className="bg-primary/10 rounded-lg p-2 border border-primary/20">
-                    <p className="text-[10px] font-medium text-primary mb-0.5">Time Saved</p>
-                    <p className="text-sm font-bold text-gray-900">{results.timeSavedHoursPerMonth}h</p>
-                    <p className="text-[9px] text-primary">{formatCurrency(results.timeSavingsValueINR)}</p>
+                    <p className="text-[10px] font-medium text-primary mb-0.5">
+                      Time Saved
+                    </p>
+                    <p className="text-sm font-bold text-gray-900">
+                      {results.timeSavedHoursPerMonth}h
+                    </p>
+                    <p className="text-[9px] text-primary">
+                      {formatCurrency(results.timeSavingsValueINR)}
+                    </p>
                   </div>
 
                   {/* Recovered Revenue */}
                   <div className="bg-green-50 rounded-lg p-2 border border-green-200">
-                    <p className="text-[10px] font-medium text-green-700 mb-0.5">Recovered</p>
-                    <p className="text-sm font-bold text-gray-900">{formatCurrency(results.recoveredRevenueINR)}</p>
+                    <p className="text-[10px] font-medium text-green-700 mb-0.5">
+                      Recovered
+                    </p>
+                    <p className="text-sm font-bold text-gray-900">
+                      {formatCurrency(results.recoveredRevenueINR)}
+                    </p>
                     <p className="text-[9px] text-green-600">5%</p>
                   </div>
                 </div>
@@ -376,26 +478,43 @@ export default function ROICalculator() {
                 <div className="grid grid-cols-2 gap-2">
                   {/* Cashflow */}
                   <div className="bg-green-50 rounded-lg p-2 border border-green-200">
-                    <p className="text-[10px] font-medium text-green-700 mb-0.5">Cashflow</p>
-                    <p className="text-sm font-bold text-gray-900">{formatCurrency(results.cashflowGainINR)}</p>
+                    <p className="text-[10px] font-medium text-green-700 mb-0.5">
+                      Cashflow
+                    </p>
+                    <p className="text-sm font-bold text-gray-900">
+                      {formatCurrency(results.cashflowGainINR)}
+                    </p>
                     <p className="text-[9px] text-green-600">5%</p>
                   </div>
 
                   {/* 1-Year ROI */}
                   <div className="bg-secondary/10 rounded-lg p-2 border border-secondary/20">
-                    <p className="text-[10px] font-medium text-secondary mb-0.5">1-Year ROI</p>
-                    <p className="text-lg font-bold text-gray-900">{results.roiPercent}%</p>
+                    <p className="text-[10px] font-medium text-secondary mb-0.5">
+                      1-Year ROI
+                    </p>
+                    <p className="text-lg font-bold text-gray-900">
+                      {results.roiPercent}%
+                    </p>
                   </div>
                 </div>
 
                 {/* Net Monthly Benefit - Full Width */}
-                <div className={`rounded-lg p-2.5 border-2 ${results.netMonthlyBenefitINR > 0 ? 'bg-emerald-50 border-emerald-300' : 'bg-red-50 border-red-300'}`}>
-                  <p className={`text-xs font-medium mb-0.5 ${results.netMonthlyBenefitINR > 0 ? 'text-emerald-700' : 'text-red-700'}`}>
+                <div
+                  className={`rounded-lg p-2.5 border-2 ${results.netMonthlyBenefitINR > 0 ? 'bg-emerald-50 border-emerald-300' : 'bg-red-50 border-red-300'}`}
+                >
+                  <p
+                    className={`text-xs font-medium mb-0.5 ${results.netMonthlyBenefitINR > 0 ? 'text-emerald-700' : 'text-red-700'}`}
+                  >
                     Net Monthly Benefit
                   </p>
-                  <p className="text-2xl font-bold text-gray-900">{formatCurrency(results.netMonthlyBenefitINR)}</p>
-                  <p className={`text-[9px] ${results.netMonthlyBenefitINR > 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                    After ₹{selectedPlan.price.toLocaleString('en-IN')} plan cost
+                  <p className="text-2xl font-bold text-gray-900">
+                    {formatCurrency(results.netMonthlyBenefitINR)}
+                  </p>
+                  <p
+                    className={`text-[9px] ${results.netMonthlyBenefitINR > 0 ? 'text-emerald-600' : 'text-red-600'}`}
+                  >
+                    After ₹{selectedPlan.price.toLocaleString('en-IN')} plan
+                    cost
                   </p>
                 </div>
               </div>
@@ -405,45 +524,88 @@ export default function ROICalculator() {
                 {/* Jobs & Revenue - SHOWING LOST REVENUE */}
                 <div className="grid grid-cols-2 gap-2">
                   <div className="bg-gray-50 rounded-lg p-2">
-                    <p className="text-[10px] font-medium text-gray-600 mb-0.5">Jobs/Month</p>
-                    <p className="text-base font-bold text-gray-900">{results.jobsPerMonth}</p>
+                    <p className="text-[10px] font-medium text-gray-600 mb-0.5">
+                      Jobs/Month
+                    </p>
+                    <p className="text-base font-bold text-gray-900">
+                      {results.jobsPerMonth}
+                    </p>
                   </div>
                   <div className="bg-red-50 rounded-lg p-2 border border-red-200">
-                    <p className="text-[10px] font-medium text-red-700 mb-0.5">Current Revenue</p>
-                    <p className="text-sm font-bold text-gray-900">
-                      {formatCurrency(results.monthlyRevenueINR - results.recoveredRevenueINR - results.cashflowGainINR)}
+                    <p className="text-[10px] font-medium text-red-700 mb-0.5">
+                      Current Revenue
                     </p>
-                    <p className="text-[9px] text-red-600">Losing {formatCurrency(results.recoveredRevenueINR + results.cashflowGainINR)}/mo</p>
+                    <p className="text-sm font-bold text-gray-900">
+                      {formatCurrency(
+                        results.monthlyRevenueINR -
+                          results.recoveredRevenueINR -
+                          results.cashflowGainINR
+                      )}
+                    </p>
+                    <p className="text-[9px] text-red-600">
+                      Losing{' '}
+                      {formatCurrency(
+                        results.recoveredRevenueINR + results.cashflowGainINR
+                      )}
+                      /mo
+                    </p>
                   </div>
                 </div>
 
                 {/* Current Problems */}
                 <div className="bg-red-50 rounded-lg p-3 border border-red-200">
-                  <p className="text-xs font-semibold text-red-700 mb-2">Current Challenges:</p>
+                  <p className="text-xs font-semibold text-red-700 mb-2">
+                    Current Challenges:
+                  </p>
                   <ul className="space-y-1.5 text-[10px] text-gray-700">
                     <li className="flex items-start">
                       <span className="text-red-500 mr-1.5">✗</span>
-                      <span>Spending <strong>{currentAdminHours}h/week</strong> on manual admin work</span>
+                      <span>
+                        Spending <strong>{currentAdminHours}h/week</strong> on
+                        manual admin work
+                      </span>
                     </li>
                     <li className="flex items-start">
                       <span className="text-red-500 mr-1.5">✗</span>
-                      <span>Losing <strong>{formatCurrency(results.recoveredRevenueINR)}/month</strong> from missed billing</span>
+                      <span>
+                        Losing{' '}
+                        <strong>
+                          {formatCurrency(results.recoveredRevenueINR)}/month
+                        </strong>{' '}
+                        from missed billing
+                      </span>
                     </li>
                     <li className="flex items-start">
                       <span className="text-red-500 mr-1.5">✗</span>
-                      <span>Slow invoicing delays <strong>{formatCurrency(results.cashflowGainINR)}/month</strong> in cashflow</span>
+                      <span>
+                        Slow invoicing delays{' '}
+                        <strong>
+                          {formatCurrency(results.cashflowGainINR)}/month
+                        </strong>{' '}
+                        in cashflow
+                      </span>
                     </li>
                     <li className="flex items-start">
                       <span className="text-red-500 mr-1.5">✗</span>
-                      <span>Wasting <strong>{formatCurrency(results.timeSavingsValueINR)}/month</strong> in manual labor</span>
+                      <span>
+                        Wasting{' '}
+                        <strong>
+                          {formatCurrency(results.timeSavingsValueINR)}/month
+                        </strong>{' '}
+                        in manual labor
+                      </span>
                     </li>
                   </ul>
                 </div>
 
                 {/* Total Cost of NOT Using Automet */}
                 <div className="bg-orange-50 rounded-lg p-3 border-2 border-orange-300">
-                  <p className="text-xs font-medium text-orange-700 mb-1">Total Monthly Loss:</p>
-                  <p className="text-2xl font-bold text-gray-900">{formatCurrency(results.totalGainINR)}</p>
+                  <p className="text-xs font-medium text-orange-700 mb-1">
+                    Total Monthly Loss:
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {formatCurrency(results.totalGainINR)}
+                  </p>
                   <p className="text-[9px] text-orange-600 mt-1">
                     What you're losing by NOT using Automet
                   </p>
@@ -466,7 +628,8 @@ export default function ROICalculator() {
         {/* Note */}
         <div className="mt-4 text-center">
           <p className="text-[9px] text-gray-500">
-            * Based on ₹200/hr labor, 50% admin reduction, 5% revenue recovery, 5% cashflow gain
+            * Based on ₹200/hr labor, 50% admin reduction, 5% revenue recovery,
+            5% cashflow gain
           </p>
         </div>
       </div>

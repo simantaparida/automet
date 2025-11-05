@@ -27,10 +27,13 @@ export default function ClientsPage() {
     if (searchTerm.trim() === '') {
       setFilteredClients(clients);
     } else {
-      const filtered = clients.filter(client =>
-        client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.contact_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.contact_phone.includes(searchTerm)
+      const filtered = clients.filter(
+        (client) =>
+          client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          client.contact_email
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          client.contact_phone.includes(searchTerm)
       );
       setFilteredClients(filtered);
     }
@@ -54,39 +57,52 @@ export default function ClientsPage() {
 
   return (
     <ProtectedRoute>
-      <div style={{
-        minHeight: '100vh',
-        backgroundColor: '#f5f5f5',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        paddingBottom: '80px',
-      }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: '#f5f5f5',
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+          paddingBottom: '80px',
+        }}
+      >
         {/* Sticky Header */}
-        <header style={{
-          backgroundColor: '#2563eb',
-          color: 'white',
-          padding: '1rem',
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        }}>
-          <h1 style={{ fontSize: '1.25rem', fontWeight: '600', margin: '0 0 0.5rem 0' }}>
+        <header
+          style={{
+            backgroundColor: '#2563eb',
+            color: 'white',
+            padding: '1rem',
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}
+        >
+          <h1
+            style={{
+              fontSize: '1.25rem',
+              fontWeight: '600',
+              margin: '0 0 0.5rem 0',
+            }}
+          >
             Clients
           </h1>
           <p style={{ fontSize: '0.875rem', margin: 0, opacity: 0.9 }}>
-            {filteredClients.length} {filteredClients.length === 1 ? 'client' : 'clients'}
+            {filteredClients.length}{' '}
+            {filteredClients.length === 1 ? 'client' : 'clients'}
           </p>
         </header>
 
         {/* Search Bar */}
-        <div style={{
-          backgroundColor: 'white',
-          padding: '1rem',
-          borderBottom: '1px solid #e5e7eb',
-          position: 'sticky',
-          top: '66px',
-          zIndex: 9,
-        }}>
+        <div
+          style={{
+            backgroundColor: 'white',
+            padding: '1rem',
+            borderBottom: '1px solid #e5e7eb',
+            position: 'sticky',
+            top: '66px',
+            zIndex: 9,
+          }}
+        >
           <input
             type="text"
             placeholder="Search clients..."
@@ -107,35 +123,45 @@ export default function ClientsPage() {
         {/* Clients List */}
         <main style={{ padding: '1rem' }}>
           {loading ? (
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              minHeight: '200px',
-            }}>
-              <div style={{
-                width: '40px',
-                height: '40px',
-                border: '4px solid #e5e7eb',
-                borderTopColor: '#2563eb',
-                borderRadius: '50%',
-                animation: 'spin 1s linear infinite'
-              }}></div>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '200px',
+              }}
+            >
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  border: '4px solid #e5e7eb',
+                  borderTopColor: '#2563eb',
+                  borderRadius: '50%',
+                  animation: 'spin 1s linear infinite',
+                }}
+              ></div>
               <style jsx>{`
                 @keyframes spin {
-                  to { transform: rotate(360deg); }
+                  to {
+                    transform: rotate(360deg);
+                  }
                 }
               `}</style>
             </div>
           ) : filteredClients.length === 0 ? (
-            <div style={{
-              backgroundColor: 'white',
-              padding: '2rem',
-              borderRadius: '8px',
-              textAlign: 'center',
-            }}>
+            <div
+              style={{
+                backgroundColor: 'white',
+                padding: '2rem',
+                borderRadius: '8px',
+                textAlign: 'center',
+              }}
+            >
               <p style={{ fontSize: '1rem', color: '#6b7280', margin: 0 }}>
-                {searchTerm ? 'No clients found matching your search' : 'No clients yet'}
+                {searchTerm
+                  ? 'No clients found matching your search'
+                  : 'No clients yet'}
               </p>
               {!searchTerm && (
                 <button
@@ -158,7 +184,13 @@ export default function ClientsPage() {
               )}
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem',
+              }}
+            >
               {filteredClients.map((client) => (
                 <button
                   key={client.id}
@@ -174,60 +206,72 @@ export default function ClientsPage() {
                     minHeight: '80px',
                   }}
                 >
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'start',
-                    marginBottom: '0.5rem',
-                  }}>
-                    <h3 style={{
-                      fontSize: '1rem',
-                      fontWeight: '600',
-                      color: '#1f2937',
-                      margin: 0,
-                    }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'start',
+                      marginBottom: '0.5rem',
+                    }}
+                  >
+                    <h3
+                      style={{
+                        fontSize: '1rem',
+                        fontWeight: '600',
+                        color: '#1f2937',
+                        margin: 0,
+                      }}
+                    >
                       {client.name}
                     </h3>
                     <span style={{ fontSize: '1.25rem' }}>👤</span>
                   </div>
 
-                  <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '0.25rem',
-                  }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.25rem',
+                    }}
+                  >
                     {client.contact_phone && (
-                      <div style={{
-                        fontSize: '0.875rem',
-                        color: '#6b7280',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                      }}>
+                      <div
+                        style={{
+                          fontSize: '0.875rem',
+                          color: '#6b7280',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                        }}
+                      >
                         <span>📞</span>
                         {client.contact_phone}
                       </div>
                     )}
                     {client.contact_email && (
-                      <div style={{
-                        fontSize: '0.875rem',
-                        color: '#6b7280',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                      }}>
+                      <div
+                        style={{
+                          fontSize: '0.875rem',
+                          color: '#6b7280',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                        }}
+                      >
                         <span>✉️</span>
                         {client.contact_email}
                       </div>
                     )}
                     {client.address && (
-                      <div style={{
-                        fontSize: '0.875rem',
-                        color: '#6b7280',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                      }}>
+                      <div
+                        style={{
+                          fontSize: '0.875rem',
+                          color: '#6b7280',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                        }}
+                      >
                         <span>📍</span>
                         {client.address}
                       </div>

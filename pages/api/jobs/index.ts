@@ -59,7 +59,8 @@ async function handleGetJobs(
   // RLS policies automatically filter by user's org_id
   let query = supabase
     .from('jobs')
-    .select(`
+    .select(
+      `
       *,
       client:clients(id, name),
       site:sites(id, name, address),
@@ -68,9 +69,13 @@ async function handleGetJobs(
         id,
         user:users(id, email, role)
       )
-    `)
+    `
+    )
     .order('scheduled_at', { ascending: false })
-    .range(parseInt(offset as string), parseInt(offset as string) + parseInt(limit as string) - 1);
+    .range(
+      parseInt(offset as string),
+      parseInt(offset as string) + parseInt(limit as string) - 1
+    );
 
   // Apply filters
   if (status) {

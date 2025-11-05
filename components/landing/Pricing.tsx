@@ -16,7 +16,13 @@ export default function Pricing({ onPreorderClick }: PricingProps) {
       price: '₹0',
       period: 'forever',
       description: 'Solo technicians / tiny vendors',
-      features: ['1 site, 3 users max', '30 jobs per month', 'Basic job creation', 'Photo upload (500 MB)', '3 months data history'],
+      features: [
+        '1 site, 3 users max',
+        '30 jobs per month',
+        'Basic job creation',
+        'Photo upload (500 MB)',
+        '3 months data history',
+      ],
       cta: 'Join Waitlist',
       ctaAction: onPreorderClick,
       popular: false,
@@ -27,7 +33,14 @@ export default function Pricing({ onPreorderClick }: PricingProps) {
       price: '₹999',
       period: 'per month',
       description: 'Small contractors (2-10 techs)',
-      features: ['Up to 5 sites, 10 techs', 'Unlimited jobs', 'Offline mode & sync', 'Recurring jobs', 'Basic inventory tracking', 'Auto PDF reports'],
+      features: [
+        'Up to 5 sites, 10 techs',
+        'Unlimited jobs',
+        'Offline mode & sync',
+        'Recurring jobs',
+        'Basic inventory tracking',
+        'Auto PDF reports',
+      ],
       cta: 'Join Waitlist',
       ctaAction: onPreorderClick,
       popular: true,
@@ -39,7 +52,14 @@ export default function Pricing({ onPreorderClick }: PricingProps) {
       price: '₹2,999',
       period: 'per month',
       description: 'Growing FM vendors (10-50 techs)',
-      features: ['Up to 20 sites, 50 techs', 'Full inventory tracking', 'SLA tracking & analytics', 'Priority email + chat', '10 GB storage', '3 years data retention'],
+      features: [
+        'Up to 20 sites, 50 techs',
+        'Full inventory tracking',
+        'SLA tracking & analytics',
+        'Priority email + chat',
+        '10 GB storage',
+        '3 years data retention',
+      ],
       cta: 'Join Waitlist',
       ctaAction: onPreorderClick,
       popular: false,
@@ -50,13 +70,19 @@ export default function Pricing({ onPreorderClick }: PricingProps) {
       price: '₹9,999',
       period: 'per month',
       description: 'Large FM partners (50-200 techs)',
-      features: ['Unlimited sites, 200 techs', 'Multi-org / multi-branch', 'Custom branding', 'Advanced SLA & analytics', 'Full API access', 'Dedicated manager'],
+      features: [
+        'Unlimited sites, 200 techs',
+        'Multi-org / multi-branch',
+        'Custom branding',
+        'Advanced SLA & analytics',
+        'Full API access',
+        'Dedicated manager',
+      ],
       cta: 'Join Waitlist',
       ctaAction: onPreorderClick,
       popular: false,
     },
   ];
-
 
   return (
     <section id="pricing" className="py-20 bg-gray-50">
@@ -99,14 +125,20 @@ export default function Pricing({ onPreorderClick }: PricingProps) {
                 <h3 className="text-xl font-bold text-gray-900 mb-1">
                   {plan.name}
                 </h3>
-                <p className="text-xs text-gray-500 uppercase tracking-wide">{plan.subtitle}</p>
+                <p className="text-xs text-gray-500 uppercase tracking-wide">
+                  {plan.subtitle}
+                </p>
               </div>
 
               {/* Price */}
               <div className="mb-4">
-                <span className="text-3xl font-bold text-gray-900">{plan.price}</span>
+                <span className="text-3xl font-bold text-gray-900">
+                  {plan.price}
+                </span>
                 {plan.price !== 'Custom' && (
-                  <span className="text-gray-600 text-sm ml-1">/{plan.period}</span>
+                  <span className="text-gray-600 text-sm ml-1">
+                    /{plan.period}
+                  </span>
                 )}
               </div>
 
@@ -146,8 +178,8 @@ export default function Pricing({ onPreorderClick }: PricingProps) {
                   plan.popular
                     ? 'bg-primary text-white hover:bg-primary/90 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
                     : plan.name === 'Free'
-                    ? 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                    : 'bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20'
+                      ? 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                      : 'bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20'
                 }`}
               >
                 {plan.cta}
@@ -159,11 +191,27 @@ export default function Pricing({ onPreorderClick }: PricingProps) {
         {/* Footer Note */}
         <div className="max-w-2xl mx-auto text-center">
           <p className="text-sm text-gray-600 mb-4">
-            Need an enterprise solution? <a href="mailto:support@automet.in" className="text-primary hover:text-primary/80 font-semibold">Contact us</a>
+            Need an enterprise solution?{' '}
+            <a
+              href="mailto:support@automet.in"
+              className="text-primary hover:text-primary/80 font-semibold"
+            >
+              Contact us
+            </a>
           </p>
           <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
-            <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            <svg
+              className="w-8 h-8 text-primary"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+              />
             </svg>
           </div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">

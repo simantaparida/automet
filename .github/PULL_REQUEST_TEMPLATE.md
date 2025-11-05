@@ -1,7 +1,9 @@
 ## Description
+
 <!-- Provide a brief description of what this PR does -->
 
 ## Type of Change
+
 <!-- Mark the relevant option with an 'x' -->
 
 - [ ] 🐛 Bug fix (non-breaking change which fixes an issue)
@@ -16,17 +18,23 @@
 - [ ] 🔐 Security fix
 
 ## Related Issues
+
 <!-- Link to related issues using #issue_number -->
+
 Closes #
 
 ## Changes Made
+
 <!-- List the key changes in this PR -->
-- 
-- 
-- 
+
+-
+-
+-
 
 ## Testing
+
 <!-- Describe the testing you've done -->
+
 - [ ] Unit tests added/updated
 - [ ] Integration tests added/updated
 - [ ] E2E tests added/updated
@@ -35,9 +43,11 @@ Closes #
 - [ ] Tested in different browsers
 
 ## Screenshots (if applicable)
+
 <!-- Add screenshots to help explain your changes -->
 
 ## Checklist
+
 <!-- Mark completed items with an 'x' -->
 
 - [ ] My code follows the project's style guidelines
@@ -52,5 +62,5 @@ Closes #
 - [ ] I have updated the CHANGELOG.md (if applicable)
 
 ## Additional Notes
-<!-- Add any additional information, context, or notes for reviewers -->
 
+<!-- Add any additional information, context, or notes for reviewers -->

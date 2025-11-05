@@ -1,7 +1,7 @@
 /**
  * Public API endpoint to get waitlist count
  * GET /api/admin/waitlist-count - Get total waitlist signups count
- * 
+ *
  * @security Public endpoint (no authentication required)
  */
 
@@ -44,4 +44,3 @@ export default async function handler(
     return res.status(200).json({ count: 500 });
   }
 }
-

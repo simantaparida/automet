@@ -43,10 +43,11 @@ async function handleGetJob(id: string, res: NextApiResponse) {
   if (!supabaseAdmin) {
     return res.status(500).json({ error: 'Server configuration error' });
   }
-  
+
   const { data, error } = await supabaseAdmin
     .from('jobs')
-    .select(`
+    .select(
+      `
       *,
       client:clients(id, name, contact_email, contact_phone, address),
       site:sites(id, name, address, gps_lat, gps_lng, metadata),
@@ -58,7 +59,8 @@ async function handleGetJob(id: string, res: NextApiResponse) {
         notes,
         user:users(id, email, role)
       )
-    `)
+    `
+    )
     .eq('id', id)
     .single();
 
@@ -86,7 +88,7 @@ async function handleUpdateJob(
   if (!supabaseAdmin) {
     return res.status(500).json({ error: 'Server configuration error' });
   }
-  
+
   const updates = req.body;
 
   // Don't allow updating org_id or id
@@ -123,11 +125,8 @@ async function handleDeleteJob(id: string, res: NextApiResponse) {
   if (!supabaseAdmin) {
     return res.status(500).json({ error: 'Server configuration error' });
   }
-  
-  const { error } = await supabaseAdmin
-    .from('jobs')
-    .delete()
-    .eq('id', id);
+
+  const { error } = await supabaseAdmin.from('jobs').delete().eq('id', id);
 
   if (error) {
     console.error('Error deleting job:', error);

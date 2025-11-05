@@ -5,6 +5,7 @@ This guide covers running, rolling back, and managing database migrations for Au
 ## Overview
 
 Migrations are versioned SQL files that modify the database schema. Each migration has:
+
 - **Up migration** (`*.sql`) - Applies changes
 - **Down migration** (`*.down.sql`) - Reverts changes
 
@@ -201,6 +202,7 @@ git commit -m "migrations: add estimated_hours to jobs table"
 Before running migrations in production:
 
 - [ ] **Backup database**
+
   ```bash
   pg_dump -h db.xxxxx.supabase.co -U postgres -F c automet > backup_$(date +%Y%m%d_%H%M%S).dump
   ```
@@ -233,6 +235,7 @@ Before running migrations in production:
 ### If Migration Fails Mid-Run
 
 1. **Check error message**:
+
    ```bash
    # Look for specific SQL error
    psql $DATABASE_URL -f migrations/20251115_009_*.sql
@@ -244,6 +247,7 @@ Before running migrations in production:
    - Deadlock → Retry during low traffic
 
 3. **Rollback if partially applied**:
+
    ```bash
    ./scripts/rollback.sh
    ```
@@ -260,6 +264,7 @@ Before running migrations in production:
 If `.down.sql` doesn't work:
 
 1. **Manual rollback** via SQL Editor:
+
    ```sql
    -- Example: Manually drop table
    DROP TABLE IF EXISTS new_table CASCADE;
@@ -277,16 +282,19 @@ If `.down.sql` doesn't work:
 ### Backup (Before Migrations)
 
 #### Schema only:
+
 ```bash
 pg_dump -h db.xxxxx.supabase.co -U postgres -s automet > schema_backup.sql
 ```
 
 #### Data only:
+
 ```bash
 pg_dump -h db.xxxxx.supabase.co -U postgres -a automet > data_backup.sql
 ```
 
 #### Full backup:
+
 ```bash
 pg_dump -h db.xxxxx.supabase.co -U postgres -F c automet > full_backup.dump
 ```
@@ -311,6 +319,7 @@ CREATE TABLE schema_migrations (
 ```
 
 Then update `migrate.sh` to:
+
 1. Check which migrations are already applied
 2. Run only pending migrations
 3. Record each migration in `schema_migrations`
@@ -324,6 +333,7 @@ Then update `migrate.sh` to:
 **Cause:** Migration already partially applied.
 
 **Fix:**
+
 - Use `IF NOT EXISTS` in CREATE statements
 - Or manually drop the object and re-run
 
@@ -332,6 +342,7 @@ Then update `migrate.sh` to:
 **Cause:** Using wrong database user or insufficient permissions.
 
 **Fix:**
+
 - Ensure `DATABASE_URL` uses `postgres` user
 - Check Supabase project has not paused (free tier)
 
@@ -340,6 +351,7 @@ Then update `migrate.sh` to:
 **Cause:** Another transaction is modifying the same rows.
 
 **Fix:**
+
 - Run migrations during low-traffic window
 - Use `LOCK TABLE` if necessary
 - Retry the migration
@@ -349,6 +361,7 @@ Then update `migrate.sh` to:
 **Cause:** Local and production databases are out of sync.
 
 **Fix:**
+
 ```bash
 # Reset local DB to match production schema
 ./scripts/reset-db.sh
@@ -365,6 +378,7 @@ Then update `migrate.sh` to:
 Runs all pending migrations.
 
 **Usage:**
+
 ```bash
 ./scripts/migrate.sh              # Run all migrations
 ./scripts/migrate.sh --dry-run    # Preview without applying
@@ -375,6 +389,7 @@ Runs all pending migrations.
 Rolls back the last migration.
 
 **Usage:**
+
 ```bash
 ./scripts/rollback.sh
 ```
@@ -384,6 +399,7 @@ Rolls back the last migration.
 ⚠️ **DESTRUCTIVE:** Drops all tables and re-runs migrations.
 
 **Usage:**
+
 ```bash
 ./scripts/reset-db.sh   # Prompts for confirmation
 ```

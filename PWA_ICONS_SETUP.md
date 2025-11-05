@@ -10,30 +10,35 @@ The PWA `manifest.json` references the following icon files that need to be crea
 ## Icon Requirements
 
 ### Specifications
+
 - **Format**: PNG with transparent background
 - **Design**: Simple, recognizable logo/icon
 - **Colors**: Match brand (Primary: `#450693`, Secondary: `#8C00FF`)
 - **Purpose**: "any maskable" - works for both standard and adaptive icons
 
 ### Sizes
+
 1. **192×192px** - Used for mobile home screens and app drawer
 2. **512×512px** - Used for splash screens and high-DPI displays
 
 ## How to Create Icons
 
 ### Option 1: Using Online Tools (Recommended)
+
 1. Visit [PWA Asset Generator](https://www.pwabuilder.com/imageGenerator)
 2. Upload a logo image (at least 512×512px)
 3. Generate icon set
 4. Download and place in `/public/` directory
 
 ### Option 2: Using Design Software
+
 1. Create icon in Figma/Photoshop/Illustrator
 2. Export as PNG at both sizes (192×192 and 512×512)
 3. Ensure transparent background
 4. Save to `/public/` with exact filenames
 
 ### Option 3: Using Command Line (ImageMagick)
+
 ```bash
 # Install ImageMagick
 brew install imagemagick  # macOS
@@ -45,6 +50,7 @@ convert logo.png -resize 512x512 public/icon-512x512.png
 ```
 
 ### Option 4: Placeholder Icons (Development Only)
+
 For development/testing, you can use solid color placeholders:
 
 ```bash
@@ -56,12 +62,14 @@ convert -size 512x512 xc:"#450693" public/icon-512x512.png
 ## Design Guidelines
 
 ### Brand Identity
+
 - **Primary Color**: Purple (`#450693`)
 - **Secondary Color**: Light Purple (`#8C00FF`)
 - **Accent Colors**: Pink (`#FF3F7F`), Yellow (`#FFC400`)
 - **Style**: Modern, clean, professional
 
 ### Icon Content Ideas
+
 - Letter "A" for Automet
 - Wrench/tool symbol (field service)
 - Checklist icon (job tracking)
@@ -73,6 +81,7 @@ convert -size 512x512 xc:"#450693" public/icon-512x512.png
 After creating icons, verify:
 
 1. **File Existence**:
+
    ```bash
    ls -lh public/icon-*.png
    ```
@@ -96,6 +105,7 @@ After creating icons, verify:
 ## Favicon (Bonus)
 
 While not required for PWA, consider also creating:
+
 - `/public/favicon.ico` (16×16, 32×32, 48×48 multi-size)
 
 ```bash
@@ -105,6 +115,7 @@ convert icon-192x192.png -define icon:auto-resize=48,32,16 public/favicon.ico
 ## Current Status
 
 ⚠️ **Icons are currently missing**
+
 - PWA installation will fail until icons are created
 - manifest.json is configured correctly
 - Theme color updated to match brand (#450693)

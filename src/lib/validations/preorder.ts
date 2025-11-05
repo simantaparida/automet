@@ -21,7 +21,10 @@ export const preorderSchema = z.object({
     .string()
     .trim()
     .min(6, 'Please enter a valid phone number')
-    .regex(/^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]{6,}$/, 'Please enter a valid phone number'),
+    .regex(
+      /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]{6,}$/,
+      'Please enter a valid phone number'
+    ),
 
   // Optional fields
   contact_name: z

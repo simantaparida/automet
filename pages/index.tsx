@@ -24,17 +24,28 @@ export default function LandingPage() {
   return (
     <>
       <Head>
-        <title>Automet - Field Job Management Made Simple for Indian AMC Vendors</title>
+        <title>
+          Automet - Field Job Management Made Simple for Indian AMC Vendors
+        </title>
         <meta
           name="description"
           content="Complete field service management platform built for Indian AMC vendors. Manage technicians, track jobs, handle inventory, and get paid faster - all in one place."
         />
-        <meta name="keywords" content="AMC management, field service management, technician tracking, job management, inventory tracking, Indian field service software" />
+        <meta
+          name="keywords"
+          content="AMC management, field service management, technician tracking, job management, inventory tracking, Indian field service software"
+        />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
         {/* Open Graph */}
-        <meta property="og:title" content="Automet - Field Job Management Made Simple" />
-        <meta property="og:description" content="Built for Indian AMC vendors. Manage technicians, track jobs, and get paid faster." />
+        <meta
+          property="og:title"
+          content="Automet - Field Job Management Made Simple"
+        />
+        <meta
+          property="og:description"
+          content="Built for Indian AMC vendors. Manage technicians, track jobs, and get paid faster."
+        />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://automet.in" />
         <meta property="og:image" content="https://automet.in/og-image.png" />
@@ -43,8 +54,14 @@ export default function LandingPage() {
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Automet - Field Job Management Made Simple" />
-        <meta name="twitter:description" content="Built for Indian AMC vendors. Manage technicians, track jobs, and get paid faster." />
+        <meta
+          name="twitter:title"
+          content="Automet - Field Job Management Made Simple"
+        />
+        <meta
+          name="twitter:description"
+          content="Built for Indian AMC vendors. Manage technicians, track jobs, and get paid faster."
+        />
         <meta name="twitter:image" content="https://automet.in/og-image.png" />
 
         {/* Favicon */}

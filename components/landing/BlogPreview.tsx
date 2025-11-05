@@ -26,7 +26,7 @@ export default function BlogPreview() {
       try {
         const response = await fetch('/api/blog?limit=3');
         if (response.ok) {
-          const data = await response.json();
+          const data = (await response.json()) as BlogPost[];
           setPosts(data);
         }
       } catch (error) {
@@ -36,7 +36,7 @@ export default function BlogPreview() {
       }
     }
 
-    fetchPosts();
+    void fetchPosts();
   }, []);
 
   const formatDate = (dateString: string) => {
@@ -93,7 +93,8 @@ export default function BlogPreview() {
             Latest insights & updates
           </h2>
           <p className="text-lg text-gray-600 animate-fade-in">
-            Industry tips, best practices, and product updates to help you grow your AMC business.
+            Industry tips, best practices, and product updates to help you grow
+            your AMC business.
           </p>
         </div>
 

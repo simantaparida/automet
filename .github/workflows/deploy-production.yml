@@ -101,7 +101,7 @@ jobs:
           release_name: Release v${{ github.run_number }}
           body: |
             Production deployment completed successfully.
-            
+
             **Deployment URL**: ${{ steps.deploy.outputs.url }}
             **Commit**: ${{ github.sha }}
             **Workflow**: ${{ github.workflow }}
@@ -116,4 +116,3 @@ jobs:
             const status = '${{ job.status }}' === 'success' ? '✅' : '❌'
             const message = `${status} Production deployment ${{ job.status }}`
             console.log(message)
-

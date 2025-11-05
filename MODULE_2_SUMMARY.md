@@ -3,6 +3,7 @@
 ## What Was Built
 
 ### 1. Authentication Context (`src/contexts/AuthContext.tsx`)
+
 - React context for managing authentication state globally
 - Functions:
   - `signIn(email, password)` - Email/password authentication
@@ -14,6 +15,7 @@
 ### 2. Authentication Pages
 
 #### Login Page (`pages/login.tsx`)
+
 - Email/password login form
 - Google OAuth button
 - Auto-redirects logged-in users to dashboard
@@ -21,6 +23,7 @@
 - Link to signup page
 
 #### Signup Page (`pages/signup.tsx`)
+
 - User registration form (email, password, confirm password)
 - Password validation (minimum 6 characters, passwords must match)
 - Google OAuth option
@@ -28,18 +31,21 @@
 - Auto-redirects logged-in users to dashboard
 
 #### OAuth Callback (`pages/auth/callback.tsx`)
+
 - Handles Google OAuth redirect
 - Completes authentication flow
 - Redirects to dashboard on success
 - Shows error message and redirects to login on failure
 
 ### 3. Protected Routes (`src/components/ProtectedRoute.tsx`)
+
 - Higher-order component to protect authenticated pages
 - Shows loading spinner while checking auth status
 - Redirects unauthenticated users to login page
 - Used in dashboard and other protected pages
 
 ### 4. Dashboard Page (`pages/dashboard.tsx`)
+
 - Protected route - requires authentication
 - Shows user profile info (name, email)
 - Displays statistics:
@@ -51,18 +57,21 @@
 - Welcome message with next steps
 
 ### 5. Updated Home Page (`pages/index.tsx`)
+
 - Smart redirect logic:
   - If logged in → redirect to `/dashboard`
   - If not logged in → redirect to `/login`
 - Loading state while checking authentication
 
 ### 6. Database Trigger (`CREATE_AUTH_TRIGGER.sql`)
+
 - Auto-creates `public.users` record when new user signs up via `auth.users`
 - Sets default role to "technician"
 - Assigns user to default organization (Sharma Services) for MVP
 - Syncs email and email_confirmed status
 
 ### 7. Demo Users SQL (`ADD_DEMO_USERS_MANUAL.sql`)
+
 - SQL script to add 4 demo users to `public.users`
 - Users: Owner, Coordinator, 2 Technicians
 - **NOTE**: These are display-only users, they cannot log in (no `auth.users` records)
@@ -108,6 +117,7 @@ Run `ADD_DEMO_USERS_MANUAL.sql` in Supabase SQL Editor to add 4 demo users.
 ### Step 5: Create a Real Test User
 
 **Option A: Using Supabase Dashboard**
+
 1. Go to Supabase Dashboard → **Authentication** → **Users**
 2. Click **"Add user"** → **"Create new user"**
 3. Enter:
@@ -126,6 +136,7 @@ Run `ADD_DEMO_USERS_MANUAL.sql` in Supabase SQL Editor to add 4 demo users.
    ```
 
 **Option B: Sign up via the app**
+
 1. Go to http://localhost:3000/signup
 2. Fill out the form and create an account
 3. Confirm your email (or disable email confirmation in Supabase Dashboard)
@@ -249,18 +260,22 @@ Now that authentication is complete, Module 3 will focus on:
 ## Troubleshooting
 
 ### Issue: "infinite recursion detected in policy"
+
 - **Solution**: This was fixed in Module 1. Make sure you ran the correct migration that simplified RLS policies.
 
 ### Issue: Cannot log in with demo users from `ADD_DEMO_USERS_MANUAL.sql`
+
 - **Reason**: Those users don't have `auth.users` records
 - **Solution**: Create real users via Supabase Dashboard or signup page
 
 ### Issue: Google OAuth not working
+
 - **Check**: Authorized redirect URI in Google Console matches:
   `https://dogzgbppyiokvipvsgln.supabase.co/auth/v1/callback`
 - **Check**: Google provider is enabled in Supabase Dashboard
 
 ### Issue: Email confirmation required
+
 - **Solution**: In Supabase Dashboard → Authentication → Settings, disable "Enable email confirmations" for development
 
 ## Environment Variables Used

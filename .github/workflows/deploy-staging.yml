@@ -80,4 +80,3 @@ jobs:
             const status = '${{ job.status }}' === 'success' ? '✅' : '❌'
             const message = `${status} Staging deployment ${{ job.status }}`
             console.log(message)
-

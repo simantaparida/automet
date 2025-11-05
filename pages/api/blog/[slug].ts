@@ -28,8 +28,7 @@ export default async function handler(
 
     // Validate environment variables (support both naming conventions)
     const supabaseUrl =
-      process.env.SUPABASE_URL ||
-      process.env.NEXT_PUBLIC_SUPABASE_URL;
+      process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
 
     const supabaseAnonKey =
       process.env.SUPABASE_ANON_KEY ||
@@ -39,9 +38,10 @@ export default async function handler(
       console.error('Blog API: Missing Supabase configuration');
       return res.status(500).json({
         error: 'Server configuration error',
-        details: process.env.NODE_ENV === 'development'
-          ? 'Missing SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL or SUPABASE_ANON_KEY/NEXT_PUBLIC_SUPABASE_ANON_KEY'
-          : undefined
+        details:
+          process.env.NODE_ENV === 'development'
+            ? 'Missing SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL or SUPABASE_ANON_KEY/NEXT_PUBLIC_SUPABASE_ANON_KEY'
+            : undefined,
       });
     }
 
@@ -60,14 +60,18 @@ export default async function handler(
         // No rows found
         return res.status(404).json({
           error: 'Blog post not found',
-          details: process.env.NODE_ENV === 'development' ? `No post with slug: ${slug}` : undefined
+          details:
+            process.env.NODE_ENV === 'development'
+              ? `No post with slug: ${slug}`
+              : undefined,
         });
       }
 
       console.error('Blog post fetch error:', error);
       return res.status(500).json({
         error: 'Failed to fetch blog post',
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        details:
+          process.env.NODE_ENV === 'development' ? error.message : undefined,
       });
     }
 
@@ -78,10 +82,12 @@ export default async function handler(
     return res.status(200).json(data);
   } catch (error) {
     console.error('Blog post API error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
     return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? errorMessage : undefined
+      details:
+        process.env.NODE_ENV === 'development' ? errorMessage : undefined,
     });
   }
 }

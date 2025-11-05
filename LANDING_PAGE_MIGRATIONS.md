@@ -107,6 +107,7 @@ FROM blog_posts;
 ```
 
 You should see:
+
 - preorders: 0 rows (empty, waiting for signups)
 - blog_posts: 3 rows (demo content)
 

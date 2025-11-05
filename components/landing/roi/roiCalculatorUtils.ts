@@ -68,7 +68,8 @@ export function calculateROI(inputs: UserInputs): ROIResults {
   const netMonthlyBenefit = timeSavingsValue - planCost;
 
   // 6. Payback period (months) = plan cost / net monthly benefit
-  const paybackMonths = netMonthlyBenefit > 0 ? planCost / netMonthlyBenefit : 0;
+  const paybackMonths =
+    netMonthlyBenefit > 0 ? planCost / netMonthlyBenefit : 0;
 
   // 7. ROI (1-year) = (net annual benefit) / (annual cost)
   const netAnnualBenefit = netMonthlyBenefit * 12;
@@ -104,7 +105,10 @@ export function formatCurrency(value: number): string {
 /**
  * Generate text summary for copy/paste
  */
-export function generateSummary(results: ROIResults, inputs: UserInputs): string {
+export function generateSummary(
+  results: ROIResults,
+  inputs: UserInputs
+): string {
   return `🎯 Your ROI with Automet
 
 📊 Your Business:
@@ -147,7 +151,7 @@ export function generateCSV(results: ROIResults, inputs: UserInputs): string {
     ['ROI (1-year)', results.roi1Year, '%'],
   ];
 
-  return rows.map(row => row.join(',')).join('\n');
+  return rows.map((row) => row.join(',')).join('\n');
 }
 
 /**

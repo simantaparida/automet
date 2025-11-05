@@ -37,7 +37,11 @@ interface WaitlistStats {
 
 export default function AdminWaitlistPage() {
   const [preorders, setPreorders] = useState<Preorder[]>([]);
-  const [stats, setStats] = useState<WaitlistStats>({ total: 0, confirmed: 0, paid: 0 });
+  const [stats, setStats] = useState<WaitlistStats>({
+    total: 0,
+    confirmed: 0,
+    paid: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [authenticated, setAuthenticated] = useState(false);
@@ -94,7 +98,7 @@ export default function AdminWaitlistPage() {
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setAuthError(null);
-    
+
     if (!password.trim()) {
       setAuthError('Please enter the admin password');
       return;
@@ -126,7 +130,9 @@ export default function AdminWaitlistPage() {
       setStats(data.stats || { total: 0, confirmed: 0, paid: 0 });
     } catch (err) {
       console.error('Authentication error:', err);
-      setAuthError(err instanceof Error ? err.message : 'Failed to authenticate');
+      setAuthError(
+        err instanceof Error ? err.message : 'Failed to authenticate'
+      );
     } finally {
       setLoading(false);
     }
@@ -174,17 +180,32 @@ export default function AdminWaitlistPage() {
           <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
             <div className="text-center mb-8">
               <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4">
-                <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                <svg
+                  className="w-8 h-8 text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
                 </svg>
               </div>
               <h1 className="text-2xl font-bold text-gray-900">Admin Access</h1>
-              <p className="text-gray-600 mt-2">Enter the admin password to view waitlist</p>
+              <p className="text-gray-600 mt-2">
+                Enter the admin password to view waitlist
+              </p>
             </div>
 
             <form onSubmit={handleLogin}>
               <div className="mb-6">
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Admin Password
                 </label>
                 <input
@@ -212,7 +233,10 @@ export default function AdminWaitlistPage() {
             </form>
 
             <div className="mt-6 text-center">
-              <Link href="/" className="text-sm text-gray-600 hover:text-gray-900">
+              <Link
+                href="/"
+                className="text-sm text-gray-600 hover:text-gray-900"
+              >
                 ← Back to Home
               </Link>
             </div>
@@ -247,11 +271,23 @@ export default function AdminWaitlistPage() {
         <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
           <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
             <div className="text-red-600 mb-4">
-              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-16 h-16 mx-auto"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Error Loading Waitlist</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              Error Loading Waitlist
+            </h1>
             <p className="text-gray-600 mb-6">{error}</p>
             <Link
               href="/"
@@ -295,16 +331,26 @@ export default function AdminWaitlistPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div className="bg-white rounded-lg shadow p-6">
-              <div className="text-sm font-medium text-gray-600">Total Signups</div>
-              <div className="text-3xl font-bold text-gray-900 mt-2">{stats.total}</div>
+              <div className="text-sm font-medium text-gray-600">
+                Total Signups
+              </div>
+              <div className="text-3xl font-bold text-gray-900 mt-2">
+                {stats.total}
+              </div>
             </div>
             <div className="bg-white rounded-lg shadow p-6">
-              <div className="text-sm font-medium text-gray-600">Email Confirmed</div>
-              <div className="text-3xl font-bold text-primary mt-2">{stats.confirmed}</div>
+              <div className="text-sm font-medium text-gray-600">
+                Email Confirmed
+              </div>
+              <div className="text-3xl font-bold text-primary mt-2">
+                {stats.confirmed}
+              </div>
             </div>
             <div className="bg-white rounded-lg shadow p-6">
               <div className="text-sm font-medium text-gray-600">Paid</div>
-              <div className="text-3xl font-bold text-green-600 mt-2">{stats.paid}</div>
+              <div className="text-3xl font-bold text-green-600 mt-2">
+                {stats.paid}
+              </div>
             </div>
           </div>
 
@@ -334,7 +380,10 @@ export default function AdminWaitlistPage() {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {preorders.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                      <td
+                        colSpan={5}
+                        className="px-6 py-12 text-center text-gray-500"
+                      >
                         No waitlist entries yet.
                       </td>
                     </tr>
@@ -346,21 +395,31 @@ export default function AdminWaitlistPage() {
                             <div className="text-sm font-medium text-gray-900">
                               {preorder.contact_name || '—'}
                             </div>
-                            <div className="text-sm text-gray-500">{preorder.email}</div>
+                            <div className="text-sm text-gray-500">
+                              {preorder.email}
+                            </div>
                             {preorder.phone && (
-                              <div className="text-sm text-gray-500">{preorder.phone}</div>
+                              <div className="text-sm text-gray-500">
+                                {preorder.phone}
+                              </div>
                             )}
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="text-sm text-gray-900">{preorder.org_name || '—'}</div>
+                          <div className="text-sm text-gray-900">
+                            {preorder.org_name || '—'}
+                          </div>
                           {preorder.city && (
-                            <div className="text-sm text-gray-500">{preorder.city}</div>
+                            <div className="text-sm text-gray-500">
+                              {preorder.city}
+                            </div>
                           )}
                         </td>
                         <td className="px-6 py-4">
                           <div className="text-sm text-gray-900">
-                            {preorder.tech_count ? `${preorder.tech_count} techs` : '—'}
+                            {preorder.tech_count
+                              ? `${preorder.tech_count} techs`
+                              : '—'}
                           </div>
                           <div className="text-sm text-gray-500">
                             Plan: {formatPlanInterest(preorder.plan_interest)}
@@ -407,20 +466,34 @@ export default function AdminWaitlistPage() {
                 <button
                   onClick={() => {
                     const csv = [
-                      ['Name', 'Email', 'Phone', 'Organization', 'City', 'Tech Count', 'Plan Interest', 'Payment Status', 'Amount Paid', 'Email Confirmed', 'Created At'].join(','),
-                      ...preorders.map(p => [
-                        p.contact_name || '',
-                        p.email,
-                        p.phone || '',
-                        p.org_name || '',
-                        p.city || '',
-                        p.tech_count || '',
-                        p.plan_interest || '',
-                        p.payment_status,
-                        p.amount_paid,
-                        p.email_confirmed ? 'Yes' : 'No',
-                        p.created_at,
-                      ].join(','))
+                      [
+                        'Name',
+                        'Email',
+                        'Phone',
+                        'Organization',
+                        'City',
+                        'Tech Count',
+                        'Plan Interest',
+                        'Payment Status',
+                        'Amount Paid',
+                        'Email Confirmed',
+                        'Created At',
+                      ].join(','),
+                      ...preorders.map((p) =>
+                        [
+                          p.contact_name || '',
+                          p.email,
+                          p.phone || '',
+                          p.org_name || '',
+                          p.city || '',
+                          p.tech_count || '',
+                          p.plan_interest || '',
+                          p.payment_status,
+                          p.amount_paid,
+                          p.email_confirmed ? 'Yes' : 'No',
+                          p.created_at,
+                        ].join(',')
+                      ),
                     ].join('\n');
 
                     const blob = new Blob([csv], { type: 'text/csv' });
@@ -455,4 +528,3 @@ export default function AdminWaitlistPage() {
     </>
   );
 }
-

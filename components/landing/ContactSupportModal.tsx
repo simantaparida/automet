@@ -10,7 +10,10 @@ interface ContactSupportModalProps {
   onClose: () => void;
 }
 
-export default function ContactSupportModal({ isOpen, onClose }: ContactSupportModalProps) {
+export default function ContactSupportModal({
+  isOpen,
+  onClose,
+}: ContactSupportModalProps) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -19,14 +22,20 @@ export default function ContactSupportModal({ isOpen, onClose }: ContactSupportM
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitStatus, setSubmitStatus] = useState<
+    'idle' | 'success' | 'error'
+  >('idle');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: '' }));
     }
   };
 
@@ -80,7 +89,10 @@ export default function ContactSupportModal({ isOpen, onClose }: ContactSupportM
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
+      const data = (await response.json()) as {
+        success?: boolean;
+        message?: string;
+      };
 
       if (!response.ok) {
         throw new Error(data.message || 'Failed to send message');
@@ -130,8 +142,12 @@ export default function ContactSupportModal({ isOpen, onClose }: ContactSupportM
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Contact Support</h2>
-            <p className="text-sm text-gray-600 mt-1">We'll get back to you within 24 hours</p>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Contact Support
+            </h2>
+            <p className="text-sm text-gray-600 mt-1">
+              We&apos;ll get back to you within 24 hours
+            </p>
           </div>
           <button
             onClick={handleClose}
@@ -139,22 +155,49 @@ export default function ContactSupportModal({ isOpen, onClose }: ContactSupportM
             className="p-2 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
             aria-label="Close"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6">
+        <form
+          onSubmit={(e) => {
+            void handleSubmit(e);
+          }}
+          className="p-6"
+        >
           {/* Success Message */}
           {submitStatus === 'success' && (
             <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
               <div className="flex items-center">
-                <svg className="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <svg
+                  className="w-5 h-5 text-green-600 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
-                <p className="text-green-800 font-medium">Message sent successfully! We'll get back to you soon.</p>
+                <p className="text-green-800 font-medium">
+                  Message sent successfully! We&apos;ll get back to you soon.
+                </p>
               </div>
             </div>
           )}
@@ -163,10 +206,23 @@ export default function ContactSupportModal({ isOpen, onClose }: ContactSupportM
           {submitStatus === 'error' && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
               <div className="flex items-center">
-                <svg className="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-5 h-5 text-red-600 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
-                <p className="text-red-800 font-medium">Failed to send message. Please try again or email us directly at support@automet.in</p>
+                <p className="text-red-800 font-medium">
+                  Failed to send message. Please try again or email us directly
+                  at support@automet.in
+                </p>
               </div>
             </div>
           )}
@@ -174,7 +230,10 @@ export default function ContactSupportModal({ isOpen, onClose }: ContactSupportM
           <div className="space-y-4">
             {/* Name */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Your Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -196,7 +255,10 @@ export default function ContactSupportModal({ isOpen, onClose }: ContactSupportM
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Email Address <span className="text-red-500">*</span>
               </label>
               <input
@@ -218,7 +280,10 @@ export default function ContactSupportModal({ isOpen, onClose }: ContactSupportM
 
             {/* Subject */}
             <div>
-              <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="subject"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Subject <span className="text-red-500">*</span>
               </label>
               <input
@@ -240,7 +305,10 @@ export default function ContactSupportModal({ isOpen, onClose }: ContactSupportM
 
             {/* Message */}
             <div>
-              <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="message"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Message <span className="text-red-500">*</span>
               </label>
               <textarea
@@ -278,9 +346,25 @@ export default function ContactSupportModal({ isOpen, onClose }: ContactSupportM
             >
               {isSubmitting ? (
                 <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   Sending...
                 </span>
@@ -294,4 +378,3 @@ export default function ContactSupportModal({ isOpen, onClose }: ContactSupportM
     </div>
   );
 }
-

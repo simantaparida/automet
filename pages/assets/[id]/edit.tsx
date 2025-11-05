@@ -85,13 +85,15 @@ export default function EditAssetPage() {
   if (loading) {
     return (
       <ProtectedRoute>
-        <div style={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#f5f5f5',
-        }}>
+        <div
+          style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#f5f5f5',
+          }}
+        >
           <p>Loading...</p>
         </div>
       </ProtectedRoute>
@@ -100,23 +102,29 @@ export default function EditAssetPage() {
 
   return (
     <ProtectedRoute>
-      <div style={{
-        minHeight: '100vh',
-        backgroundColor: '#f5f5f5',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        paddingBottom: '80px',
-      }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: '#f5f5f5',
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+          paddingBottom: '80px',
+        }}
+      >
         {/* Sticky Header */}
-        <header style={{
-          backgroundColor: '#2563eb',
-          color: 'white',
-          padding: '1rem',
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <header
+          style={{
+            backgroundColor: '#2563eb',
+            color: 'white',
+            padding: '1rem',
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}
+        >
+          <div
+            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}
+          >
             <button
               onClick={() => router.back()}
               style={{
@@ -143,46 +151,54 @@ export default function EditAssetPage() {
           <form onSubmit={handleSubmit}>
             {/* Location Info (Read-only) */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Location
               </label>
-              <div style={{
-                padding: '0.75rem',
-                backgroundColor: '#f9fafb',
-                border: '1px solid #d1d5db',
-                borderRadius: '6px',
-                fontSize: '0.875rem',
-                minHeight: '48px',
-                display: 'flex',
-                alignItems: 'center',
-                color: '#6b7280',
-              }}>
+              <div
+                style={{
+                  padding: '0.75rem',
+                  backgroundColor: '#f9fafb',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  fontSize: '0.875rem',
+                  minHeight: '48px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  color: '#6b7280',
+                }}
+              >
                 {siteInfo.clientName} → {siteInfo.siteName}
               </div>
             </div>
 
             {/* Asset Type */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Asset Type *
               </label>
               <input
                 type="text"
                 required
                 value={formData.asset_type}
-                onChange={(e) => setFormData({ ...formData, asset_type: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, asset_type: e.target.value })
+                }
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -198,20 +214,24 @@ export default function EditAssetPage() {
 
             {/* Model */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Model *
               </label>
               <input
                 type="text"
                 required
                 value={formData.model}
-                onChange={(e) => setFormData({ ...formData, model: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, model: e.target.value })
+                }
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -227,19 +247,23 @@ export default function EditAssetPage() {
 
             {/* Serial Number */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Serial Number (Optional)
               </label>
               <input
                 type="text"
                 value={formData.serial_number}
-                onChange={(e) => setFormData({ ...formData, serial_number: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, serial_number: e.target.value })
+                }
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -255,19 +279,23 @@ export default function EditAssetPage() {
 
             {/* Purchase Date */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Purchase Date (Optional)
               </label>
               <input
                 type="date"
                 value={formData.purchase_date}
-                onChange={(e) => setFormData({ ...formData, purchase_date: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, purchase_date: e.target.value })
+                }
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -282,19 +310,23 @@ export default function EditAssetPage() {
 
             {/* Warranty Expiry */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Warranty Expiry (Optional)
               </label>
               <input
                 type="date"
                 value={formData.warranty_expiry}
-                onChange={(e) => setFormData({ ...formData, warranty_expiry: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, warranty_expiry: e.target.value })
+                }
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -309,18 +341,22 @@ export default function EditAssetPage() {
 
             {/* Notes */}
             <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Notes
               </label>
               <textarea
                 value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
                 rows={4}
                 style={{
                   width: '100%',
@@ -336,7 +372,13 @@ export default function EditAssetPage() {
             </div>
 
             {/* Action Buttons */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+              }}
+            >
               <button
                 type="submit"
                 disabled={saving}

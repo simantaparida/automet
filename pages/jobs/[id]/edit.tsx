@@ -45,7 +45,11 @@ export default function EditJobPage() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    status: 'scheduled' as 'scheduled' | 'in_progress' | 'completed' | 'cancelled',
+    status: 'scheduled' as
+      | 'scheduled'
+      | 'in_progress'
+      | 'completed'
+      | 'cancelled',
     priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent',
     scheduled_at: '',
     client_id: '',
@@ -65,7 +69,9 @@ export default function EditJobPage() {
 
           // Convert ISO datetime to datetime-local format
           const scheduledDate = new Date(job.scheduled_at);
-          const localDateTime = new Date(scheduledDate.getTime() - scheduledDate.getTimezoneOffset() * 60000)
+          const localDateTime = new Date(
+            scheduledDate.getTime() - scheduledDate.getTimezoneOffset() * 60000
+          )
             .toISOString()
             .slice(0, 16);
 
@@ -113,7 +119,7 @@ export default function EditJobPage() {
       fetchSites(formData.client_id);
     } else {
       setSites([]);
-      setFormData(prev => ({ ...prev, site_id: '', asset_id: '' }));
+      setFormData((prev) => ({ ...prev, site_id: '', asset_id: '' }));
     }
   }, [formData.client_id]);
 
@@ -123,7 +129,7 @@ export default function EditJobPage() {
       fetchAssets(formData.site_id);
     } else {
       setAssets([]);
-      setFormData(prev => ({ ...prev, asset_id: '' }));
+      setFormData((prev) => ({ ...prev, asset_id: '' }));
     }
   }, [formData.site_id]);
 
@@ -182,13 +188,15 @@ export default function EditJobPage() {
   if (loading) {
     return (
       <ProtectedRoute>
-        <div style={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#f5f5f5',
-        }}>
+        <div
+          style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#f5f5f5',
+          }}
+        >
           <p>Loading...</p>
         </div>
       </ProtectedRoute>
@@ -197,23 +205,29 @@ export default function EditJobPage() {
 
   return (
     <ProtectedRoute>
-      <div style={{
-        minHeight: '100vh',
-        backgroundColor: '#f5f5f5',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        paddingBottom: '80px',
-      }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: '#f5f5f5',
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+          paddingBottom: '80px',
+        }}
+      >
         {/* Sticky Header */}
-        <header style={{
-          backgroundColor: '#2563eb',
-          color: 'white',
-          padding: '1rem',
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <header
+          style={{
+            backgroundColor: '#2563eb',
+            color: 'white',
+            padding: '1rem',
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}
+        >
+          <div
+            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}
+          >
             <button
               onClick={() => router.back()}
               style={{
@@ -240,20 +254,24 @@ export default function EditJobPage() {
           <form onSubmit={handleSubmit}>
             {/* Title */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Job Title *
               </label>
               <input
                 type="text"
                 required
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -269,18 +287,22 @@ export default function EditJobPage() {
 
             {/* Description */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Description
               </label>
               <textarea
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
                 rows={4}
                 style={{
                   width: '100%',
@@ -297,19 +319,23 @@ export default function EditJobPage() {
 
             {/* Status */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Status *
               </label>
               <select
                 required
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                onChange={(e) =>
+                  setFormData({ ...formData, status: e.target.value as any })
+                }
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -329,29 +355,48 @@ export default function EditJobPage() {
 
             {/* Priority */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Priority *
               </label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2, 1fr)',
+                  gap: '0.5rem',
+                }}
+              >
                 {[
                   { value: 'low', label: '🟢 Low', color: '#6b7280' },
                   { value: 'medium', label: '🟡 Medium', color: '#3b82f6' },
                   { value: 'high', label: '🟠 High', color: '#f59e0b' },
                   { value: 'urgent', label: '🔴 Urgent', color: '#ef4444' },
-                ].map(priority => (
+                ].map((priority) => (
                   <button
                     key={priority.value}
                     type="button"
-                    onClick={() => setFormData({ ...formData, priority: priority.value as any })}
+                    onClick={() =>
+                      setFormData({
+                        ...formData,
+                        priority: priority.value as any,
+                      })
+                    }
                     style={{
-                      backgroundColor: formData.priority === priority.value ? `${priority.color}15` : 'white',
-                      border: formData.priority === priority.value ? `2px solid ${priority.color}` : '1px solid #d1d5db',
+                      backgroundColor:
+                        formData.priority === priority.value
+                          ? `${priority.color}15`
+                          : 'white',
+                      border:
+                        formData.priority === priority.value
+                          ? `2px solid ${priority.color}`
+                          : '1px solid #d1d5db',
                       borderRadius: '6px',
                       padding: '0.75rem',
                       fontSize: '0.875rem',
@@ -368,20 +413,24 @@ export default function EditJobPage() {
 
             {/* Scheduled Date/Time */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Scheduled Date & Time *
               </label>
               <input
                 type="datetime-local"
                 required
                 value={formData.scheduled_at}
-                onChange={(e) => setFormData({ ...formData, scheduled_at: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, scheduled_at: e.target.value })
+                }
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -396,19 +445,23 @@ export default function EditJobPage() {
 
             {/* Client */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Client *
               </label>
               <select
                 required
                 value={formData.client_id}
-                onChange={(e) => setFormData({ ...formData, client_id: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, client_id: e.target.value })
+                }
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -420,26 +473,32 @@ export default function EditJobPage() {
                 }}
               >
                 <option value="">Select a client...</option>
-                {clients.map(client => (
-                  <option key={client.id} value={client.id}>{client.name}</option>
+                {clients.map((client) => (
+                  <option key={client.id} value={client.id}>
+                    {client.name}
+                  </option>
                 ))}
               </select>
             </div>
 
             {/* Site */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Site (Optional)
               </label>
               <select
                 value={formData.site_id}
-                onChange={(e) => setFormData({ ...formData, site_id: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, site_id: e.target.value })
+                }
                 disabled={!formData.client_id}
                 style={{
                   width: '100%',
@@ -453,26 +512,32 @@ export default function EditJobPage() {
                 }}
               >
                 <option value="">Select a site...</option>
-                {sites.map(site => (
-                  <option key={site.id} value={site.id}>{site.name}</option>
+                {sites.map((site) => (
+                  <option key={site.id} value={site.id}>
+                    {site.name}
+                  </option>
                 ))}
               </select>
             </div>
 
             {/* Asset */}
             <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Asset (Optional)
               </label>
               <select
                 value={formData.asset_id}
-                onChange={(e) => setFormData({ ...formData, asset_id: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, asset_id: e.target.value })
+                }
                 disabled={!formData.site_id}
                 style={{
                   width: '100%',
@@ -486,14 +551,22 @@ export default function EditJobPage() {
                 }}
               >
                 <option value="">Select an asset...</option>
-                {assets.map(asset => (
-                  <option key={asset.id} value={asset.id}>{asset.name}</option>
+                {assets.map((asset) => (
+                  <option key={asset.id} value={asset.id}>
+                    {asset.name}
+                  </option>
                 ))}
               </select>
             </div>
 
             {/* Action Buttons */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+              }}
+            >
               <button
                 type="submit"
                 disabled={saving}

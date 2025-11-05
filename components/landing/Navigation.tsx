@@ -78,10 +78,10 @@ export default function Navigation({ onPreorderClick }: NavigationProps) {
             {navLinks.map((link) => {
               const isExternal = link.href.startsWith('/');
               const Component = isExternal ? Link : 'a';
-              const props = isExternal 
+              const props = isExternal
                 ? { href: link.href }
                 : { href: link.href };
-              
+
               return (
                 <Component
                   key={link.href}
@@ -152,10 +152,13 @@ export default function Navigation({ onPreorderClick }: NavigationProps) {
               {navLinks.map((link) => {
                 const isExternal = link.href.startsWith('/');
                 const Component = isExternal ? Link : 'a';
-                const props = isExternal 
+                const props = isExternal
                   ? { href: link.href, onClick: () => setMobileMenuOpen(false) }
-                  : { href: link.href, onClick: () => setMobileMenuOpen(false) };
-                
+                  : {
+                      href: link.href,
+                      onClick: () => setMobileMenuOpen(false),
+                    };
+
                 return (
                   <Component
                     key={link.href}

@@ -60,26 +60,34 @@ export default function PreorderSuccessPage() {
             {/* Message */}
             <p className="text-lg text-gray-700 mb-6 leading-relaxed">
               Thank you for joining! We've added{' '}
-              <span className="font-semibold text-primary">{email}</span> to our waitlist.
+              <span className="font-semibold text-primary">{email}</span> to our
+              waitlist.
             </p>
-            
+
             {/* Email Notice */}
             <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 mb-6">
               <p className="text-sm text-gray-700">
-                <strong className="text-primary">📧 Check your email!</strong> We've sent a welcome email to <span className="font-semibold">{email}</span> with details about your waitlist status.
+                <strong className="text-primary">📧 Check your email!</strong>{' '}
+                We've sent a welcome email to{' '}
+                <span className="font-semibold">{email}</span> with details
+                about your waitlist status.
               </p>
             </div>
 
             {/* What's Next */}
             <div className="bg-primary/10 rounded-xl p-6 mb-8 text-left border border-primary/20">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">What happens next?</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-4">
+                What happens next?
+              </h2>
               <ol className="space-y-3">
                 <li className="flex items-start">
                   <span className="inline-flex items-center justify-center w-6 h-6 bg-primary text-white rounded-full text-sm font-bold mr-3 flex-shrink-0">
                     1
                   </span>
                   <div>
-                    <p className="font-semibold text-gray-900">We'll notify you when we launch</p>
+                    <p className="font-semibold text-gray-900">
+                      We'll notify you when we launch
+                    </p>
                     <p className="text-sm text-gray-600">
                       You'll be among the first to know when Automet is ready
                     </p>
@@ -90,7 +98,9 @@ export default function PreorderSuccessPage() {
                     2
                   </span>
                   <div>
-                    <p className="font-semibold text-gray-900">Get early access</p>
+                    <p className="font-semibold text-gray-900">
+                      Get early access
+                    </p>
                     <p className="text-sm text-gray-600">
                       You'll be among the first to access Automet when we launch
                     </p>
@@ -101,7 +111,9 @@ export default function PreorderSuccessPage() {
                     3
                   </span>
                   <div>
-                    <p className="font-semibold text-gray-900">Exclusive benefits</p>
+                    <p className="font-semibold text-gray-900">
+                      Exclusive benefits
+                    </p>
                     <p className="text-sm text-gray-600">
                       Special offers and priority support for early users
                     </p>
@@ -117,20 +129,36 @@ export default function PreorderSuccessPage() {
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
                 <div>
-                  <p className="font-semibold text-gray-900 text-sm mb-1">🎯 First Access</p>
-                  <p className="text-xs text-gray-600">Try features before public launch</p>
+                  <p className="font-semibold text-gray-900 text-sm mb-1">
+                    🎯 First Access
+                  </p>
+                  <p className="text-xs text-gray-600">
+                    Try features before public launch
+                  </p>
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 text-sm mb-1">💰 Special Offers</p>
-                  <p className="text-xs text-gray-600">Exclusive discounts for early users</p>
+                  <p className="font-semibold text-gray-900 text-sm mb-1">
+                    💰 Special Offers
+                  </p>
+                  <p className="text-xs text-gray-600">
+                    Exclusive discounts for early users
+                  </p>
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 text-sm mb-1">🚀 Priority Support</p>
-                  <p className="text-xs text-gray-600">Dedicated onboarding & setup help</p>
+                  <p className="font-semibold text-gray-900 text-sm mb-1">
+                    🚀 Priority Support
+                  </p>
+                  <p className="text-xs text-gray-600">
+                    Dedicated onboarding & setup help
+                  </p>
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 text-sm mb-1">📢 Shape the Product</p>
-                  <p className="text-xs text-gray-600">Your feedback helps us build better</p>
+                  <p className="font-semibold text-gray-900 text-sm mb-1">
+                    📢 Shape the Product
+                  </p>
+                  <p className="text-xs text-gray-600">
+                    Your feedback helps us build better
+                  </p>
                 </div>
               </div>
             </div>

@@ -20,6 +20,7 @@ The CI/CD pipeline consists of multiple workflows that ensure code quality, secu
 ### 1. CI Pipeline (`ci.yml`)
 
 **Triggers:**
+
 - Push to `main` or `develop` branches
 - Pull requests to `main` or `develop`
 - Manual workflow dispatch
@@ -27,35 +28,42 @@ The CI/CD pipeline consists of multiple workflows that ensure code quality, secu
 **Jobs (run in parallel):**
 
 #### Lint & Format
+
 - Runs ESLint
 - Checks code formatting with Prettier
 - Timeout: 10 minutes
 
 #### Type Check
+
 - Runs TypeScript compiler in check mode
 - Timeout: 10 minutes
 
 #### Build
+
 - Builds the Next.js application
 - Uploads build artifacts
 - Timeout: 15 minutes
 
 #### Unit Tests
+
 - Runs Jest tests with coverage
 - Uploads coverage reports to Codecov (if configured)
 - Timeout: 15 minutes
 
 #### E2E Tests
+
 - Runs Playwright end-to-end tests
 - Uploads test reports and screenshots
 - Timeout: 30 minutes
 
 #### CI Summary
+
 - Final job that depends on all other jobs
 - Fails if any job fails
 - Provides overall CI status
 
 **Features:**
+
 - ✅ Parallel execution for faster feedback
 - ✅ Automatic cancellation of in-progress runs
 - ✅ Caching for npm dependencies
@@ -66,6 +74,7 @@ The CI/CD pipeline consists of multiple workflows that ensure code quality, secu
 ### 2. Security Scanning (`security.yml`)
 
 **Triggers:**
+
 - Push to `main` or `develop` branches
 - Pull requests to `main` or `develop`
 - Weekly schedule (Monday 00:00 UTC)
@@ -74,23 +83,27 @@ The CI/CD pipeline consists of multiple workflows that ensure code quality, secu
 **Jobs:**
 
 #### CodeQL Analysis
+
 - Scans JavaScript and TypeScript code
 - Uses security and quality queries
 - Generates SARIF reports
 - Timeout: 60 minutes
 
 #### Dependency Review
+
 - Reviews dependencies in pull requests
 - Checks for known vulnerabilities
 - Validates license compliance
 - Timeout: 10 minutes
 
 #### NPM Audit
+
 - Runs `npm audit` for vulnerability scanning
 - Uploads audit reports as artifacts
 - Timeout: 10 minutes
 
 **Features:**
+
 - ✅ Automated security scanning
 - ✅ License compliance checking
 - ✅ Vulnerability detection
@@ -100,9 +113,11 @@ The CI/CD pipeline consists of multiple workflows that ensure code quality, secu
 ### 3. PR Checks (`pr-checks.yml`)
 
 **Triggers:**
+
 - Pull requests (opened, synchronized, reopened, ready for review)
 
 **Checks:**
+
 - Semantic PR title validation
 - Large file detection (>10MB)
 - Sensitive data detection
@@ -110,6 +125,7 @@ The CI/CD pipeline consists of multiple workflows that ensure code quality, secu
 - TODO/FIXME comment detection
 
 **Features:**
+
 - ✅ Enforces PR quality standards
 - ✅ Prevents accidental commits of sensitive data
 - ✅ Validates PR titles follow conventions
@@ -119,10 +135,12 @@ The CI/CD pipeline consists of multiple workflows that ensure code quality, secu
 ### 4. Staging Deployment (`deploy-staging.yml`)
 
 **Triggers:**
+
 - Push to `develop` branch
 - Manual workflow dispatch
 
 **Steps:**
+
 1. Type check
 2. Build application
 3. Run smoke tests
@@ -130,6 +148,7 @@ The CI/CD pipeline consists of multiple workflows that ensure code quality, secu
 5. Comment deployment URL on PR
 
 **Features:**
+
 - ✅ Automatic deployment on merge to `develop`
 - ✅ Pre-deployment validation
 - ✅ PR comments with deployment URLs
@@ -139,10 +158,12 @@ The CI/CD pipeline consists of multiple workflows that ensure code quality, secu
 ### 5. Production Deployment (`deploy-production.yml`)
 
 **Triggers:**
+
 - Push to `main` branch
 - Manual workflow dispatch
 
 **Steps:**
+
 1. Pre-deployment checks (lint, typecheck, build, tests)
 2. Build application
 3. Deploy to Vercel (production)
@@ -150,6 +171,7 @@ The CI/CD pipeline consists of multiple workflows that ensure code quality, secu
 5. Create GitHub release
 
 **Features:**
+
 - ✅ Requires environment approval (GitHub Environments)
 - ✅ Pre-deployment validation
 - ✅ Automatic release creation
@@ -160,9 +182,11 @@ The CI/CD pipeline consists of multiple workflows that ensure code quality, secu
 ### 6. Dependabot Auto-merge (`dependabot-auto-merge.yml`)
 
 **Triggers:**
+
 - Dependabot pull requests
 
 **Features:**
+
 - ✅ Waits for CI to pass
 - ✅ Automatically merges Dependabot PRs
 - ✅ Only for Dependabot-generated PRs
@@ -175,25 +199,27 @@ The CI/CD pipeline consists of multiple workflows that ensure code quality, secu
 
 Add these in **Settings → Secrets and variables → Actions → Repository secrets**:
 
-| Secret Name | Description | Required For |
-|------------|-------------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | CI, Deployment |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key | CI, Deployment |
-| `VERCEL_TOKEN` | Vercel API token | Deployment |
-| `VERCEL_ORG_ID` | Vercel organization ID | Deployment |
-| `VERCEL_PROJECT_ID` | Vercel project ID | Deployment |
-| `CODECOV_TOKEN` | Codecov token (optional) | Test coverage |
+| Secret Name                     | Description              | Required For   |
+| ------------------------------- | ------------------------ | -------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Supabase project URL     | CI, Deployment |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key   | CI, Deployment |
+| `VERCEL_TOKEN`                  | Vercel API token         | Deployment     |
+| `VERCEL_ORG_ID`                 | Vercel organization ID   | Deployment     |
+| `VERCEL_PROJECT_ID`             | Vercel project ID        | Deployment     |
+| `CODECOV_TOKEN`                 | Codecov token (optional) | Test coverage  |
 
 ### Environment Secrets
 
 Add these in **Settings → Environments → staging/production → Secrets**:
 
 #### Staging Environment
+
 - `NEXT_PUBLIC_SUPABASE_URL` (staging Supabase)
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` (staging)
 - `NEXT_PUBLIC_APP_URL` (staging URL)
 
 #### Production Environment
+
 - `NEXT_PUBLIC_SUPABASE_URL` (production Supabase)
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` (production)
 - `NEXT_PUBLIC_APP_URL` (production URL)
@@ -258,6 +284,7 @@ Add these badges to your README:
 ### For Developers
 
 1. **Always run checks locally before pushing:**
+
    ```bash
    npm run lint
    npm run typecheck
@@ -394,4 +421,3 @@ Add these badges to your README:
 ---
 
 **Last Updated:** November 2025
-

@@ -19,6 +19,7 @@ These steps require browser-based signups and manual configuration:
 ### **Step 1: Create Supabase Projects** (15-20 minutes)
 
 #### A. Dev Project
+
 1. Go to https://app.supabase.com
 2. Click "New Project"
 3. Fill in:
@@ -38,6 +39,7 @@ These steps require browser-based signups and manual configuration:
    - This will be `DATABASE_URL`
 
 #### B. Create Storage Buckets
+
 1. In Supabase Dashboard, go to **Storage**
 2. Click **"New bucket"**
 3. Create these 3 buckets:
@@ -58,6 +60,7 @@ These steps require browser-based signups and manual configuration:
    - File size limit: 2 MB
 
 #### C. Enable Auth Providers
+
 1. Go to **Authentication → Providers**
 2. **Email provider** should already be enabled
 3. For **Google provider**, leave it for now (we'll configure after Step 2)
@@ -69,6 +72,7 @@ These steps require browser-based signups and manual configuration:
 Follow this guide: [docs/GOOGLE_OAUTH_SETUP.md](docs/GOOGLE_OAUTH_SETUP.md)
 
 **Quick Summary:**
+
 1. Go to https://console.cloud.google.com
 2. Create new project: **"Automet"**
 3. Go to **APIs & Services → OAuth consent screen**
@@ -94,6 +98,7 @@ Follow this guide: [docs/GOOGLE_OAUTH_SETUP.md](docs/GOOGLE_OAUTH_SETUP.md)
    - **Client Secret** → Will be `GOOGLE_CLIENT_SECRET`
 
 **Then go back to Supabase:**
+
 1. Go to **Authentication → Providers → Google**
 2. Toggle **Enable Sign in with Google** to ON
 3. Paste Client ID and Client Secret
@@ -106,6 +111,7 @@ Follow this guide: [docs/GOOGLE_OAUTH_SETUP.md](docs/GOOGLE_OAUTH_SETUP.md)
 Follow this guide: [docs/RAZORPAY_SETUP.md](docs/RAZORPAY_SETUP.md)
 
 **Quick Summary:**
+
 1. Go to https://razorpay.com
 2. Sign up with your email
 3. Verify email and phone
@@ -117,6 +123,7 @@ Follow this guide: [docs/RAZORPAY_SETUP.md](docs/RAZORPAY_SETUP.md)
    - **Key Secret** → Will be `RZ_KEY_SECRET`
 
 **Webhook Setup (for local testing):**
+
 1. You'll need ngrok later for local webhook testing
 2. For now, generate a random webhook secret:
    ```bash
@@ -125,6 +132,7 @@ Follow this guide: [docs/RAZORPAY_SETUP.md](docs/RAZORPAY_SETUP.md)
    Save this as `RZ_WEBHOOK_SECRET`
 
 **Create Subscription Plans:**
+
 1. Go to **Subscriptions → Plans**
 2. Click **"+ Create Plan"**
 
@@ -185,11 +193,13 @@ cd /Users/simantparida/Desktop/Vibe\ Coding/Automet
 ```
 
 This will:
+
 1. ✅ Run all 8 database migrations
 2. ✅ Populate demo data (Sharma Services org)
 3. ✅ Start the dev server at http://localhost:3000
 
 **Expected output:**
+
 ```
 Running database migrations...
 Found 8 migration(s)
@@ -230,6 +240,7 @@ The seed scripts created a user record in the `users` table, but you need to cre
    ```
 
 **Alternatively (easier):**
+
 1. Before creating the user in Supabase Auth, note the UUID from seed file:
    - UUID: `20000000-0000-0000-0000-000000000001`
 2. When creating user in Supabase Dashboard, you can't set UUID directly
@@ -268,6 +279,7 @@ The seed scripts created a user record in the `users` table, but you need to cre
    ```
 
 Now you can log in with:
+
 - Email: `admin@automet.dev`
 - Password: (what you set)
 
@@ -317,21 +329,25 @@ Use this to track your progress:
 ## 🆘 Troubleshooting
 
 ### "DATABASE_URL not set"
+
 - Make sure you filled in `DATABASE_URL` in `.env.local`
 - Check there are no typos or extra spaces
 - Ensure password is correct (no special characters need escaping)
 
 ### "Migration failed"
+
 - Check Supabase project is not paused (free tier pauses after 1 week inactivity)
 - Verify DATABASE_URL is correct
 - Try running migrations one-by-one to isolate the issue
 
 ### "Cannot log in"
+
 - Verify email is confirmed in Supabase Auth dashboard
 - Check password is correct
 - Make sure Google OAuth is enabled if using Google sign-in
 
 ### "npm install failed"
+
 - Already fixed! But if issues persist, try:
   ```bash
   rm -rf node_modules package-lock.json

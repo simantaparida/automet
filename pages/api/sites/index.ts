@@ -29,7 +29,8 @@ export default async function handler(
       // RLS policies automatically filter by user's org_id
       let query = supabase
         .from('sites')
-        .select(`
+        .select(
+          `
           id,
           name,
           address,
@@ -38,7 +39,8 @@ export default async function handler(
           gps_lng,
           notes,
           client:clients(id, name)
-        `)
+        `
+        )
         .order('name', { ascending: true });
 
       if (client_id) {
@@ -69,7 +71,9 @@ export default async function handler(
       const { client_id, name, address, gps_lat, gps_lng, notes } = req.body;
 
       if (!client_id || !name) {
-        return res.status(400).json({ error: 'client_id and name are required' });
+        return res
+          .status(400)
+          .json({ error: 'client_id and name are required' });
       }
 
       // RLS policies automatically enforce org_id from authenticated user
@@ -84,7 +88,8 @@ export default async function handler(
           gps_lng: gps_lng || null,
           notes: notes || null,
         })
-        .select(`
+        .select(
+          `
           id,
           name,
           address,
@@ -92,7 +97,8 @@ export default async function handler(
           gps_lat,
           gps_lng,
           notes
-        `)
+        `
+        )
         .single();
 
       if (error) {

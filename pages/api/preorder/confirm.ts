@@ -7,7 +7,7 @@
  * @security One-time use (sets email_confirmed=true)
  */
 
-import type { NextApiRequest, NextApiResponse} from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSupabaseAdmin } from '@/lib/supabase-server';
 import { confirmationSchema } from '@/lib/validations/preorder';
 
@@ -47,7 +47,9 @@ export default async function handler(
     // Find pre-order by confirmation token
     const { data: preorder, error: fetchError } = await supabaseAdmin
       .from('preorders')
-      .select('id, email, contact_name, email_confirmed, token_expires_at, org_name')
+      .select(
+        'id, email, contact_name, email_confirmed, token_expires_at, org_name'
+      )
       .eq('confirmation_token', token)
       .single();
 
@@ -78,7 +80,8 @@ export default async function handler(
     if (now > expiresAt) {
       return res.status(410).json({
         error: 'Token expired',
-        message: 'This confirmation link has expired. Please request a new confirmation email.',
+        message:
+          'This confirmation link has expired. Please request a new confirmation email.',
       });
     }
 

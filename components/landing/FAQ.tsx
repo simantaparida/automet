@@ -32,7 +32,7 @@ export default function FAQ({ onContactClick }: FAQProps) {
     {
       question: 'When will Automet launch?',
       answer:
-        'We\'re launching in Q1 2025! Early access members will get priority onboarding and will be among the first to use the platform. We\'ll notify you via email when we\'re ready to onboard you.',
+        "We're launching in Q1 2025! Early access members will get priority onboarding and will be among the first to use the platform. We'll notify you via email when we're ready to onboard you.",
     },
   ];
 
@@ -52,8 +52,11 @@ export default function FAQ({ onContactClick }: FAQProps) {
             Frequently Asked Questions
           </h2>
           <p className="text-lg text-gray-600">
-            Got questions? We've got answers.{' '}
-            <a href="mailto:support@automet.in" className="text-primary hover:text-primary/80 font-semibold transition-colors">
+            Got questions? We&apos;ve got answers.{' '}
+            <a
+              href="mailto:support@automet.in"
+              className="text-primary hover:text-primary/80 font-semibold transition-colors"
+            >
               Contact us
             </a>
           </p>
@@ -95,7 +98,9 @@ export default function FAQ({ onContactClick }: FAQProps) {
                 {/* Answer */}
                 <div
                   className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    openIndex === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                    openIndex === index
+                      ? 'max-h-96 opacity-100'
+                      : 'max-h-0 opacity-0'
                   }`}
                 >
                   <div className="px-5 pb-4 text-gray-600 text-sm leading-relaxed border-t border-gray-100 pt-4">
@@ -114,7 +119,7 @@ export default function FAQ({ onContactClick }: FAQProps) {
               Still have questions?
             </h3>
             <p className="text-gray-600 text-sm mb-4">
-              We're here to help. Reach out to our team.
+              We&apos;re here to help. Reach out to our team.
             </p>
             <button
               onClick={onContactClick}

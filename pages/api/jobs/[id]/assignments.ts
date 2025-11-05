@@ -9,7 +9,7 @@ export default async function handler(
   if (!supabaseAdmin) {
     return res.status(500).json({ error: 'Server configuration error' });
   }
-  
+
   const { id } = req.query;
 
   if (req.method === 'POST') {
@@ -30,7 +30,9 @@ export default async function handler(
         .single();
 
       if (existing) {
-        return res.status(400).json({ error: 'Technician already assigned to this job' });
+        return res
+          .status(400)
+          .json({ error: 'Technician already assigned to this job' });
       }
 
       // Create new assignment
@@ -42,13 +44,15 @@ export default async function handler(
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
-        .select(`
+        .select(
+          `
           id,
           started_at,
           completed_at,
           notes,
           user:users(id, email, role)
-        `)
+        `
+        )
         .single();
 
       if (error) throw error;
@@ -77,7 +81,9 @@ export default async function handler(
 
       if (error) throw error;
 
-      return res.status(200).json({ message: 'Assignment removed successfully' });
+      return res
+        .status(200)
+        .json({ message: 'Assignment removed successfully' });
     } catch (error: any) {
       console.error('Error removing assignment:', error);
       return res.status(500).json({ error: error.message });

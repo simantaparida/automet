@@ -1,21 +1,34 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseAdmin } from '@/lib/supabase-server';
+import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import { withAuth, requireRole } from '@/lib/auth-middleware';
+import type { Database } from '@/types/database';
 
 /**
- * Inventory API Route
+ * Inventory API Route (Protected)
  * GET /api/inventory - List all inventory items
- * POST /api/inventory - Create a new inventory item
+ * POST /api/inventory - Create a new inventory item (requires owner or coordinator role)
+ *
+ * @security Requires authentication
+ * @security RLS policies enforced - users can only see inventory in their org
  */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  // Authenticate user
+  const authResult = await withAuth(req, res);
+  if (!authResult.authenticated) return;
+
+  const { user } = authResult;
+  const supabase = createServerSupabaseClient<Database>({ req, res });
+
   if (req.method === 'GET') {
     try {
       const { low_stock } = req.query;
 
-      let query = supabaseAdmin
-        .from('inventory')
+      // RLS policies automatically filter by user's org_id
+      let query = supabase
+        .from('inventory_items')
         .select('*')
         .order('item_name', { ascending: true });
 
@@ -44,6 +57,9 @@ export default async function handler(
   }
 
   if (req.method === 'POST') {
+    // Only owners and coordinators can create inventory items
+    if (!requireRole(user, ['owner', 'coordinator'], res)) return;
+
     try {
       const {
         item_name,
@@ -62,10 +78,11 @@ export default async function handler(
         });
       }
 
-      const { data, error } = await supabaseAdmin
-        .from('inventory')
+      // RLS policies automatically enforce org_id from authenticated user
+      const { data, error } = await supabase
+        .from('inventory_items')
         .insert({
-          org_id: '10000000-0000-0000-0000-000000000001', // Default org
+          org_id: user.org_id, // Use authenticated user's org_id
           item_name,
           category,
           sku: sku || null,
@@ -74,8 +91,6 @@ export default async function handler(
           reorder_level: reorder_level || 0,
           unit_cost: unit_cost || null,
           notes: notes || null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
         })
         .select('*')
         .single();

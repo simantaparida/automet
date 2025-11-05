@@ -1,20 +1,33 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseAdmin } from '@/lib/supabase-server';
+import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import { withAuth, requireRole } from '@/lib/auth-middleware';
+import type { Database } from '@/types/database';
 
 /**
- * Sites API Route
+ * Sites API Route (Protected)
  * GET /api/sites - List all sites (optionally filtered by client_id)
- * POST /api/sites - Create a new site
+ * POST /api/sites - Create a new site (requires owner or coordinator role)
+ *
+ * @security Requires authentication
+ * @security RLS policies enforced - users can only see sites in their org
  */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  // Authenticate user
+  const authResult = await withAuth(req, res);
+  if (!authResult.authenticated) return;
+
+  const { user } = authResult;
+  const supabase = createServerSupabaseClient<Database>({ req, res });
+
   if (req.method === 'GET') {
     try {
       const { client_id } = req.query;
 
-      let query = supabaseAdmin
+      // RLS policies automatically filter by user's org_id
+      let query = supabase
         .from('sites')
         .select(`
           id,
@@ -49,6 +62,9 @@ export default async function handler(
   }
 
   if (req.method === 'POST') {
+    // Only owners and coordinators can create sites
+    if (!requireRole(user, ['owner', 'coordinator'], res)) return;
+
     try {
       const { client_id, name, address, gps_lat, gps_lng, notes } = req.body;
 
@@ -56,18 +72,17 @@ export default async function handler(
         return res.status(400).json({ error: 'client_id and name are required' });
       }
 
-      const { data, error } = await supabaseAdmin
+      // RLS policies automatically enforce org_id from authenticated user
+      const { data, error } = await supabase
         .from('sites')
         .insert({
-          org_id: '10000000-0000-0000-0000-000000000001', // Default org
+          org_id: user.org_id, // Use authenticated user's org_id
           client_id,
           name,
           address: address || null,
           gps_lat: gps_lat || null,
           gps_lng: gps_lng || null,
           notes: notes || null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
         })
         .select(`
           id,

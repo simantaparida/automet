@@ -1,18 +1,31 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseAdmin } from '@/lib/supabase-server';
+import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import { withAuth, requireRole } from '@/lib/auth-middleware';
+import type { Database } from '@/types/database';
 
 /**
- * Clients API Route
- * GET /api/clients - List all clients
- * POST /api/clients - Create a new client
+ * Clients API Route (Protected)
+ * GET /api/clients - List all clients in user's organization
+ * POST /api/clients - Create a new client (requires owner or coordinator role)
+ *
+ * @security Requires authentication
+ * @security RLS policies enforced - users can only see clients in their org
  */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  // Authenticate user
+  const authResult = await withAuth(req, res);
+  if (!authResult.authenticated) return;
+
+  const { user } = authResult;
+  const supabase = createServerSupabaseClient<Database>({ req, res });
+
   if (req.method === 'GET') {
     try {
-      const { data, error } = await supabaseAdmin
+      // RLS policies automatically filter by user's org_id
+      const { data, error } = await supabase
         .from('clients')
         .select('id, name, contact_email, contact_phone, address, notes')
         .order('name', { ascending: true });
@@ -32,6 +45,9 @@ export default async function handler(
   }
 
   if (req.method === 'POST') {
+    // Only owners and coordinators can create clients
+    if (!requireRole(user, ['owner', 'coordinator'], res)) return;
+
     try {
       const { name, contact_email, contact_phone, address, notes } = req.body;
 
@@ -39,17 +55,16 @@ export default async function handler(
         return res.status(400).json({ error: 'Name is required' });
       }
 
-      const { data, error } = await supabaseAdmin
+      // RLS policies automatically enforce org_id from authenticated user
+      const { data, error } = await supabase
         .from('clients')
         .insert({
-          org_id: '10000000-0000-0000-0000-000000000001', // Default org for now
+          org_id: user.org_id, // Use authenticated user's org_id
           name,
           contact_email: contact_email || null,
           contact_phone: contact_phone || null,
           address: address || null,
           notes: notes || null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
         })
         .select('id, name, contact_email, contact_phone, address, notes')
         .single();

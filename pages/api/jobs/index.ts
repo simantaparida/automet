@@ -1,20 +1,34 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseAdmin } from '@/lib/supabase-server';
+import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import { withAuth, requireRole } from '@/lib/auth-middleware';
+import type { Database } from '@/types/database';
 
 /**
- * Jobs API Route
+ * Jobs API Route (Protected)
  * GET /api/jobs - List jobs with optional filters
- * POST /api/jobs - Create a new job
+ * POST /api/jobs - Create a new job (requires owner or coordinator role)
+ *
+ * @security Requires authentication
+ * @security RLS policies enforced - users can only see jobs in their org
  */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  // Authenticate user
+  const authResult = await withAuth(req, res);
+  if (!authResult.authenticated) return;
+
+  const { user } = authResult;
+  const supabase = createServerSupabaseClient<Database>({ req, res });
+
   try {
     if (req.method === 'GET') {
-      return await handleGetJobs(req, res);
+      return await handleGetJobs(req, res, supabase);
     } else if (req.method === 'POST') {
-      return await handleCreateJob(req, res);
+      // Only owners and coordinators can create jobs
+      if (!requireRole(user, ['owner', 'coordinator'], res)) return;
+      return await handleCreateJob(req, res, supabase, user);
     } else {
       return res.status(405).json({ error: 'Method not allowed' });
     }
@@ -35,10 +49,15 @@ export default async function handler(
  * - limit: number of results (default 50)
  * - offset: pagination offset (default 0)
  */
-async function handleGetJobs(req: NextApiRequest, res: NextApiResponse) {
+async function handleGetJobs(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  supabase: ReturnType<typeof createServerSupabaseClient<Database>>
+) {
   const { status, priority, client_id, limit = '50', offset = '0' } = req.query;
 
-  let query = supabaseAdmin
+  // RLS policies automatically filter by user's org_id
+  let query = supabase
     .from('jobs')
     .select(`
       *,
@@ -91,7 +110,12 @@ async function handleGetJobs(req: NextApiRequest, res: NextApiResponse) {
  *   scheduled_at: string (ISO date),
  * }
  */
-async function handleCreateJob(req: NextApiRequest, res: NextApiResponse) {
+async function handleCreateJob(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  supabase: ReturnType<typeof createServerSupabaseClient<Database>>,
+  user: { id: string; org_id: string; role: string }
+) {
   const {
     client_id,
     site_id,
@@ -109,21 +133,11 @@ async function handleCreateJob(req: NextApiRequest, res: NextApiResponse) {
     });
   }
 
-  // Get org_id from the site (for now, we use the default org)
-  const { data: siteData, error: siteError } = await supabaseAdmin
-    .from('sites')
-    .select('org_id')
-    .eq('id', site_id)
-    .single();
-
-  if (siteError || !siteData) {
-    return res.status(400).json({ error: 'Invalid site_id' });
-  }
-
-  const { data, error } = await supabaseAdmin
+  // RLS policies automatically enforce org_id from authenticated user
+  const { data, error } = await supabase
     .from('jobs')
     .insert({
-      org_id: siteData.org_id,
+      org_id: user.org_id, // Use authenticated user's org_id
       client_id,
       site_id,
       asset_id: asset_id || null,

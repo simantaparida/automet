@@ -10,6 +10,8 @@ A mobile-first Progressive Web App (PWA) to manage field jobs, track assets, and
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.1-blue)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-14.2-black)](https://nextjs.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-green)](https://supabase.com/)
+[![CI](https://github.com/simantaparida/automet/workflows/CI/badge.svg)](https://github.com/simantaparida/automet/actions/workflows/ci.yml)
+[![Security Scanning](https://github.com/simantaparida/automet/workflows/Security%20Scanning/badge.svg)](https://github.com/simantaparida/automet/actions/workflows/security.yml)
 
 [Features](#-features) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [Contributing](#-contributing)
 
@@ -76,6 +78,7 @@ This demo account includes sample data: clients, sites, assets, and jobs.
 - **[05_migrations_guide.md](docs/05_migrations_guide.md)** - Database migrations and rollback
 - **[06_api_endpoints.md](docs/06_api_endpoints.md)** - API endpoint reference
 - **[07_architecture.md](docs/07_architecture.md)** - System design overview
+- **[CI_CD_SETUP.md](docs/CI_CD_SETUP.md)** - CI/CD pipeline configuration and best practices
 
 ## 🛠️ Tech Stack
 
@@ -87,7 +90,8 @@ This demo account includes sample data: clients, sites, assets, and jobs.
 - **PWA**: [next-pwa](https://github.com/shadowwalker/next-pwa)
 - **Payments**: [Razorpay](https://razorpay.com/) (for Indian market)
 - **Testing**: Jest (unit tests), Playwright (E2E)
-- **Deployment**: Vercel (planned)
+- **Deployment**: Vercel with automated CI/CD
+- **CI/CD**: GitHub Actions with parallel jobs, security scanning, and automated deployments
 
 ## 🗂️ Project Structure
 

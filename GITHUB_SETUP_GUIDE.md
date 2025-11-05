@@ -89,7 +89,16 @@ Enable these rules:
 
 - ✅ **Require status checks to pass before merging**
   - ✅ Require branches to be up to date before merging
-  - Add checks when you set up CI/CD (e.g., "build", "test")
+  - **Required status checks** (select from the list after CI runs at least once):
+    - ✅ `CI Pipeline` (main CI workflow)
+    - Or select individual checks:
+      - ✅ `ci / ci (20.x)` - Main CI job
+      - ✅ `build` - Build verification
+      - ✅ `lint` - Linting checks
+      - ✅ `typecheck` - TypeScript type checking
+      - ✅ `test` - Unit tests
+      - ✅ `test:e2e` - E2E tests
+  - **Note**: Status checks will appear after the CI workflow runs at least once. Create a test PR or push to trigger the workflow, then return to this page to select the required checks.
 
 - ✅ **Require conversation resolution before merging**
   - All PR comments must be resolved
@@ -119,6 +128,12 @@ Enable these rules (slightly more relaxed than `main`):
   - ✅ Require approvals: **1**
   - ✅ Dismiss stale pull request approvals when new commits are pushed
 
+- ✅ **Require status checks to pass before merging**
+  - ✅ Require branches to be up to date before merging
+  - **Required status checks** (select from the list after CI runs at least once):
+    - ✅ `CI Pipeline` (main CI workflow)
+  - **Note**: Status checks will appear after the CI workflow runs at least once.
+
 - ✅ **Require conversation resolution before merging**
 
 - ✅ **Require linear history**
@@ -127,6 +142,46 @@ Enable these rules (slightly more relaxed than `main`):
 - ✅ **Allow deletions**: ❌ (disabled)
 
 Click **Create** to save.
+
+---
+
+### Enabling CI Status Checks on Branch Protection
+
+**Important**: Status checks only appear after the CI workflow has run at least once. Follow these steps:
+
+1. **First, trigger the CI workflow**:
+   - Create a test PR or push a commit to `develop` or `main`
+   - Go to **Actions** tab to see the workflow running
+   - Wait for it to complete (should take 5-10 minutes)
+
+2. **After CI runs successfully**, go back to branch protection:
+   - Navigate to **Settings** → **Branches**
+   - Click **Edit** on the `main` branch protection rule
+   - Scroll to **"Require status checks to pass before merging"**
+   - Check the box if not already checked
+   - Check **"Require branches to be up to date before merging"**
+
+3. **Select required status checks**:
+   - In the search box, type "CI" to find the workflow
+   - Select one of these options:
+     - **Option 1 (Recommended)**: Select `CI Pipeline` - This requires the entire workflow to pass
+     - **Option 2**: Select individual job checks (e.g., `ci / ci (20.x)`)
+   - Click **Save changes**
+
+4. **Repeat for `develop` branch**:
+   - Edit the `develop` branch protection rule
+   - Enable status checks and select `CI Pipeline`
+   - Click **Save changes**
+
+5. **Verify it works**:
+   - Create a new PR or push a commit
+   - The PR should show "Required" status checks that must pass before merging
+   - The merge button will be disabled until CI passes
+
+**Troubleshooting**:
+- If you don't see status checks, ensure the CI workflow has run at least once
+- Check that the workflow file is named `ci.yml` and located in `.github/workflows/`
+- Verify the workflow triggers on `push` and `pull_request` events
 
 ---
 
@@ -284,8 +339,12 @@ Use this checklist to ensure everything is set up correctly:
 - [ ] Staging secrets added
 - [ ] Production secrets added (when ready)
 
+### CI/CD
+- [x] CI workflow added (`.github/workflows/ci.yml`)
+- [ ] CI status checks enabled on branch protection (see below)
+- [ ] Test CI workflow by creating a PR
+
 ### Optional (For Later)
-- [ ] CI/CD workflow added (`.github/workflows/ci.yml`)
 - [ ] CodeQL code scanning enabled
 - [ ] Dependabot version updates configured
 - [ ] CODEOWNERS file created

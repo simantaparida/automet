@@ -9,7 +9,7 @@ import type { Database } from '@/types/database';
  * Only use in API routes, server-side functions, and migrations
  */
 export const supabaseAdmin = createClient<Database>(
-  process.env.SUPABASE_URL || '',
+  process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '',
   process.env.SUPABASE_SERVICE_ROLE_KEY || '',
   {
     auth: {
@@ -25,6 +25,6 @@ export const supabaseAdmin = createClient<Database>(
  * Use for server-side operations that should respect user permissions
  */
 export const supabaseServer = createClient<Database>(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_ANON_KEY || ''
+  process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || ''
 );

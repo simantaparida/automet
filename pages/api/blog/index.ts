@@ -4,11 +4,13 @@
  *
  * @public This endpoint is public and does not require authentication
  * @security Uses anon key with RLS policies allowing public read of published posts
+ *         Or service role key to bypass RLS (for public blog content)
  * @returns Array of blog posts with excerpt (not full content)
  */
 
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin, supabaseServer } from '@/lib/supabase-server';
 import type { Database } from '@/types/database';
 
 export default async function handler(
@@ -31,6 +33,8 @@ export default async function handler(
       process.env.SUPABASE_ANON_KEY ||
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+
     if (!supabaseUrl || !supabaseAnonKey) {
       console.error('Blog API: Missing Supabase configuration', {
         hasUrl: !!supabaseUrl,
@@ -50,9 +54,24 @@ export default async function handler(
       });
     }
 
-    // Create public client (uses anon key, respects RLS)
-    // Blog posts table should have RLS policy allowing public read of published posts
-    const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+    // Prefer admin client if available (bypasses RLS for public blog content)
+    // Otherwise use server client with anon key (respects RLS)
+    const hasServiceRoleKey = serviceRoleKey.length > 0;
+    const client = hasServiceRoleKey ? supabaseAdmin : supabaseServer;
+
+    // Log configuration (only in development)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Blog API] Configuration:', {
+        usingClient: hasServiceRoleKey ? 'supabaseAdmin (bypasses RLS)' : 'supabaseServer (respects RLS)',
+        hasServiceRoleKey,
+        hasSupabaseUrl: !!supabaseUrl,
+      });
+    }
+
+    // If not using admin client, create a client with anon key
+    const supabase = hasServiceRoleKey 
+      ? client 
+      : createClient<Database>(supabaseUrl, supabaseAnonKey);
 
     let query = supabase
       .from('blog_posts')
@@ -69,12 +88,13 @@ export default async function handler(
     const { data, error } = await query;
 
     if (error) {
-      console.error('Blog fetch error:', error);
-      console.error('Error details:', {
+      console.error('[Blog API] Fetch error:', error);
+      console.error('[Blog API] Error details:', {
         message: error.message,
         code: error.code,
         details: error.details,
         hint: error.hint,
+        usingClient: hasServiceRoleKey ? 'supabaseAdmin' : 'supabaseServer',
       });
 
       // Provide helpful error messages
@@ -88,6 +108,11 @@ export default async function handler(
           error: 'Blog posts table not found. Please run database migrations.',
           details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
+      }
+
+      // If RLS error and using server client, suggest using service role key
+      if (error.code === '42501' && !hasServiceRoleKey) {
+        console.error('[Blog API] RLS permission denied. Consider using SUPABASE_SERVICE_ROLE_KEY to bypass RLS for public blog posts.');
       }
 
       return res.status(500).json({

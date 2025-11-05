@@ -97,7 +97,8 @@ export default function HowItWorks() {
             Get started in 3 simple steps
           </h2>
           <p className="text-lg text-gray-600 animate-fade-in">
-            From setup to your first job - you'll be up and running in no time.
+            From setup to your first job - you&apos;ll be up and running in no
+            time.
           </p>
         </div>
 

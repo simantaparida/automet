@@ -55,7 +55,7 @@ export default function AdminWaitlistPage() {
     if (storedSecret) {
       setAuthenticated(true);
       setCheckingAuth(false);
-      fetchWaitlist(storedSecret);
+      void fetchWaitlist(storedSecret);
     } else {
       setCheckingAuth(false);
       setLoading(false);
@@ -71,7 +71,12 @@ export default function AdminWaitlistPage() {
           'X-Admin-Secret': secret,
         },
       });
-      const data = await response.json();
+      const data = (await response.json()) as {
+        success?: boolean;
+        data?: Preorder[];
+        stats?: WaitlistStats;
+        message?: string;
+      };
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -112,7 +117,12 @@ export default function AdminWaitlistPage() {
           'X-Admin-Secret': password,
         },
       });
-      const data = await response.json();
+      const data = (await response.json()) as {
+        success?: boolean;
+        data?: Preorder[];
+        stats?: WaitlistStats;
+        message?: string;
+      };
 
       if (!response.ok) {
         if (response.status === 401) {

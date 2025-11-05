@@ -106,7 +106,10 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
         }),
       });
 
-      const data = await response.json();
+      const data = (await response.json()) as {
+        message?: string;
+        error?: string;
+      };
 
       if (!response.ok) {
         // Use the detailed message if available, otherwise fall back to error
@@ -117,11 +120,13 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
 
       // Success - redirect to success page
       window.location.href = `/preorder/success?email=${encodeURIComponent(formData.email)}`;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Waitlist submission error:', error);
-      setSubmitError(
-        error.message || 'Something went wrong. Please try again.'
-      );
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Something went wrong. Please try again.';
+      setSubmitError(errorMessage);
       setSubmitting(false);
     }
   };
@@ -191,7 +196,12 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="p-6">
+          <form
+            onSubmit={(e) => {
+              void handleSubmit(e);
+            }}
+            className="p-6"
+          >
             {/* Error Alert */}
             {submitError && (
               <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded">
@@ -527,7 +537,8 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
                 {submitting ? 'Joining Waitlist...' : 'Join Waitlist'}
               </button>
               <p className="mt-2 text-xs text-center text-gray-500">
-                We'll notify you when Automet launches. No spam, we promise!
+                We&apos;ll notify you when Automet launches. No spam, we
+                promise!
               </p>
             </div>
           </form>

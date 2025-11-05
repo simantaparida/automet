@@ -1,12 +1,15 @@
 /**
- * Blog Posts API endpoint
+ * Blog Posts API endpoint (Public - No Authentication Required)
  * GET /api/blog - List published blog posts
  *
+ * @public This endpoint is public and does not require authentication
+ * @security Uses anon key with RLS policies allowing public read of published posts
  * @returns Array of blog posts with excerpt (not full content)
  */
 
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseAdmin, supabaseServer } from '@/lib/supabase-server';
+import { createClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/database';
 
 export default async function handler(
   req: NextApiRequest,
@@ -19,29 +22,39 @@ export default async function handler(
   try {
     const { limit = '10', category } = req.query;
 
-    // Check environment variables
-    const hasServiceRoleKey = !!process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.SUPABASE_SERVICE_ROLE_KEY.length > 0;
-    const hasAnonKey = !!process.env.SUPABASE_ANON_KEY && process.env.SUPABASE_ANON_KEY.length > 0;
-    const hasSupabaseUrl = !!process.env.SUPABASE_URL && process.env.SUPABASE_URL.length > 0;
+    // Validate environment variables (support both naming conventions)
+    const supabaseUrl =
+      process.env.SUPABASE_URL ||
+      process.env.NEXT_PUBLIC_SUPABASE_URL;
 
-    if (!hasSupabaseUrl) {
-      console.error('SUPABASE_URL is not set');
-      return res.status(500).json({ error: 'Server configuration error' });
+    const supabaseAnonKey =
+      process.env.SUPABASE_ANON_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseAnonKey) {
+      console.error('Blog API: Missing Supabase configuration', {
+        hasUrl: !!supabaseUrl,
+        hasAnonKey: !!supabaseAnonKey,
+        checkedVars: [
+          'SUPABASE_URL',
+          'NEXT_PUBLIC_SUPABASE_URL',
+          'SUPABASE_ANON_KEY',
+          'NEXT_PUBLIC_SUPABASE_ANON_KEY'
+        ],
+      });
+      return res.status(500).json({
+        error: 'Server configuration error',
+        details: process.env.NODE_ENV === 'development'
+          ? 'Missing SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL or SUPABASE_ANON_KEY/NEXT_PUBLIC_SUPABASE_ANON_KEY'
+          : undefined
+      });
     }
 
-    // Use admin client if service role key is available, otherwise use server client (which respects RLS)
-    const client = hasServiceRoleKey ? supabaseAdmin : supabaseServer;
-    
-    console.log('Blog API - Using client:', hasServiceRoleKey ? 'supabaseAdmin' : 'supabaseServer');
-    console.log('Blog API - Has service role key:', hasServiceRoleKey);
-    console.log('Blog API - Has anon key:', hasAnonKey);
-    
-    if (!hasServiceRoleKey && !hasAnonKey) {
-      console.error('Neither SUPABASE_SERVICE_ROLE_KEY nor SUPABASE_ANON_KEY is set');
-      return res.status(500).json({ error: 'Server configuration error' });
-    }
+    // Create public client (uses anon key, respects RLS)
+    // Blog posts table should have RLS policy allowing public read of published posts
+    const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
 
-    let query = client
+    let query = supabase
       .from('blog_posts')
       .select('id, slug, title, excerpt, category, tags, author_name, published_at, cover_image_url')
       .eq('published', true)
@@ -63,22 +76,35 @@ export default async function handler(
         details: error.details,
         hint: error.hint,
       });
-      return res.status(500).json({ 
+
+      // Provide helpful error messages
+      if (error.code === 'PGRST116') {
+        // No rows returned - this is okay, just return empty array
+        return res.status(200).json([]);
+      }
+
+      if (error.message?.includes('relation') && error.message?.includes('does not exist')) {
+        return res.status(500).json({
+          error: 'Blog posts table not found. Please run database migrations.',
+          details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+      }
+
+      return res.status(500).json({
         error: 'Failed to fetch blog posts',
         details: process.env.NODE_ENV === 'development' ? error.message : undefined
       });
     }
 
-    if (!data || data.length === 0) {
-      console.warn('No blog posts found. Published count:', data?.length || 0);
-    }
-
+    // Return data (even if empty array)
     return res.status(200).json(data || []);
+
   } catch (error) {
     console.error('Blog API error:', error);
-    return res.status(500).json({ 
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined
+      details: process.env.NODE_ENV === 'development' ? errorMessage : undefined
     });
   }
 }

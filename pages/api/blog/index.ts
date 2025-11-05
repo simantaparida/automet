@@ -22,19 +22,30 @@ export default async function handler(
   try {
     const { limit = '10', category } = req.query;
 
-    // Validate environment variables
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+    // Validate environment variables (support both naming conventions)
+    const supabaseUrl =
+      process.env.SUPABASE_URL ||
+      process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+    const supabaseAnonKey =
+      process.env.SUPABASE_ANON_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!supabaseUrl || !supabaseAnonKey) {
       console.error('Blog API: Missing Supabase configuration', {
         hasUrl: !!supabaseUrl,
         hasAnonKey: !!supabaseAnonKey,
+        checkedVars: [
+          'SUPABASE_URL',
+          'NEXT_PUBLIC_SUPABASE_URL',
+          'SUPABASE_ANON_KEY',
+          'NEXT_PUBLIC_SUPABASE_ANON_KEY'
+        ],
       });
       return res.status(500).json({
         error: 'Server configuration error',
         details: process.env.NODE_ENV === 'development'
-          ? 'Missing SUPABASE_URL or SUPABASE_ANON_KEY'
+          ? 'Missing SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL or SUPABASE_ANON_KEY/NEXT_PUBLIC_SUPABASE_ANON_KEY'
           : undefined
       });
     }

@@ -76,7 +76,21 @@ ADMIN_SECRET=your-secure-random-secret-here
 
 ---
 
-## Step 3: Deploy
+## Step 3: Configure Build Settings
+
+**Important:** Verify these settings in Vercel:
+
+1. Go to **Settings** → **General** → **Build & Development Settings**
+2. Ensure these are set correctly:
+   - **Framework Preset:** Next.js
+   - **Build Command:** `npm run build` (or leave empty for auto-detection)
+   - **Output Directory:** Leave empty (default `.next` is correct)
+   - **Install Command:** `npm install` (or leave empty for auto-detection)
+   - **Node.js Version:** 20.x (recommended)
+
+**⚠️ Do NOT override the Output Directory** - It must remain empty or set to `.next` for Next.js to work correctly.
+
+## Step 4: Deploy
 
 1. **Click "Deploy"**
    - Vercel will automatically:
@@ -87,6 +101,10 @@ ADMIN_SECRET=your-secure-random-secret-here
 2. **Wait for deployment to complete**
    - Usually takes 2-5 minutes
    - You'll see build logs in real-time
+   - **Watch for errors** - If you see "routes-manifest.json couldn't be found", check:
+     - All `NEXT_PUBLIC_` environment variables are set
+     - Build completed successfully (check logs for earlier errors)
+     - Output Directory is not overridden
 
 3. **Get your preview URL**
    - After deployment, you'll get a URL like:

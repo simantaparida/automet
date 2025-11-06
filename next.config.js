@@ -3,6 +3,7 @@ const withPWA = require('next-pwa')({
   register: true,
   skipWaiting: true,
   disable: process.env.NODE_ENV === 'development',
+  // Only exclude middleware manifest, don't interfere with other manifests
   buildExcludes: [/middleware-manifest\.json$/],
 });
 

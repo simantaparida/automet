@@ -29,7 +29,7 @@ export default function Hero({ onPreorderClick }: HeroProps) {
   }, []);
 
   return (
-    <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-orange-50 via-white to-amber-50">
+    <section className="relative pt-24 pb-12 md:pt-32 md:pb-20 overflow-hidden bg-gradient-to-br from-orange-50 via-white to-amber-50">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
@@ -87,13 +87,13 @@ export default function Hero({ onPreorderClick }: HeroProps) {
                 <span className="text-primary font-bold">recovering 10% lost revenue</span> with Automet
               </p>
 
-              {/* Key Benefits Grid - 2x2 layout with 14px subtitle */}
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-white rounded-lg p-4 border-2 border-primary/20 shadow-md">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+              {/* Key Benefits Grid - 2x2 layout with compact design */}
+              <div className="grid grid-cols-2 gap-3 mb-6">
+                <div className="bg-white rounded-lg p-2.5 border-2 border-primary/20 shadow-md">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg
-                        className="w-6 h-6 text-green-600"
+                        className="w-5 h-5 text-green-600"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -107,17 +107,17 @@ export default function Hero({ onPreorderClick }: HeroProps) {
                       </svg>
                     </div>
                     <div className="flex-1">
-                      <div className="text-xl font-bold text-gray-900 mb-1">10%</div>
-                      <div className="text-sm text-gray-600">Revenue Recovery</div>
+                      <div className="text-[16px] font-bold text-gray-900 leading-tight mb-0.5">10%</div>
+                      <div className="text-[12px] text-gray-600 leading-tight">Revenue Recovery</div>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg p-4 border-2 border-primary/20 shadow-md">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="bg-white rounded-lg p-2.5 border-2 border-primary/20 shadow-md">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg
-                        className="w-6 h-6 text-blue-600"
+                        className="w-5 h-5 text-blue-600"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -131,17 +131,17 @@ export default function Hero({ onPreorderClick }: HeroProps) {
                       </svg>
                     </div>
                     <div className="flex-1">
-                      <div className="text-xl font-bold text-gray-900 mb-1">5x Faster</div>
-                      <div className="text-sm text-gray-600">Payment Collection</div>
+                      <div className="text-[16px] font-bold text-gray-900 leading-tight mb-0.5">5x Faster</div>
+                      <div className="text-[12px] text-gray-600 leading-tight">Payment Collection</div>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg p-4 border-2 border-primary/20 shadow-md">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="bg-white rounded-lg p-2.5 border-2 border-primary/20 shadow-md">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg
-                        className="w-6 h-6 text-purple-600"
+                        className="w-5 h-5 text-purple-600"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -155,17 +155,17 @@ export default function Hero({ onPreorderClick }: HeroProps) {
                       </svg>
                     </div>
                     <div className="flex-1">
-                      <div className="text-xl font-bold text-gray-900 mb-1">50% Less</div>
-                      <div className="text-sm text-gray-600">Admin Time</div>
+                      <div className="text-[16px] font-bold text-gray-900 leading-tight mb-0.5">50% Less</div>
+                      <div className="text-[12px] text-gray-600 leading-tight">Admin Time</div>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg p-4 border-2 border-primary/20 shadow-md">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="bg-white rounded-lg p-2.5 border-2 border-primary/20 shadow-md">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg
-                        className="w-6 h-6 text-orange-600"
+                        className="w-5 h-5 text-orange-600"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -179,8 +179,8 @@ export default function Hero({ onPreorderClick }: HeroProps) {
                       </svg>
                     </div>
                     <div className="flex-1">
-                      <div className="text-xl font-bold text-gray-900 mb-1">300%+</div>
-                      <div className="text-sm text-gray-600">ROI in Year 1</div>
+                      <div className="text-[16px] font-bold text-gray-900 leading-tight mb-0.5">300%+</div>
+                      <div className="text-[12px] text-gray-600 leading-tight">ROI in Year 1</div>
                     </div>
                   </div>
                 </div>

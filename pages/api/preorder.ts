@@ -107,7 +107,7 @@ export default async function handler(
     // Using admin client if available (bypasses RLS), otherwise using public RLS policy
     const { data: preorder, error: insertError } = await supabase
       .from('preorders')
-      // @ts-ignore - Supabase type inference issue with insert
+      // @ts-expect-error - Supabase type inference issue with insert
       .insert({
         org_name: data.org_name || null,
         contact_name: data.contact_name || null,
@@ -195,7 +195,10 @@ export default async function handler(
 
     // Send welcome email (don't fail if email fails)
     try {
-      const preorderData = preorder as { email: string; contact_name?: string | null } | null;
+      const preorderData = preorder as {
+        email: string;
+        contact_name?: string | null;
+      } | null;
       if (preorderData) {
         await sendWaitlistWelcomeEmail(
           preorderData.email,

@@ -98,7 +98,7 @@ export default async function handler(
     // Mark email as confirmed
     const { error: updateError } = await supabaseAdmin
       .from('preorders')
-      // @ts-ignore - Supabase type inference issue with update
+      // @ts-expect-error - Supabase type inference issue with update
       .update({
         email_confirmed: true,
         updated_at: new Date().toISOString(),

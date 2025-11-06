@@ -223,21 +223,6 @@ export default function JobDetailPage() {
     setShowAssignModal(true);
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'scheduled':
-        return '#3b82f6';
-      case 'in_progress':
-        return '#f59e0b';
-      case 'completed':
-        return '#10b981';
-      case 'cancelled':
-        return '#ef4444';
-      default:
-        return '#6b7280';
-    }
-  };
-
   const getPriorityIcon = (priority: string) => {
     switch (priority) {
       case 'urgent':

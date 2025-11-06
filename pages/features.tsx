@@ -551,10 +551,16 @@ export default function FeaturesPage() {
 
       {/* Modals */}
       {preorderModalOpen && (
-        <PreorderModal onClose={() => setPreorderModalOpen(false)} />
+        <PreorderModal
+          isOpen={preorderModalOpen}
+          onClose={() => setPreorderModalOpen(false)}
+        />
       )}
       {contactModalOpen && (
-        <ContactSupportModal onClose={() => setContactModalOpen(false)} />
+        <ContactSupportModal
+          isOpen={contactModalOpen}
+          onClose={() => setContactModalOpen(false)}
+        />
       )}
     </>
   );

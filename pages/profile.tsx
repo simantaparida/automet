@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
@@ -7,7 +7,7 @@ import BottomNav from '@/components/BottomNav';
 export default function ProfilePage() {
   const { user, signOut } = useAuth();
   const router = useRouter();
-  const [orgName, setOrgName] = useState('Sharma Services');
+  const [orgName] = useState('Sharma Services');
   const [loading, setLoading] = useState(false);
 
   const handleSignOut = async () => {

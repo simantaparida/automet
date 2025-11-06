@@ -65,9 +65,11 @@ export default async function handler(
           jobs: jobs || [],
         },
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error fetching asset:', error);
-      return res.status(500).json({ error: error.message });
+      return res.status(500).json({
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
     }
   }
 
@@ -90,7 +92,7 @@ export default async function handler(
 
       const { data, error } = await supabaseAdmin
         .from('assets')
-        // @ts-ignore - Supabase type inference issue with update
+        // @ts-expect-error - Supabase type inference issue with update
         .update({
           asset_type,
           model,
@@ -109,9 +111,11 @@ export default async function handler(
       if (error) throw error;
 
       return res.status(200).json(data);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error updating asset:', error);
-      return res.status(500).json({ error: error.message });
+      return res.status(500).json({
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
     }
   }
 

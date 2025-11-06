@@ -55,16 +55,19 @@ export const getSupabaseAdmin = (): ReturnType<
   ) {
     // Try to decode JWT to verify it's a service role key
     try {
-      const payload = JSON.parse(
-        Buffer.from(serviceRoleKey.split('.')[1], 'base64').toString()
-      );
-      if (payload.role === 'service_role') {
-        console.log('✅ Admin client created with valid service_role key');
-      } else {
-        console.warn(
-          '⚠️ Service role key does not have service_role role:',
-          payload.role
-        );
+      const parts = serviceRoleKey.split('.');
+      if (parts.length >= 2 && parts[1]) {
+        const payload = JSON.parse(
+          Buffer.from(parts[1], 'base64').toString()
+        ) as { role?: string };
+        if (payload.role === 'service_role') {
+          console.log('✅ Admin client created with valid service_role key');
+        } else {
+          console.warn(
+            '⚠️ Service role key does not have service_role role:',
+            payload.role
+          );
+        }
       }
     } catch (e) {
       // Not a valid JWT format, but that's okay - Supabase will validate it

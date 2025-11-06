@@ -4,15 +4,6 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import BottomNav from '@/components/BottomNav';
 
-interface Job {
-  id: string;
-  status: 'scheduled' | 'in_progress' | 'completed' | 'cancelled';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  scheduled_at: string;
-  title: string;
-  description: string | null;
-}
-
 interface DashboardStats {
   scheduledJobs: number;
   inProgressJobs: number;

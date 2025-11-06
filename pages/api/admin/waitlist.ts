@@ -61,9 +61,13 @@ export default async function handler(
     // Get summary statistics
     const total = preorders?.length || 0;
     const confirmed =
-      preorders?.filter((p: any) => p.email_confirmed === true).length || 0;
+      preorders?.filter(
+        (p: { email_confirmed?: boolean }) => p.email_confirmed === true
+      ).length || 0;
     const paid =
-      preorders?.filter((p: any) => p.payment_status === 'paid').length || 0;
+      preorders?.filter(
+        (p: { payment_status?: string }) => p.payment_status === 'paid'
+      ).length || 0;
 
     return res.status(200).json({
       success: true,

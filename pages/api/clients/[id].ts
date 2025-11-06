@@ -74,7 +74,7 @@ export default async function handler(
 
       const { data, error } = await supabaseAdmin
         .from('clients')
-        // @ts-ignore - Supabase type inference issue with update
+        // @ts-expect-error - Supabase type inference issue with update
         .update({
           name,
           contact_email: contact_email || null,

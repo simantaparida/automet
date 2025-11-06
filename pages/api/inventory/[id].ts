@@ -17,7 +17,7 @@ export default async function handler(
     return res.status(400).json({ error: 'Invalid inventory item ID' });
   }
 
-  const itemId = id as string;
+  const itemId = id;
 
   if (req.method === 'GET') {
     try {
@@ -61,7 +61,7 @@ export default async function handler(
 
       const { data, error } = await supabaseAdmin
         .from('inventory')
-        // @ts-ignore - Supabase type inference issue with update
+        // @ts-expect-error - Supabase type inference issue with update
         .update({
           item_name,
           category,

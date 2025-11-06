@@ -167,44 +167,67 @@ export default function BlogPostPage() {
       }
 
       return (
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mt-10 mb-4 leading-tight tracking-tight" {...props}>
+        <h1
+          className="text-3xl md:text-4xl font-bold text-gray-900 mt-10 mb-4 leading-tight tracking-tight"
+          {...props}
+        >
           {children}
         </h1>
       );
     },
     h2: ({ children, ...props }: any) => (
-      <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mt-8 mb-3 leading-tight tracking-tight" {...props}>
+      <h2
+        className="text-2xl md:text-3xl font-bold text-gray-900 mt-8 mb-3 leading-tight tracking-tight"
+        {...props}
+      >
         {children}
       </h2>
     ),
     h3: ({ children, ...props }: any) => (
-      <h3 className="text-xl md:text-2xl font-semibold text-gray-900 mt-6 mb-2.5 leading-snug tracking-tight" {...props}>
+      <h3
+        className="text-xl md:text-2xl font-semibold text-gray-900 mt-6 mb-2.5 leading-snug tracking-tight"
+        {...props}
+      >
         {children}
       </h3>
     ),
     // Paragraphs - Professional spacing and readability
     p: ({ children, ...props }: any) => (
-      <p className="text-base md:text-lg text-gray-700 leading-7 mb-5 font-normal" {...props}>
+      <p
+        className="text-base md:text-lg text-gray-700 leading-7 mb-5 font-normal"
+        {...props}
+      >
         {children}
       </p>
     ),
     // Lists - Better spacing and alignment
     ul: ({ children, ...props }: any) => (
-      <ul className="list-disc list-outside ml-5 mb-5 space-y-1.5 text-gray-700 pl-1" {...props}>
+      <ul
+        className="list-disc list-outside ml-5 mb-5 space-y-1.5 text-gray-700 pl-1"
+        {...props}
+      >
         {children}
       </ul>
     ),
     ol: ({ children, ...props }: any) => (
-      <ol className="list-decimal list-outside ml-5 mb-5 space-y-1.5 text-gray-700 pl-1" {...props}>
+      <ol
+        className="list-decimal list-outside ml-5 mb-5 space-y-1.5 text-gray-700 pl-1"
+        {...props}
+      >
         {children}
       </ol>
     ),
     li: ({ children, ...props }: any) => (
-      <li className="pl-2 leading-7 text-base md:text-lg" {...props}>{children}</li>
+      <li className="pl-2 leading-7 text-base md:text-lg" {...props}>
+        {children}
+      </li>
     ),
     // Blockquotes - Refined styling
     blockquote: ({ children, ...props }: any) => (
-      <blockquote className="border-l-4 border-primary/60 pl-5 py-3 my-6 bg-primary/5 rounded-r-lg italic text-gray-700 text-base md:text-lg leading-7" {...props}>
+      <blockquote
+        className="border-l-4 border-primary/60 pl-5 py-3 my-6 bg-primary/5 rounded-r-lg italic text-gray-700 text-base md:text-lg leading-7"
+        {...props}
+      >
         {children}
       </blockquote>
     ),
@@ -213,7 +236,10 @@ export default function BlogPostPage() {
       <div className="my-8 overflow-x-auto -mx-4 sm:mx-0">
         <div className="inline-block min-w-full align-middle">
           <div className="overflow-hidden shadow-xl rounded-lg border-2 border-gray-300 bg-white">
-            <table className="min-w-full divide-y divide-gray-200 bg-white m-0" {...props}>
+            <table
+              className="min-w-full divide-y divide-gray-200 bg-white m-0"
+              {...props}
+            >
               {children}
             </table>
           </div>
@@ -221,18 +247,28 @@ export default function BlogPostPage() {
       </div>
     ),
     thead: ({ children, ...props }: any) => (
-      <thead className="bg-gray-50" {children}</thead>
+      <thead className="bg-gray-50" {...props}>
+        {children}
+      </thead>
     ),
     tbody: ({ children, ...props }: any) => (
-      <tbody className="divide-y divide-gray-200 bg-white" {children}</tbody>
+      <tbody className="divide-y divide-gray-200 bg-white" {...props}>
+        {children}
+      </tbody>
     ),
     tr: ({ children, ...props }: any) => (
-      <tr className="hover:bg-gray-50 transition-colors duration-150" {...props}>
+      <tr
+        className="hover:bg-gray-50 transition-colors duration-150"
+        {...props}
+      >
         {children}
       </tr>
     ),
     th: ({ children, ...props }: any) => (
-      <th className="px-4 py-2.5 text-left text-xs font-bold text-gray-900 uppercase tracking-wider border-b-2 border-gray-300 bg-gray-50 whitespace-nowrap align-middle" {...props}>
+      <th
+        className="px-4 py-2.5 text-left text-xs font-bold text-gray-900 uppercase tracking-wider border-b-2 border-gray-300 bg-gray-50 whitespace-nowrap align-middle"
+        {...props}
+      >
         {children}
       </th>
     ),
@@ -278,7 +314,6 @@ export default function BlogPostPage() {
         className="text-primary hover:text-primary/80 underline font-medium transition-colors"
         target={href?.startsWith('http') ? '_blank' : undefined}
         rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
-      >
         {...props}
       >
         {children}
@@ -286,28 +321,39 @@ export default function BlogPostPage() {
     ),
     // Strong
     strong: ({ children, ...props }: any) => (
-      <strong className="font-bold text-gray-900" {children}</strong>
+      <strong className="font-bold text-gray-900" {...props}>
+        {children}
+      </strong>
     ),
     // Code
     code: ({
       className,
       children,
+      ...props
     }: {
       className?: string;
       children: React.ReactNode;
-    }) => {
+    } & any) => {
       const isInline = !className;
       return isInline ? (
-        <code className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm font-mono" {...props}>
+        <code
+          className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm font-mono"
+          {...props}
+        >
           {children}
         </code>
       ) : (
-        <code className={className} {children}</code>
+        <code className={className} {...props}>
+          {children}
+        </code>
       );
     },
     // Pre for code blocks
     pre: ({ children, ...props }: any) => (
-      <pre className="bg-gray-900 text-gray-100 p-5 rounded-lg overflow-x-auto mb-5 shadow-lg text-sm leading-6" {...props}>
+      <pre
+        className="bg-gray-900 text-gray-100 p-5 rounded-lg overflow-x-auto mb-5 shadow-lg text-sm leading-6"
+        {...props}
+      >
         {children}
       </pre>
     ),
@@ -363,7 +409,7 @@ export default function BlogPostPage() {
           <meta property="og:image" content={post.cover_image_url} />
         )}
         <link rel="icon" href="/favicon.ico" />
-        </Head>
+      </Head>
 
       <div className="min-h-screen bg-white">
         {/* Navigation */}

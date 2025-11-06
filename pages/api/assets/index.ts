@@ -55,10 +55,13 @@ export default async function handler(
       }
 
       // Filter by client_id if provided (since we join through site)
-      let filteredData = data || [];
+      let filteredData = (data || []) as Array<{
+        site?: { client?: { id?: string } };
+        [key: string]: unknown;
+      }>;
       if (client_id && filteredData.length > 0) {
-        filteredData = (filteredData as any[]).filter(
-          (asset: any) => asset.site?.client?.id === client_id
+        filteredData = filteredData.filter(
+          (asset) => asset.site?.client?.id === client_id
         );
       }
 

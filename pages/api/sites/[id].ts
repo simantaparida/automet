@@ -17,7 +17,7 @@ export default async function handler(
     return res.status(400).json({ error: 'Invalid site ID' });
   }
 
-  const siteId = id as string;
+  const siteId = id;
 
   if (req.method === 'GET') {
     try {
@@ -83,7 +83,7 @@ export default async function handler(
 
       const { data, error } = await supabaseAdmin
         .from('sites')
-        // @ts-ignore - Supabase type inference issue with update
+        // @ts-expect-error - Supabase type inference issue with update
         .update({
           name,
           address: address || null,
@@ -135,7 +135,10 @@ export default async function handler(
         });
       }
 
-      const { error } = await supabaseAdmin.from('sites').delete().eq('id', siteId);
+      const { error } = await supabaseAdmin
+        .from('sites')
+        .delete()
+        .eq('id', siteId);
 
       if (error) throw error;
 

@@ -482,7 +482,10 @@ export default function ROICalculatorPage() {
 
       {/* Modal */}
       {preorderModalOpen && (
-        <PreorderModal onClose={() => setPreorderModalOpen(false)} />
+        <PreorderModal
+          isOpen={preorderModalOpen}
+          onClose={() => setPreorderModalOpen(false)}
+        />
       )}
     </>
   );

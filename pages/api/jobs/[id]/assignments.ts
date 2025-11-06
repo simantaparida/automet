@@ -17,7 +17,7 @@ export default async function handler(
     return res.status(400).json({ error: 'Invalid job ID' });
   }
 
-  const jobId = id as string;
+  const jobId = id;
 
   if (req.method === 'POST') {
     // Assign technician to job
@@ -45,7 +45,7 @@ export default async function handler(
       // Create new assignment
       const { data, error } = await supabaseAdmin
         .from('job_assignments')
-        // @ts-ignore - Supabase type inference issue with insert
+        // @ts-expect-error - Supabase type inference issue with insert
         .insert({
           job_id: jobId,
           user_id,

@@ -49,20 +49,28 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Product</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <a
-                  href="#features"
+                <Link
+                  href="/features"
                   className="hover:text-primary transition-colors duration-300"
                 >
                   Features
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#pricing"
+                <Link
+                  href="/pricing"
                   className="hover:text-primary transition-colors duration-300"
                 >
                   Pricing
-                </a>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/roi-calculator"
+                  className="hover:text-primary transition-colors duration-300"
+                >
+                  ROI Calculator
+                </Link>
               </li>
               <li>
                 <a

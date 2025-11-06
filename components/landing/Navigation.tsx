@@ -24,9 +24,9 @@ export default function Navigation({ onPreorderClick }: NavigationProps) {
   }, []);
 
   const navLinks = [
-    { href: '#features', label: 'Features' },
-    { href: '#roi-calculator', label: 'ROI Calculator' },
-    { href: '#pricing', label: 'Pricing' },
+    { href: '/features', label: 'Features' },
+    { href: '/roi-calculator', label: 'ROI Calculator' },
+    { href: '/pricing', label: 'Pricing' },
     { href: '/blog', label: 'Blog' },
     { href: '/about', label: 'About' },
   ];

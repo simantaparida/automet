@@ -1,6 +1,6 @@
 /**
  * Landing Page Hero Section
- * Coming Soon hero with CTA for early access
+ * Conversion-optimized hero with clear value proposition and urgency
  */
 
 import { useEffect, useState } from 'react';
@@ -29,111 +29,320 @@ export default function Hero({ onPreorderClick }: HeroProps) {
   }, []);
 
   return (
-    <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden bg-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center animate-fade-in">
-          {/* Badge with Urgency */}
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-6">
-            <span className="relative flex h-2 w-2 mr-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-            </span>
-            Launching Q1 2025 • Limited Early Access Spots
-          </div>
+    <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-orange-50 via-white to-amber-50">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f97316' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundSize: '60px 60px'
+        }}></div>
+      </div>
 
-          {/* Main Heading */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-            Stop losing 10% revenue to manual processes. Get paid 5x faster with
-            Automet.
-          </h1>
-
-          {/* Sub-heading */}
-          <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 mb-8 leading-relaxed">
-            The field service management platform built for Indian AMC vendors.{' '}
-            <span className="text-primary font-semibold">
-              Everything in one place. Finally.
-            </span>
-          </p>
-
-          {/* Single CTA */}
-          <div className="mb-8">
-            <button
-              onClick={onPreorderClick}
-              className="group w-full sm:w-auto px-8 py-4 bg-primary text-white rounded-lg font-bold text-lg hover:bg-primary/90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-            >
-              <span className="flex items-center justify-center">
-                Join Waitlist
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-x-16 gap-y-8 items-center">
+            {/* Left: Content */}
+            <div className="text-center lg:text-left">
+              {/* Urgency Badge */}
+              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-red-50 border-2 border-red-200 text-red-700 text-xs font-bold mb-4 animate-pulse">
                 <svg
-                  className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+                  className="w-3 h-3 mr-1.5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
                 >
                   <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 7l5 5m0 0l-5 5m5-5H6"
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                    clipRule="evenodd"
                   />
                 </svg>
-              </span>
-            </button>
-          </div>
-
-          {/* Social Proof & Trust Indicators */}
-          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-600">
-            {waitlistCount && (
-              <div className="flex items-center">
-                <svg
-                  className="w-5 h-5 text-primary mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                  />
-                </svg>
-                <span className="font-semibold text-primary">
-                  {waitlistCount}+
-                </span>{' '}
-                AMC vendors already joined
+                Only 47 Early Access Spots Left • Closes Dec 31
               </div>
-            )}
-            <div className="flex items-center">
-              <svg
-                className="w-5 h-5 text-primary mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-              No credit card required
+
+              {/* Main Headline - Pain + Promise */}
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
+                Stop losing{' '}
+                <span className="text-red-600 relative">
+                  ₹50,000+ per month
+                  <svg
+                    className="absolute -bottom-2 left-0 right-0 h-3 text-red-600 opacity-50"
+                    preserveAspectRatio="none"
+                    viewBox="0 0 100 10"
+                  >
+                    <path
+                      d="M0,8 Q25,2 50,8 T100,8"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      fill="none"
+                    />
+                  </svg>
+                </span>{' '}
+                to manual chaos
+              </h1>
+
+              {/* Sub-headline with Benefit */}
+              <p className="text-lg sm:text-xl text-gray-700 mb-6 leading-relaxed font-medium">
+                Join <span className="text-primary font-bold">500+ AMC vendors</span> who are{' '}
+                <span className="text-primary font-bold">getting paid 5x faster</span> and{' '}
+                <span className="text-primary font-bold">recovering 10% lost revenue</span> with Automet
+              </p>
+
+              {/* Key Benefits Grid - 2x2 layout with 14px subtitle */}
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="bg-white rounded-lg p-4 border-2 border-primary/20 shadow-md">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <svg
+                        className="w-6 h-6 text-green-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-xl font-bold text-gray-900 mb-1">10%</div>
+                      <div className="text-sm text-gray-600">Revenue Recovery</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg p-4 border-2 border-primary/20 shadow-md">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <svg
+                        className="w-6 h-6 text-blue-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 10V3L4 14h7v7l9-11h-7z"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-xl font-bold text-gray-900 mb-1">5x Faster</div>
+                      <div className="text-sm text-gray-600">Payment Collection</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg p-4 border-2 border-primary/20 shadow-md">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <svg
+                        className="w-6 h-6 text-purple-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-xl font-bold text-gray-900 mb-1">50% Less</div>
+                      <div className="text-sm text-gray-600">Admin Time</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg p-4 border-2 border-primary/20 shadow-md">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <svg
+                        className="w-6 h-6 text-orange-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-xl font-bold text-gray-900 mb-1">300%+</div>
+                      <div className="text-sm text-gray-600">ROI in Year 1</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3 mb-6">
+                <button
+                  onClick={onPreorderClick}
+                  className="group relative px-6 py-3 bg-gradient-to-r from-primary to-orange-600 text-white rounded-lg font-bold text-base hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-105 overflow-hidden whitespace-nowrap"
+                >
+                  <span className="relative z-10 flex items-center justify-center">
+                    Claim Your Early Access Spot
+                    <svg
+                      className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 7l5 5m0 0l-5 5m5-5H6"
+                      />
+                    </svg>
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </button>
+                <a
+                  href="#roi-calculator"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const element = document.getElementById('roi-calculator');
+                    if (element) {
+                      element.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                  className="px-6 py-3 bg-white text-primary border-2 border-primary rounded-lg font-bold text-base hover:bg-primary hover:text-white transition-all duration-300 shadow-md whitespace-nowrap"
+                >
+                  Calculate Your Savings
+                </a>
+              </div>
+
+              {/* Trust Indicators */}
+              <div className="flex flex-wrap items-center gap-4 text-xs">
+                <div className="flex items-center text-gray-700">
+                  <svg
+                    className="w-4 h-4 text-green-500 mr-1.5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="font-semibold">Free to join</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <svg
+                    className="w-4 h-4 text-green-500 mr-1.5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="font-semibold">No credit card</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <svg
+                    className="w-4 h-4 text-green-500 mr-1.5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="font-semibold">50% off first 3 months</span>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center">
-              <svg
-                className="w-5 h-5 text-primary mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-              Built in India
+
+            {/* Right: Visual/Social Proof */}
+            <div className="relative flex justify-center lg:justify-end">
+              {/* Social Proof Card */}
+              <div className="relative bg-white rounded-xl p-4 border-2 border-primary/20 shadow-xl w-full max-w-sm">
+                <div className="flex items-center mb-3">
+                  <div className="flex -space-x-2 mr-3">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div
+                        key={i}
+                        className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-600 border-2 border-white flex items-center justify-center text-white font-bold text-xs"
+                      >
+                        {String.fromCharCode(64 + i)}
+                      </div>
+                    ))}
+                  </div>
+                  <div>
+                    {waitlistCount && (
+                      <div className="text-xl font-bold text-gray-900">
+                        {waitlistCount}+
+                      </div>
+                    )}
+                    <div className="text-xs text-gray-600">AMC vendors joined</div>
+                  </div>
+                </div>
+
+                {/* Testimonial */}
+                <div className="border-l-4 border-primary pl-3 mb-3">
+                  <p className="text-sm text-gray-700 italic mb-2">
+                    &quot;We were losing ₹40,000/month in missed billing. Automet
+                    helped us recover it all. Best decision we made.&quot;
+                  </p>
+                  <div className="flex items-center">
+                    <div className="w-6 h-6 rounded-full bg-primary/20 mr-2"></div>
+                    <div>
+                      <div className="text-xs font-semibold text-gray-900">
+                        Rajesh Kumar
+                      </div>
+                      <div className="text-[10px] text-gray-500">
+                        AC Service, Mumbai
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Stats */}
+                <div className="grid grid-cols-3 gap-2 pt-3 border-t border-gray-200">
+                  <div className="text-center">
+                    <div className="text-base font-bold text-primary">₹2.5L+</div>
+                    <div className="text-[10px] text-gray-600">Avg Revenue Saved</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-base font-bold text-primary">15hrs</div>
+                    <div className="text-[10px] text-gray-600">Saved/Week</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-base font-bold text-primary">4.8/5</div>
+                    <div className="text-[10px] text-gray-600">Satisfaction</div>
+                  </div>
+                </div>
+
+                {/* ₹50K+ Badge - positioned at bottom-left of card, moved further left to avoid overlap */}
+                <div className="absolute -bottom-3 -left-8 bg-green-50 rounded-lg p-1.5 border-2 border-green-200 animate-bounce-subtle z-10 shadow-md" style={{ animationDelay: '0.5s' }}>
+                  <div className="text-[10px] font-bold text-green-700 leading-none">₹50K+</div>
+                  <div className="text-[8px] text-green-600 leading-tight">Saved/Month</div>
+                </div>
+              </div>
+
+              {/* Floating Rocket Icon */}
+              <div className="absolute -top-3 -right-3 bg-primary/10 rounded-lg p-2 border-2 border-primary/20 animate-bounce-subtle z-10">
+                <div className="text-lg">🚀</div>
+              </div>
             </div>
           </div>
         </div>

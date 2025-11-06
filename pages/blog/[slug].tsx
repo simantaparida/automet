@@ -8,6 +8,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import type { Components } from 'react-markdown';
 import Navigation from '@/components/landing/Navigation';
 import Footer from '@/components/landing/Footer';
 import PreorderModal from '@/components/landing/PreorderModal';
@@ -147,59 +150,163 @@ export default function BlogPostPage() {
     }
   };
 
-  // Simple markdown-to-HTML converter (basic support)
-  const renderMarkdown = (markdown: string) => {
-    // This is a simple implementation - in production, use a library like 'marked' or 'react-markdown'
-    let html = markdown;
-
-    // Headers
-    html = html.replace(
-      /^### (.*$)/gim,
-      '<h3 class="text-2xl font-bold text-gray-900 mb-4 mt-8">$1</h3>'
-    );
-    html = html.replace(
-      /^## (.*$)/gim,
-      '<h2 class="text-3xl font-bold text-gray-900 mb-4 mt-8">$1</h2>'
-    );
-    html = html.replace(
-      /^# (.*$)/gim,
-      '<h1 class="text-4xl font-bold text-gray-900 mb-4 mt-8">$1</h1>'
-    );
-
-    // Bold
-    html = html.replace(
-      /\*\*(.*?)\*\*/gim,
-      '<strong class="font-semibold">$1</strong>'
-    );
-
-    // Italic
-    html = html.replace(/\*(.*?)\*/gim, '<em class="italic">$1</em>');
-
-    // Lists
-    html = html.replace(/^\* (.*$)/gim, '<li class="ml-6 mb-2">$1</li>');
-    html = html.replace(/^- (.*$)/gim, '<li class="ml-6 mb-2">$1</li>');
-
-    // Wrap consecutive <li> in <ul>
-    html = html.replace(
-      /(<li.*<\/li>)/gim,
-      '<ul class="list-disc space-y-2 mb-4">$1</ul>'
-    );
-
-    // Paragraphs
-    html = html.replace(
-      /\n\n/g,
-      '</p><p class="text-gray-700 leading-relaxed mb-4">'
-    );
-    html = `<p class="text-gray-700 leading-relaxed mb-4">${html}</p>`;
-
-    // Blockquotes
-    html = html.replace(
-      /^&gt; (.*$)/gim,
-      '<blockquote class="border-l-4 border-blue-500 pl-4 italic text-gray-600 my-4">$1</blockquote>'
-    );
-
-    return html;
-  };
+  // Custom renderers for better styling
+  // Create a function that returns components with access to post
+  const getMarkdownComponents = (): Partial<Components> => ({
+    // Headers - Professional spacing and typography
+    // Skip first H1 if it matches the post title (already shown in header)
+    h1: ({ children }: { children: React.ReactNode }) => {
+      const headingText = typeof children === 'string' 
+        ? children 
+        : Array.isArray(children)
+        ? children.map(c => typeof c === 'string' ? c : '').join('')
+        : String(children);
+      
+      // If this H1 matches the post title, don't render it
+      if (post && headingText.toLowerCase().trim() === post.title.toLowerCase().trim()) {
+        return null;
+      }
+      
+      return (
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mt-10 mb-4 leading-tight tracking-tight">
+          {children}
+        </h1>
+      );
+    },
+    h2: ({ children }: { children: React.ReactNode }) => (
+      <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mt-8 mb-3 leading-tight tracking-tight">
+        {children}
+      </h2>
+    ),
+    h3: ({ children }: { children: React.ReactNode }) => (
+      <h3 className="text-xl md:text-2xl font-semibold text-gray-900 mt-6 mb-2.5 leading-snug tracking-tight">
+        {children}
+      </h3>
+    ),
+    // Paragraphs - Professional spacing and readability
+    p: ({ children }: { children: React.ReactNode }) => (
+      <p className="text-base md:text-lg text-gray-700 leading-7 mb-5 font-normal">
+        {children}
+      </p>
+    ),
+    // Lists - Better spacing and alignment
+    ul: ({ children }: { children: React.ReactNode }) => (
+      <ul className="list-disc list-outside ml-5 mb-5 space-y-1.5 text-gray-700 pl-1">
+        {children}
+      </ul>
+    ),
+    ol: ({ children }: { children: React.ReactNode }) => (
+      <ol className="list-decimal list-outside ml-5 mb-5 space-y-1.5 text-gray-700 pl-1">
+        {children}
+      </ol>
+    ),
+    li: ({ children }: { children: React.ReactNode }) => (
+      <li className="pl-2 leading-7 text-base md:text-lg">{children}</li>
+    ),
+    // Blockquotes - Refined styling
+    blockquote: ({ children }: { children: React.ReactNode }) => (
+      <blockquote className="border-l-4 border-primary/60 pl-5 py-3 my-6 bg-primary/5 rounded-r-lg italic text-gray-700 text-base md:text-lg leading-7">
+        {children}
+      </blockquote>
+    ),
+    // Tables - Professional styling with better visual hierarchy
+    table: ({ children }: { children: React.ReactNode }) => (
+      <div className="my-8 overflow-x-auto -mx-4 sm:mx-0">
+        <div className="inline-block min-w-full align-middle">
+          <div className="overflow-hidden shadow-xl rounded-lg border-2 border-gray-300 bg-white">
+            <table className="min-w-full divide-y divide-gray-200 bg-white m-0">
+              {children}
+            </table>
+          </div>
+        </div>
+      </div>
+    ),
+    thead: ({ children }: { children: React.ReactNode }) => (
+      <thead className="bg-gray-50">
+        {children}
+      </thead>
+    ),
+    tbody: ({ children }: { children: React.ReactNode }) => (
+      <tbody className="divide-y divide-gray-200 bg-white">{children}</tbody>
+    ),
+    tr: ({ children }: { children: React.ReactNode }) => (
+      <tr className="hover:bg-gray-50 transition-colors duration-150">
+        {children}
+      </tr>
+    ),
+    th: ({ children }: { children: React.ReactNode }) => (
+      <th className="px-4 py-2.5 text-left text-xs font-bold text-gray-900 uppercase tracking-wider border-b-2 border-gray-300 bg-gray-50 whitespace-nowrap align-middle">
+        {children}
+      </th>
+    ),
+    td: ({ children }: { children: React.ReactNode }) => {
+      // Convert children to string for checking
+      const content = typeof children === 'string' 
+        ? children 
+        : Array.isArray(children)
+        ? children.map(c => typeof c === 'string' ? c : '').join('')
+        : String(children);
+      
+      const hasCheckmark = content.includes('✅') || content.includes('✓');
+      const hasX = content.includes('❌') || content.includes('✗') || content.includes('×');
+      
+      // Determine alignment - center for icons, left for text
+      const isIconOnly = hasCheckmark || hasX || content.trim().match(/^[❌✅✗×]$/);
+      const alignClass = isIconOnly ? 'text-center' : 'text-left';
+      
+      return (
+        <td className={`px-4 py-2.5 text-sm ${alignClass} border-b border-gray-200 align-middle ${
+          hasCheckmark ? 'text-green-600 font-semibold' : 
+          hasX ? 'text-red-600 font-semibold' : 
+          'text-gray-700'
+        }`}>
+          <span className="inline-block leading-tight">
+            {children}
+          </span>
+        </td>
+      );
+    },
+    // Links
+    a: ({ href, children }: { href?: string; children: React.ReactNode }) => (
+      <a
+        href={href}
+        className="text-primary hover:text-primary/80 underline font-medium transition-colors"
+        target={href?.startsWith('http') ? '_blank' : undefined}
+        rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+      >
+        {children}
+      </a>
+    ),
+    // Strong
+    strong: ({ children }: { children: React.ReactNode }) => (
+      <strong className="font-bold text-gray-900">{children}</strong>
+    ),
+    // Code
+    code: ({
+      className,
+      children,
+    }: {
+      className?: string;
+      children: React.ReactNode;
+    }) => {
+      const isInline = !className;
+      return isInline ? (
+        <code className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm font-mono">
+          {children}
+        </code>
+      ) : (
+        <code className={className}>{children}</code>
+      );
+    },
+    // Pre for code blocks
+    pre: ({ children }: { children: React.ReactNode }) => (
+      <pre className="bg-gray-900 text-gray-100 p-5 rounded-lg overflow-x-auto mb-5 shadow-lg text-sm leading-6">
+        {children}
+      </pre>
+    ),
+    // Horizontal rule
+    hr: () => <hr className="my-8 border-t border-gray-200" />,
+  });
 
   if (loading) {
     return (
@@ -408,22 +515,291 @@ export default function BlogPostPage() {
 
               {/* Cover Image */}
               {post.cover_image_url && (
-                <div className="mb-8">
+                <div className="mb-10 -mx-4 sm:mx-0">
                   <img
                     src={post.cover_image_url}
                     alt={post.title}
-                    className="w-full rounded-xl shadow-lg"
+                    className="w-full rounded-xl shadow-xl object-cover"
+                    style={{ maxHeight: '500px' }}
+                    onError={(e) => {
+                      // Hide broken images
+                      e.currentTarget.style.display = 'none';
+                    }}
                   />
                 </div>
               )}
 
-              {/* Content - Better Typography */}
-              <div
-                className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-4 prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900 prose-ul:list-disc prose-ol:list-decimal prose-li:mb-2 prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600"
-                dangerouslySetInnerHTML={{
-                  __html: renderMarkdown(post.content),
-                }}
-              />
+              {/* Content - Professional Markdown Rendering */}
+              <div className="blog-content max-w-none">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={getMarkdownComponents()}
+                  skipHtml={false}
+                  rehypePlugins={[]}
+                >
+                  {(() => {
+                    let processedContent = post.content
+                      // Fix table spacing
+                      .replace(/\n\n\|/g, '\n|')
+                      .replace(/\|\n\n\|/g, '|\n|')
+                      // Remove meta description from visible content (more comprehensive pattern)
+                      .replace(/\*\*Meta Description:\*\*\s*\n\n[^\n]+/gi, '')
+                      .replace(/\*\*Meta Description:\*\*\s*[^\n]+/gi, '')
+                      .replace(/Meta Description:\s*[^\n]+/gi, '')
+                      // Remove the first H1 if it matches the post title (to avoid duplicate title)
+                      .replace(/^#\s+([^\n]+)\n\n/, (match, title) => {
+                        // Check if this H1 matches the post title (case-insensitive)
+                        const normalizedTitle = title.toLowerCase().trim();
+                        const normalizedPostTitle = post.title.toLowerCase().trim();
+                        if (normalizedTitle === normalizedPostTitle) {
+                          return ''; // Remove the H1
+                        }
+                        return match; // Keep it if it's different
+                      });
+                    return processedContent;
+                  })()}
+                </ReactMarkdown>
+              </div>
+
+              {/* Custom Styles for Markdown Elements */}
+              <style jsx global>{`
+                .blog-content {
+                  max-width: 100%;
+                  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+                  color: #374151;
+                }
+                
+                /* Typography improvements */
+                .blog-content p {
+                  margin-bottom: 1.25rem;
+                  line-height: 1.75;
+                  font-size: 1.0625rem;
+                }
+                
+                .blog-content h1,
+                .blog-content h2,
+                .blog-content h3,
+                .blog-content h4,
+                .blog-content h5,
+                .blog-content h6 {
+                  font-weight: 700;
+                  line-height: 1.25;
+                  margin-top: 2rem;
+                  margin-bottom: 1rem;
+                  color: #111827;
+                }
+                
+                .blog-content h1:first-child,
+                .blog-content h2:first-child,
+                .blog-content h3:first-child {
+                  margin-top: 0;
+                }
+                
+                .blog-content h1 {
+                  font-size: 2.25rem;
+                  margin-top: 2.5rem;
+                }
+                
+                .blog-content h2 {
+                  font-size: 1.875rem;
+                  margin-top: 2rem;
+                }
+                
+                .blog-content h3 {
+                  font-size: 1.5rem;
+                  margin-top: 1.75rem;
+                }
+                
+                /* Lists - Professional spacing */
+                .blog-content ul,
+                .blog-content ol {
+                  margin-bottom: 1.25rem;
+                  padding-left: 1.5rem;
+                }
+                
+                .blog-content li {
+                  margin-bottom: 0.5rem;
+                  line-height: 1.75;
+                  font-size: 1.0625rem;
+                }
+                
+                .blog-content ul li::marker {
+                  color: #f97316;
+                }
+                
+                .blog-content ol li::marker {
+                  color: #f97316;
+                  font-weight: 600;
+                }
+                
+                /* Blockquotes */
+                .blog-content blockquote {
+                  margin: 1.5rem 0;
+                  padding: 1rem 1.25rem;
+                  border-left: 4px solid #f97316;
+                  background-color: #fff7ed;
+                  border-radius: 0 0.5rem 0.5rem 0;
+                  font-style: italic;
+                  color: #4b5563;
+                }
+                
+                /* Code blocks */
+                .blog-content pre {
+                  margin: 1.5rem 0;
+                  padding: 1.25rem;
+                  background-color: #1f2937;
+                  color: #f9fafb;
+                  border-radius: 0.5rem;
+                  overflow-x: auto;
+                  font-size: 0.875rem;
+                  line-height: 1.6;
+                }
+                
+                .blog-content code {
+                  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', monospace;
+                  font-size: 0.875em;
+                }
+                
+                .blog-content pre code {
+                  background: transparent;
+                  padding: 0;
+                  color: inherit;
+                  font-size: inherit;
+                }
+                
+                /* Links */
+                .blog-content a {
+                  color: #ea580c;
+                  text-decoration: underline;
+                  text-underline-offset: 2px;
+                  transition: color 0.2s ease;
+                }
+                
+                .blog-content a:hover {
+                  color: #c2410c;
+                }
+                
+                /* Images */
+                .blog-content img {
+                  max-width: 100%;
+                  height: auto;
+                  border-radius: 0.5rem;
+                  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                  margin: 2rem 0;
+                  display: block;
+                }
+                
+                /* Horizontal rules */
+                .blog-content hr {
+                  margin: 2.5rem 0;
+                  border: none;
+                  border-top: 1px solid #e5e7eb;
+                }
+                
+                /* Professional table styling */
+                .blog-content table {
+                  display: table !important;
+                  width: 100% !important;
+                  font-size: 0.9375rem;
+                  border-collapse: collapse !important;
+                  border-spacing: 0;
+                  margin: 2rem 0 !important;
+                  background: white;
+                }
+                
+                .blog-content thead {
+                  display: table-header-group !important;
+                  background: #f9fafb !important;
+                }
+                
+                .blog-content tbody {
+                  display: table-row-group !important;
+                }
+                
+                .blog-content tr {
+                  display: table-row !important;
+                }
+                
+                .blog-content th,
+                .blog-content td {
+                  display: table-cell !important;
+                  border: 1px solid #e5e7eb !important;
+                  padding: 0.75rem 1rem !important;
+                  vertical-align: middle !important;
+                }
+                
+                .blog-content th {
+                  font-weight: 700;
+                  text-transform: uppercase;
+                  font-size: 0.75rem;
+                  letter-spacing: 0.05em;
+                  color: #111827;
+                  background-color: #f9fafb;
+                  border-bottom: 2px solid #d1d5db;
+                }
+                
+                .blog-content td {
+                  color: #374151;
+                  line-height: 1.6;
+                }
+                
+                .blog-content table td:first-child,
+                .blog-content table th:first-child {
+                  font-weight: 600;
+                  color: #1f2937;
+                }
+                
+                .blog-content table tbody tr:nth-child(even) {
+                  background-color: #f9fafb;
+                }
+                
+                .blog-content table tbody tr:hover {
+                  background-color: #f3f4f6;
+                }
+                
+                /* Remove extra spacing from cell content */
+                .blog-content table td span,
+                .blog-content table th span {
+                  display: inline-block;
+                  vertical-align: middle;
+                  line-height: 1.5;
+                }
+                
+                /* Nested lists */
+                .blog-content ul ul,
+                .blog-content ol ol,
+                .blog-content ul ol,
+                .blog-content ol ul {
+                  margin-top: 0.5rem;
+                  margin-bottom: 0.5rem;
+                  margin-left: 1.5rem;
+                }
+                
+                /* Mobile responsive */
+                @media (max-width: 640px) {
+                  .blog-content {
+                    font-size: 1rem;
+                  }
+                  
+                  .blog-content h1 {
+                    font-size: 1.875rem;
+                  }
+                  
+                  .blog-content h2 {
+                    font-size: 1.5rem;
+                  }
+                  
+                  .blog-content h3 {
+                    font-size: 1.25rem;
+                  }
+                  
+                  .blog-content table td,
+                  .blog-content table th {
+                    padding: 0.5rem 0.75rem !important;
+                    font-size: 0.875rem;
+                  }
+                }
+              `}</style>
 
               {/* Tags */}
               {post.tags && post.tags.length > 0 && (

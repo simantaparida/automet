@@ -5,6 +5,43 @@
 
 import { useEffect, useState } from 'react';
 
+// Tooltip component for info icons
+function InfoTooltip({ content }: { content: string }) {
+  const [isVisible, setIsVisible] = useState(false);
+
+  return (
+    <div className="relative inline-block">
+      <button
+        type="button"
+        className="inline-flex items-center justify-center w-3.5 h-3.5 text-gray-400 opacity-60 hover:opacity-100 transition-opacity"
+        onMouseEnter={() => setIsVisible(true)}
+        onMouseLeave={() => setIsVisible(false)}
+        aria-label="More information"
+      >
+        <svg
+          className="w-full h-full"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      </button>
+      {isVisible && (
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-gray-900 text-white text-xs rounded-lg shadow-xl z-50 pointer-events-none">
+          {content}
+          <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface HeroProps {
   onPreorderClick: () => void;
 }
@@ -63,7 +100,7 @@ export default function Hero({ onPreorderClick }: HeroProps) {
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
                 Stop losing{' '}
                 <span className="text-red-600 relative">
-                  ₹50,000+ per month
+                  up to ₹50,000+/month
                   <svg
                     className="absolute -bottom-2 left-0 right-0 h-3 text-red-600 opacity-50"
                     preserveAspectRatio="none"
@@ -107,7 +144,10 @@ export default function Hero({ onPreorderClick }: HeroProps) {
                       </svg>
                     </div>
                     <div className="flex-1">
-                      <div className="text-[16px] font-bold text-gray-900 leading-tight mb-0.5">10%</div>
+                      <div className="text-[16px] font-bold text-gray-900 leading-tight mb-0.5 flex items-center gap-1">
+                        10%
+                        <InfoTooltip content="Based on typical 5% revenue lost to billing delays + missed invoices" />
+                      </div>
                       <div className="text-[12px] text-gray-600 leading-tight">Revenue Recovery</div>
                     </div>
                   </div>
@@ -131,7 +171,10 @@ export default function Hero({ onPreorderClick }: HeroProps) {
                       </svg>
                     </div>
                     <div className="flex-1">
-                      <div className="text-[16px] font-bold text-gray-900 leading-tight mb-0.5">5x Faster</div>
+                      <div className="text-[16px] font-bold text-gray-900 leading-tight mb-0.5 flex items-center gap-1">
+                        5x Faster
+                        <InfoTooltip content="Average collection time reduced from 30+ days to 5-7 days" />
+                      </div>
                       <div className="text-[12px] text-gray-600 leading-tight">Payment Collection</div>
                     </div>
                   </div>
@@ -155,7 +198,10 @@ export default function Hero({ onPreorderClick }: HeroProps) {
                       </svg>
                     </div>
                     <div className="flex-1">
-                      <div className="text-[16px] font-bold text-gray-900 leading-tight mb-0.5">50% Less</div>
+                      <div className="text-[16px] font-bold text-gray-900 leading-tight mb-0.5 flex items-center gap-1">
+                        50% Less
+                        <InfoTooltip content="Automation of job tracking, invoicing, and payment follow-ups" />
+                      </div>
                       <div className="text-[12px] text-gray-600 leading-tight">Admin Time</div>
                     </div>
                   </div>
@@ -179,7 +225,10 @@ export default function Hero({ onPreorderClick }: HeroProps) {
                       </svg>
                     </div>
                     <div className="flex-1">
-                      <div className="text-[16px] font-bold text-gray-900 leading-tight mb-0.5">300%+</div>
+                      <div className="text-[16px] font-bold text-gray-900 leading-tight mb-0.5 flex items-center gap-1">
+                        300%+
+                        <InfoTooltip content="Calculated over 12 months with time savings valued at ₹200/hr" />
+                      </div>
                       <div className="text-[12px] text-gray-600 leading-tight">ROI in Year 1</div>
                     </div>
                   </div>
@@ -187,7 +236,7 @@ export default function Hero({ onPreorderClick }: HeroProps) {
               </div>
 
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 mb-6">
+              <div className="flex flex-col sm:flex-row gap-3 mb-2">
                 <button
                   onClick={onPreorderClick}
                   className="group relative px-6 py-3 bg-gradient-to-r from-primary to-orange-600 text-white rounded-lg font-bold text-base hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-105 overflow-hidden whitespace-nowrap"
@@ -224,6 +273,11 @@ export default function Hero({ onPreorderClick }: HeroProps) {
                   Calculate Your Savings
                 </a>
               </div>
+
+              {/* Disclaimer */}
+              <p className="text-xs text-gray-500 mb-6 text-center sm:text-left">
+                * Based on average metrics. Actual results vary by business size.
+              </p>
 
               {/* Trust Indicators */}
               <div className="flex flex-wrap items-center gap-4 text-xs">

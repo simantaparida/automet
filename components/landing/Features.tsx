@@ -24,8 +24,7 @@ export default function Features() {
       ),
       title: 'Job Management',
       description:
-        'Create jobs, assign technicians, track progress from start to finish.',
-      description2: 'Real-time updates on every job status.',
+        'Stop WhatsApp chaos. All jobs, technicians, and service reports in one dashboard. Assign work with one tap. Watch real-time updates without calling technicians repeatedly.',
     },
     {
       icon: (
@@ -45,8 +44,7 @@ export default function Features() {
       ),
       title: 'Technician Tracking',
       description:
-        "See where your team is, what they're working on, and when jobs are completed.",
-      description2: 'No more guessing — know everything in real-time.',
+        "Never ask 'Where is Raju?' again. Live GPS map shows every technician's location, current job, and on-site time. One dashboard instead of endless WhatsApp messages.",
     },
     {
       icon: (
@@ -66,9 +64,7 @@ export default function Features() {
       ),
       title: 'Billing & Payments',
       description:
-        'Generate invoices instantly, send payment links, and get paid faster.',
-      description2:
-        'Integrated payment gateway supporting UPI, cards, net banking.',
+        'Stop waiting 30+ days for bank transfers. Auto-generate invoices instantly. Send payment links via SMS. Customers pay via UPI, cards, or net banking. Money hits your account in minutes.',
     },
     {
       icon: (
@@ -88,8 +84,7 @@ export default function Features() {
       ),
       title: 'Inventory Control',
       description:
-        'Track spare parts, set low-stock alerts, and know exactly what you have.',
-      description2: 'Never run out unexpectedly with smart alerts.',
+        "Never disappoint customers by running out of parts. Real-time inventory tracking with SMS alerts when stock hits minimum. Know exactly what's available before technician reaches site.",
     },
   ];
 
@@ -131,11 +126,8 @@ export default function Features() {
                 </h3>
 
                 {/* Description */}
-                <p className="text-gray-600 text-sm leading-relaxed mb-2">
-                  {feature.description}
-                </p>
                 <p className="text-gray-600 text-sm leading-relaxed">
-                  {feature.description2}
+                  {feature.description}
                 </p>
               </div>
             );

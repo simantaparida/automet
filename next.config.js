@@ -18,8 +18,16 @@ const nextConfig = {
     domains: [
       'lh3.googleusercontent.com', // Google profile photos
       'supabase.co', // Supabase Storage
+      'automet.in', // Automet domain
+      'chatgpt.com', // ChatGPT backend (temporary for blog images)
     ],
     formats: ['image/avif', 'image/webp'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
   },
 
   // Environment variables exposed to browser

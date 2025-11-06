@@ -21,7 +21,7 @@ Your Automet MVP has **Module 1 (Database)** and **Module 2 (Authentication)** c
 
 This creates a database trigger that automatically creates a `public.users` record when someone signs up.
 
-1. Go to [Supabase Dashboard](https://app.supabase.com/project/dogzgbppyiokvipvsgln)
+1. Go to [Supabase Dashboard](https://app.supabase.com/project/YOUR_PROJECT_ID)
 2. Navigate to **SQL Editor**
 3. Open the file `CREATE_AUTH_TRIGGER.sql` from your project
 4. Copy the entire contents
@@ -51,7 +51,7 @@ You should see: "Success. No rows returned"
 3. Click on your OAuth 2.0 Client ID
 4. Under **Authorized redirect URIs**, add:
    ```
-   https://dogzgbppyiokvipvsgln.supabase.co/auth/v1/callback
+   https://YOUR_PROJECT_REF.supabase.co/auth/v1/callback
    ```
 5. Click **Save**
 
@@ -187,7 +187,7 @@ Automet/
 **Check**:
 
 - Google provider is enabled in Supabase Dashboard
-- Redirect URI in Google Console matches: `https://dogzgbppyiokvipvsgln.supabase.co/auth/v1/callback`
+- Redirect URI in Google Console matches: `https://YOUR_PROJECT_REF.supabase.co/auth/v1/callback`
 - Client ID and Secret are correct in Supabase
 
 ### Issue: User created but can't access data

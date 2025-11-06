@@ -80,7 +80,7 @@
 
 ### Step 1: Configure Google OAuth in Supabase
 
-1. Go to [Supabase Dashboard](https://app.supabase.com/project/dogzgbppyiokvipvsgln)
+1. Go to [Supabase Dashboard](https://app.supabase.com/project/YOUR_PROJECT_ID)
 2. Navigate to **Authentication** → **Providers**
 3. Enable **Google** provider
 4. Enter credentials from `.env.local`:
@@ -95,7 +95,7 @@
 3. Click on your OAuth 2.0 Client ID
 4. Under **Authorized redirect URIs**, add:
    ```
-   https://dogzgbppyiokvipvsgln.supabase.co/auth/v1/callback
+   https://YOUR_PROJECT_REF.supabase.co/auth/v1/callback
    ```
 5. Click **Save**
 
@@ -271,7 +271,7 @@ Now that authentication is complete, Module 3 will focus on:
 ### Issue: Google OAuth not working
 
 - **Check**: Authorized redirect URI in Google Console matches:
-  `https://dogzgbppyiokvipvsgln.supabase.co/auth/v1/callback`
+  `https://YOUR_PROJECT_REF.supabase.co/auth/v1/callback`
 - **Check**: Google provider is enabled in Supabase Dashboard
 
 ### Issue: Email confirmation required
@@ -284,7 +284,7 @@ From `.env.local`:
 
 ```bash
 # Supabase (Public - exposed to browser)
-NEXT_PUBLIC_SUPABASE_URL=https://dogzgbppyiokvipvsgln.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 # Google OAuth

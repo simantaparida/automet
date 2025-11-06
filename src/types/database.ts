@@ -3,7 +3,7 @@
  * These types represent the database schema
  *
  * TODO: Generate these automatically using Supabase CLI:
- * npx supabase gen types typescript --project-id dogzgbppyiokvipvsgln > src/types/database.ts
+ * npx supabase gen types typescript --project-id YOUR_PROJECT_ID > src/types/database.ts
  */
 
 export type Json =

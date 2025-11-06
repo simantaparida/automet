@@ -113,7 +113,7 @@ ADMIN_SECRET=your-secure-random-secret-here
 
 ---
 
-## Step 4: Update NEXT_PUBLIC_APP_URL
+## Step 5: Update NEXT_PUBLIC_APP_URL
 
 Once you have your Vercel preview URL:
 

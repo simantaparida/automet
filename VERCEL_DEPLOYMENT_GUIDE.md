@@ -36,7 +36,11 @@
 Get these values from your secure sources (`.env.local` file, Supabase dashboard, etc.):
 
 ```bash
-# Supabase (Get from Supabase Dashboard → Settings → API)
+# Supabase - Client-side (REQUIRED for build - must have NEXT_PUBLIC_ prefix)
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+
+# Supabase - Server-side (Get from Supabase Dashboard → Settings → API)
 SUPABASE_URL=https://your-project-ref.supabase.co
 SUPABASE_ANON_KEY=your-anon-key-here
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
@@ -48,18 +52,26 @@ SENDGRID_FROM_EMAIL=noreply@automet.app
 
 # App Configuration
 NODE_ENV=production
+NEXT_PUBLIC_APP_URL=https://your-preview-url.vercel.app
 
 # Admin Secret (Generate a secure random string)
 ADMIN_SECRET=your-secure-random-secret-here
 ```
 
+**⚠️ CRITICAL:** The `NEXT_PUBLIC_` prefixed variables are **REQUIRED** for the build to succeed. These are exposed to the browser and used by client-side code.
+
 **How to get these values:**
 1. **Supabase credentials:** Go to Supabase Dashboard → Settings → API
+   - Copy **Project URL** → Use for both `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_URL`
+   - Copy **anon/public key** → Use for both `NEXT_PUBLIC_SUPABASE_ANON_KEY` and `SUPABASE_ANON_KEY`
+   - Copy **service_role key** → Use for `SUPABASE_SERVICE_ROLE_KEY` (server-only, never expose to client)
 2. **DATABASE_URL:** Go to Supabase Dashboard → Settings → Database → Connection string (URI)
 3. **ADMIN_SECRET:** Generate a secure random string (e.g., using `openssl rand -hex 32`)
+4. **NEXT_PUBLIC_APP_URL:** Set this to your Vercel preview URL after first deployment, or use `https://your-project.vercel.app`
 
-**Note:** 
-- `NEXT_PUBLIC_APP_URL` will be automatically set by Vercel (you'll get a preview URL)
+**Important Notes:** 
+- ⚠️ **`NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are REQUIRED** - The build will fail without them
+- `NEXT_PUBLIC_APP_URL` - Set to your Vercel deployment URL (update after first deploy)
 - `RESEND_API_KEY` - Leave empty for now, we'll add it later
 
 ---

@@ -120,8 +120,8 @@ export default function ROICalculatorPage() {
               </h3>
               <ol className="space-y-2 text-sm text-gray-700 list-decimal list-inside">
                 <li>
-                  Select your plan (Free, Starter, Growth, or Business) based
-                  on your team size
+                  Select your plan (Free, Starter, Growth, or Business) based on
+                  your team size
                 </li>
                 <li>
                   Adjust the sliders to match your current business metrics
@@ -130,9 +130,7 @@ export default function ROICalculatorPage() {
                   Toggle between &quot;With Automet&quot; and &quot;Without
                   Automet&quot; to see the difference
                 </li>
-                <li>
-                  See your potential savings, ROI, and recovered revenue
-                </li>
+                <li>See your potential savings, ROI, and recovered revenue</li>
               </ol>
             </div>
 
@@ -286,8 +284,8 @@ export default function ROICalculatorPage() {
                 </div>
                 <p className="text-sm text-gray-600">
                   Your return on investment as a percentage. Calculated as:
-                  (Annual Benefits ÷ Annual Cost) × 100. Most businesses see
-                  ROI of 200-500%.
+                  (Annual Benefits ÷ Annual Cost) × 100. Most businesses see ROI
+                  of 200-500%.
                 </p>
               </div>
             </div>
@@ -331,8 +329,8 @@ export default function ROICalculatorPage() {
                       Small Team (10 Technicians)
                     </h3>
                     <p className="text-sm text-gray-600 mb-3">
-                      AC service provider with 10 technicians, 250 jobs/month, ₹1,200
-                      average revenue per job
+                      AC service provider with 10 technicians, 250 jobs/month,
+                      ₹1,200 average revenue per job
                     </p>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
@@ -376,8 +374,8 @@ export default function ROICalculatorPage() {
                       Growing Business (25 Technicians)
                     </h3>
                     <p className="text-sm text-gray-600 mb-3">
-                      Elevator maintenance company with 25 technicians, 750 jobs/month,
-                      ₹1,500 average revenue per job
+                      Elevator maintenance company with 25 technicians, 750
+                      jobs/month, ₹1,500 average revenue per job
                     </p>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
@@ -421,8 +419,8 @@ export default function ROICalculatorPage() {
                       Large Team (75 Technicians)
                     </h3>
                     <p className="text-sm text-gray-600 mb-3">
-                      Equipment servicing business with 75 technicians, 2,625 jobs/month,
-                      ₹1,500 average revenue per job
+                      Equipment servicing business with 75 technicians, 2,625
+                      jobs/month, ₹1,500 average revenue per job
                     </p>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
@@ -489,4 +487,3 @@ export default function ROICalculatorPage() {
     </>
   );
 }
-

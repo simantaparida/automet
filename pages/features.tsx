@@ -215,8 +215,7 @@ export default function FeaturesPage() {
     },
     {
       title: 'Custom Reports',
-      description:
-        'Generate PDF reports for clients with your branding.',
+      description: 'Generate PDF reports for clients with your branding.',
       icon: '📄',
     },
   ];
@@ -317,7 +316,9 @@ export default function FeaturesPage() {
               >
                 {/* Left: Content */}
                 <div className="flex-1">
-                  <div className={`inline-flex items-center justify-center w-16 h-16 ${feature.bgColor} rounded-xl mb-6`}>
+                  <div
+                    className={`inline-flex items-center justify-center w-16 h-16 ${feature.bgColor} rounded-xl mb-6`}
+                  >
                     <div className={feature.color}>{feature.icon}</div>
                   </div>
                   <span className="inline-block px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-semibold mb-4">
@@ -558,4 +559,3 @@ export default function FeaturesPage() {
     </>
   );
 }
-

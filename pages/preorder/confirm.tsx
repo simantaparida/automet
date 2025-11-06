@@ -261,7 +261,7 @@ export default function EmailConfirmPage() {
                 Back to Home
               </Link>
               <a
-                href="mailto:support@automet.in"
+                href="mailto:support@automet.app"
                 className="px-6 py-3 bg-white text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors border-2 border-gray-200"
               >
                 Contact Support
@@ -273,10 +273,10 @@ export default function EmailConfirmPage() {
               <p className="text-sm text-gray-600">
                 Need help?{' '}
                 <a
-                  href="mailto:support@automet.in"
+                  href="mailto:support@automet.app"
                   className="text-primary hover:text-primary/80 font-semibold"
                 >
-                  support@automet.in
+                  support@automet.app
                 </a>
               </p>
             </div>

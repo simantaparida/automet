@@ -34,8 +34,6 @@ export default function BlogPostPage() {
   const router = useRouter();
   const { slug } = router.query;
   const [post, setPost] = useState<BlogPost | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
   const [preorderModalOpen, setPreorderModalOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
@@ -78,13 +76,10 @@ export default function BlogPostPage() {
           const data = await response.json();
           setPost(data);
         } else {
-          setError(true);
         }
       } catch (err) {
         console.error('Failed to fetch blog post:', err);
-        setError(true);
       } finally {
-        setLoading(false);
       }
     }
 
@@ -155,131 +150,143 @@ export default function BlogPostPage() {
   const getMarkdownComponents = (): Partial<Components> => ({
     // Headers - Professional spacing and typography
     // Skip first H1 if it matches the post title (already shown in header)
-    h1: ({ children }: { children: React.ReactNode }) => {
-      const headingText = typeof children === 'string' 
-        ? children 
-        : Array.isArray(children)
-        ? children.map(c => typeof c === 'string' ? c : '').join('')
-        : String(children);
-      
+    h1: ({ children, ...props }: any) => {
+      const headingText =
+        typeof children === 'string'
+          ? children
+          : Array.isArray(children)
+            ? children.map((c) => (typeof c === 'string' ? c : '')).join('')
+            : String(children);
+
       // If this H1 matches the post title, don't render it
-      if (post && headingText.toLowerCase().trim() === post.title.toLowerCase().trim()) {
+      if (
+        post &&
+        headingText.toLowerCase().trim() === post.title.toLowerCase().trim()
+      ) {
         return null;
       }
-      
+
       return (
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mt-10 mb-4 leading-tight tracking-tight">
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mt-10 mb-4 leading-tight tracking-tight" {...props}>
           {children}
         </h1>
       );
     },
-    h2: ({ children }: { children: React.ReactNode }) => (
-      <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mt-8 mb-3 leading-tight tracking-tight">
+    h2: ({ children, ...props }: any) => (
+      <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mt-8 mb-3 leading-tight tracking-tight" {...props}>
         {children}
       </h2>
     ),
-    h3: ({ children }: { children: React.ReactNode }) => (
-      <h3 className="text-xl md:text-2xl font-semibold text-gray-900 mt-6 mb-2.5 leading-snug tracking-tight">
+    h3: ({ children, ...props }: any) => (
+      <h3 className="text-xl md:text-2xl font-semibold text-gray-900 mt-6 mb-2.5 leading-snug tracking-tight" {...props}>
         {children}
       </h3>
     ),
     // Paragraphs - Professional spacing and readability
-    p: ({ children }: { children: React.ReactNode }) => (
-      <p className="text-base md:text-lg text-gray-700 leading-7 mb-5 font-normal">
+    p: ({ children, ...props }: any) => (
+      <p className="text-base md:text-lg text-gray-700 leading-7 mb-5 font-normal" {...props}>
         {children}
       </p>
     ),
     // Lists - Better spacing and alignment
-    ul: ({ children }: { children: React.ReactNode }) => (
-      <ul className="list-disc list-outside ml-5 mb-5 space-y-1.5 text-gray-700 pl-1">
+    ul: ({ children, ...props }: any) => (
+      <ul className="list-disc list-outside ml-5 mb-5 space-y-1.5 text-gray-700 pl-1" {...props}>
         {children}
       </ul>
     ),
-    ol: ({ children }: { children: React.ReactNode }) => (
-      <ol className="list-decimal list-outside ml-5 mb-5 space-y-1.5 text-gray-700 pl-1">
+    ol: ({ children, ...props }: any) => (
+      <ol className="list-decimal list-outside ml-5 mb-5 space-y-1.5 text-gray-700 pl-1" {...props}>
         {children}
       </ol>
     ),
-    li: ({ children }: { children: React.ReactNode }) => (
-      <li className="pl-2 leading-7 text-base md:text-lg">{children}</li>
+    li: ({ children, ...props }: any) => (
+      <li className="pl-2 leading-7 text-base md:text-lg" {...props}>{children}</li>
     ),
     // Blockquotes - Refined styling
-    blockquote: ({ children }: { children: React.ReactNode }) => (
-      <blockquote className="border-l-4 border-primary/60 pl-5 py-3 my-6 bg-primary/5 rounded-r-lg italic text-gray-700 text-base md:text-lg leading-7">
+    blockquote: ({ children, ...props }: any) => (
+      <blockquote className="border-l-4 border-primary/60 pl-5 py-3 my-6 bg-primary/5 rounded-r-lg italic text-gray-700 text-base md:text-lg leading-7" {...props}>
         {children}
       </blockquote>
     ),
     // Tables - Professional styling with better visual hierarchy
-    table: ({ children }: { children: React.ReactNode }) => (
+    table: ({ children, ...props }: any) => (
       <div className="my-8 overflow-x-auto -mx-4 sm:mx-0">
         <div className="inline-block min-w-full align-middle">
           <div className="overflow-hidden shadow-xl rounded-lg border-2 border-gray-300 bg-white">
-            <table className="min-w-full divide-y divide-gray-200 bg-white m-0">
+            <table className="min-w-full divide-y divide-gray-200 bg-white m-0" {...props}>
               {children}
             </table>
           </div>
         </div>
       </div>
     ),
-    thead: ({ children }: { children: React.ReactNode }) => (
-      <thead className="bg-gray-50">
-        {children}
-      </thead>
+    thead: ({ children, ...props }: any) => (
+      <thead className="bg-gray-50" {children}</thead>
     ),
-    tbody: ({ children }: { children: React.ReactNode }) => (
-      <tbody className="divide-y divide-gray-200 bg-white">{children}</tbody>
+    tbody: ({ children, ...props }: any) => (
+      <tbody className="divide-y divide-gray-200 bg-white" {children}</tbody>
     ),
-    tr: ({ children }: { children: React.ReactNode }) => (
-      <tr className="hover:bg-gray-50 transition-colors duration-150">
+    tr: ({ children, ...props }: any) => (
+      <tr className="hover:bg-gray-50 transition-colors duration-150" {...props}>
         {children}
       </tr>
     ),
-    th: ({ children }: { children: React.ReactNode }) => (
-      <th className="px-4 py-2.5 text-left text-xs font-bold text-gray-900 uppercase tracking-wider border-b-2 border-gray-300 bg-gray-50 whitespace-nowrap align-middle">
+    th: ({ children, ...props }: any) => (
+      <th className="px-4 py-2.5 text-left text-xs font-bold text-gray-900 uppercase tracking-wider border-b-2 border-gray-300 bg-gray-50 whitespace-nowrap align-middle" {...props}>
         {children}
       </th>
     ),
-    td: ({ children }: { children: React.ReactNode }) => {
+    td: ({ children, ...props }: any) => {
       // Convert children to string for checking
-      const content = typeof children === 'string' 
-        ? children 
-        : Array.isArray(children)
-        ? children.map(c => typeof c === 'string' ? c : '').join('')
-        : String(children);
-      
+      const content =
+        typeof children === 'string'
+          ? children
+          : Array.isArray(children)
+            ? children.map((c) => (typeof c === 'string' ? c : '')).join('')
+            : String(children);
+
       const hasCheckmark = content.includes('✅') || content.includes('✓');
-      const hasX = content.includes('❌') || content.includes('✗') || content.includes('×');
-      
+      const hasX =
+        content.includes('❌') ||
+        content.includes('✗') ||
+        content.includes('×');
+
       // Determine alignment - center for icons, left for text
-      const isIconOnly = hasCheckmark || hasX || content.trim().match(/^[❌✅✗×]$/);
+      const isIconOnly =
+        hasCheckmark || hasX || content.trim().match(/^[❌✅✗×]$/);
       const alignClass = isIconOnly ? 'text-center' : 'text-left';
-      
+
       return (
-        <td className={`px-4 py-2.5 text-sm ${alignClass} border-b border-gray-200 align-middle ${
-          hasCheckmark ? 'text-green-600 font-semibold' : 
-          hasX ? 'text-red-600 font-semibold' : 
-          'text-gray-700'
-        }`}>
-          <span className="inline-block leading-tight">
-            {children}
-          </span>
+        <td
+          className={`px-4 py-2.5 text-sm ${alignClass} border-b border-gray-200 align-middle ${
+            hasCheckmark
+              ? 'text-green-600 font-semibold'
+              : hasX
+                ? 'text-red-600 font-semibold'
+                : 'text-gray-700'
+          }`}
+          {...props}
+        >
+          <span className="inline-block leading-tight">{children}</span>
         </td>
       );
     },
     // Links
-    a: ({ href, children }: { href?: string; children: React.ReactNode }) => (
+    a: ({ href, children, ...props }: any) => (
       <a
         href={href}
         className="text-primary hover:text-primary/80 underline font-medium transition-colors"
         target={href?.startsWith('http') ? '_blank' : undefined}
         rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
       >
+        {...props}
+      >
         {children}
       </a>
     ),
     // Strong
-    strong: ({ children }: { children: React.ReactNode }) => (
-      <strong className="font-bold text-gray-900">{children}</strong>
+    strong: ({ children, ...props }: any) => (
+      <strong className="font-bold text-gray-900" {children}</strong>
     ),
     // Code
     code: ({
@@ -291,16 +298,16 @@ export default function BlogPostPage() {
     }) => {
       const isInline = !className;
       return isInline ? (
-        <code className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm font-mono">
+        <code className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm font-mono" {...props}>
           {children}
         </code>
       ) : (
-        <code className={className}>{children}</code>
+        <code className={className} {children}</code>
       );
     },
     // Pre for code blocks
-    pre: ({ children }: { children: React.ReactNode }) => (
-      <pre className="bg-gray-900 text-gray-100 p-5 rounded-lg overflow-x-auto mb-5 shadow-lg text-sm leading-6">
+    pre: ({ children, ...props }: any) => (
+      <pre className="bg-gray-900 text-gray-100 p-5 rounded-lg overflow-x-auto mb-5 shadow-lg text-sm leading-6" {...props}>
         {children}
       </pre>
     ),
@@ -308,7 +315,7 @@ export default function BlogPostPage() {
     hr: () => <hr className="my-8 border-t border-gray-200" />,
   });
 
-  if (loading) {
+  if (!post) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -319,7 +326,7 @@ export default function BlogPostPage() {
     );
   }
 
-  if (error || !post) {
+  if (!post) {
     return (
       <>
         <Head>
@@ -356,7 +363,7 @@ export default function BlogPostPage() {
           <meta property="og:image" content={post.cover_image_url} />
         )}
         <link rel="icon" href="/favicon.ico" />
-      </Head>
+        </Head>
 
       <div className="min-h-screen bg-white">
         {/* Navigation */}
@@ -538,7 +545,7 @@ export default function BlogPostPage() {
                   rehypePlugins={[]}
                 >
                   {(() => {
-                    let processedContent = post.content
+                    const processedContent = post.content
                       // Fix table spacing
                       .replace(/\n\n\|/g, '\n|')
                       .replace(/\|\n\n\|/g, '|\n|')
@@ -550,7 +557,9 @@ export default function BlogPostPage() {
                       .replace(/^#\s+([^\n]+)\n\n/, (match, title) => {
                         // Check if this H1 matches the post title (case-insensitive)
                         const normalizedTitle = title.toLowerCase().trim();
-                        const normalizedPostTitle = post.title.toLowerCase().trim();
+                        const normalizedPostTitle = post.title
+                          .toLowerCase()
+                          .trim();
                         if (normalizedTitle === normalizedPostTitle) {
                           return ''; // Remove the H1
                         }
@@ -565,17 +574,20 @@ export default function BlogPostPage() {
               <style jsx global>{`
                 .blog-content {
                   max-width: 100%;
-                  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+                  font-family:
+                    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+                    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+                    'Helvetica Neue', sans-serif;
                   color: #374151;
                 }
-                
+
                 /* Typography improvements */
                 .blog-content p {
                   margin-bottom: 1.25rem;
                   line-height: 1.75;
                   font-size: 1.0625rem;
                 }
-                
+
                 .blog-content h1,
                 .blog-content h2,
                 .blog-content h3,
@@ -588,50 +600,50 @@ export default function BlogPostPage() {
                   margin-bottom: 1rem;
                   color: #111827;
                 }
-                
+
                 .blog-content h1:first-child,
                 .blog-content h2:first-child,
                 .blog-content h3:first-child {
                   margin-top: 0;
                 }
-                
+
                 .blog-content h1 {
                   font-size: 2.25rem;
                   margin-top: 2.5rem;
                 }
-                
+
                 .blog-content h2 {
                   font-size: 1.875rem;
                   margin-top: 2rem;
                 }
-                
+
                 .blog-content h3 {
                   font-size: 1.5rem;
                   margin-top: 1.75rem;
                 }
-                
+
                 /* Lists - Professional spacing */
                 .blog-content ul,
                 .blog-content ol {
                   margin-bottom: 1.25rem;
                   padding-left: 1.5rem;
                 }
-                
+
                 .blog-content li {
                   margin-bottom: 0.5rem;
                   line-height: 1.75;
                   font-size: 1.0625rem;
                 }
-                
+
                 .blog-content ul li::marker {
                   color: #f97316;
                 }
-                
+
                 .blog-content ol li::marker {
                   color: #f97316;
                   font-weight: 600;
                 }
-                
+
                 /* Blockquotes */
                 .blog-content blockquote {
                   margin: 1.5rem 0;
@@ -642,7 +654,7 @@ export default function BlogPostPage() {
                   font-style: italic;
                   color: #4b5563;
                 }
-                
+
                 /* Code blocks */
                 .blog-content pre {
                   margin: 1.5rem 0;
@@ -654,19 +666,21 @@ export default function BlogPostPage() {
                   font-size: 0.875rem;
                   line-height: 1.6;
                 }
-                
+
                 .blog-content code {
-                  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', monospace;
+                  font-family:
+                    'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono',
+                    'Source Code Pro', monospace;
                   font-size: 0.875em;
                 }
-                
+
                 .blog-content pre code {
                   background: transparent;
                   padding: 0;
                   color: inherit;
                   font-size: inherit;
                 }
-                
+
                 /* Links */
                 .blog-content a {
                   color: #ea580c;
@@ -674,28 +688,30 @@ export default function BlogPostPage() {
                   text-underline-offset: 2px;
                   transition: color 0.2s ease;
                 }
-                
+
                 .blog-content a:hover {
                   color: #c2410c;
                 }
-                
+
                 /* Images */
                 .blog-content img {
                   max-width: 100%;
                   height: auto;
                   border-radius: 0.5rem;
-                  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                  box-shadow:
+                    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                    0 2px 4px -1px rgba(0, 0, 0, 0.06);
                   margin: 2rem 0;
                   display: block;
                 }
-                
+
                 /* Horizontal rules */
                 .blog-content hr {
                   margin: 2.5rem 0;
                   border: none;
                   border-top: 1px solid #e5e7eb;
                 }
-                
+
                 /* Professional table styling */
                 .blog-content table {
                   display: table !important;
@@ -706,20 +722,20 @@ export default function BlogPostPage() {
                   margin: 2rem 0 !important;
                   background: white;
                 }
-                
+
                 .blog-content thead {
                   display: table-header-group !important;
                   background: #f9fafb !important;
                 }
-                
+
                 .blog-content tbody {
                   display: table-row-group !important;
                 }
-                
+
                 .blog-content tr {
                   display: table-row !important;
                 }
-                
+
                 .blog-content th,
                 .blog-content td {
                   display: table-cell !important;
@@ -727,7 +743,7 @@ export default function BlogPostPage() {
                   padding: 0.75rem 1rem !important;
                   vertical-align: middle !important;
                 }
-                
+
                 .blog-content th {
                   font-weight: 700;
                   text-transform: uppercase;
@@ -737,26 +753,26 @@ export default function BlogPostPage() {
                   background-color: #f9fafb;
                   border-bottom: 2px solid #d1d5db;
                 }
-                
+
                 .blog-content td {
                   color: #374151;
                   line-height: 1.6;
                 }
-                
+
                 .blog-content table td:first-child,
                 .blog-content table th:first-child {
                   font-weight: 600;
                   color: #1f2937;
                 }
-                
+
                 .blog-content table tbody tr:nth-child(even) {
                   background-color: #f9fafb;
                 }
-                
+
                 .blog-content table tbody tr:hover {
                   background-color: #f3f4f6;
                 }
-                
+
                 /* Remove extra spacing from cell content */
                 .blog-content table td span,
                 .blog-content table th span {
@@ -764,7 +780,7 @@ export default function BlogPostPage() {
                   vertical-align: middle;
                   line-height: 1.5;
                 }
-                
+
                 /* Nested lists */
                 .blog-content ul ul,
                 .blog-content ol ol,
@@ -774,25 +790,25 @@ export default function BlogPostPage() {
                   margin-bottom: 0.5rem;
                   margin-left: 1.5rem;
                 }
-                
+
                 /* Mobile responsive */
                 @media (max-width: 640px) {
                   .blog-content {
                     font-size: 1rem;
                   }
-                  
+
                   .blog-content h1 {
                     font-size: 1.875rem;
                   }
-                  
+
                   .blog-content h2 {
                     font-size: 1.5rem;
                   }
-                  
+
                   .blog-content h3 {
                     font-size: 1.25rem;
                   }
-                  
+
                   .blog-content table td,
                   .blog-content table th {
                     padding: 0.5rem 0.75rem !important;

@@ -22,13 +22,11 @@ export default async function handler(
     // Check environment variables (support both NEXT_PUBLIC_ and non-prefixed versions)
     const supabaseUrl =
       process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '';
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
     const anonKey =
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
       process.env.SUPABASE_ANON_KEY ||
       '';
 
-    const hasServiceRoleKey = serviceRoleKey.length > 0;
     const hasAnonKey = anonKey.length > 0;
     const hasSupabaseUrl = supabaseUrl.length > 0;
 

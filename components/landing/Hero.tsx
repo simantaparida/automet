@@ -69,10 +69,13 @@ export default function Hero({ onPreorderClick }: HeroProps) {
     <section className="relative pt-24 pb-12 md:pt-32 md:pb-20 overflow-hidden bg-gradient-to-br from-orange-50 via-white to-amber-50">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f97316' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          backgroundSize: '60px 60px'
-        }}></div>
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f97316' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            backgroundSize: '60px 60px',
+          }}
+        ></div>
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -119,9 +122,17 @@ export default function Hero({ onPreorderClick }: HeroProps) {
 
               {/* Sub-headline with Benefit */}
               <p className="text-lg sm:text-xl text-gray-700 mb-6 leading-relaxed font-medium">
-                Join <span className="text-primary font-bold">500+ AMC vendors</span> who are{' '}
-                <span className="text-primary font-bold">getting paid 5x faster</span> and{' '}
-                <span className="text-primary font-bold">recovering 10% lost revenue</span> with Automet
+                Join{' '}
+                <span className="text-primary font-bold">500+ AMC vendors</span>{' '}
+                who are{' '}
+                <span className="text-primary font-bold">
+                  getting paid 5x faster
+                </span>{' '}
+                and{' '}
+                <span className="text-primary font-bold">
+                  recovering 10% lost revenue
+                </span>{' '}
+                with Automet
               </p>
 
               {/* Key Benefits Grid - 2x2 layout with compact design */}
@@ -148,7 +159,9 @@ export default function Hero({ onPreorderClick }: HeroProps) {
                         10%
                         <InfoTooltip content="Based on typical 5% revenue lost to billing delays + missed invoices" />
                       </div>
-                      <div className="text-[12px] text-gray-600 leading-tight">Revenue Recovery</div>
+                      <div className="text-[12px] text-gray-600 leading-tight">
+                        Revenue Recovery
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -175,7 +188,9 @@ export default function Hero({ onPreorderClick }: HeroProps) {
                         5x Faster
                         <InfoTooltip content="Average collection time reduced from 30+ days to 5-7 days" />
                       </div>
-                      <div className="text-[12px] text-gray-600 leading-tight">Payment Collection</div>
+                      <div className="text-[12px] text-gray-600 leading-tight">
+                        Payment Collection
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -202,7 +217,9 @@ export default function Hero({ onPreorderClick }: HeroProps) {
                         50% Less
                         <InfoTooltip content="Automation of job tracking, invoicing, and payment follow-ups" />
                       </div>
-                      <div className="text-[12px] text-gray-600 leading-tight">Admin Time</div>
+                      <div className="text-[12px] text-gray-600 leading-tight">
+                        Admin Time
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -229,7 +246,9 @@ export default function Hero({ onPreorderClick }: HeroProps) {
                         300%+
                         <InfoTooltip content="Calculated over 12 months with time savings valued at ₹200/hr" />
                       </div>
-                      <div className="text-[12px] text-gray-600 leading-tight">ROI in Year 1</div>
+                      <div className="text-[12px] text-gray-600 leading-tight">
+                        ROI in Year 1
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -276,7 +295,8 @@ export default function Hero({ onPreorderClick }: HeroProps) {
 
               {/* Disclaimer */}
               <p className="text-xs text-gray-500 mb-6 text-center sm:text-left">
-                * Based on average metrics. Actual results vary by business size.
+                * Based on average metrics. Actual results vary by business
+                size.
               </p>
 
               {/* Trust Indicators */}
@@ -347,15 +367,18 @@ export default function Hero({ onPreorderClick }: HeroProps) {
                         {waitlistCount}+
                       </div>
                     )}
-                    <div className="text-xs text-gray-600">AMC vendors joined</div>
+                    <div className="text-xs text-gray-600">
+                      AMC vendors joined
+                    </div>
                   </div>
                 </div>
 
                 {/* Testimonial */}
                 <div className="border-l-4 border-primary pl-3 mb-3">
                   <p className="text-sm text-gray-700 italic mb-2">
-                    &quot;We were losing ₹40,000/month in missed billing. Automet
-                    helped us recover it all. Best decision we made.&quot;
+                    &quot;We were losing ₹40,000/month in missed billing.
+                    Automet helped us recover it all. Best decision we
+                    made.&quot;
                   </p>
                   <div className="flex items-center">
                     <div className="w-6 h-6 rounded-full bg-primary/20 mr-2"></div>
@@ -373,23 +396,40 @@ export default function Hero({ onPreorderClick }: HeroProps) {
                 {/* Stats */}
                 <div className="grid grid-cols-3 gap-2 pt-3 border-t border-gray-200">
                   <div className="text-center">
-                    <div className="text-base font-bold text-primary">₹2.5L+</div>
-                    <div className="text-[10px] text-gray-600">Avg Revenue Saved</div>
+                    <div className="text-base font-bold text-primary">
+                      ₹2.5L+
+                    </div>
+                    <div className="text-[10px] text-gray-600">
+                      Avg Revenue Saved
+                    </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-base font-bold text-primary">15hrs</div>
+                    <div className="text-base font-bold text-primary">
+                      15hrs
+                    </div>
                     <div className="text-[10px] text-gray-600">Saved/Week</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-base font-bold text-primary">4.8/5</div>
-                    <div className="text-[10px] text-gray-600">Satisfaction</div>
+                    <div className="text-base font-bold text-primary">
+                      4.8/5
+                    </div>
+                    <div className="text-[10px] text-gray-600">
+                      Satisfaction
+                    </div>
                   </div>
                 </div>
 
                 {/* ₹50K+ Badge - positioned at bottom-left of card, moved further left to avoid overlap */}
-                <div className="absolute -bottom-3 -left-8 bg-green-50 rounded-lg p-1.5 border-2 border-green-200 animate-bounce-subtle z-10 shadow-md" style={{ animationDelay: '0.5s' }}>
-                  <div className="text-[10px] font-bold text-green-700 leading-none">₹50K+</div>
-                  <div className="text-[8px] text-green-600 leading-tight">Saved/Month</div>
+                <div
+                  className="absolute -bottom-3 -left-8 bg-green-50 rounded-lg p-1.5 border-2 border-green-200 animate-bounce-subtle z-10 shadow-md"
+                  style={{ animationDelay: '0.5s' }}
+                >
+                  <div className="text-[10px] font-bold text-green-700 leading-none">
+                    ₹50K+
+                  </div>
+                  <div className="text-[8px] text-green-600 leading-tight">
+                    Saved/Month
+                  </div>
                 </div>
               </div>
 

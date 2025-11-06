@@ -61,7 +61,7 @@ export default async function handler(
     }
 
     // Send email to support
-    const supportEmail = process.env.SUPPORT_EMAIL || 'support@automet.in';
+    const supportEmail = process.env.SUPPORT_EMAIL || 'support@automet.app';
     const emailSubject = `[Contact Form] ${subject}`;
     const emailHtml = `
       <!DOCTYPE html>
@@ -128,7 +128,7 @@ This message was sent from the Automet contact form on the website.
       return res.status(500).json({
         error: 'Failed to send message',
         message:
-          'Unable to send your message. Please try again later or email us directly at support@automet.in',
+          'Unable to send your message. Please try again later or email us directly at support@automet.app',
       });
     }
 

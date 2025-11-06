@@ -12,12 +12,19 @@ export default async function handler(
 
   const { id } = req.query;
 
+  // Validate id parameter
+  if (!id || Array.isArray(id)) {
+    return res.status(400).json({ error: 'Invalid inventory item ID' });
+  }
+
+  const itemId = id as string;
+
   if (req.method === 'GET') {
     try {
       const { data: item, error: itemError } = await supabaseAdmin
         .from('inventory_items')
         .select('*')
-        .eq('id', id)
+        .eq('id', itemId)
         .single();
 
       if (itemError) throw itemError;
@@ -54,6 +61,7 @@ export default async function handler(
 
       const { data, error } = await supabaseAdmin
         .from('inventory')
+        // @ts-ignore - Supabase type inference issue with update
         .update({
           item_name,
           category,
@@ -65,7 +73,7 @@ export default async function handler(
           notes: notes || null,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', id)
+        .eq('id', itemId)
         .select('*')
         .single();
 
@@ -83,7 +91,7 @@ export default async function handler(
       const { error } = await supabaseAdmin
         .from('inventory')
         .delete()
-        .eq('id', id);
+        .eq('id', itemId);
 
       if (error) throw error;
 

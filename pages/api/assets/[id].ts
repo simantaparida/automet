@@ -12,6 +12,13 @@ export default async function handler(
 
   const { id } = req.query;
 
+  // Validate id parameter
+  if (!id || Array.isArray(id)) {
+    return res.status(400).json({ error: 'Invalid asset ID' });
+  }
+
+  const assetId = id;
+
   if (req.method === 'GET') {
     try {
       // Fetch asset with related data
@@ -35,7 +42,7 @@ export default async function handler(
           )
         `
         )
-        .eq('id', id)
+        .eq('id', assetId)
         .single();
 
       if (assetError) throw assetError;
@@ -48,13 +55,13 @@ export default async function handler(
       const { data: jobs } = await supabaseAdmin
         .from('jobs')
         .select('id, title, status, priority, scheduled_at')
-        .eq('asset_id', id)
+        .eq('asset_id', assetId)
         .order('scheduled_at', { ascending: false })
         .limit(10);
 
       return res.status(200).json({
         asset: {
-          ...asset,
+          ...(asset as Record<string, unknown>),
           jobs: jobs || [],
         },
       });
@@ -83,6 +90,7 @@ export default async function handler(
 
       const { data, error } = await supabaseAdmin
         .from('assets')
+        // @ts-ignore - Supabase type inference issue with update
         .update({
           asset_type,
           model,
@@ -92,7 +100,7 @@ export default async function handler(
           notes: notes || null,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', id)
+        .eq('id', assetId)
         .select(
           'id, asset_type, model, serial_number, purchase_date, warranty_expiry, notes'
         )
@@ -113,7 +121,7 @@ export default async function handler(
       const { data: jobs } = await supabaseAdmin
         .from('jobs')
         .select('id')
-        .eq('asset_id', id)
+        .eq('asset_id', assetId)
         .limit(1);
 
       if (jobs && jobs.length > 0) {
@@ -126,7 +134,7 @@ export default async function handler(
       const { error } = await supabaseAdmin
         .from('assets')
         .delete()
-        .eq('id', id);
+        .eq('id', assetId);
 
       if (error) throw error;
 

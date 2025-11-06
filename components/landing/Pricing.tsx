@@ -193,7 +193,7 @@ export default function Pricing({ onPreorderClick }: PricingProps) {
           <p className="text-sm text-gray-600 mb-4">
             Need an enterprise solution?{' '}
             <a
-              href="mailto:support@automet.in"
+              href="mailto:support@automet.app"
               className="text-primary hover:text-primary/80 font-semibold"
             >
               Contact us

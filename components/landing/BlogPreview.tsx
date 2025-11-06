@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface BlogPost {
   id: string;
@@ -110,10 +111,11 @@ export default function BlogPreview() {
               {/* Cover Image */}
               <div className="aspect-video bg-primary/10 relative overflow-hidden">
                 {post.cover_image_url ? (
-                  <img
+                  <Image
                     src={post.cover_image_url}
                     alt={post.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">

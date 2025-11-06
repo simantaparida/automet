@@ -3,11 +3,51 @@
  * Quick preset buttons for common scenarios
  */
 
-import { PRESET_SCENARIOS, ROIInputs } from './roiCalculatorUtils';
+import { UserInputs } from './roiCalculatorUtils';
 
 interface ROICalculatorPresetsProps {
-  onLoadPreset: (values: ROIInputs) => void;
+  onLoadPreset: (values: UserInputs) => void;
 }
+
+// Preset scenarios for quick start
+const PRESET_SCENARIOS = {
+  small: {
+    label: 'Small Team',
+    description: '5 techs, 20 jobs/month',
+    icon: '👷',
+    values: {
+      technicians: 5,
+      jobsPerTech: 20,
+      revenuePerJob: 1000,
+      minutesSavedPerJob: 8,
+      planTier: 1, // Starter
+    } as UserInputs,
+  },
+  medium: {
+    label: 'Medium Team',
+    description: '15 techs, 30 jobs/month',
+    icon: '🏢',
+    values: {
+      technicians: 15,
+      jobsPerTech: 30,
+      revenuePerJob: 1500,
+      minutesSavedPerJob: 10,
+      planTier: 2, // Growth
+    } as UserInputs,
+  },
+  large: {
+    label: 'Large Team',
+    description: '50 techs, 40 jobs/month',
+    icon: '🏭',
+    values: {
+      technicians: 50,
+      jobsPerTech: 40,
+      revenuePerJob: 2000,
+      minutesSavedPerJob: 12,
+      planTier: 3, // Business
+    } as UserInputs,
+  },
+};
 
 export default function ROICalculatorPresets({
   onLoadPreset,

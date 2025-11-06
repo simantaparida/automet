@@ -207,7 +207,7 @@ Replace broken links with:
 }
 
 // Option 2: Make functional
-<a href="mailto:support@automet.in">Contact</a>;
+<a href="mailto:support@automet.app">Contact</a>;
 ```
 
 ### 4. Add Analytics (Google Analytics 4)

@@ -91,7 +91,7 @@ export default function FAQ({ onContactClick }: FAQProps) {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  const currentFAQs = faqCategories[activeTab].faqs;
+  const currentFAQs = faqCategories[activeTab]?.faqs || [];
 
   return (
     <section id="faq" className="py-20 bg-white">
@@ -107,7 +107,7 @@ export default function FAQ({ onContactClick }: FAQProps) {
           <p className="text-lg text-gray-600">
             Got questions? We&apos;ve got answers.{' '}
             <a
-              href="mailto:support@automet.in"
+              href="mailto:support@automet.app"
               className="text-primary hover:text-primary/80 font-semibold transition-colors"
             >
               Contact us
@@ -155,7 +155,9 @@ export default function FAQ({ onContactClick }: FAQProps) {
                   </span>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {openIndex !== index && (
-                      <span className="text-xs text-gray-400 italic">(expand)</span>
+                      <span className="text-xs text-gray-400 italic">
+                        (expand)
+                      </span>
                     )}
                     <svg
                       className={`w-5 h-5 text-primary transition-transform duration-300 ease-in-out ${
@@ -201,10 +203,10 @@ export default function FAQ({ onContactClick }: FAQProps) {
             <p className="text-gray-600 text-sm mb-4">
               Chat with our team or email{' '}
               <a
-                href="mailto:support@automet.in"
+                href="mailto:support@automet.app"
                 className="text-primary hover:text-primary/80 font-semibold transition-colors"
               >
-                support@automet.in
+                support@automet.app
               </a>
             </p>
             <button

@@ -4,7 +4,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import { ROIResults, formatCurrency, formatNumber } from './roiCalculatorUtils';
+import { ROIResults, formatCurrency } from './roiCalculatorUtils';
 
 interface ROICalculatorResultsProps {
   results: ROIResults;
@@ -52,7 +52,10 @@ function AnimatedNumber({
 export default function ROICalculatorResults({
   results,
 }: ROICalculatorResultsProps) {
-  const isPositiveROI = results.grossMonthlySavings > 0;
+  // Calculate derived values
+  const grossMonthlySavings = results.netMonthlyBenefit + results.planCost; // Time savings value
+  const grossAnnualSavings = grossMonthlySavings * 12;
+  const isPositiveROI = results.netMonthlyBenefit > 0;
 
   return (
     <div className="space-y-6">
@@ -62,7 +65,7 @@ export default function ROICalculatorResults({
           ✨ Your Savings With Automet
         </h3>
         <p className="text-gray-600 text-sm">
-          Based on {results.totalJobs} jobs per month
+          Based on {results.totalJobsPerMonth} jobs per month
         </p>
       </div>
 
@@ -125,15 +128,15 @@ export default function ROICalculatorResults({
             </div>
           </div>
           <p className="text-xs font-medium text-blue-700 mb-1 uppercase tracking-wide">
-            Revenue Recovered
+            Monthly Revenue
           </p>
           <p className="text-3xl font-bold text-gray-900 mb-1">
             <AnimatedNumber
-              value={results.recoveredRevenue}
+              value={results.monthlyRevenue}
               formatter={formatCurrency}
             />
           </p>
-          <p className="text-sm text-gray-600">Missed billings captured</p>
+          <p className="text-sm text-gray-600">Total monthly revenue</p>
         </div>
 
         {/* Net Monthly Benefit */}
@@ -174,11 +177,11 @@ export default function ROICalculatorResults({
           </p>
           <p className="text-3xl font-bold text-gray-900 mb-1">
             <AnimatedNumber
-              value={results.grossMonthlySavings}
+              value={grossMonthlySavings}
               formatter={formatCurrency}
             />
           </p>
-          <p className="text-sm text-gray-600">Gross value</p>
+          <p className="text-sm text-gray-600">Time savings value</p>
         </div>
       </div>
 
@@ -191,17 +194,17 @@ export default function ROICalculatorResults({
           </p>
           <p className="text-2xl font-bold text-gray-900">
             <AnimatedNumber
-              value={results.grossAnnualSavings}
+              value={grossAnnualSavings}
               formatter={formatCurrency}
             />
           </p>
-          <p className="text-xs text-gray-500 mt-1">Gross value</p>
+          <p className="text-xs text-gray-500 mt-1">Annual time savings</p>
         </div>
 
         {/* ROI */}
         <div
           className={`rounded-lg p-4 border-2 hover:shadow-md transition-all ${
-            results.roi > 100
+            results.roi1Year > 100
               ? 'bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-300'
               : 'bg-white border-gray-200'
           }`}
@@ -210,10 +213,10 @@ export default function ROICalculatorResults({
             ROI (1-year)
           </p>
           <p
-            className={`text-2xl font-bold ${results.roi > 100 ? 'text-purple-600' : 'text-gray-900'}`}
+            className={`text-2xl font-bold ${results.roi1Year > 100 ? 'text-purple-600' : 'text-gray-900'}`}
           >
             <AnimatedNumber
-              value={results.roi}
+              value={results.roi1Year}
               formatter={(v) => `${Math.round(v)}%`}
             />
           </p>
@@ -238,15 +241,15 @@ export default function ROICalculatorResults({
         {/* Invoice Benefit */}
         <div className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md transition-all">
           <p className="text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
-            Cash Flow Boost
+            Plan Cost
           </p>
           <p className="text-2xl font-bold text-gray-900">
             <AnimatedNumber
-              value={results.invoiceCashBenefit}
+              value={results.planCost}
               formatter={formatCurrency}
             />
           </p>
-          <p className="text-xs text-gray-500 mt-1">Faster invoicing benefit</p>
+          <p className="text-xs text-gray-500 mt-1">Monthly subscription</p>
         </div>
       </div>
 

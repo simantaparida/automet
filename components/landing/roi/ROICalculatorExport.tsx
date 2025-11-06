@@ -5,14 +5,14 @@
 
 import { useState } from 'react';
 import {
-  ROIInputs,
+  UserInputs,
   ROIResults,
   generateSummary,
   generateCSV,
 } from './roiCalculatorUtils';
 
 interface ROICalculatorExportProps {
-  inputs: ROIInputs;
+  inputs: UserInputs;
   results: ROIResults;
 }
 
@@ -23,7 +23,7 @@ export default function ROICalculatorExport({
   const [copiedSummary, setCopiedSummary] = useState(false);
 
   const handleCopySummary = async () => {
-    const summary = generateSummary(inputs, results);
+    const summary = generateSummary(results, inputs);
     try {
       await navigator.clipboard.writeText(summary);
       setCopiedSummary(true);
@@ -34,7 +34,7 @@ export default function ROICalculatorExport({
   };
 
   const handleDownloadCSV = () => {
-    const csv = generateCSV(inputs, results);
+    const csv = generateCSV(results, inputs);
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -50,7 +50,9 @@ export default function ROICalculatorExport({
     <div className="flex flex-col sm:flex-row gap-3 justify-center">
       {/* Copy Summary Button */}
       <button
-        onClick={handleCopySummary}
+        onClick={() => {
+          void handleCopySummary();
+        }}
         className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all shadow-md hover:shadow-lg"
       >
         {copiedSummary ? (

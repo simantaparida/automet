@@ -60,21 +60,31 @@ export default async function handler(
       });
     }
 
+    // Type assertion for preorder data
+    const preorderData = preorder as {
+      id: string;
+      email: string;
+      contact_name?: string | null;
+      email_confirmed: boolean;
+      token_expires_at: string;
+      org_name?: string | null;
+    };
+
     // Check if already confirmed
-    if (preorder.email_confirmed) {
+    if (preorderData.email_confirmed) {
       return res.status(200).json({
         success: true,
         message: 'Email already confirmed',
         preorder: {
-          email: preorder.email,
-          contact_name: preorder.contact_name,
-          org_name: preorder.org_name,
+          email: preorderData.email,
+          contact_name: preorderData.contact_name,
+          org_name: preorderData.org_name,
         },
       });
     }
 
     // Check token expiry
-    const expiresAt = new Date(preorder.token_expires_at);
+    const expiresAt = new Date(preorderData.token_expires_at);
     const now = new Date();
 
     if (now > expiresAt) {
@@ -88,11 +98,12 @@ export default async function handler(
     // Mark email as confirmed
     const { error: updateError } = await supabaseAdmin
       .from('preorders')
+      // @ts-ignore - Supabase type inference issue with update
       .update({
         email_confirmed: true,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', preorder.id);
+      .eq('id', preorderData.id);
 
     if (updateError) {
       console.error('Failed to confirm email:', updateError);
@@ -107,9 +118,9 @@ export default async function handler(
       success: true,
       message: 'Email confirmed successfully!',
       preorder: {
-        email: preorder.email,
-        contact_name: preorder.contact_name,
-        org_name: preorder.org_name,
+        email: preorderData.email,
+        contact_name: preorderData.contact_name,
+        org_name: preorderData.org_name,
       },
     });
   } catch (error) {

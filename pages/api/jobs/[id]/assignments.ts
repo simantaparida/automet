@@ -12,6 +12,13 @@ export default async function handler(
 
   const { id } = req.query;
 
+  // Validate id parameter
+  if (!id || Array.isArray(id)) {
+    return res.status(400).json({ error: 'Invalid job ID' });
+  }
+
+  const jobId = id as string;
+
   if (req.method === 'POST') {
     // Assign technician to job
     try {
@@ -25,7 +32,7 @@ export default async function handler(
       const { data: existing } = await supabaseAdmin
         .from('job_assignments')
         .select('id')
-        .eq('job_id', id)
+        .eq('job_id', jobId)
         .eq('user_id', user_id)
         .single();
 
@@ -38,8 +45,9 @@ export default async function handler(
       // Create new assignment
       const { data, error } = await supabaseAdmin
         .from('job_assignments')
+        // @ts-ignore - Supabase type inference issue with insert
         .insert({
-          job_id: id,
+          job_id: jobId,
           user_id,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
@@ -77,7 +85,7 @@ export default async function handler(
         .from('job_assignments')
         .delete()
         .eq('id', assignment_id)
-        .eq('job_id', id);
+        .eq('job_id', jobId);
 
       if (error) throw error;
 

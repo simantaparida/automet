@@ -74,14 +74,6 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="#how-it-works"
-                  className="hover:text-primary transition-colors duration-300"
-                >
-                  How It Works
-                </a>
-              </li>
-              <li>
-                <a
                   href="#faq"
                   className="hover:text-primary transition-colors duration-300"
                 >
@@ -105,7 +97,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="mailto:support@automet.in"
+                  href="mailto:support@automet.app"
                   className="hover:text-primary transition-colors duration-300"
                 >
                   Support
@@ -113,7 +105,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="mailto:support@automet.in"
+                  href="mailto:support@automet.app"
                   className="hover:text-primary transition-colors duration-300"
                 >
                   Contact Us
@@ -127,28 +119,36 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Company</h3>
             <ul className="space-y-2 text-sm">
               <li>
+                <Link
+                  href="/about"
+                  className="hover:text-primary transition-colors duration-300"
+                >
+                  About Us
+                </Link>
+              </li>
+              <li>
                 <a
-                  href="mailto:support@automet.in"
+                  href="mailto:support@automet.app"
                   className="hover:text-primary transition-colors duration-300"
                 >
                   Contact
                 </a>
               </li>
               <li>
-                <a
-                  href="mailto:support@automet.in?subject=Privacy Policy"
+                <Link
+                  href="/privacy-policy"
                   className="hover:text-primary transition-colors duration-300"
                 >
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="mailto:support@automet.in?subject=Terms of Service"
+                <Link
+                  href="/terms-of-service"
                   className="hover:text-primary transition-colors duration-300"
                 >
                   Terms of Service
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -164,7 +164,7 @@ export default function Footer() {
             {/* Social Links */}
             <div className="flex space-x-6">
               <a
-                href="mailto:support@automet.in"
+                href="mailto:support@automet.app"
                 className="text-gray-400 hover:text-primary transition-all duration-300 transform hover:scale-110"
                 aria-label="Email"
               >
@@ -183,7 +183,7 @@ export default function Footer() {
                 </svg>
               </a>
               <a
-                href="mailto:support@automet.in"
+                href="mailto:support@automet.app"
                 className="text-gray-400 hover:text-primary transition-all duration-300 transform hover:scale-110"
                 aria-label="LinkedIn"
               >

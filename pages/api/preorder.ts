@@ -107,6 +107,7 @@ export default async function handler(
     // Using admin client if available (bypasses RLS), otherwise using public RLS policy
     const { data: preorder, error: insertError } = await supabase
       .from('preorders')
+      // @ts-ignore - Supabase type inference issue with insert
       .insert({
         org_name: data.org_name || null,
         contact_name: data.contact_name || null,
@@ -194,24 +195,33 @@ export default async function handler(
 
     // Send welcome email (don't fail if email fails)
     try {
-      await sendWaitlistWelcomeEmail(
-        preorder.email,
-        preorder.contact_name || 'there'
-      );
+      const preorderData = preorder as { email: string; contact_name?: string | null } | null;
+      if (preorderData) {
+        await sendWaitlistWelcomeEmail(
+          preorderData.email,
+          preorderData.contact_name || 'there'
+        );
+      }
     } catch (emailError) {
       console.error('Failed to send welcome email:', emailError);
       // Don't fail the request if email fails - user is still added to waitlist
     }
 
     // Return success response
+    const preorderResponse = preorder as { id: string; email: string } | null;
     return res.status(201).json({
       success: true,
       message:
         "Successfully joined the waitlist! We'll notify you when Automet launches.",
-      preorder: {
-        id: preorder.id,
-        email: preorder.email,
-      },
+      preorder: preorderResponse
+        ? {
+            id: preorderResponse.id,
+            email: preorderResponse.email,
+          }
+        : {
+            id: 'unknown',
+            email: data.email,
+          },
     });
   } catch (error) {
     console.error('Pre-order API error:', error);

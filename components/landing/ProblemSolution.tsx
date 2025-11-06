@@ -188,14 +188,14 @@ export default function ProblemSolution({
               </div>
 
               {/* Solution Card */}
-              <div className="bg-primary/5 rounded-lg p-4 border-l-4 border-primary hover:shadow-md transition-all duration-200">
+              <div className="bg-green-50 rounded-lg p-4 border-l-4 border-green-500 hover:shadow-md transition-all duration-200">
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-md flex items-center justify-center text-primary mt-0.5">
+                  <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-md flex items-center justify-center text-green-600 mt-0.5">
                     {comparison.solution.icon}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1.5">
-                      <span className="inline-block px-2 py-0.5 bg-primary text-white text-xs font-bold rounded uppercase">
+                      <span className="inline-block px-2 py-0.5 bg-green-600 text-white text-xs font-bold rounded uppercase">
                         Solution
                       </span>
                     </div>

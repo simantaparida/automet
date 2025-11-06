@@ -12,6 +12,13 @@ export default async function handler(
 
   const { id } = req.query;
 
+  // Validate id parameter
+  if (!id || Array.isArray(id)) {
+    return res.status(400).json({ error: 'Invalid job ID' });
+  }
+
+  const jobId = id as string;
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -44,11 +51,12 @@ export default async function handler(
       }
     }
 
-    const { data, error } = await supabaseAdmin
-      .from('job_assignments')
-      .update(updates)
+      const { data, error } = await supabaseAdmin
+        .from('job_assignments')
+        // @ts-ignore - Supabase type inference issue with update
+        .update(updates)
       .eq('id', assignment_id)
-      .eq('job_id', id)
+      .eq('job_id', jobId)
       .select(
         `
         id,
@@ -66,11 +74,12 @@ export default async function handler(
     if (action === 'checkin') {
       await supabaseAdmin
         .from('jobs')
+        // @ts-ignore - Supabase type inference issue with update
         .update({
           status: 'in_progress',
           updated_at: new Date().toISOString(),
         })
-        .eq('id', id);
+        .eq('id', jobId);
     }
 
     return res.status(200).json(data);

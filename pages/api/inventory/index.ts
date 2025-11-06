@@ -27,7 +27,7 @@ export default async function handler(
       const { low_stock } = req.query;
 
       // RLS policies automatically filter by user's org_id
-      let query = supabase
+      const query = supabase
         .from('inventory_items')
         .select('*')
         .order('item_name', { ascending: true });

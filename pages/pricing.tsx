@@ -99,55 +99,153 @@ export default function PricingPage() {
   ];
 
   const comparisonFeatures = [
-    { feature: 'Sites', free: '1', starter: '5', growth: '20', business: 'Unlimited' },
-    { feature: 'Users/Technicians', free: '3', starter: '10', growth: '50', business: '200' },
-    { feature: 'Jobs per month', free: '30', starter: 'Unlimited', growth: 'Unlimited', business: 'Unlimited' },
-    { feature: 'Storage', free: '500 MB', starter: '2 GB', growth: '10 GB', business: '50 GB' },
-    { feature: 'Data retention', free: '3 months', starter: '1 year', growth: '3 years', business: 'Unlimited' },
-    { feature: 'Offline mode', free: '❌', starter: '✅', growth: '✅', business: '✅' },
-    { feature: 'Recurring jobs', free: '❌', starter: '✅', growth: '✅', business: '✅' },
-    { feature: 'Inventory tracking', free: 'Basic', starter: 'Basic', growth: 'Full', business: 'Full' },
-    { feature: 'SLA tracking', free: '❌', starter: '❌', growth: '✅', business: 'Advanced' },
-    { feature: 'Analytics', free: 'Basic', starter: 'Basic', growth: 'Advanced', business: 'Advanced' },
-    { feature: 'Auto PDF reports', free: '❌', starter: '✅', growth: '✅', business: '✅' },
-    { feature: 'Multi-org support', free: '❌', starter: '❌', growth: '❌', business: '✅' },
-    { feature: 'Custom branding', free: '❌', starter: '❌', growth: '❌', business: '✅' },
-    { feature: 'API access', free: '❌', starter: '❌', growth: '❌', business: '✅' },
-    { feature: 'Support', free: 'Email', starter: 'Email', growth: 'Priority', business: 'Dedicated' },
+    {
+      feature: 'Sites',
+      free: '1',
+      starter: '5',
+      growth: '20',
+      business: 'Unlimited',
+    },
+    {
+      feature: 'Users/Technicians',
+      free: '3',
+      starter: '10',
+      growth: '50',
+      business: '200',
+    },
+    {
+      feature: 'Jobs per month',
+      free: '30',
+      starter: 'Unlimited',
+      growth: 'Unlimited',
+      business: 'Unlimited',
+    },
+    {
+      feature: 'Storage',
+      free: '500 MB',
+      starter: '2 GB',
+      growth: '10 GB',
+      business: '50 GB',
+    },
+    {
+      feature: 'Data retention',
+      free: '3 months',
+      starter: '1 year',
+      growth: '3 years',
+      business: 'Unlimited',
+    },
+    {
+      feature: 'Offline mode',
+      free: '❌',
+      starter: '✅',
+      growth: '✅',
+      business: '✅',
+    },
+    {
+      feature: 'Recurring jobs',
+      free: '❌',
+      starter: '✅',
+      growth: '✅',
+      business: '✅',
+    },
+    {
+      feature: 'Inventory tracking',
+      free: 'Basic',
+      starter: 'Basic',
+      growth: 'Full',
+      business: 'Full',
+    },
+    {
+      feature: 'SLA tracking',
+      free: '❌',
+      starter: '❌',
+      growth: '✅',
+      business: 'Advanced',
+    },
+    {
+      feature: 'Analytics',
+      free: 'Basic',
+      starter: 'Basic',
+      growth: 'Advanced',
+      business: 'Advanced',
+    },
+    {
+      feature: 'Auto PDF reports',
+      free: '❌',
+      starter: '✅',
+      growth: '✅',
+      business: '✅',
+    },
+    {
+      feature: 'Multi-org support',
+      free: '❌',
+      starter: '❌',
+      growth: '❌',
+      business: '✅',
+    },
+    {
+      feature: 'Custom branding',
+      free: '❌',
+      starter: '❌',
+      growth: '❌',
+      business: '✅',
+    },
+    {
+      feature: 'API access',
+      free: '❌',
+      starter: '❌',
+      growth: '❌',
+      business: '✅',
+    },
+    {
+      feature: 'Support',
+      free: 'Email',
+      starter: 'Email',
+      growth: 'Priority',
+      business: 'Dedicated',
+    },
   ];
 
   const pricingFAQs = [
     {
       question: 'What payment methods do you accept?',
-      answer: 'We accept all major credit cards, debit cards, UPI, and net banking. All payments are processed securely through Razorpay.',
+      answer:
+        'We accept all major credit cards, debit cards, UPI, and net banking. All payments are processed securely through Razorpay.',
     },
     {
       question: 'Can I change plans later?',
-      answer: 'Yes, absolutely! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and we prorate the charges.',
+      answer:
+        'Yes, absolutely! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and we prorate the charges.',
     },
     {
       question: 'Do you offer annual billing discounts?',
-      answer: 'Yes! All paid plans include a 20% discount when you choose annual billing. Early access members get an additional 50% off for the first 3 months after launch.',
+      answer:
+        'Yes! All paid plans include a 20% discount when you choose annual billing. Early access members get an additional 50% off for the first 3 months after launch.',
     },
     {
       question: 'What happens if I exceed my plan limits?',
-      answer: 'We will notify you when you approach your limits. You can upgrade your plan at any time. For Business plan users, we can discuss custom limits based on your needs.',
+      answer:
+        'We will notify you when you approach your limits. You can upgrade your plan at any time. For Business plan users, we can discuss custom limits based on your needs.',
     },
     {
       question: 'Is there a setup fee?',
-      answer: 'No setup fees! All plans include free onboarding and setup assistance. We want to make it easy for you to get started.',
+      answer:
+        'No setup fees! All plans include free onboarding and setup assistance. We want to make it easy for you to get started.',
     },
     {
       question: 'What is your refund policy?',
-      answer: 'We offer a 30-day money-back guarantee on all paid plans. If you are not satisfied, contact us within 30 days for a full refund, no questions asked.',
+      answer:
+        'We offer a 30-day money-back guarantee on all paid plans. If you are not satisfied, contact us within 30 days for a full refund, no questions asked.',
     },
     {
       question: 'Do you offer enterprise plans?',
-      answer: 'Yes! For organizations needing more than 200 technicians or custom features, we offer enterprise plans with custom pricing, dedicated support, and tailored solutions. Contact us for details.',
+      answer:
+        'Yes! For organizations needing more than 200 technicians or custom features, we offer enterprise plans with custom pricing, dedicated support, and tailored solutions. Contact us for details.',
     },
     {
       question: 'When will I be charged?',
-      answer: 'For early access members, you will be charged when you activate your account after launch. We will notify you via email before any charges occur.',
+      answer:
+        'For early access members, you will be charged when you activate your account after launch. We will notify you via email before any charges occur.',
     },
   ];
 
@@ -334,8 +432,8 @@ export default function PricingPage() {
                   Save 20% with annual billing
                 </span>{' '}
                 on all paid plans. Early access members get an additional{' '}
-                <span className="font-semibold text-primary">50% off</span>{' '}
-                for the first 3 months!
+                <span className="font-semibold text-primary">50% off</span> for
+                the first 3 months!
               </p>
             </div>
           </div>
@@ -556,4 +654,3 @@ export default function PricingPage() {
     </>
   );
 }
-

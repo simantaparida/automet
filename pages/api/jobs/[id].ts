@@ -99,9 +99,10 @@ async function handleUpdateJob(
   // Add updated_at
   updates.updated_at = new Date().toISOString();
 
-  const { data, error } = await supabaseAdmin
-    .from('jobs')
-    .update(updates)
+    const { data, error } = await supabaseAdmin
+      .from('jobs')
+      // @ts-ignore - Supabase type inference issue with update
+      .update(updates)
     .eq('id', id)
     .select()
     .single();

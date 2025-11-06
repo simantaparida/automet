@@ -12,6 +12,13 @@ export default async function handler(
 
   const { id } = req.query;
 
+  // Validate id parameter
+  if (!id || Array.isArray(id)) {
+    return res.status(400).json({ error: 'Invalid site ID' });
+  }
+
+  const siteId = id as string;
+
   if (req.method === 'GET') {
     try {
       // Fetch site with related data
@@ -29,7 +36,7 @@ export default async function handler(
           client:clients(id, name, contact_email, contact_phone)
         `
         )
-        .eq('id', id)
+        .eq('id', siteId)
         .single();
 
       if (siteError) throw siteError;
@@ -55,7 +62,7 @@ export default async function handler(
 
       return res.status(200).json({
         site: {
-          ...site,
+          ...(site as Record<string, unknown>),
           assets: assets || [],
           jobs: jobs || [],
         },
@@ -76,6 +83,7 @@ export default async function handler(
 
       const { data, error } = await supabaseAdmin
         .from('sites')
+        // @ts-ignore - Supabase type inference issue with update
         .update({
           name,
           address: address || null,
@@ -84,7 +92,7 @@ export default async function handler(
           notes: notes || null,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', id)
+        .eq('id', siteId)
         .select('id, name, address, gps_lat, gps_lng, notes')
         .single();
 
@@ -127,7 +135,7 @@ export default async function handler(
         });
       }
 
-      const { error } = await supabaseAdmin.from('sites').delete().eq('id', id);
+      const { error } = await supabaseAdmin.from('sites').delete().eq('id', siteId);
 
       if (error) throw error;
 

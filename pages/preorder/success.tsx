@@ -184,7 +184,7 @@ export default function PreorderSuccessPage() {
               <p className="text-sm text-gray-600">
                 Questions?{' '}
                 <a
-                  href="mailto:support@automet.in"
+                  href="mailto:support@automet.app"
                   className="text-primary hover:text-primary/80 font-semibold"
                 >
                   Contact us

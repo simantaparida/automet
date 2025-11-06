@@ -221,7 +221,7 @@ export default function ContactSupportModal({
                 </svg>
                 <p className="text-red-800 font-medium">
                   Failed to send message. Please try again or email us directly
-                  at support@automet.in
+                  at support@automet.app
                 </p>
               </div>
             </div>

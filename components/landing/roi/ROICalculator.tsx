@@ -77,7 +77,16 @@ const PLAN_PRESETS: PlanPreset[] = [
 ];
 
 export default function ROICalculator() {
-  const [selectedPlan, setSelectedPlan] = useState<PlanPreset>(PLAN_PRESETS[2]); // Default: Growth
+  // Ensure we always have a valid PlanPreset
+  const getDefaultPlan = (): PlanPreset => {
+    const plan = PLAN_PRESETS[2] ?? PLAN_PRESETS[0] ?? PLAN_PRESETS[1];
+    if (!plan) {
+      throw new Error('PLAN_PRESETS array is empty');
+    }
+    return plan;
+  };
+
+  const [selectedPlan, setSelectedPlan] = useState<PlanPreset>(getDefaultPlan); // Default: Growth, fallback to first available
   const [showTooltip, setShowTooltip] = useState(false);
   const [showWithAutomet, setShowWithAutomet] = useState(true); // Toggle state
 
@@ -607,7 +616,7 @@ export default function ROICalculator() {
                     {formatCurrency(results.totalGainINR)}
                   </p>
                   <p className="text-[9px] text-orange-600 mt-1">
-                    What you're losing by NOT using Automet
+                    What you&apos;re losing by NOT using Automet
                   </p>
                 </div>
 

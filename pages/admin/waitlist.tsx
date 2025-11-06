@@ -210,7 +210,12 @@ export default function AdminWaitlistPage() {
               </p>
             </div>
 
-            <form onSubmit={handleLogin}>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                void handleLogin(e);
+              }}
+            >
               <div className="mb-6">
                 <label
                   htmlFor="password"

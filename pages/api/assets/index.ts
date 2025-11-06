@@ -57,8 +57,8 @@ export default async function handler(
       // Filter by client_id if provided (since we join through site)
       let filteredData = data || [];
       if (client_id && filteredData.length > 0) {
-        filteredData = filteredData.filter(
-          (asset) => asset.site?.client?.id === client_id
+        filteredData = (filteredData as any[]).filter(
+          (asset: any) => asset.site?.client?.id === client_id
         );
       }
 

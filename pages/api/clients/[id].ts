@@ -12,6 +12,13 @@ export default async function handler(
 
   const { id } = req.query;
 
+  // Validate id parameter
+  if (!id || Array.isArray(id)) {
+    return res.status(400).json({ error: 'Invalid client ID' });
+  }
+
+  const clientId = id;
+
   if (req.method === 'GET') {
     try {
       // Fetch client with related data
@@ -20,7 +27,7 @@ export default async function handler(
         .select(
           'id, name, contact_email, contact_phone, address, notes, created_at'
         )
-        .eq('id', id)
+        .eq('id', clientId)
         .single();
 
       if (clientError) throw clientError;
@@ -33,20 +40,20 @@ export default async function handler(
       const { data: sites } = await supabaseAdmin
         .from('sites')
         .select('id, name, address, gps_lat, gps_lng')
-        .eq('client_id', id)
+        .eq('client_id', clientId)
         .order('name');
 
       // Fetch related jobs
       const { data: jobs } = await supabaseAdmin
         .from('jobs')
         .select('id, title, status, priority, scheduled_at')
-        .eq('client_id', id)
+        .eq('client_id', clientId)
         .order('scheduled_at', { ascending: false })
         .limit(10);
 
       return res.status(200).json({
         client: {
-          ...client,
+          ...(client as Record<string, unknown>),
           sites: sites || [],
           jobs: jobs || [],
         },
@@ -67,6 +74,7 @@ export default async function handler(
 
       const { data, error } = await supabaseAdmin
         .from('clients')
+        // @ts-ignore - Supabase type inference issue with update
         .update({
           name,
           contact_email: contact_email || null,
@@ -75,7 +83,7 @@ export default async function handler(
           notes: notes || null,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', id)
+        .eq('id', clientId)
         .select('id, name, contact_email, contact_phone, address, notes')
         .single();
 
@@ -94,7 +102,7 @@ export default async function handler(
       const { data: sites } = await supabaseAdmin
         .from('sites')
         .select('id')
-        .eq('client_id', id)
+        .eq('client_id', clientId)
         .limit(1);
 
       if (sites && sites.length > 0) {
@@ -108,7 +116,7 @@ export default async function handler(
       const { data: jobs } = await supabaseAdmin
         .from('jobs')
         .select('id')
-        .eq('client_id', id)
+        .eq('client_id', clientId)
         .limit(1);
 
       if (jobs && jobs.length > 0) {
@@ -121,7 +129,7 @@ export default async function handler(
       const { error } = await supabaseAdmin
         .from('clients')
         .delete()
-        .eq('id', id);
+        .eq('id', clientId);
 
       if (error) throw error;
 

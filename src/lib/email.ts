@@ -10,7 +10,7 @@ const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
 
-const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || 'noreply@automet.in';
+const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || 'noreply@automet.app';
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
 interface SendEmailParams {
@@ -130,7 +130,7 @@ export async function sendWaitlistWelcomeEmail(
     <p>
       <a href="${APP_URL}" style="color: #6b7280; text-decoration: none;">Visit Website</a> •
       <a href="${APP_URL}/blog" style="color: #6b7280; text-decoration: none;">Blog</a> •
-      <a href="mailto:hello@automet.in" style="color: #6b7280; text-decoration: none;">Contact</a>
+      <a href="mailto:support@automet.app" style="color: #6b7280; text-decoration: none;">Contact</a>
     </p>
   </div>
 
@@ -241,7 +241,7 @@ export async function sendPaymentConfirmation(
   </div>
 
   <div style="text-align: center; margin-top: 30px; color: #9ca3af; font-size: 12px;">
-    <p>Need help? Email us at hello@automet.in</p>
+    <p>Need help? Email us at support@automet.app</p>
   </div>
 
 </body>
@@ -275,7 +275,7 @@ Best,
 The Automet Team
 
 ---
-Need help? hello@automet.in
+Need help? support@automet.app
 `;
 
   return sendEmail({

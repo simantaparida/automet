@@ -49,7 +49,11 @@ export const DEFAULT_USER_INPUTS: UserInputs = {
  * Calculate ROI - SIMPLE AND ACCURATE
  */
 export function calculateROI(inputs: UserInputs): ROIResults {
-  const planCost = PLAN_TIERS[inputs.planTier].price;
+  const planTier = PLAN_TIERS[inputs.planTier];
+  if (!planTier) {
+    throw new Error(`Invalid plan tier: ${inputs.planTier}`);
+  }
+  const planCost = planTier.price;
 
   // 1. Jobs per month
   const totalJobsPerMonth = inputs.technicians * inputs.jobsPerTech;

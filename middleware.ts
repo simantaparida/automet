@@ -39,12 +39,7 @@ export function middleware(request: NextRequest) {
     '/api/health',
   ];
 
-  // Check if current path is a landing page
-  const isLandingPage =
-    landingPages.some((page) => pathname === page || pathname.startsWith(`${page}/`)) ||
-    landingApiRoutes.some((route) => pathname.startsWith(route));
-
-  // Allow static files, _next, and public assets
+  // Allow static files, _next, and public assets FIRST
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/static') ||
@@ -54,9 +49,17 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // If not a landing page in landing-only mode, show 404
+  // Check if current path is a landing page
+  const isLandingPage =
+    landingPages.some((page) => pathname === page || pathname.startsWith(`${page}/`)) ||
+    landingApiRoutes.some((route) => pathname.startsWith(route));
+
+  // If not a landing page in landing-only mode, redirect to home
   if (!isLandingPage) {
-    // Redirect to home page with a message
+    // Prevent infinite redirect loop - if already at home, just continue
+    if (pathname === '/') {
+      return NextResponse.next();
+    }
     return NextResponse.redirect(new URL('/', request.url));
   }
 

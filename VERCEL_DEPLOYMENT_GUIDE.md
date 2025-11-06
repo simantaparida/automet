@@ -31,12 +31,16 @@
 
 ### Required Environment Variables:
 
+**⚠️ SECURITY WARNING: Never commit credentials to Git!**
+
+Get these values from your secure sources (`.env.local` file, Supabase dashboard, etc.):
+
 ```bash
-# Supabase
-SUPABASE_URL=https://dogzgbppyiokvipvsgln.supabase.co
-SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvZ3pnYnBweWlva3ZpcHZzZ2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5NDEwMTYsImV4cCI6MjA3NzUxNzAxNn0.0cnh62VqxUrsRe5HzZn1OVzV4vxs4Zp0q0vBmGspfAQ
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvZ3pnYnBweWlva3ZpcHZzZ2xuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MTk0MTAxNiwiZXhwIjoyMDc3NTE3MDE2fQ.P6OC8GpoVucZJdpPgfVW-m9daYIsDXv1Drp-LSt5I7w
-DATABASE_URL=postgresql://postgres:BAyJfvtCc2jYK1eu@db.dogzgbppyiokvipvsgln.supabase.co:5432/postgres
+# Supabase (Get from Supabase Dashboard → Settings → API)
+SUPABASE_URL=https://your-project-ref.supabase.co
+SUPABASE_ANON_KEY=your-anon-key-here
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
+DATABASE_URL=postgresql://postgres:your-password@db.your-project-ref.supabase.co:5432/postgres
 
 # Email (Add later - leave empty for now)
 # RESEND_API_KEY=
@@ -45,9 +49,14 @@ SENDGRID_FROM_EMAIL=noreply@automet.app
 # App Configuration
 NODE_ENV=production
 
-# Admin Secret
-ADMIN_SECRET=4322fafeaed92a1230774e90f2162b6ce0f04b353f3bf14700f31e888d074315
+# Admin Secret (Generate a secure random string)
+ADMIN_SECRET=your-secure-random-secret-here
 ```
+
+**How to get these values:**
+1. **Supabase credentials:** Go to Supabase Dashboard → Settings → API
+2. **DATABASE_URL:** Go to Supabase Dashboard → Settings → Database → Connection string (URI)
+3. **ADMIN_SECRET:** Generate a secure random string (e.g., using `openssl rand -hex 32`)
 
 **Note:** 
 - `NEXT_PUBLIC_APP_URL` will be automatically set by Vercel (you'll get a preview URL)

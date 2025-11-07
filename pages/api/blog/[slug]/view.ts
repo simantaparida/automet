@@ -6,6 +6,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabaseServer } from '@/lib/supabase-server';
 
+interface BlogPostViewCount {
+  view_count: number | null;
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -36,7 +40,8 @@ export default async function handler(
     }
 
     // Increment view count
-    const newCount = (post.view_count || 0) + 1;
+    const currentPost = post as BlogPostViewCount;
+    const newCount = (currentPost.view_count || 0) + 1;
     const { error: updateError } = await supabaseServer
       .from('blog_posts')
       .update({ view_count: newCount })
@@ -46,7 +51,7 @@ export default async function handler(
     if (updateError) {
       console.error('Error incrementing view count:', updateError);
       // Silently fail for analytics - don't block user
-      return res.status(200).json({ success: true, view_count: post.view_count || 0 });
+      return res.status(200).json({ success: true, view_count: currentPost.view_count || 0 });
     }
 
     return res.status(200).json({ 

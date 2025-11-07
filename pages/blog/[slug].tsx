@@ -16,6 +16,8 @@ import Footer from '@/components/landing/Footer';
 import PreorderModal from '@/components/landing/PreorderModal';
 import NewsletterSignup from '@/components/blog/NewsletterSignup';
 import AuthorBio from '@/components/blog/AuthorBio';
+import ExitIntentPopup from '@/components/blog/ExitIntentPopup';
+import TableOfContents from '@/components/blog/TableOfContents';
 
 interface BlogPost {
   id: string;
@@ -28,6 +30,7 @@ interface BlogPost {
   author_name: string;
   published_at: string;
   updated_at?: string;
+  view_count?: number;
   cover_image_url?: string;
   meta_title?: string;
   meta_description?: string;
@@ -92,6 +95,15 @@ export default function BlogPostPage() {
 
     fetchPost();
   }, [slug]);
+
+  // Track page view
+  useEffect(() => {
+    if (!post || !slug) return;
+
+    // Track view (fire and forget, don't block UI)
+    fetch(`/api/blog/${slug}/view`, { method: 'POST' })
+      .catch(err => console.error('View tracking failed:', err));
+  }, [post, slug]);
 
   // Fetch related articles based on category and tags
   const fetchRelatedPosts = async (currentPost: BlogPost) => {
@@ -562,7 +574,16 @@ export default function BlogPostPage() {
         {/* Article */}
         <article className="pb-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto">
+            {/* Table of Contents (Mobile only - sticky at top) */}
+            <TableOfContents content={post.content} />
+            
+            <div className="max-w-7xl mx-auto">
+              <div className="flex gap-8">
+                {/* Table of Contents (Desktop - Sticky Sidebar) */}
+                <TableOfContents content={post.content} />
+
+                {/* Main Content */}
+                <div className="flex-1 min-w-0 max-w-4xl">
               {/* Breadcrumbs */}
               <nav className="mb-6 text-sm text-gray-600">
                 <ol className="flex items-center space-x-2">
@@ -635,6 +656,33 @@ export default function BlogPostPage() {
                   </svg>
                   {calculateReadingTime(post.content)} min read
                 </span>
+                {post.view_count && post.view_count > 0 && (
+                  <>
+                    <span>•</span>
+                    <span className="flex items-center">
+                      <svg
+                        className="w-4 h-4 mr-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
+                      </svg>
+                      {post.view_count.toLocaleString()} views
+                    </span>
+                  </>
+                )}
               </div>
 
               {/* Share Button */}
@@ -687,6 +735,7 @@ export default function BlogPostPage() {
                   <img
                     src={post.cover_image_url}
                     alt={post.title}
+                    loading="eager"
                     className="w-full rounded-xl shadow-xl object-cover"
                     style={{ maxHeight: '500px' }}
                     onError={(e) => {
@@ -1022,6 +1071,7 @@ export default function BlogPostPage() {
                             <img
                               src={relatedPost.cover_image_url}
                               alt={relatedPost.title}
+                              loading="lazy"
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             />
                           ) : (
@@ -1108,6 +1158,8 @@ export default function BlogPostPage() {
                   Join Waitlist
                 </button>
               </div>
+                </div>
+              </div>
             </div>
           </div>
         </article>
@@ -1143,6 +1195,9 @@ export default function BlogPostPage() {
           isOpen={preorderModalOpen}
           onClose={() => setPreorderModalOpen(false)}
         />
+
+        {/* Exit-Intent Popup */}
+        <ExitIntentPopup />
       </div>
     </>
   );

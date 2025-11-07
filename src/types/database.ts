@@ -125,6 +125,62 @@ export interface Database {
           updated_at?: string;
         };
       };
+      blog_posts: {
+        Row: {
+          id: string;
+          slug: string;
+          title: string;
+          excerpt: string | null;
+          content: string;
+          category: string | null;
+          tags: string[] | null;
+          author_name: string | null;
+          cover_image_url: string | null;
+          meta_title: string | null;
+          meta_description: string | null;
+          published: boolean;
+          published_at: string | null;
+          updated_at: string | null;
+          view_count: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          slug: string;
+          title: string;
+          excerpt?: string | null;
+          content: string;
+          category?: string | null;
+          tags?: string[] | null;
+          author_name?: string | null;
+          cover_image_url?: string | null;
+          meta_title?: string | null;
+          meta_description?: string | null;
+          published?: boolean;
+          published_at?: string | null;
+          updated_at?: string | null;
+          view_count?: number | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          slug?: string;
+          title?: string;
+          excerpt?: string | null;
+          content?: string;
+          category?: string | null;
+          tags?: string[] | null;
+          author_name?: string | null;
+          cover_image_url?: string | null;
+          meta_title?: string | null;
+          meta_description?: string | null;
+          published?: boolean;
+          published_at?: string | null;
+          updated_at?: string | null;
+          view_count?: number | null;
+          created_at?: string;
+        };
+      };
       // Add more table types as needed...
     };
     Views: {

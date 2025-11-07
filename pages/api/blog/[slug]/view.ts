@@ -22,11 +22,16 @@ export default async function handler(
     }
 
     // Get admin client to bypass RLS
-    const supabase = getSupabaseAdmin();
-    if (!supabase) {
+    const adminClient = getSupabaseAdmin();
+    if (!adminClient) {
       console.error('Supabase admin client not available');
       return res.status(200).json({ success: true, view_count: 0 });
     }
+
+    // Our Supabase client types currently do not include blog_posts (needs generated types).
+    // Cast to any to avoid build-time failures while keeping runtime logic intact.
+    // TODO: Replace with typed client once Supabase types are generated.
+    const supabase = adminClient as any;
 
     // Fetch current post
     const { data: post, error: fetchError } = await supabase
@@ -43,7 +48,7 @@ export default async function handler(
     }
 
     // Increment view count
-    const newCount = (post.view_count || 0) + 1;
+    const newCount = ((post?.view_count as number | null) || 0) + 1;
     const { error: updateError } = await supabase
       .from('blog_posts')
       .update({ view_count: newCount })

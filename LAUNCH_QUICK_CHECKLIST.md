@@ -15,7 +15,7 @@
 - [ ] Remove all hardcoded API keys/secrets
 
 ### Database
-- [ ] Run all 5 migrations in production Supabase (in order)
+- [ ] Run all required migrations in production Supabase (in order)
 - [ ] Test database connections from production
 - [ ] Verify RLS policies allow service_role operations
 - [ ] Set up daily database backups
@@ -23,8 +23,7 @@
 ### Testing
 - [ ] Test waitlist form (end-to-end)
 - [ ] Test contact form (end-to-end)
-- [ ] Test newsletter signup
-- [ ] Verify emails/notifications are sent
+- [ ] Verify transactional emails/notifications are sent
 - [ ] Test admin panels (waitlist, contact messages)
 - [ ] Test on mobile devices (iOS Safari, Chrome Android)
 

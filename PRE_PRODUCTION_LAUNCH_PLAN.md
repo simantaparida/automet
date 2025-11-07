@@ -70,9 +70,8 @@ This document outlines all steps required to safely deploy the Automet landing p
 **Migrations to Run (in order):**
 1. ✅ `20251107_001_create_contact_messages.sql` - Contact messages table
 2. ✅ `20251107_002_add_updated_at_to_blog_posts.sql` - Blog updated_at field
-3. ✅ `20251107_003_create_newsletter_subscribers.sql` - Newsletter table
-4. ✅ `20251107_004_add_view_count_to_blog_posts.sql` - Blog view tracking
-5. ⏳ `20251107_005_seed_job_tracking_blog_post.sql` - Seed first blog post
+3. ✅ `20251107_004_add_view_count_to_blog_posts.sql` - Blog view tracking
+4. ⏳ `20251107_005_seed_job_tracking_blog_post.sql` - Seed first blog post
 
 **Migration Checklist:**
 - [ ] Backup production database before running migrations
@@ -97,7 +96,6 @@ This document outlines all steps required to safely deploy the Automet landing p
 - [ ] Enable Row Level Security (RLS) on all tables
 - [ ] Verify RLS policies for:
   - [ ] `contact_messages` (service_role full access, public insert)
-  - [ ] `newsletter_subscribers` (service_role full access, public insert)
   - [ ] `blog_posts` (public read for published posts)
   - [ ] `waitlist` (service_role full access, public insert)
 - [ ] Set up database backups (daily at minimum)

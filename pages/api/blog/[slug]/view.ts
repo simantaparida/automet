@@ -26,7 +26,8 @@ export default async function handler(
     }
 
     // Fetch current post
-    const { data: post, error: fetchError } = await supabaseServer
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: post, error: fetchError } = await (supabaseServer as any)
       .from('blog_posts')
       .select('view_count')
       .eq('slug', slug)
@@ -42,7 +43,9 @@ export default async function handler(
     // Increment view count
     const currentPost = post as BlogPostViewCount;
     const newCount = (currentPost.view_count || 0) + 1;
-    const { error: updateError } = await supabaseServer
+    
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: updateError } = await (supabaseServer as any)
       .from('blog_posts')
       .update({ view_count: newCount })
       .eq('slug', slug)

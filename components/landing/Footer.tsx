@@ -3,9 +3,41 @@
  * Footer with links and copyright
  */
 
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 
 export default function Footer() {
+  const [toastVisible, setToastVisible] = useState(false);
+  const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimeoutRef.current) {
+        clearTimeout(toastTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleEmailClick = async () => {
+    const email = 'info@automet.app';
+
+    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(email);
+        setToastVisible(true);
+        if (toastTimeoutRef.current) {
+          clearTimeout(toastTimeoutRef.current);
+        }
+        toastTimeoutRef.current = setTimeout(() => setToastVisible(false), 2000);
+        return;
+      } catch (error) {
+        // Fallback to mailto below
+      }
+    }
+
+    window.location.href = `mailto:${email}`;
+  };
+
   const currentYear = new Date().getFullYear();
 
   return (
@@ -96,20 +128,22 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <a
-                  href="mailto:info@automet.app"
+                <button
+                  type="button"
+                  onClick={handleEmailClick}
                   className="hover:text-primary transition-colors duration-300"
                 >
                   Support
-                </a>
+                </button>
               </li>
               <li>
-                <a
-                  href="mailto:info@automet.app"
+                <button
+                  type="button"
+                  onClick={handleEmailClick}
                   className="hover:text-primary transition-colors duration-300"
                 >
                   Contact Us
-                </a>
+                </button>
               </li>
             </ul>
           </div>
@@ -127,12 +161,13 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <a
-                  href="mailto:info@automet.app"
+                <button
+                  type="button"
+                  onClick={handleEmailClick}
                   className="hover:text-primary transition-colors duration-300"
                 >
                   Contact
-                </a>
+                </button>
               </li>
               <li>
                 <Link
@@ -163,10 +198,11 @@ export default function Footer() {
 
             {/* Social Links */}
             <div className="flex space-x-6">
-              <a
-                href="mailto:info@automet.app"
+              <button
+                type="button"
+                onClick={handleEmailClick}
                 className="text-gray-400 hover:text-primary transition-all duration-300 transform hover:scale-110"
-                aria-label="Email"
+                aria-label="Copy email address"
               >
                 <svg
                   className="w-5 h-5"
@@ -181,7 +217,7 @@ export default function Footer() {
                     d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                   />
                 </svg>
-              </a>
+              </button>
               <a
                 href="https://www.linkedin.com/company/automethq/"
                 target="_blank"
@@ -244,6 +280,32 @@ export default function Footer() {
               </a>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Toast Notification */}
+      <div
+        className={`pointer-events-none fixed bottom-6 right-6 z-50 transform transition-all duration-300 ${
+          toastVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
+        }`}
+        role="status"
+        aria-live="polite"
+      >
+        <div className="flex items-center gap-3 rounded-xl bg-gray-900/95 px-4 py-3 text-sm text-white shadow-xl border border-primary/40">
+          <svg
+            className="h-5 w-5 text-primary"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span className="font-medium">Email copied to clipboard</span>
         </div>
       </div>
     </footer>

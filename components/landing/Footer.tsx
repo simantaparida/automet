@@ -137,13 +137,12 @@ export default function Footer() {
                 </button>
               </li>
               <li>
-                <button
-                  type="button"
-                  onClick={handleEmailClick}
+                <Link
+                  href="/contact"
                   className="hover:text-primary transition-colors duration-300"
                 >
                   Contact Us
-                </button>
+                </Link>
               </li>
             </ul>
           </div>
@@ -161,13 +160,12 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <button
-                  type="button"
-                  onClick={handleEmailClick}
+                <Link
+                  href="/contact"
                   className="hover:text-primary transition-colors duration-300"
                 >
                   Contact
-                </button>
+                </Link>
               </li>
               <li>
                 <Link

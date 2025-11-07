@@ -5,43 +5,6 @@
 
 import { useEffect, useState } from 'react';
 
-// Tooltip component for info icons
-function InfoTooltip({ content }: { content: string }) {
-  const [isVisible, setIsVisible] = useState(false);
-
-  return (
-    <div className="relative inline-block">
-      <button
-        type="button"
-        className="inline-flex items-center justify-center w-3.5 h-3.5 text-gray-400 opacity-60 hover:opacity-100 transition-opacity"
-        onMouseEnter={() => setIsVisible(true)}
-        onMouseLeave={() => setIsVisible(false)}
-        aria-label="More information"
-      >
-        <svg
-          className="w-full h-full"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-      </button>
-      {isVisible && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-gray-900 text-white text-xs rounded-lg shadow-xl z-50 pointer-events-none">
-          {content}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
-        </div>
-      )}
-    </div>
-  );
-}
-
 interface HeroProps {
   onPreorderClick: () => void;
 }

@@ -14,9 +14,7 @@ import type { Components } from 'react-markdown';
 import Navigation from '@/components/landing/Navigation';
 import Footer from '@/components/landing/Footer';
 import PreorderModal from '@/components/landing/PreorderModal';
-import NewsletterSignup from '@/components/blog/NewsletterSignup';
 import AuthorBio from '@/components/blog/AuthorBio';
-import ExitIntentPopup from '@/components/blog/ExitIntentPopup';
 import TableOfContents from '@/components/blog/TableOfContents';
 
 interface BlogPost {
@@ -1028,9 +1026,6 @@ export default function BlogPostPage() {
                 }
               `}</style>
 
-              {/* Newsletter Signup - End of Article */}
-              <NewsletterSignup variant="endOfArticle" context={`blog-${post.category}`} />
-
               {/* Author Bio */}
               <AuthorBio authorName={post.author_name} />
 
@@ -1196,9 +1191,6 @@ export default function BlogPostPage() {
           isOpen={preorderModalOpen}
           onClose={() => setPreorderModalOpen(false)}
         />
-
-        {/* Exit-Intent Popup */}
-        <ExitIntentPopup />
       </div>
     </>
   );

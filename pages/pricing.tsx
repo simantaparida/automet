@@ -26,6 +26,7 @@ export default function PricingPage() {
   const [preorderModalOpen, setPreorderModalOpen] = useState(false);
   const [contactModalOpen, setContactModalOpen] = useState(false);
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<string>('starter');
 
   const plans: PricingPlan[] = [
     {
@@ -409,7 +410,10 @@ export default function PricingPage() {
 
                 {/* CTA Button */}
                 <button
-                  onClick={() => setPreorderModalOpen(true)}
+                  onClick={() => {
+                    setSelectedPlan(plan.name.toLowerCase());
+                    setPreorderModalOpen(true);
+                  }}
                   className={`w-full py-3 px-4 rounded-lg font-semibold text-sm transition-all ${
                     plan.popular
                       ? 'bg-primary text-white hover:bg-primary/90 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
@@ -627,7 +631,7 @@ export default function PricingPage() {
             </h2>
             <p className="text-xl text-gray-600 mb-8">
               Join hundreds of AMC vendors who are already on the waitlist.
-              Launching Q1 2025.
+              Launching Q1 2026.
             </p>
             <button
               onClick={() => setPreorderModalOpen(true)}
@@ -649,6 +653,7 @@ export default function PricingPage() {
         <PreorderModal
           isOpen={preorderModalOpen}
           onClose={() => setPreorderModalOpen(false)}
+          defaultPlan={selectedPlan}
         />
       )}
       {contactModalOpen && (

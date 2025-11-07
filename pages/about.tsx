@@ -98,7 +98,7 @@ export default function AboutPage() {
   ];
 
   const stats = [
-    { label: 'Launch Date', value: 'Q1 2025' },
+    { label: 'Launch Date', value: 'Q1 2026' },
     { label: 'Built In', value: 'India' },
     { label: 'Target Market', value: 'AMC Vendors' },
     { label: 'Focus', value: 'Field Service' },

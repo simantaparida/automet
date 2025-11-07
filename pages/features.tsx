@@ -382,15 +382,43 @@ export default function FeaturesPage() {
                 {/* Right: Visual Placeholder */}
                 <div className="flex-1">
                   <div
-                    className={`${feature.bgColor} rounded-2xl p-8 border-2 border-gray-200`}
+                    className={`${feature.bgColor} rounded-2xl p-8 border-2 border-gray-200 relative overflow-hidden`}
                   >
-                    <div className="aspect-video bg-white rounded-lg shadow-lg flex items-center justify-center">
-                      <div className="text-center">
-                        <div className={`text-6xl mb-4 ${feature.color}`}>
+                    {/* Coming Soon Badge - Diagonal Ribbon */}
+                    <div className="absolute top-6 -right-12 transform rotate-45 z-10">
+                      <div className="bg-gradient-to-r from-primary to-secondary px-16 py-2 shadow-lg">
+                        <span className="text-white text-xs font-bold uppercase tracking-wider">
+                          Revealing Soon
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Floating Badge - Top Left */}
+                    <div className="absolute top-4 left-4 z-10">
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full"></div>
+                        <div className="relative bg-gradient-to-br from-primary to-secondary text-white px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wide shadow-lg flex items-center gap-1.5 animate-pulse">
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          Coming Soon
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="aspect-video bg-white rounded-lg shadow-lg flex items-center justify-center relative overflow-hidden">
+                      {/* Shimmer Effect */}
+                      <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                      
+                      <div className="text-center relative z-10">
+                        <div className={`text-6xl mb-4 ${feature.color} opacity-30`}>
                           {feature.icon}
                         </div>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-gray-400 font-medium">
                           {feature.title} Dashboard
+                        </p>
+                        <p className="text-xs text-gray-400 mt-2 max-w-[200px] mx-auto">
+                          Sneak peek launching Q1 2026
                         </p>
                       </div>
                     </div>
@@ -524,7 +552,7 @@ export default function FeaturesPage() {
               Ready to streamline your operations?
             </h2>
             <p className="text-xl text-gray-600 mb-8">
-              Join hundreds of AMC vendors on the waitlist. Launching Q1 2025.
+              Join hundreds of AMC vendors on the waitlist. Launching Q1 2026.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button

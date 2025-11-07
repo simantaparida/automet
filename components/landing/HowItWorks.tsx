@@ -86,17 +86,17 @@ export default function HowItWorks() {
   ];
 
   return (
-    <section id="how-it-works" className="py-20 bg-gray-50">
+    <section id="how-it-works" className="py-12 sm:py-16 bg-gray-50">
       <div className="container mx-auto px-4 sm:px-6">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in">
-          <span className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4 animate-slide-down">
+        <div className="text-center max-w-3xl mx-auto mb-10 animate-fade-in">
+          <span className="inline-block px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs sm:text-sm font-medium mb-3 animate-slide-down">
             HOW IT WORKS
           </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 animate-slide-up">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 animate-slide-up">
             Get started in 3 simple steps
           </h2>
-          <p className="text-lg text-gray-600 animate-fade-in">
+          <p className="text-base sm:text-lg text-gray-600 animate-fade-in">
             From setup to your first job - you&apos;ll be up and running in no
             time.
           </p>

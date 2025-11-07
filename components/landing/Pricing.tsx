@@ -4,7 +4,7 @@
  */
 
 interface PricingProps {
-  onPreorderClick: () => void;
+  onPreorderClick: (planName?: string) => void;
 }
 
 export default function Pricing({ onPreorderClick }: PricingProps) {
@@ -24,7 +24,7 @@ export default function Pricing({ onPreorderClick }: PricingProps) {
         '3 months data history',
       ],
       cta: 'Join Waitlist',
-      ctaAction: onPreorderClick,
+      ctaAction: () => onPreorderClick('free'),
       popular: false,
     },
     {
@@ -42,7 +42,7 @@ export default function Pricing({ onPreorderClick }: PricingProps) {
         'Auto PDF reports',
       ],
       cta: 'Join Waitlist',
-      ctaAction: onPreorderClick,
+      ctaAction: () => onPreorderClick('starter'),
       popular: true,
       badge: 'Most Popular',
     },
@@ -61,7 +61,7 @@ export default function Pricing({ onPreorderClick }: PricingProps) {
         '3 years data retention',
       ],
       cta: 'Join Waitlist',
-      ctaAction: onPreorderClick,
+      ctaAction: () => onPreorderClick('growth'),
       popular: false,
     },
     {
@@ -79,7 +79,7 @@ export default function Pricing({ onPreorderClick }: PricingProps) {
         'Dedicated manager',
       ],
       cta: 'Join Waitlist',
-      ctaAction: onPreorderClick,
+      ctaAction: () => onPreorderClick('business'),
       popular: false,
     },
   ];

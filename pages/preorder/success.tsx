@@ -31,14 +31,14 @@ export default function PreorderSuccessPage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50 flex items-center justify-center px-6 py-8">
         <div className="max-w-2xl w-full">
           {/* Success Card */}
-          <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 text-center">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 md:p-10 text-center">
             {/* Success Icon */}
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-full mb-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-primary/10 rounded-full mb-4 sm:mb-6">
               <svg
-                className="w-10 h-10 text-primary"
+                className="w-8 h-8 sm:w-10 sm:h-10 text-primary"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -53,7 +53,7 @@ export default function PreorderSuccessPage() {
             </div>
 
             {/* Heading */}
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight">
               You're on the Waitlist! 🎉
             </h1>
 

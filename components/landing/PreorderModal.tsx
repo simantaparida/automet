@@ -3,17 +3,19 @@
  * Simplified waitlist signup form
  */
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 
 interface PreorderModalProps {
   isOpen: boolean;
   onClose: () => void;
+  defaultPlan?: string;
 }
 
 interface FormData {
   contact_name: string;
   email: string;
   phone: string;
+  country_code: string;
   org_name: string;
   tech_count: string;
   city: string;
@@ -24,20 +26,28 @@ interface FormErrors {
   [key: string]: string;
 }
 
-export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
+export default function PreorderModal({ isOpen, onClose, defaultPlan }: PreorderModalProps) {
   const [formData, setFormData] = useState<FormData>({
     contact_name: '',
     email: '',
     phone: '',
+    country_code: '+91',
     org_name: '',
     tech_count: '',
     city: '',
-    plan_interest: 'starter',
+    plan_interest: defaultPlan || 'starter',
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+
+  // Update plan when defaultPlan changes
+  useEffect(() => {
+    if (defaultPlan && isOpen) {
+      setFormData((prev) => ({ ...prev, plan_interest: defaultPlan }));
+    }
+  }, [defaultPlan, isOpen]);
 
   // Validate form
   const validateForm = (): boolean => {
@@ -49,10 +59,10 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
       newErrors.email = 'Valid email is required';
     }
 
-    // Phone is required
-    const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]{6,}$/;
+    // Phone is required (10 digits for Indian numbers)
+    const phoneRegex = /^[0-9]{10}$/;
     if (!formData.phone.trim() || !phoneRegex.test(formData.phone)) {
-      newErrors.phone = 'Valid phone number is required';
+      newErrors.phone = 'Valid 10-digit phone number is required';
     }
 
     // Contact name is optional but if provided, must be valid
@@ -96,7 +106,7 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
         body: JSON.stringify({
           contact_name: formData.contact_name || undefined,
           email: formData.email.trim().toLowerCase(),
-          phone: formData.phone.trim(),
+          phone: `${formData.country_code}${formData.phone.trim()}`,
           org_name: formData.org_name || undefined,
           tech_count: formData.tech_count
             ? Number(formData.tech_count)
@@ -189,8 +199,8 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
                 Early Access
               </span>
             </div>
-            <h2 className="text-2xl font-bold mb-1">Join the Waitlist</h2>
-            <p className="text-white/90 text-sm">
+            <h2 className="text-2xl font-bold mb-1 text-center">Join the Waitlist</h2>
+            <p className="text-white/90 text-sm text-center">
               Be among the first to access Automet when we launch
             </p>
           </div>
@@ -210,60 +220,60 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
             )}
 
             {/* Early Access Benefits - 2x2 Grid */}
-            <div className="mb-5 p-4 bg-primary/10 rounded-xl border-2 border-primary/20">
+            <div className="mb-5">
               <p className="text-xs font-bold text-primary mb-3 uppercase tracking-wide text-center">
                 Early Access Benefits
               </p>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-white rounded-lg p-3 border border-primary/20 shadow-sm">
-                  <div className="flex items-start gap-2 mb-1">
-                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="grid grid-cols-2 gap-2.5">
+                <div className="bg-gray-50 rounded-lg p-2.5 border border-gray-200">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
                     </div>
-                    <div>
-                      <p className="font-bold text-gray-900 text-sm mb-0.5">First Access</p>
-                      <p className="text-xs text-gray-600 leading-tight">Try features early</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-gray-900 text-sm truncate">First Access</p>
+                      <p className="text-xs text-gray-600 truncate">Try features early</p>
                     </div>
                   </div>
                 </div>
-                <div className="bg-white rounded-lg p-3 border border-primary/20 shadow-sm">
-                  <div className="flex items-start gap-2 mb-1">
-                    <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="bg-gray-50 rounded-lg p-2.5 border border-gray-200">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
-                    <div>
-                      <p className="font-bold text-gray-900 text-sm mb-0.5">Special Offers</p>
-                      <p className="text-xs text-gray-600 leading-tight">Exclusive discounts</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-gray-900 text-sm truncate">Special Offers</p>
+                      <p className="text-xs text-gray-600 truncate">Exclusive discounts</p>
                     </div>
                   </div>
                 </div>
-                <div className="bg-white rounded-lg p-3 border border-primary/20 shadow-sm">
-                  <div className="flex items-start gap-2 mb-1">
-                    <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="bg-gray-50 rounded-lg p-2.5 border border-gray-200">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
                       </svg>
                     </div>
-                    <div>
-                      <p className="font-bold text-gray-900 text-sm mb-0.5">Priority Support</p>
-                      <p className="text-xs text-gray-600 leading-tight">Dedicated onboarding</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-gray-900 text-sm truncate">Priority Support</p>
+                      <p className="text-xs text-gray-600 truncate">Dedicated help</p>
                     </div>
                   </div>
                 </div>
-                <div className="bg-white rounded-lg p-3 border border-primary/20 shadow-sm">
-                  <div className="flex items-start gap-2 mb-1">
-                    <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="bg-gray-50 rounded-lg p-2.5 border border-gray-200">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
                       </svg>
                     </div>
-                    <div>
-                      <p className="font-bold text-gray-900 text-sm mb-0.5">Shape Product</p>
-                      <p className="text-xs text-gray-600 leading-tight">Your feedback matters</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-gray-900 text-sm truncate">Shape Product</p>
+                      <p className="text-xs text-gray-600 truncate">Your feedback</p>
                     </div>
                   </div>
                 </div>
@@ -304,18 +314,34 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
                 >
                   Phone Number <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.phone ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="+91-9876543210"
-                  required
-                />
+                <div className="flex gap-2 items-stretch">
+                  <select
+                    name="country_code"
+                    value={formData.country_code}
+                    onChange={handleChange}
+                    className="w-28 px-2.5 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-sm"
+                  >
+                    <option value="+91">🇮🇳 +91</option>
+                    <option value="+1">🇺🇸 +1</option>
+                    <option value="+44">🇬🇧 +44</option>
+                    <option value="+61">🇦🇺 +61</option>
+                    <option value="+971">🇦🇪 +971</option>
+                    <option value="+65">🇸🇬 +65</option>
+                  </select>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    maxLength={10}
+                    className={`flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      errors.phone ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="9876543210"
+                    required
+                  />
+                </div>
                 {errors.phone && (
                   <p className="mt-1 text-xs text-red-500">{errors.phone}</p>
                 )}
@@ -426,7 +452,7 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
               <div className="space-y-2">
                 {/* Free Plan */}
                 <label
-                  className={`flex items-start p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                  className={`flex items-start p-2 border-2 rounded-lg cursor-pointer transition-all ${
                     formData.plan_interest === 'free'
                       ? 'border-primary bg-primary/5'
                       : 'border-gray-200 hover:border-gray-300 bg-white'
@@ -438,11 +464,11 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
                     value="free"
                     checked={formData.plan_interest === 'free'}
                     onChange={handleRadioChange}
-                    className="mr-3 mt-0.5 flex-shrink-0"
+                    className="mr-2.5 mt-0.5 flex-shrink-0"
                   />
                   <div className="flex-1">
-                    <div className="font-semibold text-gray-900 mb-0.5">Free</div>
-                    <div className="text-sm text-gray-600">
+                    <div className="font-semibold text-gray-900 text-sm">Free</div>
+                    <div className="text-xs text-gray-600">
                       ₹0/forever • 1 site, 3 users
                     </div>
                   </div>
@@ -450,7 +476,7 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
 
                 {/* Starter Plan */}
                 <label
-                  className={`flex items-start p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                  className={`flex items-start p-2 border-2 rounded-lg cursor-pointer transition-all ${
                     formData.plan_interest === 'starter'
                       ? 'border-primary bg-primary/5'
                       : 'border-gray-200 hover:border-gray-300 bg-white'
@@ -462,16 +488,16 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
                     value="starter"
                     checked={formData.plan_interest === 'starter'}
                     onChange={handleRadioChange}
-                    className="mr-3 mt-0.5 flex-shrink-0"
+                    className="mr-2.5 mt-0.5 flex-shrink-0"
                   />
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <span className="font-semibold text-gray-900">Starter</span>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-primary/10 text-primary">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-gray-900 text-sm">Starter</span>
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary">
                         ⭐ MOST POPULAR
                       </span>
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-xs text-gray-600">
                       ₹999/mo • 5 sites, 10 techs
                     </div>
                   </div>
@@ -479,7 +505,7 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
 
                 {/* Growth Plan */}
                 <label
-                  className={`flex items-start p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                  className={`flex items-start p-2 border-2 rounded-lg cursor-pointer transition-all ${
                     formData.plan_interest === 'growth'
                       ? 'border-primary bg-primary/5'
                       : 'border-gray-200 hover:border-gray-300 bg-white'
@@ -491,11 +517,11 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
                     value="growth"
                     checked={formData.plan_interest === 'growth'}
                     onChange={handleRadioChange}
-                    className="mr-3 mt-0.5 flex-shrink-0"
+                    className="mr-2.5 mt-0.5 flex-shrink-0"
                   />
                   <div className="flex-1">
-                    <div className="font-semibold text-gray-900 mb-0.5">Growth</div>
-                    <div className="text-sm text-gray-600">
+                    <div className="font-semibold text-gray-900 text-sm">Growth</div>
+                    <div className="text-xs text-gray-600">
                       ₹2,999/mo • 20 sites, 50 techs
                     </div>
                   </div>
@@ -503,7 +529,7 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
 
                 {/* Business Plan */}
                 <label
-                  className={`flex items-start p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                  className={`flex items-start p-2 border-2 rounded-lg cursor-pointer transition-all ${
                     formData.plan_interest === 'business'
                       ? 'border-primary bg-primary/5'
                       : 'border-gray-200 hover:border-gray-300 bg-white'
@@ -515,11 +541,11 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
                     value="business"
                     checked={formData.plan_interest === 'business'}
                     onChange={handleRadioChange}
-                    className="mr-3 mt-0.5 flex-shrink-0"
+                    className="mr-2.5 mt-0.5 flex-shrink-0"
                   />
                   <div className="flex-1">
-                    <div className="font-semibold text-gray-900 mb-0.5">Business</div>
-                    <div className="text-sm text-gray-600">
+                    <div className="font-semibold text-gray-900 text-sm">Business</div>
+                    <div className="text-xs text-gray-600">
                       ₹9,999/mo • Unlimited sites, 200 techs
                     </div>
                   </div>
@@ -527,7 +553,7 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
 
                 {/* Enterprise Plan */}
                 <label
-                  className={`flex items-start p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                  className={`flex items-start p-2 border-2 rounded-lg cursor-pointer transition-all ${
                     formData.plan_interest === 'enterprise'
                       ? 'border-primary bg-primary/5'
                       : 'border-gray-200 hover:border-gray-300 bg-white'
@@ -539,11 +565,11 @@ export default function PreorderModal({ isOpen, onClose }: PreorderModalProps) {
                     value="enterprise"
                     checked={formData.plan_interest === 'enterprise'}
                     onChange={handleRadioChange}
-                    className="mr-3 mt-0.5 flex-shrink-0"
+                    className="mr-2.5 mt-0.5 flex-shrink-0"
                   />
                   <div className="flex-1">
-                    <div className="font-semibold text-gray-900 mb-0.5">Enterprise</div>
-                    <div className="text-sm text-gray-600">
+                    <div className="font-semibold text-gray-900 text-sm">Enterprise</div>
+                    <div className="text-xs text-gray-600">
                       Custom pricing • 200+ techs, dedicated support
                     </div>
                   </div>

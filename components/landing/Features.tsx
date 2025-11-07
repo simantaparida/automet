@@ -89,17 +89,17 @@ export default function Features() {
   ];
 
   return (
-    <section id="features" className="py-20 bg-white">
+    <section id="features" className="py-12 sm:py-16 bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-semibold mb-4">
+        <div className="text-center max-w-3xl mx-auto mb-10">
+          <span className="inline-block px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs sm:text-sm font-semibold mb-3">
             FEATURES
           </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3">
             Everything you need to run your AMC business
           </h2>
-          <p className="text-lg text-gray-600">
+          <p className="text-base sm:text-lg text-gray-600">
             Four powerful modules working together seamlessly.
           </p>
         </div>

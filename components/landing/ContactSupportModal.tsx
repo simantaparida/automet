@@ -17,7 +17,7 @@ export default function ContactSupportModal({
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    subject: '',
+    topic: '',
     message: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -54,10 +54,8 @@ export default function ContactSupportModal({
       newErrors.email = 'Please enter a valid email address';
     }
 
-    if (!formData.subject.trim()) {
-      newErrors.subject = 'Subject is required';
-    } else if (formData.subject.trim().length < 5) {
-      newErrors.subject = 'Subject must be at least 5 characters';
+    if (!formData.topic) {
+      newErrors.topic = 'Please select a topic';
     }
 
     if (!formData.message.trim()) {
@@ -103,7 +101,7 @@ export default function ContactSupportModal({
       setFormData({
         name: '',
         email: '',
-        subject: '',
+        topic: '',
         message: '',
       });
 
@@ -125,7 +123,7 @@ export default function ContactSupportModal({
       setFormData({
         name: '',
         email: '',
-        subject: '',
+        topic: '',
         message: '',
       });
       setErrors({});
@@ -138,25 +136,25 @@ export default function ContactSupportModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-slide-up">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto animate-slide-up">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
+        <div className="bg-primary text-white rounded-t-2xl px-6 py-5 flex items-center justify-between relative">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">
-              Contact Support
+            <h2 className="text-xl font-bold">
+              Get in Touch
             </h2>
-            <p className="text-sm text-gray-600 mt-1">
-              We&apos;ll get back to you within 24 hours
+            <p className="text-sm text-white/90 mt-0.5">
+              Quick response in 24 hours
             </p>
           </div>
           <button
             onClick={handleClose}
             disabled={isSubmitting}
-            className="p-2 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
+            className="p-1.5 text-white/80 hover:text-white transition-colors disabled:opacity-50"
             aria-label="Close"
           >
             <svg
-              className="w-6 h-6"
+              className="w-5 h-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -176,14 +174,14 @@ export default function ContactSupportModal({
           onSubmit={(e) => {
             void handleSubmit(e);
           }}
-          className="p-6"
+          className="p-6 space-y-4"
         >
           {/* Success Message */}
           {submitStatus === 'success' && (
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <div className="flex items-center">
+            <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+              <div className="flex items-center gap-2">
                 <svg
-                  className="w-5 h-5 text-green-600 mr-2"
+                  className="w-5 h-5 text-green-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -195,8 +193,8 @@ export default function ContactSupportModal({
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
-                <p className="text-green-800 font-medium">
-                  Message sent successfully! We&apos;ll get back to you soon.
+                <p className="text-green-800 text-sm font-medium">
+                  Message sent! We&apos;ll respond soon.
                 </p>
               </div>
             </div>
@@ -204,10 +202,10 @@ export default function ContactSupportModal({
 
           {/* Error Message */}
           {submitStatus === 'error' && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <div className="flex items-center">
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-start gap-2">
                 <svg
-                  className="w-5 h-5 text-red-600 mr-2"
+                  className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -219,22 +217,24 @@ export default function ContactSupportModal({
                     d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <p className="text-red-800 font-medium">
-                  Failed to send message. Please try again or email us directly
-                  at support@automet.app
+                <p className="text-red-800 text-sm">
+                  Failed to send. Try again or email{' '}
+                  <a href="mailto:support@automet.app" className="font-semibold underline">
+                    support@automet.app
+                  </a>
                 </p>
               </div>
             </div>
           )}
 
-          <div className="space-y-4">
-            {/* Name */}
+          {/* Email & Name - Side by Side */}
+          <div className="grid grid-cols-2 gap-3">
             <div>
               <label
                 htmlFor="name"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 mb-1.5"
               >
-                Your Name <span className="text-red-500">*</span>
+                Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -242,10 +242,10 @@ export default function ContactSupportModal({
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
+                className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-colors ${
                   errors.name ? 'border-red-500' : 'border-gray-300'
                 }`}
-                placeholder="Enter your name"
+                placeholder="Your name"
                 disabled={isSubmitting}
               />
               {errors.name && (
@@ -253,13 +253,12 @@ export default function ContactSupportModal({
               )}
             </div>
 
-            {/* Email */}
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 mb-1.5"
               >
-                Email Address <span className="text-red-500">*</span>
+                Email <span className="text-red-500">*</span>
               </label>
               <input
                 type="email"
@@ -267,7 +266,7 @@ export default function ContactSupportModal({
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
+                className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-colors ${
                   errors.email ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="your@email.com"
@@ -277,77 +276,86 @@ export default function ContactSupportModal({
                 <p className="mt-1 text-xs text-red-500">{errors.email}</p>
               )}
             </div>
+          </div>
 
-            {/* Subject */}
-            <div>
-              <label
-                htmlFor="subject"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Subject <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                id="subject"
-                name="subject"
-                value={formData.subject}
-                onChange={handleChange}
-                className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
-                  errors.subject ? 'border-red-500' : 'border-gray-300'
-                }`}
-                placeholder="What is this about?"
-                disabled={isSubmitting}
-              />
-              {errors.subject && (
-                <p className="mt-1 text-xs text-red-500">{errors.subject}</p>
-              )}
-            </div>
+          {/* Topic Dropdown */}
+          <div>
+            <label
+              htmlFor="topic"
+              className="block text-sm font-medium text-gray-700 mb-1.5"
+            >
+              What can we help with? <span className="text-red-500">*</span>
+            </label>
+            <select
+              id="topic"
+              name="topic"
+              value={formData.topic}
+              onChange={handleChange}
+              className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-colors bg-white ${
+                errors.topic ? 'border-red-500' : 'border-gray-300'
+              }`}
+              disabled={isSubmitting}
+            >
+              <option value="">Select a topic...</option>
+              <option value="pricing">💰 Pricing & Plans</option>
+              <option value="features">✨ Features & Capabilities</option>
+              <option value="technical">🔧 Technical Support</option>
+              <option value="demo">🎬 Request a Demo</option>
+              <option value="partnership">🤝 Partnership Inquiry</option>
+              <option value="other">💬 Other Questions</option>
+            </select>
+            {errors.topic && (
+              <p className="mt-1 text-xs text-red-500">{errors.topic}</p>
+            )}
+          </div>
 
-            {/* Message */}
-            <div>
-              <label
-                htmlFor="message"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Message <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                rows={5}
-                className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none ${
-                  errors.message ? 'border-red-500' : 'border-gray-300'
-                }`}
-                placeholder="Tell us how we can help..."
-                disabled={isSubmitting}
-              />
-              {errors.message && (
-                <p className="mt-1 text-xs text-red-500">{errors.message}</p>
-              )}
-            </div>
+          {/* Message */}
+          <div>
+            <label
+              htmlFor="message"
+              className="block text-sm font-medium text-gray-700 mb-1.5"
+            >
+              Message <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              id="message"
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
+              rows={4}
+              className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-colors resize-none ${
+                errors.message ? 'border-red-500' : 'border-gray-300'
+              }`}
+              placeholder="How can we help you?"
+              disabled={isSubmitting}
+            />
+            {errors.message && (
+              <p className="mt-1 text-xs text-red-500">{errors.message}</p>
+            )}
+            <p className="mt-1.5 text-xs text-gray-500">
+              Minimum 10 characters
+            </p>
           </div>
 
           {/* Actions */}
-          <div className="flex gap-4 mt-6">
+          <div className="flex gap-3 pt-2">
             <button
               type="button"
               onClick={handleClose}
               disabled={isSubmitting}
-              className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-lg font-medium text-sm hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-5 py-2.5 bg-primary text-white rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
             >
               {isSubmitting ? (
-                <span className="flex items-center justify-center">
+                <span className="flex items-center justify-center gap-2">
                   <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    className="animate-spin h-4 w-4 text-white"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"

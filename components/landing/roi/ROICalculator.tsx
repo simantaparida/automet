@@ -3,7 +3,7 @@
  * Compact UI with Before/After toggle
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   calculateROI,
   ROIInputs,
@@ -89,6 +89,7 @@ export default function ROICalculator() {
   const [selectedPlan, setSelectedPlan] = useState<PlanPreset>(getDefaultPlan); // Default: Growth, fallback to first available
   const [showTooltip, setShowTooltip] = useState(false);
   const [showWithAutomet, setShowWithAutomet] = useState(true); // Toggle state
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   // Calculate admin hours automatically based on technicians and jobs
   const calculateAdminHours = (techs: number, jobsPerTech: number): number => {
@@ -156,6 +157,17 @@ export default function ROICalculator() {
     if (plan) {
       setSelectedPlan(plan);
       setInputs(getInitialInputs(plan));
+      
+      // Scroll to results on mobile only when plan changes via tap
+      if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+        setTimeout(() => {
+          resultsRef.current?.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start',
+            inline: 'nearest'
+          });
+        }, 100);
+      }
     }
   };
 
@@ -173,17 +185,17 @@ export default function ROICalculator() {
   };
 
   return (
-    <section id="roi-calculator" className="py-12 bg-gray-50">
+    <section id="roi-calculator" className="py-12 sm:py-16 bg-gray-50">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Header */}
-        <div className="text-center mb-6">
-          <span className="inline-block px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium mb-2">
+        <div className="text-center mb-8">
+          <span className="inline-block px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-medium mb-2">
             ROI CALCULATOR
           </span>
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">
             Calculate Your Savings
           </h2>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600">
             Select plan, customize, see real ROI
           </p>
         </div>
@@ -331,7 +343,7 @@ export default function ROICalculator() {
           </div>
 
           {/* RIGHT - Results */}
-          <div className="bg-white rounded-xl shadow-lg border-2 border-gray-200 p-4">
+          <div ref={resultsRef} className="bg-white rounded-xl shadow-lg border-2 border-gray-200 p-4">
             {/* Header with Title, Toggle, and Info Button */}
             <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-3 mb-3">
               <h3 className="text-base font-bold text-gray-900">

@@ -200,82 +200,77 @@ export default function BlogListPage() {
         </section>
 
         {/* Search and Filters */}
-        <div className="bg-gray-50 border-b border-gray-200 py-6">
+        <div className="bg-white border-y border-gray-200 py-6">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto">
+            <div className="max-w-7xl mx-auto space-y-4">
               {/* Search Bar */}
-              <div className="mb-6">
-                <div className="relative max-w-2xl mx-auto">
-                  <svg
-                    className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                  <input
-                    type="text"
-                    placeholder="Search articles by title, content, or tags..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              <div className="relative">
+                <svg
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                   />
-                  {searchQuery && (
-                    <button
-                      onClick={() => setSearchQuery('')}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search articles..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:bg-white transition-colors text-sm"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
-                  )}
-                </div>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                )}
               </div>
 
-              {/* Category Filter and Sort */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+              {/* Filters Row */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                {/* Category Filter */}
+                <div className="flex flex-wrap gap-2 flex-1">
                   {categoryCounts.map((cat) => (
                     <button
                       key={cat.value}
                       onClick={() => {
                         setSelectedCategory(cat.value);
-                        // Clear search when changing category
                         if (searchQuery) setSearchQuery('');
                       }}
-                      className={`px-3 py-1.5 rounded-lg font-medium text-xs sm:text-sm transition-all duration-300 ${
+                      className={`px-3 py-1.5 rounded-lg font-medium text-sm transition-all whitespace-nowrap ${
                         selectedCategory === cat.value
-                          ? 'bg-primary text-white shadow-md hover:bg-primary/90'
-                          : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                          ? 'bg-primary text-white shadow-sm'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
-                      <span className="hidden sm:inline">{cat.label}</span>
-                      <span className="sm:hidden">
-                        {cat.label.split(' ')[0]}
-                      </span>
+                      {cat.label}
                       {cat.count > 0 && (
                         <span
-                          className={`ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] sm:text-xs ${
+                          className={`ml-1.5 px-1.5 py-0.5 rounded-full text-xs ${
                             selectedCategory === cat.value
-                              ? 'bg-white/20'
-                              : 'bg-gray-100'
+                              ? 'bg-white/20 text-white'
+                              : 'bg-white text-gray-600'
                           }`}
                         >
                           {cat.count}
@@ -286,45 +281,41 @@ export default function BlogListPage() {
                 </div>
 
                 {/* Sort Dropdown */}
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <label className="text-xs sm:text-sm text-gray-600 whitespace-nowrap">
-                    Sort:
+                <div className="flex items-center gap-2 sm:ml-auto">
+                  <label className="text-sm text-gray-600 font-medium whitespace-nowrap">
+                    Sort by:
                   </label>
                   <select
                     value={sortBy}
                     onChange={(e) =>
                       setSortBy(e.target.value as 'newest' | 'oldest')
                     }
-                    className="flex-1 sm:flex-none px-3 py-2 border border-gray-300 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-primary focus:border-transparent bg-white"
+                    className="px-3 py-1.5 bg-gray-100 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary focus:bg-white transition-colors"
                   >
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
+                    <option value="newest">Newest</option>
+                    <option value="oldest">Oldest</option>
                   </select>
                 </div>
               </div>
 
               {/* Results Count */}
               {!loading && (
-                <div className="mt-4 text-center sm:text-left">
-                  <p className="text-sm text-gray-600">
+                <div className="flex items-center justify-between text-sm text-gray-600 pt-2 border-t border-gray-100">
+                  <p>
                     {searchQuery ? (
                       <>
-                        Found{' '}
-                        <span className="font-semibold text-gray-900">
-                          {filteredAndSortedPosts.length}
-                        </span>{' '}
-                        article{filteredAndSortedPosts.length !== 1 ? 's' : ''}{' '}
-                        matching "{searchQuery}"
+                        Found <span className="font-semibold text-gray-900">{filteredAndSortedPosts.length}</span>{' '}
+                        {filteredAndSortedPosts.length === 1 ? 'result' : 'results'}
                       </>
                     ) : (
                       <>
-                        Showing{' '}
-                        <span className="font-semibold text-gray-900">
-                          {filteredAndSortedPosts.length}
-                        </span>{' '}
-                        article{filteredAndSortedPosts.length !== 1 ? 's' : ''}
-                        {selectedCategory !== 'all' &&
-                          ` in ${categories.find((c) => c.value === selectedCategory)?.label}`}
+                        <span className="font-semibold text-gray-900">{filteredAndSortedPosts.length}</span>{' '}
+                        {filteredAndSortedPosts.length === 1 ? 'article' : 'articles'}
+                        {selectedCategory !== 'all' && (
+                          <span className="text-gray-500">
+                            {' '}in {categories.find((c) => c.value === selectedCategory)?.label}
+                          </span>
+                        )}
                       </>
                     )}
                   </p>

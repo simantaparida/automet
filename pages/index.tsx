@@ -20,6 +20,7 @@ import ContactSupportModal from '@/components/landing/ContactSupportModal';
 export default function LandingPage() {
   const [preorderModalOpen, setPreorderModalOpen] = useState(false);
   const [contactModalOpen, setContactModalOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<string>('starter');
 
   return (
     <>
@@ -82,7 +83,12 @@ export default function LandingPage() {
         <Features />
 
         {/* Pricing Section */}
-        <Pricing onPreorderClick={() => setPreorderModalOpen(true)} />
+        <Pricing
+          onPreorderClick={(planName) => {
+            if (planName) setSelectedPlan(planName);
+            setPreorderModalOpen(true);
+          }}
+        />
 
         {/* ROI Calculator Section - Moved after Pricing */}
         <ROICalculator />
@@ -100,6 +106,7 @@ export default function LandingPage() {
         <PreorderModal
           isOpen={preorderModalOpen}
           onClose={() => setPreorderModalOpen(false)}
+          defaultPlan={selectedPlan}
         />
 
         {/* Contact Support Modal */}

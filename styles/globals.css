@@ -14,6 +14,16 @@
   }
 }
 
+/* Shimmer animation for coming soon placeholders */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 /* Line clamp utilities for multi-line text truncation */
 @layer utilities {
   .line-clamp-2 {

@@ -455,7 +455,7 @@ export default function ROICalculatorPage() {
             </h2>
             <p className="text-xl text-gray-600 mb-8">
               Join hundreds of AMC vendors who are already on the waitlist.
-              Launching Q1 2025.
+              Launching Q1 2026.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button

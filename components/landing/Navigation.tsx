@@ -23,6 +23,35 @@ export default function Navigation({ onPreorderClick }: NavigationProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Add/remove overlay when mobile menu opens
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      // Create overlay element
+      const overlay = document.createElement('div');
+      overlay.id = 'mobile-menu-overlay';
+      overlay.className = 'fixed left-0 right-0 bottom-0 bg-black/50 backdrop-blur-sm z-40';
+      overlay.style.top = '80px';
+      overlay.onclick = () => setMobileMenuOpen(false);
+      document.body.appendChild(overlay);
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Remove overlay
+      const overlay = document.getElementById('mobile-menu-overlay');
+      if (overlay) {
+        document.body.removeChild(overlay);
+      }
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      const overlay = document.getElementById('mobile-menu-overlay');
+      if (overlay) {
+        document.body.removeChild(overlay);
+      }
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
+
   const navLinks = [
     { href: '/features', label: 'Features' },
     { href: '/roi-calculator', label: 'ROI Calculator' },
@@ -39,7 +68,7 @@ export default function Navigation({ onPreorderClick }: NavigationProps) {
           : 'bg-transparent py-4'
       }`}
     >
-      <div className="container mx-auto px-4 sm:px-6">
+      <div className="container mx-auto px-4 sm:px-6 relative">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link
@@ -146,9 +175,14 @@ export default function Navigation({ onPreorderClick }: NavigationProps) {
         </div>
 
         {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t border-primary/20 pt-4 animate-slide-down">
-            <div className="flex flex-col space-y-4">
+        <div
+          className={`md:hidden absolute left-0 right-0 top-full border-t border-primary/20 bg-white shadow-xl overflow-hidden transition-all duration-300 ease-in-out ${
+            mobileMenuOpen
+              ? 'max-h-[500px] opacity-100 translate-y-0'
+              : 'max-h-0 opacity-0 -translate-y-4 pointer-events-none'
+          }`}
+        >
+          <div className="flex flex-col space-y-4 px-4 py-4">
               {navLinks.map((link) => {
                 const isExternal = link.href.startsWith('/');
                 const Component = isExternal ? Link : 'a';
@@ -180,7 +214,6 @@ export default function Navigation({ onPreorderClick }: NavigationProps) {
               </button>
             </div>
           </div>
-        )}
       </div>
     </nav>
   );

@@ -1,6 +1,6 @@
 /**
  * FAQ Section
- * Simplified FAQs with tabs and expand indicators
+ * Simplified FAQs with 6 high-impact questions
  */
 
 import { useState } from 'react';
@@ -12,78 +12,41 @@ interface FAQProps {
 interface FAQItem {
   question: string;
   answer: string;
-  fullAnswer?: string; // Optional expanded explanation
-}
-
-interface FAQCategory {
-  name: string;
-  faqs: FAQItem[];
 }
 
 export default function FAQ({ onContactClick }: FAQProps) {
-  const [activeTab, setActiveTab] = useState(0);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  const faqCategories: FAQCategory[] = [
+  const faqs: FAQItem[] = [
     {
-      name: 'Product Basics',
-      faqs: [
-        {
-          question: 'What is Automet?',
-          answer:
-            'Automet is a mobile app for Indian AC service, elevator maintenance, and field service companies to track technicians, send invoices via SMS, and get paid instantly via UPI.',
-        },
-        {
-          question: 'Who should use Automet?',
-          answer:
-            'Any business with field technicians: AC service centers, elevator maintenance, equipment servicing, plumbing, electrical. From solo technicians to 200+ tech teams.',
-        },
-        {
-          question: 'How much does it cost?',
-          answer:
-            'Free forever for solo technicians. Paid plans start at ₹999/month. See our pricing page for details and annual discounts.',
-        },
-      ],
+      question: 'What is Automet?',
+      answer:
+        'Automet is a complete field service management platform built for Indian AMC vendors. It helps you manage technicians, track jobs in real-time, handle billing & payments, and control inventory - all from one mobile-first dashboard.',
     },
     {
-      name: 'Technical',
-      faqs: [
-        {
-          question: 'Does it work offline?',
-          answer:
-            'Yes. Technicians can work fully offline on mobile app. All data syncs automatically when internet returns. Perfect for poor 2G/3G areas.',
-        },
-        {
-          question: 'How secure is my customer data?',
-          answer:
-            'Bank-level encryption. All data stored on servers in India. You own your data and can export it anytime.',
-        },
-      ],
+      question: 'Who should use Automet?',
+      answer:
+        'Any business with field technicians: AC service centers, elevator maintenance, equipment servicing, plumbing, electrical. Perfect for teams from 1 to 200+ technicians.',
     },
     {
-      name: 'Payment & Data',
-      faqs: [
-        {
-          question: 'What payment methods does Automet support?',
-          answer:
-            'Customers can pay via UPI, credit/debit cards, or net banking. Money reaches your account within minutes (not days like bank transfer).',
-        },
-        {
-          question: 'Can I import my existing customer data?',
-          answer:
-            "Yes. We'll help you import customers and historical data during onboarding at no extra cost.",
-        },
-      ],
+      question: 'How much does it cost?',
+      answer:
+        'Free forever for solo technicians (1 site, 3 users). Paid plans start at ₹999/month for teams up to 10 technicians. Check our pricing page for complete details and annual discounts.',
     },
     {
-      name: 'Launch & Access',
-      faqs: [
-        {
-          question: 'When does Automet launch?',
-          answer:
-            'Q1 2025. Early access members get priority onboarding and 50% discount for 3 months.',
-        },
-      ],
+      question: 'Does it work offline?',
+      answer:
+        'Yes! Technicians can work fully offline on the mobile app. All data syncs automatically when internet connection returns. Perfect for areas with poor 2G/3G coverage.',
+    },
+    {
+      question: 'When does Automet launch?',
+      answer:
+        'Q1 2026. Join our waitlist now to get early access, priority onboarding, and an exclusive 50% discount for the first 3 months.',
+    },
+    {
+      question: 'How do I get paid faster with Automet?',
+      answer:
+        'Auto-generate invoices instantly after job completion and send payment links via SMS/WhatsApp. Customers pay via UPI, cards, or net banking - money hits your account in minutes, not days.',
     },
   ];
 
@@ -91,20 +54,18 @@ export default function FAQ({ onContactClick }: FAQProps) {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  const currentFAQs = faqCategories[activeTab]?.faqs || [];
-
   return (
-    <section id="faq" className="py-20 bg-white">
+    <section id="faq" className="py-12 sm:py-16 bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <span className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-semibold mb-4">
+        <div className="text-center max-w-3xl mx-auto mb-8">
+          <span className="inline-block px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs sm:text-sm font-semibold mb-3">
             FAQ
           </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3">
             Frequently Asked Questions
           </h2>
-          <p className="text-lg text-gray-600">
+          <p className="text-base sm:text-lg text-gray-600">
             Got questions? We&apos;ve got answers.{' '}
             <a
               href="mailto:support@automet.app"
@@ -115,66 +76,37 @@ export default function FAQ({ onContactClick }: FAQProps) {
           </p>
         </div>
 
-        {/* Tabs */}
-        <div className="max-w-3xl mx-auto mb-8">
-          <div className="flex flex-wrap justify-center gap-2 border-b border-gray-200">
-            {faqCategories.map((category, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  setActiveTab(index);
-                  setOpenIndex(null);
-                }}
-                className={`px-4 py-2 text-sm font-semibold transition-colors duration-200 border-b-2 ${
-                  activeTab === index
-                    ? 'text-primary border-primary'
-                    : 'text-gray-600 border-transparent hover:text-gray-900 hover:border-gray-300'
-                }`}
-              >
-                {category.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* FAQ Accordion */}
         <div className="max-w-3xl mx-auto">
           <div className="space-y-3">
-            {currentFAQs.map((faq, index) => (
+            {faqs.map((faq, index) => (
               <div
                 key={index}
-                className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:border-primary/40 transition-all duration-300"
+                className="bg-gray-50 rounded-xl border-2 border-gray-200 overflow-hidden hover:border-primary/40 hover:shadow-md transition-all duration-300"
               >
                 {/* Question */}
                 <button
                   onClick={() => toggleFAQ(index)}
-                  className="w-full px-5 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors duration-200"
+                  className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-white transition-colors duration-200"
                 >
                   <span className="text-base font-semibold text-gray-900 pr-4 flex-1">
                     {faq.question}
                   </span>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    {openIndex !== index && (
-                      <span className="text-xs text-gray-400 italic">
-                        (expand)
-                      </span>
-                    )}
-                    <svg
-                      className={`w-5 h-5 text-primary transition-transform duration-300 ease-in-out ${
-                        openIndex === index ? 'transform rotate-180' : ''
-                      }`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </div>
+                  <svg
+                    className={`w-6 h-6 text-primary flex-shrink-0 transition-transform duration-300 ease-in-out ${
+                      openIndex === index ? 'transform rotate-180' : ''
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
                 </button>
 
                 {/* Answer */}
@@ -185,7 +117,7 @@ export default function FAQ({ onContactClick }: FAQProps) {
                       : 'max-h-0 opacity-0'
                   }`}
                 >
-                  <div className="px-5 pb-4 text-gray-600 text-sm leading-relaxed border-t border-gray-100 pt-4">
+                  <div className="px-6 pb-4 text-gray-700 text-sm leading-relaxed bg-white border-t border-gray-200 pt-4">
                     {faq.answer}
                   </div>
                 </div>

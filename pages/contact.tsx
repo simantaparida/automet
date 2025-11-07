@@ -68,16 +68,24 @@ export default function ContactPage() {
               <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
                 <button
                   onClick={() => setContactModalOpen(true)}
-                  className="px-8 py-4 bg-primary text-white rounded-xl font-semibold text-base shadow-lg hover:bg-primary/90 hover:shadow-xl transition-all duration-300"
+                  className="px-8 py-4 bg-primary text-white rounded-xl font-semibold text-base shadow-lg hover:bg-primary/90 hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
                 >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
                   Send us a message
                 </button>
-                <button
-                  onClick={() => setPreorderModalOpen(true)}
-                  className="px-8 py-4 bg-white text-primary border-2 border-primary rounded-xl font-semibold text-base shadow-lg hover:bg-primary/5 transition-all duration-300"
+                <a
+                  href={WHATSAPP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-8 py-4 bg-green-500 text-white rounded-xl font-semibold text-base shadow-lg hover:bg-green-600 hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
                 >
-                  Join the waitlist
-                </button>
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20 2H4C2.897 2 2 2.897 2 4v16c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V4c0-1.103-.897-2-2-2zm-5.189 13.59c-.234.667-1.354 1.273-1.919 1.353-.491.07-1.118.101-1.805-.114-3.172-1.012-5.23-4.015-5.391-4.205-.158-.19-1.286-1.712-1.286-3.266s.818-2.325 1.11-2.643c.292-.316.631-.395.842-.395.211 0 .421.002.606.011.195.009.456-.074.714.546.259.621.88 2.146.958 2.3.079.158.131.348.026.562-.105.216-.158.348-.316.537-.157.189-.332.424-.474.569-.157.157-.321.327-.138.642.186.316.833 1.368 1.788 2.214 1.231 1.099 2.269 1.44 2.585 1.597.316.158.502.131.684-.079.183-.211.788-.921.999-1.236.21-.316.421-.263.714-.158.296.105 1.87.882 2.188 1.038.316.158.525.237.6.369.079.131.079.751-.157 1.418z" />
+                  </svg>
+                  Message on WhatsApp
+                </a>
               </div>
             </div>
           </div>
@@ -259,16 +267,22 @@ export default function ContactPage() {
               <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <button
                   onClick={() => setContactModalOpen(true)}
-                  className="px-8 py-4 bg-primary text-white rounded-xl font-semibold text-base shadow-lg hover:bg-primary/90 hover:shadow-xl transition-all duration-300"
+                  className="px-8 py-4 bg-primary text-white rounded-xl font-semibold text-base shadow-lg hover:bg-primary/90 hover:shadow-xl transition-all duration-300 flex items-center gap-2"
                 >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
                   Book a discovery call
                 </button>
                 <a
                   href={WHATSAPP_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-8 py-4 bg-white text-primary border-2 border-primary rounded-xl font-semibold text-base shadow-lg hover:bg-primary/5 transition-all duration-300"
+                  className="px-8 py-4 bg-green-500 text-white rounded-xl font-semibold text-base shadow-lg hover:bg-green-600 hover:shadow-xl transition-all duration-300 flex items-center gap-2"
                 >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20 2H4C2.897 2 2 2.897 2 4v16c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V4c0-1.103-.897-2-2-2zm-5.189 13.59c-.234.667-1.354 1.273-1.919 1.353-.491.07-1.118.101-1.805-.114-3.172-1.012-5.23-4.015-5.391-4.205-.158-.19-1.286-1.712-1.286-3.266s.818-2.325 1.11-2.643c.292-.316.631-.395.842-.395.211 0 .421.002.606.011.195.009.456-.074.714.546.259.621.88 2.146.958 2.3.079.158.131.348.026.562-.105.216-.158.348-.316.537-.157.189-.332.424-.474.569-.157.157-.321.327-.138.642.186.316.833 1.368 1.788 2.214 1.231 1.099 2.269 1.44 2.585 1.597.316.158.502.131.684-.079.183-.211.788-.921.999-1.236.21-.316.421-.263.714-.158.296.105 1.87.882 2.188 1.038.316.158.525.237.6.369.079.131.079.751-.157 1.418z" />
+                  </svg>
                   Chat on WhatsApp
                 </a>
               </div>

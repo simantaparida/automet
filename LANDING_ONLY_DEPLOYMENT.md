@@ -41,13 +41,13 @@ NEXT_PUBLIC_LANDING_ONLY=true
 # App URL
 NEXT_PUBLIC_APP_URL=https://your-vercel-url.vercel.app
 
-# Supabase (for waitlist functionality)
-NEXT_PUBLIC_SUPABASE_URL=https://dogzgbppyiokvipvsgln.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-SUPABASE_URL=https://dogzgbppyiokvipvsgln.supabase.co
-SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-DATABASE_URL=postgresql://postgres:your-password@db.dogzgbppyiokvipvsgln.supabase.co:5432/postgres
+# Supabase (Get from Supabase Dashboard → Settings → API)
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+SUPABASE_URL=https://your-project-ref.supabase.co
+SUPABASE_ANON_KEY=your-anon-key-here
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
+DATABASE_URL=postgresql://postgres:your-password@db.your-project-ref.supabase.co:5432/postgres
 
 # Email (for contact form - can skip for now)
 # RESEND_API_KEY=

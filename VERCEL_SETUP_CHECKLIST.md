@@ -21,13 +21,13 @@ NEXT_PUBLIC_LANDING_ONLY=true
 NODE_ENV=production
 NEXT_PUBLIC_APP_URL=https://automet-git-develop-username.vercel.app
 
-# Supabase (you already have these)
-NEXT_PUBLIC_SUPABASE_URL=https://dogzgbppyiokvipvsgln.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvZ3pnYnBweWlva3ZpcHZzZ2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5NDEwMTYsImV4cCI6MjA3NzUxNzAxNn0.0cnh62VqxUrsRe5HzZn1OVzV4vxs4Zp0q0vBmGspfAQ
-SUPABASE_URL=https://dogzgbppyiokvipvsgln.supabase.co
-SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvZ3pnYnBweWlva3ZpcHZzZ2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5NDEwMTYsImV4cCI6MjA3NzUxNzAxNn0.0cnh62VqxUrsRe5HzZn1OVzV4vxs4Zp0q0vBmGspfAQ
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvZ3pnYnBweWlva3ZpcHZzZ2xuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MTk0MTAxNiwiZXhwIjoyMDc3NTE3MDE2fQ.P6OC8GpoVucZJdpPgfVW-m9daYIsDXv1Drp-LSt5I7w
-DATABASE_URL=postgresql://postgres:BAyJfvtCc2jYK1eu@db.dogzgbppyiokvipvsgln.supabase.co:5432/postgres
+# Supabase (Get from Supabase Dashboard → Settings → API)
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+SUPABASE_URL=https://your-project-ref.supabase.co
+SUPABASE_ANON_KEY=your-anon-key-here
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
+DATABASE_URL=postgresql://postgres:your-password@db.your-project-ref.supabase.co:5432/postgres
 
 # Email (optional for now)
 SENDGRID_FROM_EMAIL=noreply@automet.app

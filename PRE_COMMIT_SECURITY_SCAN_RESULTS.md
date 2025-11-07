@@ -103,7 +103,7 @@ Status: ✅ PASS
 
 ### Project ID Scan
 ```
-Pattern: dogzgbppyiokvipvsgln|BAyJfvtCc2jYK1eu
+Pattern: (Supabase project references and database passwords)
 Results: 0 instances found
 Status: ✅ PASS
 ```

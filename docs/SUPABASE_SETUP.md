@@ -46,9 +46,11 @@ Once the project is ready:
 
 3. Add to `.env.local`:
    ```bash
-   SUPABASE_URL=https://xxxxx.supabase.co
-   SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-   SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+   NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+   SUPABASE_URL=https://your-project-ref.supabase.co
+   SUPABASE_ANON_KEY=your-anon-key-here
+   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
    ```
 
 ### Step 4: Configure Authentication
@@ -127,7 +129,7 @@ For running migrations via `psql` or migration tools:
 4. Replace `[YOUR-PASSWORD]` with your database password
 5. Add to `.env.local`:
    ```bash
-   DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@db.xxxxx.supabase.co:5432/postgres
+   DATABASE_URL=postgresql://postgres:your-password@db.your-project-ref.supabase.co:5432/postgres
    ```
 
 ---

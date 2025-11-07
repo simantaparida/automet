@@ -4,11 +4,7 @@
  */
 
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseServer } from '@/lib/supabase-server';
-
-interface BlogPostViewCount {
-  view_count: number | null;
-}
+import { getSupabaseAdmin } from '@/lib/supabase-server';
 
 export default async function handler(
   req: NextApiRequest,
@@ -25,9 +21,15 @@ export default async function handler(
       return res.status(400).json({ success: false, message: 'Invalid slug' });
     }
 
+    // Get admin client to bypass RLS
+    const supabase = getSupabaseAdmin();
+    if (!supabase) {
+      console.error('Supabase admin client not available');
+      return res.status(200).json({ success: true, view_count: 0 });
+    }
+
     // Fetch current post
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: post, error: fetchError } = await (supabaseServer as any)
+    const { data: post, error: fetchError } = await supabase
       .from('blog_posts')
       .select('view_count')
       .eq('slug', slug)
@@ -41,11 +43,8 @@ export default async function handler(
     }
 
     // Increment view count
-    const currentPost = post as BlogPostViewCount;
-    const newCount = (currentPost.view_count || 0) + 1;
-    
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: updateError } = await (supabaseServer as any)
+    const newCount = (post.view_count || 0) + 1;
+    const { error: updateError } = await supabase
       .from('blog_posts')
       .update({ view_count: newCount })
       .eq('slug', slug)
@@ -54,7 +53,7 @@ export default async function handler(
     if (updateError) {
       console.error('Error incrementing view count:', updateError);
       // Silently fail for analytics - don't block user
-      return res.status(200).json({ success: true, view_count: currentPost.view_count || 0 });
+      return res.status(200).json({ success: true, view_count: post.view_count || 0 });
     }
 
     return res.status(200).json({ 

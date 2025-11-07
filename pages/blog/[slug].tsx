@@ -579,12 +579,12 @@ export default function BlogPostPage() {
             <TableOfContents content={post.content} />
             
             <div className="max-w-7xl mx-auto">
-              <div className="flex gap-8">
+              <div className="flex gap-8 justify-center">
                 {/* Table of Contents (Desktop - Sticky Sidebar) */}
                 <TableOfContents content={post.content} />
 
-                {/* Main Content */}
-                <div className="flex-1 min-w-0 max-w-4xl">
+                {/* Main Content - Centered */}
+                <div className="flex-1 min-w-0 max-w-4xl mx-auto">
               {/* Breadcrumbs */}
               <nav className="mb-6 text-sm text-gray-600">
                 <ol className="flex items-center space-x-2">

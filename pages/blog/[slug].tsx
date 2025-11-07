@@ -14,6 +14,8 @@ import type { Components } from 'react-markdown';
 import Navigation from '@/components/landing/Navigation';
 import Footer from '@/components/landing/Footer';
 import PreorderModal from '@/components/landing/PreorderModal';
+import NewsletterSignup from '@/components/blog/NewsletterSignup';
+import AuthorBio from '@/components/blog/AuthorBio';
 
 interface BlogPost {
   id: string;
@@ -25,6 +27,7 @@ interface BlogPost {
   tags: string[];
   author_name: string;
   published_at: string;
+  updated_at?: string;
   cover_image_url?: string;
   meta_title?: string;
   meta_description?: string;
@@ -489,7 +492,7 @@ export default function BlogPostPage() {
               headline: post.title,
               image: post.cover_image_url || 'https://automet.in/og-image.png',
               datePublished: post.published_at,
-              dateModified: post.published_at, // Will be updated_at once we add that field
+              dateModified: post.updated_at || post.published_at,
               author: {
                 '@type': 'Person',
                 name: post.author_name,
@@ -607,7 +610,14 @@ export default function BlogPostPage() {
               <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600 mb-6 pb-6 border-b border-gray-200">
                 <span className="font-medium">{post.author_name}</span>
                 <span>•</span>
-                <span>{formatDate(post.published_at)}</span>
+                <span>
+                  {formatDate(post.published_at)}
+                  {post.updated_at && post.updated_at !== post.published_at && (
+                    <span className="text-gray-500 ml-2">
+                      (Updated: {formatDate(post.updated_at)})
+                    </span>
+                  )}
+                </span>
                 <span>•</span>
                 <span className="flex items-center">
                   <svg
@@ -967,6 +977,12 @@ export default function BlogPostPage() {
                   }
                 }
               `}</style>
+
+              {/* Newsletter Signup - End of Article */}
+              <NewsletterSignup variant="endOfArticle" context={`blog-${post.category}`} />
+
+              {/* Author Bio */}
+              <AuthorBio authorName={post.author_name} />
 
               {/* Tags */}
               {post.tags && post.tags.length > 0 && (

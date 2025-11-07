@@ -20,6 +20,7 @@ interface BlogPost {
   tags: string[];
   author_name: string;
   published_at: string;
+  updated_at?: string;
   cover_image_url?: string;
 }
 
@@ -448,56 +449,56 @@ export default function BlogListPage() {
                       )}
                     </div>
 
-                    {/* Content - More compact */}
-                    <div className="p-4">
-                      {/* Category Badge - Smaller */}
+                    {/* Content - Better mobile typography */}
+                    <div className="p-5">
+                      {/* Category Badge - More readable on mobile */}
                       <span
-                        className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold mb-2 ${getCategoryColor(
+                        className={`inline-block px-2.5 py-1 rounded-full text-[11px] sm:text-[10px] font-semibold mb-2.5 ${getCategoryColor(
                           post.category
                         )}`}
                       >
                         {formatCategory(post.category)}
                       </span>
 
-                      {/* Title - Smaller */}
-                      <h2 className="text-base font-bold text-gray-900 mb-1.5 group-hover:text-primary transition-colors duration-300 line-clamp-2 leading-snug">
+                      {/* Title - Better sizing for mobile */}
+                      <h2 className="text-lg sm:text-base font-bold text-gray-900 mb-2 sm:mb-1.5 group-hover:text-primary transition-colors duration-300 line-clamp-2 leading-snug">
                         {post.title}
                       </h2>
 
-                      {/* Excerpt - Compact */}
-                      <p className="text-gray-600 text-xs mb-3 line-clamp-2 leading-relaxed">
+                      {/* Excerpt - More readable on mobile */}
+                      <p className="text-gray-600 text-sm sm:text-xs mb-4 sm:mb-3 line-clamp-2 leading-relaxed">
                         {post.excerpt}
                       </p>
 
                       {/* Tags - Show first 2 tags */}
                       {post.tags && post.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mb-2">
+                        <div className="flex flex-wrap gap-1.5 mb-3">
                           {post.tags.slice(0, 2).map((tag, idx) => (
                             <span
                               key={idx}
-                              className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px] font-medium"
+                              className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-[11px] sm:text-[10px] font-medium"
                             >
                               #{tag}
                             </span>
                           ))}
                           {post.tags.length > 2 && (
-                            <span className="px-2 py-0.5 text-gray-500 text-[10px]">
+                            <span className="px-2 py-0.5 text-gray-500 text-[11px] sm:text-[10px]">
                               +{post.tags.length - 2}
                             </span>
                           )}
                         </div>
                       )}
 
-                      {/* Meta - Compact with Reading Time */}
-                      <div className="flex items-center justify-between text-[10px] text-gray-500 mb-2 flex-wrap gap-1">
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="truncate max-w-[80px]">
+                      {/* Meta - Better spacing and sizing for mobile */}
+                      <div className="flex items-center justify-between text-xs sm:text-[10px] text-gray-500 mb-3 flex-wrap gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="truncate max-w-[120px] sm:max-w-[80px]">
                             {post.author_name}
                           </span>
                           <span>•</span>
                           <span className="flex items-center whitespace-nowrap">
                             <svg
-                              className="w-3 h-3 mr-0.5 flex-shrink-0"
+                              className="w-3.5 h-3.5 sm:w-3 sm:h-3 mr-1 flex-shrink-0"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -517,11 +518,11 @@ export default function BlogListPage() {
                         </span>
                       </div>
 
-                      {/* Read More Link - Smaller */}
-                      <div className="flex items-center text-primary font-semibold text-xs group-hover:text-primary/80 transition-colors duration-300">
+                      {/* Read More Link - Better sizing */}
+                      <div className="flex items-center text-primary font-semibold text-sm sm:text-xs group-hover:text-primary/80 transition-colors duration-300">
                         Read Article
                         <svg
-                          className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform duration-300"
+                          className="w-3.5 h-3.5 sm:w-3 sm:h-3 ml-1 group-hover:translate-x-1 transition-transform duration-300"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"

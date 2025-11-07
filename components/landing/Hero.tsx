@@ -66,7 +66,7 @@ export default function Hero({ onPreorderClick }: HeroProps) {
   }, []);
 
   return (
-    <section className="relative pt-24 pb-12 md:pt-32 md:pb-20 overflow-hidden bg-gradient-to-br from-orange-50 via-white to-amber-50">
+    <section className="relative pt-28 pb-16 md:pt-32 md:pb-20 overflow-hidden bg-gradient-to-br from-orange-50 via-white to-amber-50">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div
@@ -80,11 +80,11 @@ export default function Hero({ onPreorderClick }: HeroProps) {
 
       <div className="container mx-auto px-6 sm:px-10 lg:px-16 relative z-10">
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-x-16 gap-y-8 items-center">
+          <div className="grid lg:grid-cols-2 gap-x-16 gap-y-12 items-center">
             {/* Left: Content */}
-            <div className="text-center lg:text-left px-4 sm:px-6 lg:px-0">
+            <div className="text-center lg:text-left px-2 sm:px-6 lg:px-0">
               {/* Urgency Badge */}
-              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-red-50 border-2 border-red-200 text-red-700 text-xs font-bold mb-4 animate-pulse">
+              <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-red-50 border-2 border-red-200 text-red-700 text-xs font-bold mb-6 animate-pulse">
                 <svg
                   className="w-3 h-3 mr-1.5"
                   fill="currentColor"
@@ -100,7 +100,7 @@ export default function Hero({ onPreorderClick }: HeroProps) {
               </div>
 
               {/* Main Headline - Pain + Promise */}
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-5 leading-tight">
                 Stop losing{' '}
                 <span className="text-red-600 relative">
                   up to ₹50,000+/month
@@ -121,7 +121,7 @@ export default function Hero({ onPreorderClick }: HeroProps) {
               </h1>
 
               {/* Sub-headline with Benefit */}
-              <p className="text-lg sm:text-xl text-gray-700 mb-6 leading-relaxed font-medium">
+              <p className="text-lg sm:text-xl text-gray-700 mb-8 leading-relaxed font-medium">
                 Join{' '}
                 <span className="text-primary font-bold">500+ AMC vendors</span>{' '}
                 who are{' '}
@@ -136,7 +136,7 @@ export default function Hero({ onPreorderClick }: HeroProps) {
               </p>
 
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 mb-2">
+              <div className="flex flex-col sm:flex-row gap-4 mb-4">
                 <button
                   onClick={onPreorderClick}
                   className="group relative px-6 py-3 bg-gradient-to-r from-primary to-orange-600 text-white rounded-lg font-bold text-base hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-105 overflow-hidden whitespace-nowrap"
@@ -175,13 +175,13 @@ export default function Hero({ onPreorderClick }: HeroProps) {
               </div>
 
               {/* Disclaimer */}
-              <p className="text-xs text-gray-500 mb-6 text-center sm:text-left">
+              <p className="text-xs text-gray-500 mb-8 text-center sm:text-left">
                 * Based on average metrics. Actual results vary by business
                 size.
               </p>
 
               {/* Trust Indicators */}
-              <div className="flex flex-wrap items-center gap-4 text-xs">
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-5 text-xs">
                 <div className="flex items-center text-gray-700">
                   <svg
                     className="w-4 h-4 text-green-500 mr-1.5"
@@ -228,9 +228,9 @@ export default function Hero({ onPreorderClick }: HeroProps) {
             </div>
 
             {/* Right: Visual/Social Proof */}
-            <div className="relative flex justify-center lg:justify-end">
+            <div className="relative flex justify-center lg:justify-end mt-8 lg:mt-0">
               {/* Social Proof Card */}
-              <div className="relative bg-white rounded-xl p-4 border-2 border-primary/20 shadow-xl w-full max-w-sm">
+              <div className="relative bg-white rounded-xl p-5 border-2 border-primary/20 shadow-xl w-full max-w-sm">
                 <div className="flex items-center mb-3">
                   <div className="flex -space-x-2 mr-3">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 border-2 border-white flex items-center justify-center text-lg">

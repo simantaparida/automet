@@ -4,39 +4,27 @@
 
 BEGIN;
 
--- Ensure required extension for UUIDs exists (safe to run repeatedly)
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 -- Insert the post only if it doesn't exist already
-DO $$
-DECLARE
-    v_slug text := 'why-service-companies-in-india-need-job-tracking-software-2026';
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM public.blog_posts WHERE slug = v_slug
-    ) THEN
-        INSERT INTO public.blog_posts (
-            id,
-            slug,
-            title,
-            excerpt,
-            content,
-            category,
-            tags,
-            author_name,
-            published,
-            published_at,
-            updated_at,
-            cover_image_url,
-            meta_title,
-            meta_description
-        )
-        VALUES (
-            uuid_generate_v4(),
-            v_slug,
-            'Why Every Service Company in India Needs Job Tracking Software in 2026',
-            'In 2026, Indian service businesses that still rely on WhatsApp, calls and spreadsheets are leaking revenue and trust. Learn how job tracking software boosts first-time-fix, cash flow, SLA compliance and growth—with a 30-60-90 day rollout plan and ROI math.',
-            $$
+INSERT INTO public.blog_posts (
+    slug,
+    title,
+    excerpt,
+    content,
+    category,
+    tags,
+    author_name,
+    published,
+    published_at,
+    updated_at,
+    cover_image_url,
+    meta_title,
+    meta_description
+)
+SELECT
+    'why-service-companies-in-india-need-job-tracking-software-2026',
+    'Why Every Service Company in India Needs Job Tracking Software in 2026',
+    'In 2026, Indian service businesses that still rely on WhatsApp, calls and spreadsheets are leaking revenue and trust. Learn how job tracking software boosts first-time-fix, cash flow, SLA compliance and growth—with a 30-60-90 day rollout plan and ROI math.',
+    $$
 ## Introduction: 2026 Is the Breakout Year for Indian Service Businesses
 If you still coordinate jobs through WhatsApp, paper, or Excel, 2026 is the year to switch. Labor costs are rising, customers expect real-time updates, and SLAs are getting tighter. Job tracking software gives operations leaders one source of truth for every job—from lead to cash—so nothing slips through cracks.
 
@@ -188,19 +176,18 @@ Use offline‑first apps with local data storage and auto‑sync when the device
 ## Call to Action
 Ready to lift first‑time‑fix and revenue in 60 days? Explore the platform and see how Indian service leaders are modernizing operations.
 $$,
-            'industry-insights',
-            ARRAY['job tracking','field service management','AMC','India','scheduling','ROI','2026','technician productivity','SLA']::text[],
-            'Automet Team',
-            true,
-            NOW(),
-            NOW(),
-            NULL,
-            'Why Every Service Company in India Needs Job Tracking Software in 2026',
-            'In 2026, Indian service businesses that still rely on WhatsApp, calls and spreadsheets are losing revenue and customer trust. Learn how job tracking software boosts first‑time‑fix, cash flow, SLA compliance and growth—with a 30‑60‑90 day rollout plan and ROI math.'
-        );
-    END IF;
-END $$;
+    'industry-insights',
+    ARRAY['job tracking','field service management','AMC','India','scheduling','ROI','2026','technician productivity','SLA']::text[],
+    'Automet Team',
+    true,
+    NOW(),
+    NOW(),
+    NULL,
+    'Why Every Service Company in India Needs Job Tracking Software in 2026',
+    'In 2026, Indian service businesses that still rely on WhatsApp, calls and spreadsheets are losing revenue and customer trust. Learn how job tracking software boosts first‑time‑fix, cash flow, SLA compliance and growth—with a 30‑60‑90 day rollout plan and ROI math.'
+WHERE NOT EXISTS (
+    SELECT 1 FROM public.blog_posts
+    WHERE slug = 'why-service-companies-in-india-need-job-tracking-software-2026'
+);
 
 COMMIT;
-
-

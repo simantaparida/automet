@@ -21,26 +21,37 @@ export default async function handler(
       return res.status(400).json({ success: false, message: 'Invalid slug' });
     }
 
-    // Increment view count
-    const { data, error } = await supabaseServer
+    // Fetch current post
+    const { data: post, error: fetchError } = await supabaseServer
       .from('blog_posts')
-      .update({ view_count: supabaseServer.sql`view_count + 1` })
+      .select('view_count')
       .eq('slug', slug)
       .eq('published', true)
-      .select('view_count')
       .single();
 
-    if (error) {
-      console.error('Error incrementing view count:', error);
-      return res.status(500).json({ 
-        success: false, 
-        message: 'Failed to track view' 
-      });
+    if (fetchError || !post) {
+      console.error('Error fetching post:', fetchError);
+      // Silently fail for analytics - don't block user
+      return res.status(200).json({ success: true, view_count: 0 });
+    }
+
+    // Increment view count
+    const newCount = (post.view_count || 0) + 1;
+    const { error: updateError } = await supabaseServer
+      .from('blog_posts')
+      .update({ view_count: newCount })
+      .eq('slug', slug)
+      .eq('published', true);
+
+    if (updateError) {
+      console.error('Error incrementing view count:', updateError);
+      // Silently fail for analytics - don't block user
+      return res.status(200).json({ success: true, view_count: post.view_count || 0 });
     }
 
     return res.status(200).json({ 
       success: true, 
-      view_count: data?.view_count || 0 
+      view_count: newCount 
     });
 
   } catch (error) {

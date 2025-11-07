@@ -6,12 +6,10 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 
 const ADMIN_SECRET_KEY = 'admin_secret_authenticated';
 
 export default function AdminDashboard() {
-  const router = useRouter();
   const [authenticated, setAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState<string | null>(null);

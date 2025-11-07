@@ -34,6 +34,7 @@ export default function BlogPostPage() {
   const router = useRouter();
   const { slug } = router.query;
   const [post, setPost] = useState<BlogPost | null>(null);
+  const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
   const [preorderModalOpen, setPreorderModalOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
@@ -75,6 +76,9 @@ export default function BlogPostPage() {
         if (response.ok) {
           const data = await response.json();
           setPost(data);
+          
+          // Fetch related articles
+          fetchRelatedPosts(data);
         } else {
         }
       } catch (err) {
@@ -85,6 +89,47 @@ export default function BlogPostPage() {
 
     fetchPost();
   }, [slug]);
+
+  // Fetch related articles based on category and tags
+  const fetchRelatedPosts = async (currentPost: BlogPost) => {
+    try {
+      // Fetch posts from the same category
+      const response = await fetch(`/api/blog?limit=10&category=${currentPost.category}`);
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Filter out current post and calculate relevance scores
+        const scoredPosts = data
+          .filter((p: BlogPost) => p.slug !== currentPost.slug)
+          .map((p: BlogPost) => {
+            let score = 0;
+            
+            // Same category: +2 points
+            if (p.category === currentPost.category) score += 2;
+            
+            // Matching tags: +3 points per tag
+            const matchingTags = p.tags.filter((tag: string) => 
+              currentPost.tags.includes(tag)
+            );
+            score += matchingTags.length * 3;
+            
+            // Recent posts: +1 point if published within 90 days
+            const daysSincePublished = Math.floor(
+              (new Date().getTime() - new Date(p.published_at).getTime()) / (1000 * 60 * 60 * 24)
+            );
+            if (daysSincePublished <= 90) score += 1;
+            
+            return { ...p, score };
+          })
+          .sort((a: any, b: any) => b.score - a.score)
+          .slice(0, 3); // Top 3 related posts
+        
+        setRelatedPosts(scoredPosts);
+      }
+    } catch (err) {
+      console.error('Failed to fetch related posts:', err);
+    }
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -402,13 +447,73 @@ export default function BlogPostPage() {
           name="description"
           content={post.meta_description || post.excerpt}
         />
+        
+        {/* Canonical URL */}
+        <link rel="canonical" href={`https://automet.in/blog/${post.slug}`} />
+        
+        {/* Open Graph */}
         <meta property="og:title" content={post.title} />
         <meta property="og:description" content={post.excerpt} />
         <meta property="og:type" content="article" />
+        <meta property="og:url" content={`https://automet.in/blog/${post.slug}`} />
+        <meta property="og:site_name" content="Automet" />
+        <meta property="og:locale" content="en_IN" />
         {post.cover_image_url && (
           <meta property="og:image" content={post.cover_image_url} />
         )}
+        <meta property="article:published_time" content={post.published_at} />
+        <meta property="article:author" content={post.author_name} />
+        <meta property="article:section" content={formatCategory(post.category)} />
+        {post.tags && post.tags.map((tag) => (
+          <meta property="article:tag" content={tag} key={tag} />
+        ))}
+        
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@automet" />
+        <meta name="twitter:title" content={post.title} />
+        <meta name="twitter:description" content={post.excerpt} />
+        {post.cover_image_url && (
+          <meta name="twitter:image" content={post.cover_image_url} />
+        )}
+        
         <link rel="icon" href="/favicon.ico" />
+        
+        {/* JSON-LD Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'BlogPosting',
+              headline: post.title,
+              image: post.cover_image_url || 'https://automet.in/og-image.png',
+              datePublished: post.published_at,
+              dateModified: post.published_at, // Will be updated_at once we add that field
+              author: {
+                '@type': 'Person',
+                name: post.author_name,
+                url: 'https://automet.in/about',
+              },
+              publisher: {
+                '@type': 'Organization',
+                name: 'Automet',
+                logo: {
+                  '@type': 'ImageObject',
+                  url: 'https://automet.in/logo.png',
+                },
+              },
+              description: post.excerpt,
+              mainEntityOfPage: {
+                '@type': 'WebPage',
+                '@id': `https://automet.in/blog/${post.slug}`,
+              },
+              articleSection: formatCategory(post.category),
+              keywords: post.tags ? post.tags.join(', ') : '',
+              wordCount: post.content.split(/\s+/).length,
+            }),
+          }}
+        />
       </Head>
 
       <div className="min-h-screen bg-white">
@@ -877,6 +982,95 @@ export default function BlogPostPage() {
                       >
                         #{tag}
                       </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Related Articles */}
+              {relatedPosts.length > 0 && (
+                <div className="mt-12 pt-8 border-t border-gray-200">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-6">
+                    Related Articles
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {relatedPosts.map((relatedPost) => (
+                      <Link
+                        key={relatedPost.id}
+                        href={`/blog/${relatedPost.slug}`}
+                        className="group bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden hover:border-primary/40 hover:shadow-md transition-all duration-300"
+                      >
+                        {/* Cover Image */}
+                        <div className="aspect-[16/9] bg-primary/10 relative overflow-hidden">
+                          {relatedPost.cover_image_url ? (
+                            <img
+                              src={relatedPost.cover_image_url}
+                              alt={relatedPost.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <svg
+                                className="w-12 h-12 text-primary/30"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+                                />
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-4">
+                          {/* Category Badge */}
+                          <span
+                            className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold mb-2 ${getCategoryColor(
+                              relatedPost.category
+                            )}`}
+                          >
+                            {formatCategory(relatedPost.category)}
+                          </span>
+
+                          {/* Title */}
+                          <h4 className="text-base font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors duration-300 line-clamp-2 leading-snug">
+                            {relatedPost.title}
+                          </h4>
+
+                          {/* Excerpt */}
+                          <p className="text-gray-600 text-xs mb-3 line-clamp-2 leading-relaxed">
+                            {relatedPost.excerpt}
+                          </p>
+
+                          {/* Meta */}
+                          <div className="flex items-center text-[10px] text-gray-500">
+                            <span className="flex items-center">
+                              <svg
+                                className="w-3 h-3 mr-0.5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                              </svg>
+                              {calculateReadingTime(relatedPost.content)} min read
+                            </span>
+                            <span className="mx-1">•</span>
+                            <span>{formatDate(relatedPost.published_at)}</span>
+                          </div>
+                        </div>
+                      </Link>
                     ))}
                   </div>
                 </div>

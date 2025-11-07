@@ -167,6 +167,23 @@ export default function BlogListPage() {
           name="description"
           content="Explore industry insights, best practices, and product updates for field service management and AMC operations."
         />
+        
+        {/* Canonical URL */}
+        <link rel="canonical" href="https://automet.in/blog" />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content="Blog - Automet | Industry Insights & Best Practices" />
+        <meta property="og:description" content="Explore industry insights, best practices, and product updates for field service management and AMC operations." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://automet.in/blog" />
+        <meta property="og:site_name" content="Automet" />
+        
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@automet" />
+        <meta name="twitter:title" content="Blog - Automet | Industry Insights & Best Practices" />
+        <meta name="twitter:description" content="Explore industry insights, best practices, and product updates for field service management and AMC operations." />
+        
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

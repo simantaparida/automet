@@ -78,11 +78,11 @@ export default function Hero({ onPreorderClick }: HeroProps) {
         ></div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="container mx-auto px-6 sm:px-10 lg:px-16 relative z-10">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-x-16 gap-y-8 items-center">
             {/* Left: Content */}
-            <div className="text-center lg:text-left">
+            <div className="text-center lg:text-left px-4 sm:px-6 lg:px-0">
               {/* Urgency Badge */}
               <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-red-50 border-2 border-red-200 text-red-700 text-xs font-bold mb-4 animate-pulse">
                 <svg
@@ -134,125 +134,6 @@ export default function Hero({ onPreorderClick }: HeroProps) {
                 </span>{' '}
                 with Automet
               </p>
-
-              {/* Key Benefits Grid - 2x2 layout with compact design */}
-              <div className="grid grid-cols-2 gap-3 mb-6">
-                <div className="bg-white rounded-lg p-2.5 border-2 border-primary/20 shadow-md">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <svg
-                        className="w-5 h-5 text-green-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-[16px] font-bold text-gray-900 leading-tight mb-0.5 flex items-center gap-1">
-                        10%
-                        <InfoTooltip content="Based on typical 5% revenue lost to billing delays + missed invoices" />
-                      </div>
-                      <div className="text-[12px] text-gray-600 leading-tight">
-                        Revenue Recovery
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-lg p-2.5 border-2 border-primary/20 shadow-md">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <svg
-                        className="w-5 h-5 text-blue-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M13 10V3L4 14h7v7l9-11h-7z"
-                        />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-[16px] font-bold text-gray-900 leading-tight mb-0.5 flex items-center gap-1">
-                        5x Faster
-                        <InfoTooltip content="Average collection time reduced from 30+ days to 5-7 days" />
-                      </div>
-                      <div className="text-[12px] text-gray-600 leading-tight">
-                        Payment Collection
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-lg p-2.5 border-2 border-primary/20 shadow-md">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <svg
-                        className="w-5 h-5 text-purple-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-[16px] font-bold text-gray-900 leading-tight mb-0.5 flex items-center gap-1">
-                        50% Less
-                        <InfoTooltip content="Automation of job tracking, invoicing, and payment follow-ups" />
-                      </div>
-                      <div className="text-[12px] text-gray-600 leading-tight">
-                        Admin Time
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-lg p-2.5 border-2 border-primary/20 shadow-md">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <svg
-                        className="w-5 h-5 text-orange-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                        />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-[16px] font-bold text-gray-900 leading-tight mb-0.5 flex items-center gap-1">
-                        300%+
-                        <InfoTooltip content="Calculated over 12 months with time savings valued at ₹200/hr" />
-                      </div>
-                      <div className="text-[12px] text-gray-600 leading-tight">
-                        ROI in Year 1
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 mb-2">
@@ -352,14 +233,18 @@ export default function Hero({ onPreorderClick }: HeroProps) {
               <div className="relative bg-white rounded-xl p-4 border-2 border-primary/20 shadow-xl w-full max-w-sm">
                 <div className="flex items-center mb-3">
                   <div className="flex -space-x-2 mr-3">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div
-                        key={i}
-                        className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-600 border-2 border-white flex items-center justify-center text-white font-bold text-xs"
-                      >
-                        {String.fromCharCode(64 + i)}
-                      </div>
-                    ))}
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 border-2 border-white flex items-center justify-center text-lg">
+                      🤖
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 border-2 border-white flex items-center justify-center text-lg">
+                      👨‍💼
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-teal-600 border-2 border-white flex items-center justify-center text-lg">
+                      👩‍💻
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-red-600 border-2 border-white flex items-center justify-center text-lg">
+                      🧑‍🔧
+                    </div>
                   </div>
                   <div>
                     {waitlistCount && (

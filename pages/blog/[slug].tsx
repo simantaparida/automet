@@ -108,7 +108,7 @@ export default function BlogPostPage() {
   // Fetch related articles based on category and tags
   const fetchRelatedPosts = async (currentPost: BlogPost) => {
     try {
-      // Fetch posts from the same category
+      // Fetch posts from the same category (select only needed fields for performance)
       const response = await fetch(`/api/blog?limit=10&category=${currentPost.category}`);
       if (response.ok) {
         const data = await response.json();
@@ -123,9 +123,9 @@ export default function BlogPostPage() {
             if (p.category === currentPost.category) score += 2;
             
             // Matching tags: +3 points per tag
-            const matchingTags = p.tags.filter((tag: string) => 
-              currentPost.tags.includes(tag)
-            );
+            const matchingTags = p.tags?.filter((tag: string) => 
+              currentPost.tags?.includes(tag)
+            ) || [];
             score += matchingTags.length * 3;
             
             // Recent posts: +1 point if published within 90 days
@@ -174,9 +174,10 @@ export default function BlogPostPage() {
 
   // Calculate reading time (average 200 words per minute)
   const calculateReadingTime = (content: string) => {
+    if (!content) return 1;
     const words = content.split(/\s+/).length;
     const minutes = Math.ceil(words / 200);
-    return minutes;
+    return Math.max(minutes, 1); // Minimum 1 minute
   };
 
   // Share functionality
@@ -1130,7 +1131,7 @@ export default function BlogPostPage() {
                                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                                 />
                               </svg>
-                              {calculateReadingTime(relatedPost.content)} min read
+                              {calculateReadingTime(relatedPost.content || relatedPost.excerpt || '')} min read
                             </span>
                             <span className="mx-1">•</span>
                             <span>{formatDate(relatedPost.published_at)}</span>

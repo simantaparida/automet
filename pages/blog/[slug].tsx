@@ -576,12 +576,12 @@ export default function BlogPostPage() {
         <article className="pb-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             {/* Table of Contents (Mobile only - sticky at top) */}
-            <TableOfContents content={post.content} />
+            <TableOfContents content={post.content} variant="mobile" />
             
             <div className="max-w-7xl mx-auto">
               <div className="flex gap-8 justify-center">
                 {/* Table of Contents (Desktop - Sticky Sidebar) */}
-                <TableOfContents content={post.content} />
+                <TableOfContents content={post.content} variant="desktop" />
 
                 {/* Main Content - Centered */}
                 <div className="flex-1 min-w-0 max-w-4xl mx-auto">

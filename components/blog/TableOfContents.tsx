@@ -37,16 +37,18 @@ export default function TableOfContents({
     const headingRegex = /^(#{2,3})\s+(.+)$/gm;
     const matches = [...content.matchAll(headingRegex)];
     
-    const extractedHeadings: TOCItem[] = matches.map((match) => {
-      const level = match[1].length; // ## = 2, ### = 3
-      const text = match[2].trim();
-      const id = text
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '');
-      
-      return { id, text, level };
-    });
+    const extractedHeadings: TOCItem[] = matches
+      .filter((match) => match[1] && match[2]) // Ensure capture groups exist
+      .map((match) => {
+        const level = match[1]!.length; // ## = 2, ### = 3
+        const text = match[2]!.trim();
+        const id = text
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '');
+        
+        return { id, text, level };
+      });
 
     setHeadings(extractedHeadings);
   }, [content, minWords]);

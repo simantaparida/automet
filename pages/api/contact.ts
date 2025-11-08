@@ -5,17 +5,133 @@
 
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { sendEmail } from '@/lib/email';
-import { createClient } from '@supabase/supabase-js';
+import { getSupabaseAdmin } from '@/lib/supabase-server';
+import { logError, logWarn } from '@/lib/logger';
 
-interface ContactFormData {
-  name?: string;
-  company?: string;
-  country_code?: string;
-  phone?: string;
-  email?: string | null;
-  topic?: string | null;
-  message?: string | null;
+const ALLOWED_TOPICS = [
+  'pricing',
+  'features',
+  'technical',
+  'demo',
+  'partnership',
+  'other',
+] as const;
+type AllowedTopic = (typeof ALLOWED_TOPICS)[number];
+
+interface ContactMessageInsert {
+  name: string;
+  company: string;
+  country_code: string;
+  phone: string;
+  email: string | null;
+  topic: AllowedTopic | null;
+  message: string | null;
+  status: 'new';
 }
+
+interface ParsedContactPayload extends ContactMessageInsert {
+  topicLabel: string;
+  phoneDisplay: string;
+}
+
+const topicLabels: Record<AllowedTopic, string> = {
+  pricing: 'Pricing & Plans',
+  features: 'Features & Capabilities',
+  technical: 'Technical Support',
+  demo: 'Request a Demo',
+  partnership: 'Partnership Inquiry',
+  other: 'Other Questions',
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+
+const parseContactPayload = (
+  payload: unknown
+):
+  | { ok: true; data: ParsedContactPayload }
+  | { ok: false; message: string } => {
+  if (!isRecord(payload)) {
+    return { ok: false, message: 'Invalid payload format.' };
+  }
+
+  const name = typeof payload.name === 'string' ? payload.name.trim() : '';
+  const company =
+    typeof payload.company === 'string' ? payload.company.trim() : '';
+  const countryCode =
+    typeof payload.country_code === 'string'
+      ? payload.country_code.trim()
+      : '+91';
+  const rawPhone =
+    typeof payload.phone === 'string' ? payload.phone.replace(/\D/g, '') : '';
+  const email = typeof payload.email === 'string' ? payload.email.trim() : '';
+  const topic =
+    typeof payload.topic === 'string' &&
+    ALLOWED_TOPICS.includes(payload.topic as AllowedTopic)
+      ? (payload.topic as AllowedTopic)
+      : null;
+  const message =
+    typeof payload.message === 'string' ? payload.message.trim() : '';
+
+  if (!name) {
+    return { ok: false, message: 'Name is required.' };
+  }
+
+  if (name.length < 2) {
+    return { ok: false, message: 'Name must be at least 2 characters.' };
+  }
+
+  if (!company) {
+    return { ok: false, message: 'Company is required.' };
+  }
+
+  if (company.length < 2) {
+    return { ok: false, message: 'Company must be at least 2 characters.' };
+  }
+
+  if (!/^\+\d{1,4}$/.test(countryCode)) {
+    return { ok: false, message: 'Please select a valid country code.' };
+  }
+
+  if (!/^\d{10}$/.test(rawPhone)) {
+    return {
+      ok: false,
+      message: 'Phone number must be a valid 10-digit number.',
+    };
+  }
+
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { ok: false, message: 'Please enter a valid email address.' };
+  }
+
+  if (message && message.length < 10) {
+    return {
+      ok: false,
+      message: 'Message must be at least 10 characters when provided.',
+    };
+  }
+
+  const fullPhone = `${countryCode}${rawPhone}`;
+  const topicLabel = topic ? topicLabels[topic] : 'General inquiry';
+  const normalizedMessage = message || null;
+  const normalizedEmail = email || null;
+
+  return {
+    ok: true,
+    data: {
+      name,
+      company,
+      country_code: countryCode,
+      phone: fullPhone,
+      email: normalizedEmail,
+      topic,
+      message: normalizedMessage,
+      status: 'new',
+      topicLabel,
+      phoneDisplay: `${countryCode} ${rawPhone}`,
+    },
+  };
+};
 
 export default async function handler(
   req: NextApiRequest,
@@ -26,141 +142,43 @@ export default async function handler(
   }
 
   try {
-    const body =
-      typeof req.body === 'object' && req.body !== null
-        ? (req.body as Partial<ContactFormData>)
-        : {};
+    const parsed = parseContactPayload(req.body);
 
-    const { name, company, country_code, phone, email, topic, message } = body;
-
-    const trimmedName = (name ?? '').trim();
-    const trimmedCompany = (company ?? '').trim();
-    const countryCode = (country_code ?? '+91').trim();
-    const rawPhone = (phone ?? '').replace(/\D/g, '');
-    const trimmedEmail = email?.trim() ?? '';
-    const trimmedMessage = message?.trim() ?? '';
-    const allowedTopics = new Set([
-      'pricing',
-      'features',
-      'technical',
-      'demo',
-      'partnership',
-      'other',
-    ]);
-
-    // Validation
-    if (!trimmedName) {
+    if (!parsed.ok) {
       return res.status(400).json({
-        error: 'Invalid name',
-        message: 'Name is required.',
+        error: 'Validation failed',
+        message: parsed.message,
       });
     }
 
-    if (trimmedName.length < 2) {
-      return res.status(400).json({
-        error: 'Invalid name',
-        message: 'Name must be at least 2 characters.',
-      });
-    }
+    const { topicLabel, phoneDisplay, ...contactRecord } = parsed.data;
 
-    if (!trimmedCompany) {
-      return res.status(400).json({
-        error: 'Invalid company',
-        message: 'Company is required.',
-      });
-    }
-
-    if (trimmedCompany.length < 2) {
-      return res.status(400).json({
-        error: 'Invalid company',
-        message: 'Company must be at least 2 characters.',
-      });
-    }
-
-    if (!/^\+\d{1,4}$/.test(countryCode)) {
-      return res.status(400).json({
-        error: 'Invalid country code',
-        message: 'Please select a valid country code.',
-      });
-    }
-
-    if (!/^\d{10}$/.test(rawPhone)) {
-      return res.status(400).json({
-        error: 'Invalid phone',
-        message: 'Phone number must be a valid 10-digit number.',
-      });
-    }
-
-    if (trimmedEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-      return res.status(400).json({
-        error: 'Invalid email',
-        message: 'Please enter a valid email address.',
-      });
-    }
-
-    const normalizedTopic = topic && allowedTopics.has(topic) ? topic : null;
-
-    if (trimmedMessage && trimmedMessage.length < 10) {
-      return res.status(400).json({
-        error: 'Invalid message',
-        message: 'Message must be at least 10 characters when provided.',
-      });
-    }
-
-    const fullPhone = `${countryCode}${rawPhone}`;
-    const normalizedEmail = trimmedEmail || null;
-    const normalizedMessage = trimmedMessage || null;
-
-    // Format topic for display
-    const topicLabels: Record<string, string> = {
-      pricing: 'Pricing & Plans',
-      features: 'Features & Capabilities',
-      technical: 'Technical Support',
-      demo: 'Request a Demo',
-      partnership: 'Partnership Inquiry',
-      other: 'Other Questions',
-    };
-    const topicLabel = normalizedTopic
-      ? topicLabels[normalizedTopic] || normalizedTopic
-      : 'General inquiry';
-
-    // Store in database
+    // Store in database (best effort)
     try {
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-      if (supabaseUrl && supabaseServiceKey) {
-        const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
+      const supabase = getSupabaseAdmin();
+      if (!supabase) {
+        logWarn(
+          'Contact form submission not stored - SUPABASE_SERVICE_ROLE_KEY missing'
+        );
+      } else {
         const { error: dbError } = await supabase
-          .from('contact_messages')
-          .insert({
-            name: trimmedName,
-            company: trimmedCompany,
-            country_code: countryCode,
-            phone: fullPhone,
-            email: normalizedEmail,
-            topic: normalizedTopic,
-            message: normalizedMessage,
-            status: 'new',
-          });
+          .from<ContactMessageInsert>('contact_messages')
+          .insert(contactRecord);
 
         if (dbError) {
-          console.error('Failed to store contact message in DB:', dbError);
-          // Continue anyway - email is the primary notification method
+          logError('Failed to store contact message in DB:', dbError);
         }
       }
     } catch (dbError) {
-      console.error('Database error storing contact message:', dbError);
-      // Continue anyway - email is the primary notification method
+      logError('Database error storing contact message:', dbError);
     }
 
     // Send email to support
     const supportEmail = process.env.SUPPORT_EMAIL || 'support@automet.app';
-    const emailSubject = normalizedTopic
-      ? `[Contact Form - ${topicLabel}] New message from ${trimmedName}`
-      : `[Contact Form] New message from ${trimmedName}`;
-    const phoneForDisplay = `${countryCode} ${rawPhone}`;
+    const emailSubject = contactRecord.topic
+      ? `[Contact Form - ${topicLabel}] New message from ${contactRecord.name}`
+      : `[Contact Form] New message from ${contactRecord.name}`;
+
     const emailHtml = `
       <!DOCTYPE html>
       <html>
@@ -182,18 +200,18 @@ export default async function handler(
 
           <div style="background: white; padding: 20px; border-left: 4px solid #EF7722; border-radius: 4px; margin-bottom: 20px;">
             <p style="margin: 0; font-weight: 600; color: #1f2937;">From:</p>
-            <p style="margin: 5px 0 0 0; color: #4b5563;">${trimmedName}</p>
-            <p style="margin: 5px 0 0 0; color: #4b5563;">${trimmedCompany}</p>
-            <p style="margin: 5px 0 0 0; color: #4b5563;">${phoneForDisplay}</p>
+            <p style="margin: 5px 0 0 0; color: #4b5563;">${contactRecord.name}</p>
+            <p style="margin: 5px 0 0 0; color: #4b5563;">${contactRecord.company}</p>
+            <p style="margin: 5px 0 0 0; color: #4b5563;">${phoneDisplay}</p>
             <p style="margin: 5px 0 0 0; color: #4b5563;">${
-              normalizedEmail ?? 'No email provided'
+              contactRecord.email ?? 'No email provided'
             }</p>
           </div>
 
           <div style="background: white; padding: 20px; border-left: 4px solid #EF7722; border-radius: 4px;">
             <p style="margin: 0; font-weight: 600; color: #1f2937; margin-bottom: 10px;">Message:</p>
             <p style="margin: 0; color: #4b5563; white-space: pre-wrap;">${
-              normalizedMessage ?? 'No additional message provided.'
+              contactRecord.message ?? 'No additional message provided.'
             }</p>
           </div>
 
@@ -212,13 +230,13 @@ New Contact Form Submission
 
 Topic: ${topicLabel}
 
-From: ${trimmedName}
-Company: ${trimmedCompany}
-Phone: ${phoneForDisplay}
-Email: ${normalizedEmail ?? 'No email provided'}
+From: ${contactRecord.name}
+Company: ${contactRecord.company}
+Phone: ${phoneDisplay}
+Email: ${contactRecord.email ?? 'No email provided'}
 
 Message:
-${normalizedMessage ?? 'No additional message provided.'}
+${contactRecord.message ?? 'No additional message provided.'}
 
 ---
 This message was sent from the Automet contact form.
@@ -232,7 +250,7 @@ This message was sent from the Automet contact form.
     });
 
     if (!emailSent) {
-      console.error('Failed to send contact form email');
+      logError('Failed to send contact form email');
       return res.status(500).json({
         error: 'Failed to send message',
         message:
@@ -246,7 +264,7 @@ This message was sent from the Automet contact form.
         "Your message has been sent successfully. We'll get back to you within 24 hours.",
     });
   } catch (error) {
-    console.error('Contact form API error:', error);
+    logError('Contact form API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
       message: 'Something went wrong. Please try again later.',

@@ -1,20 +1,24 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+
+const insertMock = jest.fn();
+const fromMock = jest.fn(() => ({
+  insert: insertMock,
+}));
+const supabaseMock = {
+  from: fromMock,
+};
+
 jest.mock('@/lib/email', () => ({
   sendEmail: jest.fn(),
 }));
 
-const insertMock = jest.fn().mockResolvedValue({ error: null });
-const fromMock = jest.fn(() => ({
-  insert: insertMock,
+jest.mock('@/lib/supabase-server', () => ({
+  getSupabaseAdmin: jest.fn(),
 }));
 
-jest.mock('@supabase/supabase-js', () => ({
-  createClient: jest.fn(() => ({
-    from: fromMock,
-  })),
-}));
-
-// Import after mocks are defined so they receive the mocked implementations
+const { getSupabaseAdmin } = require('@/lib/supabase-server') as {
+  getSupabaseAdmin: jest.Mock;
+};
 const handler = require('../../pages/api/contact').default as (
   req: NextApiRequest,
   res: NextApiResponse
@@ -27,9 +31,10 @@ describe('POST /api/contact', () => {
   const originalEnv = process.env;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
     insertMock.mockResolvedValue({ error: null });
     fromMock.mockReturnValue({ insert: insertMock });
+    getSupabaseAdmin.mockReturnValue(supabaseMock);
     process.env = { ...originalEnv };
     process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://example.supabase.co';
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-key';
@@ -101,6 +106,7 @@ describe('POST /api/contact', () => {
         phone: '+917008099715',
         email: 'simanta@example.com',
         topic: 'features',
+        status: 'new',
       })
     );
     expect(sendEmail).toHaveBeenCalledWith(
@@ -111,4 +117,3 @@ describe('POST /api/contact', () => {
     );
   });
 });
-

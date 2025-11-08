@@ -5,73 +5,76 @@
 
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSupabaseAdmin } from '@/lib/supabase-server';
+import { logError, logWarn } from '@/lib/logger';
+
+interface BlogPostRow {
+  id: string;
+  view_count: number | null;
+}
+
+const isSlug = (value: unknown): value is string =>
+  typeof value === 'string' && value.trim().length > 0;
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ success: false, message: 'Method not allowed' });
+    return res.status(405).json({
+      success: false,
+      message: 'Method not allowed',
+    });
   }
 
   try {
     const { slug } = req.query;
 
-    if (!slug || typeof slug !== 'string') {
+    if (!isSlug(slug)) {
       return res.status(400).json({ success: false, message: 'Invalid slug' });
     }
 
-    // Get admin client to bypass RLS
     const adminClient = getSupabaseAdmin();
     if (!adminClient) {
-      console.error('Supabase admin client not available');
+      logWarn('Supabase admin client not available');
       return res.status(200).json({ success: true, view_count: 0 });
     }
 
-    // Our Supabase client types currently do not include blog_posts (needs generated types).
-    // Cast to any to avoid build-time failures while keeping runtime logic intact.
-    // TODO: Replace with typed client once Supabase types are generated.
-    const supabase = adminClient as any;
-
-    // Fetch current post
-    const { data: post, error: fetchError } = await supabase
-      .from('blog_posts')
-      .select('view_count')
+    const { data: post, error: fetchError } = await adminClient
+      .from<BlogPostRow>('blog_posts')
+      .select('id, view_count')
       .eq('slug', slug)
       .eq('published', true)
-      .single();
+      .maybeSingle<BlogPostRow>();
 
     if (fetchError || !post) {
-      console.error('Error fetching post:', fetchError);
-      // Silently fail for analytics - don't block user
+      logWarn('Error fetching post for view tracking:', fetchError);
       return res.status(200).json({ success: true, view_count: 0 });
     }
 
-    // Increment view count
-    const newCount = ((post?.view_count as number | null) || 0) + 1;
-    const { error: updateError } = await supabase
-      .from('blog_posts')
+    const newCount = (post.view_count ?? 0) + 1;
+
+    const { error: updateError } = await adminClient
+      .from<BlogPostRow>('blog_posts')
       .update({ view_count: newCount })
-      .eq('slug', slug)
-      .eq('published', true);
+      .eq('id', post.id);
 
     if (updateError) {
-      console.error('Error incrementing view count:', updateError);
-      // Silently fail for analytics - don't block user
-      return res.status(200).json({ success: true, view_count: post.view_count || 0 });
+      logWarn('Error incrementing view count:', updateError);
+      return res.status(200).json({
+        success: true,
+        view_count: post.view_count ?? 0,
+      });
     }
 
-    return res.status(200).json({ 
-      success: true, 
-      view_count: newCount 
+    return res.status(200).json({
+      success: true,
+      view_count: newCount,
     });
-
   } catch (error) {
-    console.error('View tracking error:', error);
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
+    logError('View tracking error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
     });
   }
 }
-

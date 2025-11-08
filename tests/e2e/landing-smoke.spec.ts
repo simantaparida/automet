@@ -1,9 +1,11 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Landing smoke tests', () => {
-  test('opens waitlist modal from hero CTA', async ({ page }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto('/');
+  });
 
+  test('opens waitlist modal from hero CTA', async ({ page }) => {
     await page
       .getByRole('button', { name: 'Claim Your Early Access Spot' })
       .click();
@@ -30,10 +32,10 @@ test.describe('Landing smoke tests', () => {
       });
     });
 
-    await page.goto('/');
-
     await page.getByRole('button', { name: 'Contact Support' }).click();
-    await expect(page.getByRole('heading', { name: 'Get in Touch' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Get in Touch' })
+    ).toBeVisible();
 
     await page.fill('input[name="name"]', 'QA Lead');
     await page.fill('input[name="company"]', 'Bengaluru Pilot Co');
@@ -47,5 +49,39 @@ test.describe('Landing smoke tests', () => {
 
     await page.getByRole('button', { name: 'Close' }).click();
   });
-});
 
+  test('joins waitlist with mocked preorder API', async ({ page }) => {
+    await page.route('**/api/preorder', async (route) => {
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          message: 'Successfully joined the waitlist!',
+        }),
+      });
+    });
+
+    await page
+      .getByRole('button', { name: 'Claim Your Early Access Spot' })
+      .click();
+
+    await expect(
+      page.getByRole('heading', { name: 'Join the Waitlist' })
+    ).toBeVisible();
+
+    await page.fill('input[name="email"]', 'waitlist@example.com');
+    await page.fill('input[name="phone"]', '9123456789');
+
+    const waitlistForm = page
+      .locator('form')
+      .filter({ has: page.locator('input[name="email"]') });
+
+    await Promise.all([
+      page.waitForURL(/\/preorder\/success/i),
+      waitlistForm
+        .getByRole('button', { name: 'Join Waitlist' })
+        .click({ force: true }),
+    ]);
+  });
+});

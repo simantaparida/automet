@@ -30,6 +30,7 @@ Coverage is collected for the core server code (`src/lib/auth-middleware.ts`, AP
 | Command | Use Case |
 | ------- | -------- |
 | `npm run test:e2e` | Execute Playwright specs (Chromium). |
+| `npx playwright show-report` | Open the most recent HTML report locally. |
 
 Before running E2E locally:
 
@@ -37,6 +38,8 @@ Before running E2E locally:
 npx playwright install --with-deps chromium
 # optionally set env vars required by the app (see .env.example or README)
 ```
+
+Traces are retained automatically on failure (`trace: 'retain-on-failure'`). In CI the generated HTML report is uploaded as an artifact (`playwright-report`) for easier debugging.
 
 ## Typical Local Workflow
 

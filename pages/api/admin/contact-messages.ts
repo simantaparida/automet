@@ -6,14 +6,15 @@
 
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSupabaseAdmin } from '@/lib/supabase-server';
+import { logDev, logError } from '@/lib/logger';
 
-interface ContactMessage {
+interface ContactMessageRow {
   id: string;
   name: string;
-  email: string;
-  topic: string;
-  message: string;
-  status: string;
+  email: string | null;
+  topic: string | null;
+  message: string | null;
+  status: AllowedStatus;
   created_at: string;
   updated_at: string;
   resolved_at: string | null;
@@ -27,26 +28,90 @@ interface ContactMessagesStats {
   resolved: number;
 }
 
+const ALLOWED_STATUSES = [
+  'new',
+  'in_progress',
+  'resolved',
+  'archived',
+] as const;
+type AllowedStatus = (typeof ALLOWED_STATUSES)[number];
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+
+const parseUpdatePayload = (
+  payload: unknown
+): { id: string; status: AllowedStatus; notes?: string | null } | null => {
+  if (!isRecord(payload)) {
+    return null;
+  }
+
+  const { id, status, notes } = payload;
+
+  if (typeof id !== 'string' || typeof status !== 'string') {
+    return null;
+  }
+
+  if (!ALLOWED_STATUSES.includes(status as AllowedStatus)) {
+    return null;
+  }
+
+  let normalizedNotes: string | null | undefined;
+  if (typeof notes === 'string') {
+    normalizedNotes = notes;
+  } else if (notes === null) {
+    normalizedNotes = null;
+  }
+
+  return { id, status: status as AllowedStatus, notes: normalizedNotes };
+};
+
+const toStats = (messages: ContactMessageRow[]): ContactMessagesStats => {
+  let newCount = 0;
+  let inProgressCount = 0;
+  let resolvedCount = 0;
+
+  for (const message of messages) {
+    if (message.status === 'new') {
+      newCount += 1;
+    } else if (message.status === 'in_progress') {
+      inProgressCount += 1;
+    } else if (message.status === 'resolved') {
+      resolvedCount += 1;
+    }
+  }
+
+  return {
+    total: messages.length,
+    new: newCount,
+    in_progress: inProgressCount,
+    resolved: resolvedCount,
+  };
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  // Verify admin secret
-  const adminSecret = req.headers['x-admin-secret'] as string;
+  const adminSecret = req.headers['x-admin-secret'] as string | undefined;
   const validAdminSecret = process.env.ADMIN_SECRET;
 
-  // Debug logging
-  console.log('Admin Secret Check:', {
-    receivedSecret: adminSecret ? `${adminSecret.substring(0, 3)}...` : 'MISSING',
-    hasValidSecret: !!validAdminSecret,
-    validSecretPreview: validAdminSecret ? `${validAdminSecret.substring(0, 3)}...` : 'NOT_SET',
+  logDev('Admin Secret Check:', {
+    receivedSecret: adminSecret
+      ? `${adminSecret.substring(0, 3)}...`
+      : 'MISSING',
+    hasValidSecret: Boolean(validAdminSecret),
+    validSecretPreview: validAdminSecret
+      ? `${validAdminSecret.substring(0, 3)}...`
+      : 'NOT_SET',
     match: adminSecret === validAdminSecret,
   });
 
   if (!validAdminSecret) {
     return res.status(500).json({
       success: false,
-      message: 'ADMIN_SECRET environment variable is not configured on the server',
+      message:
+        'ADMIN_SECRET environment variable is not configured on the server',
     });
   }
 
@@ -65,7 +130,7 @@ export default async function handler(
   }
 
   const supabase = getSupabaseAdmin();
-  
+
   if (!supabase) {
     return res.status(500).json({
       success: false,
@@ -75,15 +140,13 @@ export default async function handler(
 
   if (req.method === 'GET') {
     try {
-      // Fetch all contact messages
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-      const { data: messages, error } = await (supabase as any)
+      const { data: messages, error } = await supabase
         .from('contact_messages')
-        .select('*')
+        .select<ContactMessageRow[]>('*')
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('Failed to fetch contact messages:', error);
+        logError('Failed to fetch contact messages:', error);
         return res.status(500).json({
           success: false,
           message: 'Failed to fetch contact messages',
@@ -91,76 +154,93 @@ export default async function handler(
         });
       }
 
-      // Type assertion for messages
-      const typedMessages = (messages || []) as ContactMessage[];
+      const typedMessages: ContactMessageRow[] = Array.isArray(messages)
+        ? messages.filter((message): message is ContactMessageRow => {
+            if (!isRecord(message)) {
+              return false;
+            }
 
-      // Calculate stats
-      const stats: ContactMessagesStats = {
-        total: typedMessages.length,
-        new: typedMessages.filter((m) => m.status === 'new').length,
-        in_progress: typedMessages.filter((m) => m.status === 'in_progress').length,
-        resolved: typedMessages.filter((m) => m.status === 'resolved').length,
-      };
+            const {
+              id,
+              name,
+              email,
+              topic,
+              message: body,
+              status,
+              created_at,
+              updated_at,
+              resolved_at,
+              notes,
+            } = message;
+
+            return (
+              typeof id === 'string' &&
+              typeof name === 'string' &&
+              (typeof email === 'string' || email === null) &&
+              (typeof topic === 'string' || topic === null) &&
+              (typeof body === 'string' || body === null) &&
+              typeof status === 'string' &&
+              ALLOWED_STATUSES.includes(status as AllowedStatus) &&
+              typeof created_at === 'string' &&
+              typeof updated_at === 'string' &&
+              (typeof resolved_at === 'string' || resolved_at === null) &&
+              (typeof notes === 'string' || notes === null)
+            );
+          })
+        : [];
 
       return res.status(200).json({
         success: true,
         data: typedMessages,
-        stats,
+        stats: toStats(typedMessages),
       });
     } catch (error) {
-      console.error('Contact messages API error:', error);
+      logError('Contact messages API error:', error);
       return res.status(500).json({
         success: false,
         message: 'Internal server error',
       });
     }
-  } else if (req.method === 'PATCH') {
+  }
+
+  if (req.method === 'PATCH') {
     try {
-      const { id, status, notes } = req.body;
+      const updatePayload = parseUpdatePayload(req.body);
 
-      if (!id || !status) {
+      if (!updatePayload) {
         return res.status(400).json({
           success: false,
-          message: 'Missing required fields: id and status',
+          message:
+            'Invalid payload. Provide id, status, and optionally notes (string or null).',
         });
       }
 
-      const validStatuses = ['new', 'in_progress', 'resolved', 'archived'];
-      if (!validStatuses.includes(status)) {
-        return res.status(400).json({
-          success: false,
-          message: 'Invalid status. Must be: new, in_progress, resolved, or archived',
-        });
-      }
+      const { id, status, notes } = updatePayload;
 
       const updateData: {
-        status: string;
+        status: AllowedStatus;
         updated_at: string;
-        resolved_at?: string;
-        notes?: string;
+        resolved_at: string | null;
+        notes?: string | null;
       } = {
         status,
         updated_at: new Date().toISOString(),
+        resolved_at: status === 'resolved' ? new Date().toISOString() : null,
       };
 
-      if (status === 'resolved') {
-        updateData.resolved_at = new Date().toISOString();
-      }
-
-      if (notes !== undefined) {
+      if (typeof notes !== 'undefined') {
         updateData.notes = notes;
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-      const { data, error } = await (supabase as any)
+      const { data: updatedMessage, error } = await supabase
         .from('contact_messages')
         .update(updateData)
         .eq('id', id)
-        .select()
-        .single();
+        .select<ContactMessageRow>('*')
+        .maybeSingle();
 
       if (error) {
-        console.error('Failed to update contact message:', error);
+        logError('Failed to update contact message:', error);
         return res.status(500).json({
           success: false,
           message: 'Failed to update message',
@@ -168,23 +248,29 @@ export default async function handler(
         });
       }
 
+      if (!updatedMessage) {
+        return res.status(404).json({
+          success: false,
+          message: 'Contact message not found',
+        });
+      }
+
       return res.status(200).json({
         success: true,
-        data,
+        data: updatedMessage,
         message: 'Message updated successfully',
       });
     } catch (error) {
-      console.error('Contact messages update API error:', error);
+      logError('Contact messages update API error:', error);
       return res.status(500).json({
         success: false,
         message: 'Internal server error',
       });
     }
-  } else {
-    return res.status(405).json({
-      success: false,
-      message: 'Method not allowed',
-    });
   }
-}
 
+  return res.status(405).json({
+    success: false,
+    message: 'Method not allowed',
+  });
+}

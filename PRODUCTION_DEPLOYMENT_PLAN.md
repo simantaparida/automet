@@ -119,6 +119,11 @@ Before going to production, verify:
 
 ## 🚀 Phase 4: Deploy to Production
 
+### CI Guardrails (Before Final Merge)
+- Ensure the GitHub Actions workflow named **CI** must pass on every PR.  
+  - GitHub → Settings → Branches → “Add rule” for `develop` and `main` → require status check **CI**.  
+- The CI pipeline now runs `npm run build` with safe defaults, `lint:core`, `test:ci`, and the Playwright smoke suite; keep those steps green before promoting a change.
+
 ### Option A: Merge to Main (Recommended)
 
 **Step 1: Create Pull Request**

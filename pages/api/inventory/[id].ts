@@ -4,6 +4,7 @@ import { logError, logWarn } from '@/lib/logger';
 
 interface InventoryItemRow {
   id: string;
+  org_id: string;
   item_name: string;
   category: string;
   sku: string | null;
@@ -13,18 +14,20 @@ interface InventoryItemRow {
   unit_cost: number | null;
   notes: string | null;
   updated_at: string | null;
+  created_at: string;
 }
 
-interface ParsedUpdatePayload {
-  item_name: string;
-  category: string;
-  unit_of_measure: string;
-  sku: string | null;
-  quantity_available: number | null;
-  reorder_level: number | null;
-  unit_cost: number | null;
-  notes: string | null;
-}
+type ParsedUpdatePayload = Pick<
+  InventoryItemRow,
+  | 'item_name'
+  | 'category'
+  | 'unit_of_measure'
+  | 'sku'
+  | 'quantity_available'
+  | 'reorder_level'
+  | 'unit_cost'
+  | 'notes'
+>;
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
@@ -118,8 +121,8 @@ export default async function handler(
   if (req.method === 'GET') {
     try {
       const { data: item, error: itemError } = await supabase
-        .from<InventoryItemRow>('inventory_items')
-        .select('*')
+        .from('inventory_items')
+        .select<InventoryItemRow>('*')
         .eq('id', itemId)
         .maybeSingle();
 
@@ -146,13 +149,14 @@ export default async function handler(
       }
 
       const { data, error } = await supabase
-        .from<InventoryItemRow>('inventory')
+        .from('inventory')
+        // @ts-expect-error Supabase type definitions do not include inventory table metadata locally
         .update({
           ...parsed.data,
           updated_at: new Date().toISOString(),
         })
         .eq('id', itemId)
-        .select('*')
+        .select<InventoryItemRow>('*')
         .maybeSingle();
 
       if (error) {
@@ -173,7 +177,7 @@ export default async function handler(
   if (req.method === 'DELETE') {
     try {
       const { data, error } = await supabase
-        .from<InventoryItemRow>('inventory')
+        .from('inventory')
         .delete()
         .eq('id', itemId);
 

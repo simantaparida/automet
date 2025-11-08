@@ -8,6 +8,8 @@ This project includes focused linting, unit, and end-to-end suites that integrat
 - Install dependencies once: `npm install`
 - For Playwright E2E tests, install the Chromium binary: `npx playwright install --with-deps chromium`
 
+> **Branch protection:** in GitHub, require the `CI` workflow to pass before merging into `develop` and `main`. This mirrors the manual workflow described below (build → lint → Jest → Playwright).
+
 ## Linting
 
 | Command | Use Case |
@@ -45,7 +47,8 @@ Traces are retained automatically on failure (`trace: 'retain-on-failure'`). In 
 
 1. `npm run lint:core`
 2. `npm run test:ci`
-3. (Optional) `npm run test:e2e`
+3. `npm run build`
+4. (Optional) `npm run test:e2e`
 
 Running these steps locally mirrors the CI workflow and keeps the repository ready for Phase 3/4 automation work.***
 

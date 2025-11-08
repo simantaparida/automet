@@ -77,14 +77,14 @@ export default function ContactSupportModal({
       newErrors.phone = 'Valid 10-digit phone number is required';
     }
 
-    if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    if (
+      formData.email.trim() &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
+    ) {
       newErrors.email = 'Please enter a valid email address';
     }
 
-    if (
-      formData.message.trim() &&
-      formData.message.trim().length < 10
-    ) {
+    if (formData.message.trim() && formData.message.trim().length < 10) {
       newErrors.message = 'Message must be at least 10 characters';
     }
 
@@ -182,9 +182,7 @@ export default function ContactSupportModal({
         {/* Header */}
         <div className="bg-primary text-white rounded-t-2xl px-6 py-5 flex items-center justify-between relative">
           <div>
-            <h2 className="text-xl font-bold">
-              Get in Touch
-            </h2>
+            <h2 className="text-xl font-bold">Get in Touch</h2>
             <p className="text-sm text-white/90 mt-0.5">
               Quick response in 24 hours
             </p>
@@ -261,7 +259,10 @@ export default function ContactSupportModal({
                 </svg>
                 <p className="text-red-800 text-sm">
                   Failed to send. Try again or email{' '}
-                  <a href="mailto:support@automet.app" className="font-semibold underline">
+                  <a
+                    href="mailto:support@automet.app"
+                    className="font-semibold underline"
+                  >
                     support@automet.app
                   </a>
                 </p>
@@ -372,7 +373,8 @@ export default function ContactSupportModal({
               htmlFor="email"
               className="block text-sm font-medium text-gray-700 mb-1.5"
             >
-              Email <span className="text-gray-400 font-normal">(optional)</span>
+              Email{' '}
+              <span className="text-gray-400 font-normal">(optional)</span>
             </label>
             <input
               type="email"
@@ -424,7 +426,8 @@ export default function ContactSupportModal({
               htmlFor="message"
               className="block text-sm font-medium text-gray-700 mb-1.5"
             >
-              Message <span className="text-gray-400 font-normal">(optional)</span>
+              Message{' '}
+              <span className="text-gray-400 font-normal">(optional)</span>
             </label>
             <textarea
               id="message"

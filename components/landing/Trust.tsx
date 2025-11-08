@@ -14,14 +14,14 @@ export default function Trust() {
     },
     {
       quote:
-        "The live technician tracker we tested in Bommanahalli means I can see who finished which ticket before the client even calls. It has cut our daily WhatsApp check-ins in half.",
+        'The live technician tracker we tested in Bommanahalli means I can see who finished which ticket before the client even calls. It has cut our daily WhatsApp check-ins in half.',
       author: 'Priya Sharma',
       role: 'Operations Lead, Facility Services pilot cohort',
       location: 'Bommanahalli, Bengaluru',
     },
     {
       quote:
-        "During the pilot, Automet started flagging items before we hit zero stock. Our storeroom in Whitefield stayed ready for emergency visits without me rushing last-minute purchases.",
+        'During the pilot, Automet started flagging items before we hit zero stock. Our storeroom in Whitefield stayed ready for emergency visits without me rushing last-minute purchases.',
       author: 'Amit Patel',
       role: 'Inventory Manager, Residential AMC rollout',
       location: 'Whitefield, Bengaluru',

@@ -26,15 +26,12 @@ export default async function handler(
   }
 
   try {
-    const {
-      name,
-      company,
-      country_code,
-      phone,
-      email,
-      topic,
-      message,
-    }: ContactFormData = req.body;
+    const body =
+      typeof req.body === 'object' && req.body !== null
+        ? (req.body as Partial<ContactFormData>)
+        : {};
+
+    const { name, company, country_code, phone, email, topic, message } = body;
 
     const trimmedName = (name ?? '').trim();
     const trimmedCompany = (company ?? '').trim();
@@ -134,7 +131,7 @@ export default async function handler(
 
       if (supabaseUrl && supabaseServiceKey) {
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
-        
+
         const { error: dbError } = await supabase
           .from('contact_messages')
           .insert({

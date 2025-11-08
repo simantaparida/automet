@@ -18,7 +18,8 @@
     "migrate": "./scripts/migrate.sh",
     "seed": "./scripts/seed.sh",
     "reset-db": "./scripts/reset-db.sh",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "lint:core": "eslint components/landing/ContactSupportModal.tsx components/landing/Hero.tsx components/landing/Trust.tsx pages/admin/contact-messages.tsx pages/api/contact.ts"
   },
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.10.0",

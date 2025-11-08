@@ -48,7 +48,9 @@ export default function AdminContactMessagesPage() {
   const [authError, setAuthError] = useState<string | null>(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
+  const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(
+    null
+  );
   const [updatingStatus, setUpdatingStatus] = useState(false);
 
   // Check if already authenticated
@@ -81,10 +83,9 @@ export default function AdminContactMessagesPage() {
         error?: string;
       };
 
-      console.log('API Response:', { status: response.status, data });
-
       if (!response.ok || !data.success) {
-        const errorMsg = data.message || data.error || 'Failed to fetch contact messages';
+        const errorMsg =
+          data.message || data.error || 'Failed to fetch contact messages';
         console.error('API Error:', errorMsg);
         throw new Error(errorMsg);
       }
@@ -101,7 +102,7 @@ export default function AdminContactMessagesPage() {
     }
   }
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError(null);
 
@@ -166,10 +167,10 @@ export default function AdminContactMessagesPage() {
     });
   };
 
-const getTopicLabel = (topic?: string | null) => {
-  if (!topic) {
-    return 'General inquiry';
-  }
+  const getTopicLabel = (topic?: string | null) => {
+    if (!topic) {
+      return 'General inquiry';
+    }
     const labels: Record<string, string> = {
       pricing: '💰 Pricing & Plans',
       features: '✨ Features',
@@ -181,7 +182,7 @@ const getTopicLabel = (topic?: string | null) => {
     return labels[topic] || topic;
   };
 
-const getStatusColor = (status: string) => {
+  const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       new: 'bg-blue-100 text-blue-800',
       in_progress: 'bg-yellow-100 text-yellow-800',
@@ -191,27 +192,27 @@ const getStatusColor = (status: string) => {
     return colors[status] || 'bg-gray-100 text-gray-800';
   };
 
-const formatPhoneDisplay = (countryCode: string, fullPhone: string) => {
-  if (!countryCode && !fullPhone) return 'Not provided';
+  const formatPhoneDisplay = (countryCode: string, fullPhone: string) => {
+    if (!countryCode && !fullPhone) return 'Not provided';
 
-  const sanitizedCode = countryCode?.replace(/[^\d+]/g, '') || '';
-  const digitsOnly = fullPhone?.replace(/\D/g, '') || '';
-  const codeDigits = sanitizedCode.replace(/\D/g, '');
+    const sanitizedCode = countryCode?.replace(/[^\d+]/g, '') || '';
+    const digitsOnly = fullPhone?.replace(/\D/g, '') || '';
+    const codeDigits = sanitizedCode.replace(/\D/g, '');
 
-  if (digitsOnly && codeDigits && digitsOnly.startsWith(codeDigits)) {
-    const local = digitsOnly.slice(codeDigits.length);
-    return `${sanitizedCode} ${local}`;
-  }
+    if (digitsOnly && codeDigits && digitsOnly.startsWith(codeDigits)) {
+      const local = digitsOnly.slice(codeDigits.length);
+      return `${sanitizedCode} ${local}`;
+    }
 
-  if (sanitizedCode && digitsOnly) {
-    return `${sanitizedCode} ${digitsOnly}`;
-  }
+    if (sanitizedCode && digitsOnly) {
+      return `${sanitizedCode} ${digitsOnly}`;
+    }
 
-  if (sanitizedCode) return sanitizedCode;
-  if (digitsOnly) return digitsOnly;
+    if (sanitizedCode) return sanitizedCode;
+    if (digitsOnly) return digitsOnly;
 
-  return 'Not provided';
-};
+    return 'Not provided';
+  };
 
   const filteredMessages = messages.filter((msg) => {
     if (filterStatus === 'all') return true;
@@ -372,24 +373,26 @@ const formatPhoneDisplay = (countryCode: string, fullPhone: string) => {
 
           {/* Filters */}
           <div className="flex flex-wrap gap-2 mb-6">
-            {['all', 'new', 'in_progress', 'resolved', 'archived'].map((status) => (
-              <button
-                key={status}
-                onClick={() => setFilterStatus(status)}
-                className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
-                  filterStatus === status
-                    ? 'bg-primary text-white shadow-sm'
-                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
-                }`}
-              >
-                {status === 'all'
-                  ? 'All'
-                  : status
-                      .split('_')
-                      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-                      .join(' ')}
-              </button>
-            ))}
+            {['all', 'new', 'in_progress', 'resolved', 'archived'].map(
+              (status) => (
+                <button
+                  key={status}
+                  onClick={() => setFilterStatus(status)}
+                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                    filterStatus === status
+                      ? 'bg-primary text-white shadow-sm'
+                      : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                  }`}
+                >
+                  {status === 'all'
+                    ? 'All'
+                    : status
+                        .split('_')
+                        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                        .join(' ')}
+                </button>
+              )
+            )}
           </div>
 
           {/* Messages List */}
@@ -454,7 +457,9 @@ const formatPhoneDisplay = (countryCode: string, fullPhone: string) => {
                           >
                             {message.status
                               .split('_')
-                              .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                              .map(
+                                (w) => w.charAt(0).toUpperCase() + w.slice(1)
+                              )
                               .join(' ')}
                           </span>
                           <span className="text-xs text-gray-500">
@@ -495,14 +500,19 @@ const formatPhoneDisplay = (countryCode: string, fullPhone: string) => {
                           <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">
                             Company
                           </p>
-                          <p className="text-sm text-gray-900">{message.company}</p>
+                          <p className="text-sm text-gray-900">
+                            {message.company}
+                          </p>
                         </div>
                         <div className="bg-white p-3 rounded border border-gray-200">
                           <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">
                             Phone
                           </p>
                           <p className="text-sm text-gray-900">
-                            {formatPhoneDisplay(message.country_code, message.phone)}
+                            {formatPhoneDisplay(
+                              message.country_code,
+                              message.phone
+                            )}
                           </p>
                         </div>
                         <div className="bg-white p-3 rounded border border-gray-200">
@@ -561,9 +571,9 @@ const formatPhoneDisplay = (countryCode: string, fullPhone: string) => {
                           (status) => (
                             <button
                               key={status}
-                              onClick={() =>
-                                handleUpdateStatus(message.id, status)
-                              }
+                              onClick={() => {
+                                void handleUpdateStatus(message.id, status);
+                              }}
                               disabled={
                                 updatingStatus || message.status === status
                               }
@@ -575,7 +585,9 @@ const formatPhoneDisplay = (countryCode: string, fullPhone: string) => {
                             >
                               {status
                                 .split('_')
-                                .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                                .map(
+                                  (w) => w.charAt(0).toUpperCase() + w.slice(1)
+                                )
                                 .join(' ')}
                             </button>
                           )
@@ -592,4 +604,3 @@ const formatPhoneDisplay = (countryCode: string, fullPhone: string) => {
     </>
   );
 }
-

@@ -19,7 +19,7 @@
     "seed": "./scripts/seed.sh",
     "reset-db": "./scripts/reset-db.sh",
     "prepare": "husky install",
-    "lint:core": "eslint components/landing/ContactSupportModal.tsx components/landing/Hero.tsx components/landing/Trust.tsx pages/admin/contact-messages.tsx pages/api/contact.ts pages/api/admin/contact-messages.ts pages/api/blog/[slug]/view.ts pages/api/inventory/[id].ts pages/api/inventory/index.ts src/lib"
+    "lint:core": "eslint components/landing/ContactSupportModal.tsx components/landing/Hero.tsx components/landing/Trust.tsx pages/admin/contact-messages.tsx pages/api/contact.ts pages/api/admin/contact-messages.ts pages/api/blog/[slug]/view.ts pages/api/inventory/[id].ts pages/api/inventory/index.ts pages/api/jobs/index.ts src/lib"
   },
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.10.0",

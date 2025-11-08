@@ -5,6 +5,7 @@
  */
 
 import { Resend } from 'resend';
+import { logDev, logError } from './logger';
 
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
@@ -28,12 +29,12 @@ export async function sendEmail(params: SendEmailParams): Promise<boolean> {
 
   // Development mode: log to console
   if (isDev || !resend) {
-    console.log('\n📧 ===== EMAIL (DEV MODE) =====');
-    console.log('To:', params.to);
-    console.log('Subject:', params.subject);
-    console.log('---');
-    console.log(params.text || 'No text version');
-    console.log('=============================\n');
+    logDev('\n📧 ===== EMAIL (DEV MODE) =====');
+    logDev('To:', params.to);
+    logDev('Subject:', params.subject);
+    logDev('---');
+    logDev(params.text || 'No text version');
+    logDev('=============================\n');
     return true;
   }
 
@@ -48,13 +49,13 @@ export async function sendEmail(params: SendEmailParams): Promise<boolean> {
     });
 
     if (result.error) {
-      console.error('Email send error:', result.error);
+      logError('Email send error:', result.error);
       return false;
     }
 
     return true;
   } catch (error) {
-    console.error('Email service error:', error);
+    logError('Email service error:', error);
     return false;
   }
 }

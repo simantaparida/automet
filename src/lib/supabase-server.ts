@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
+import { logDev, logWarn } from './logger';
 
 /**
  * Get Supabase URL from environment variables
@@ -29,12 +30,12 @@ export const getSupabaseAdmin = (): ReturnType<
 
   if (!serviceRoleKey || serviceRoleKey.length < 20 || !url) {
     if (process.env.NODE_ENV === 'development') {
-      console.warn('⚠️ Supabase Admin Client cannot be created:');
-      console.warn(
+      logWarn('⚠️ Supabase Admin Client cannot be created:');
+      logWarn(
         '   - Service Role Key:',
         serviceRoleKey ? `Set (${serviceRoleKey.length} chars)` : 'NOT SET'
       );
-      console.warn('   - Supabase URL:', url || 'NOT SET');
+      logWarn('   - Supabase URL:', url || 'NOT SET');
     }
     return null;
   }
@@ -61,9 +62,9 @@ export const getSupabaseAdmin = (): ReturnType<
           Buffer.from(parts[1], 'base64').toString()
         ) as { role?: string };
         if (payload.role === 'service_role') {
-          console.log('✅ Admin client created with valid service_role key');
+          logDev('✅ Admin client created with valid service_role key');
         } else {
-          console.warn(
+          logWarn(
             '⚠️ Service role key does not have service_role role:',
             payload.role
           );

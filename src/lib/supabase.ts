@@ -5,25 +5,17 @@ import type { Database } from '@/types/database';
  * Get Supabase URL from environment variables
  * Supports both naming conventions for flexibility
  */
-const getSupabaseUrl = (): string => {
-  return (
-    process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    process.env.SUPABASE_URL ||
-    ''
-  );
-};
+const getSupabaseUrl = (): string =>
+  process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '';
 
 /**
  * Get Supabase Anon Key from environment variables
  * Supports both naming conventions for flexibility
  */
-const getSupabaseAnonKey = (): string => {
-  return (
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    process.env.SUPABASE_ANON_KEY ||
-    ''
-  );
-};
+const getSupabaseAnonKey = (): string =>
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  process.env.SUPABASE_ANON_KEY ||
+  '';
 
 /**
  * Supabase Client (Browser)

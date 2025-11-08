@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import type { Database } from '@/types/database';
+import { logError } from './logger';
 
 /**
  * Authenticated API Response with user context
@@ -53,14 +54,19 @@ export async function withAuth(
     }
 
     // Get user profile with org_id and role from database
+    type UserProfile = Pick<
+      Database['public']['Tables']['users']['Row'],
+      'id' | 'email' | 'org_id' | 'role'
+    >;
+
     const { data: userProfile, error: profileError } = await supabase
       .from('users')
       .select('id, email, org_id, role')
       .eq('id', session.user.id)
-      .single();
+      .maybeSingle<UserProfile>();
 
     if (profileError || !userProfile) {
-      console.error('Error fetching user profile:', profileError);
+      logError('Error fetching user profile:', profileError);
       res.status(403).json({
         error: 'Forbidden',
         message: 'User profile not found. Please complete your registration.',
@@ -79,7 +85,7 @@ export async function withAuth(
       },
     };
   } catch (error) {
-    console.error('Authentication middleware error:', error);
+    logError('Authentication middleware error:', error);
     res.status(500).json({
       error: 'Internal Server Error',
       message: 'Authentication check failed',

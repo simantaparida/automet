@@ -7,24 +7,24 @@ export default function Trust() {
   const testimonials = [
     {
       quote:
-        'Before Automet, I was spending 3-4 hours daily just managing paperwork and coordinating with technicians. Now everything is automated. I can focus on growing my business instead of putting out fires.',
+        'Since joining the Automet pilot, our maintenance logs are finally in one place. My crew in Peenya wraps up site reports on the go instead of calling me late at night.',
       author: 'Rajesh Kumar',
-      role: 'Owner, Kumar AC Services',
-      location: 'Mumbai',
+      role: 'Service Lead, HVAC AMC team',
+      location: 'Peenya, Bengaluru',
     },
     {
       quote:
-        "The real-time technician tracking is a game-changer. I know exactly where my team is and what they're working on without making endless calls.",
+        "The live technician tracker we tested in Bommanahalli means I can see who finished which ticket before the client even calls. It has cut our daily WhatsApp check-ins in half.",
       author: 'Priya Sharma',
-      role: 'Operations Manager, TechCare Solutions',
-      location: 'Delhi',
+      role: 'Operations Lead, Facility Services pilot cohort',
+      location: 'Bommanahalli, Bengaluru',
     },
     {
       quote:
-        "Automet's inventory alerts saved us from multiple stock-outs. We can now plan better and never disappoint our clients.",
+        "During the pilot, Automet started flagging items before we hit zero stock. Our storeroom in Whitefield stayed ready for emergency visits without me rushing last-minute purchases.",
       author: 'Amit Patel',
-      role: 'Founder, Precision Maintenance',
-      location: 'Ahmedabad',
+      role: 'Inventory Manager, Residential AMC rollout',
+      location: 'Whitefield, Bengaluru',
     },
   ];
 

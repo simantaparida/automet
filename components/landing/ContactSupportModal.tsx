@@ -5,6 +5,16 @@
 
 import { useState } from 'react';
 
+interface ContactFormState {
+  name: string;
+  company: string;
+  country_code: string;
+  phone: string;
+  email: string;
+  topic: string;
+  message: string;
+}
+
 interface ContactSupportModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -14,8 +24,11 @@ export default function ContactSupportModal({
   isOpen,
   onClose,
 }: ContactSupportModalProps) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ContactFormState>({
     name: '',
+    company: '',
+    country_code: '+91',
+    phone: '',
     email: '',
     topic: '',
     message: '',
@@ -48,19 +61,30 @@ export default function ContactSupportModal({
       newErrors.name = 'Name must be at least 2 characters';
     }
 
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    if (!formData.company.trim()) {
+      newErrors.company = 'Company is required';
+    } else if (formData.company.trim().length < 2) {
+      newErrors.company = 'Company must be at least 2 characters';
+    }
+
+    const sanitizedCountryCode = formData.country_code.replace(/[^\d+]/g, '');
+    if (!sanitizedCountryCode || !/^\+\d{1,4}$/.test(sanitizedCountryCode)) {
+      newErrors.country_code = 'Select a valid country code';
+    }
+
+    const phoneDigits = formData.phone.replace(/\D/g, '');
+    if (!phoneDigits || phoneDigits.length !== 10) {
+      newErrors.phone = 'Valid 10-digit phone number is required';
+    }
+
+    if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
     }
 
-    if (!formData.topic) {
-      newErrors.topic = 'Please select a topic';
-    }
-
-    if (!formData.message.trim()) {
-      newErrors.message = 'Message is required';
-    } else if (formData.message.trim().length < 10) {
+    if (
+      formData.message.trim() &&
+      formData.message.trim().length < 10
+    ) {
       newErrors.message = 'Message must be at least 10 characters';
     }
 
@@ -79,12 +103,24 @@ export default function ContactSupportModal({
     setSubmitStatus('idle');
 
     try {
+      const sanitizedCountryCode = formData.country_code.replace(/[^\d+]/g, '');
+      const normalizedPhone = formData.phone.replace(/\D/g, '');
+      const payload = {
+        name: formData.name.trim(),
+        company: formData.company.trim(),
+        country_code: sanitizedCountryCode,
+        phone: normalizedPhone,
+        email: formData.email.trim() || undefined,
+        topic: formData.topic || undefined,
+        message: formData.message.trim() || undefined,
+      };
+
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       const data = (await response.json()) as {
@@ -100,6 +136,9 @@ export default function ContactSupportModal({
       // Reset form
       setFormData({
         name: '',
+        company: '',
+        country_code: '+91',
+        phone: '',
         email: '',
         topic: '',
         message: '',
@@ -122,6 +161,9 @@ export default function ContactSupportModal({
     if (!isSubmitting) {
       setFormData({
         name: '',
+        company: '',
+        country_code: '+91',
+        phone: '',
         email: '',
         topic: '',
         message: '',
@@ -227,8 +269,8 @@ export default function ContactSupportModal({
             </div>
           )}
 
-          {/* Email & Name - Side by Side */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* Name & Company */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label
                 htmlFor="name"
@@ -255,27 +297,98 @@ export default function ContactSupportModal({
 
             <div>
               <label
-                htmlFor="email"
+                htmlFor="company"
                 className="block text-sm font-medium text-gray-700 mb-1.5"
               >
-                Email <span className="text-red-500">*</span>
+                Company <span className="text-red-500">*</span>
               </label>
               <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
+                type="text"
+                id="company"
+                name="company"
+                value={formData.company}
                 onChange={handleChange}
                 className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-colors ${
-                  errors.email ? 'border-red-500' : 'border-gray-300'
+                  errors.company ? 'border-red-500' : 'border-gray-300'
                 }`}
-                placeholder="your@email.com"
+                placeholder="Your company name"
                 disabled={isSubmitting}
               />
-              {errors.email && (
-                <p className="mt-1 text-xs text-red-500">{errors.email}</p>
+              {errors.company && (
+                <p className="mt-1 text-xs text-red-500">{errors.company}</p>
               )}
             </div>
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label
+              htmlFor="phone"
+              className="block text-sm font-medium text-gray-700 mb-1.5"
+            >
+              Phone <span className="text-red-500">*</span>
+            </label>
+            <div className="flex gap-2 items-stretch">
+              <select
+                name="country_code"
+                value={formData.country_code}
+                onChange={handleChange}
+                className={`w-28 px-2.5 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-colors bg-white ${
+                  errors.country_code ? 'border-red-500' : 'border-gray-300'
+                }`}
+                disabled={isSubmitting}
+              >
+                <option value="+91">🇮🇳 +91</option>
+                <option value="+1">🇺🇸 +1</option>
+                <option value="+44">🇬🇧 +44</option>
+                <option value="+61">🇦🇺 +61</option>
+                <option value="+971">🇦🇪 +971</option>
+                <option value="+65">🇸🇬 +65</option>
+              </select>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                maxLength={10}
+                className={`flex-1 px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-colors ${
+                  errors.phone ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="9876543210"
+                disabled={isSubmitting}
+              />
+            </div>
+            {(errors.phone || errors.country_code) && (
+              <p className="mt-1 text-xs text-red-500">
+                {errors.phone || errors.country_code}
+              </p>
+            )}
+          </div>
+
+          {/* Email */}
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-1.5"
+            >
+              Email <span className="text-gray-400 font-normal">(optional)</span>
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-colors ${
+                errors.email ? 'border-red-500' : 'border-gray-300'
+              }`}
+              placeholder="you@company.com"
+              disabled={isSubmitting}
+            />
+            {errors.email && (
+              <p className="mt-1 text-xs text-red-500">{errors.email}</p>
+            )}
           </div>
 
           {/* Topic Dropdown */}
@@ -284,19 +397,18 @@ export default function ContactSupportModal({
               htmlFor="topic"
               className="block text-sm font-medium text-gray-700 mb-1.5"
             >
-              What can we help with? <span className="text-red-500">*</span>
+              What can we help with?{' '}
+              <span className="text-gray-400 font-normal">(optional)</span>
             </label>
             <select
               id="topic"
               name="topic"
               value={formData.topic}
               onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-colors bg-white ${
-                errors.topic ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-colors bg-white border-gray-300"
               disabled={isSubmitting}
             >
-              <option value="">Select a topic...</option>
+              <option value="">Select a topic (optional)</option>
               <option value="pricing">💰 Pricing & Plans</option>
               <option value="features">✨ Features & Capabilities</option>
               <option value="technical">🔧 Technical Support</option>
@@ -304,9 +416,6 @@ export default function ContactSupportModal({
               <option value="partnership">🤝 Partnership Inquiry</option>
               <option value="other">💬 Other Questions</option>
             </select>
-            {errors.topic && (
-              <p className="mt-1 text-xs text-red-500">{errors.topic}</p>
-            )}
           </div>
 
           {/* Message */}
@@ -315,7 +424,7 @@ export default function ContactSupportModal({
               htmlFor="message"
               className="block text-sm font-medium text-gray-700 mb-1.5"
             >
-              Message <span className="text-red-500">*</span>
+              Message <span className="text-gray-400 font-normal">(optional)</span>
             </label>
             <textarea
               id="message"
@@ -326,14 +435,14 @@ export default function ContactSupportModal({
               className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-colors resize-none ${
                 errors.message ? 'border-red-500' : 'border-gray-300'
               }`}
-              placeholder="How can we help you?"
+              placeholder="Share a bit about your request (optional)"
               disabled={isSubmitting}
             />
             {errors.message && (
               <p className="mt-1 text-xs text-red-500">{errors.message}</p>
             )}
             <p className="mt-1.5 text-xs text-gray-500">
-              Minimum 10 characters
+              Optional, but helpful if you add at least 10 characters.
             </p>
           </div>
 

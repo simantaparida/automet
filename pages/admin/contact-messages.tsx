@@ -12,9 +12,12 @@ const ADMIN_SECRET_KEY = 'admin_secret_authenticated';
 interface ContactMessage {
   id: string;
   name: string;
-  email: string;
-  topic: string;
-  message: string;
+  company: string;
+  country_code: string;
+  phone: string;
+  email: string | null;
+  topic: string | null;
+  message: string | null;
   status: string;
   created_at: string;
   updated_at: string;
@@ -163,7 +166,10 @@ export default function AdminContactMessagesPage() {
     });
   };
 
-  const getTopicLabel = (topic: string) => {
+const getTopicLabel = (topic?: string | null) => {
+  if (!topic) {
+    return 'General inquiry';
+  }
     const labels: Record<string, string> = {
       pricing: '💰 Pricing & Plans',
       features: '✨ Features',
@@ -175,7 +181,7 @@ export default function AdminContactMessagesPage() {
     return labels[topic] || topic;
   };
 
-  const getStatusColor = (status: string) => {
+const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       new: 'bg-blue-100 text-blue-800',
       in_progress: 'bg-yellow-100 text-yellow-800',
@@ -184,6 +190,28 @@ export default function AdminContactMessagesPage() {
     };
     return colors[status] || 'bg-gray-100 text-gray-800';
   };
+
+const formatPhoneDisplay = (countryCode: string, fullPhone: string) => {
+  if (!countryCode && !fullPhone) return 'Not provided';
+
+  const sanitizedCode = countryCode?.replace(/[^\d+]/g, '') || '';
+  const digitsOnly = fullPhone?.replace(/\D/g, '') || '';
+  const codeDigits = sanitizedCode.replace(/\D/g, '');
+
+  if (digitsOnly && codeDigits && digitsOnly.startsWith(codeDigits)) {
+    const local = digitsOnly.slice(codeDigits.length);
+    return `${sanitizedCode} ${local}`;
+  }
+
+  if (sanitizedCode && digitsOnly) {
+    return `${sanitizedCode} ${digitsOnly}`;
+  }
+
+  if (sanitizedCode) return sanitizedCode;
+  if (digitsOnly) return digitsOnly;
+
+  return 'Not provided';
+};
 
   const filteredMessages = messages.filter((msg) => {
     if (filterStatus === 'all') return true;
@@ -395,14 +423,25 @@ export default function AdminContactMessagesPage() {
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-2 flex-wrap">
+                        <div className="flex items-center gap-2 mb-2 flex-wrap text-sm text-gray-600">
                           <span className="font-semibold text-gray-900">
                             {message.name}
                           </span>
                           <span className="text-gray-400">•</span>
-                          <span className="text-sm text-gray-600">
-                            {message.email}
+                          <span>{message.company}</span>
+                          <span className="text-gray-400">•</span>
+                          <span>
+                            {formatPhoneDisplay(
+                              message.country_code,
+                              message.phone
+                            )}
                           </span>
+                          {message.email && (
+                            <>
+                              <span className="text-gray-400">•</span>
+                              <span>{message.email}</span>
+                            </>
+                          )}
                         </div>
                         <div className="flex items-center gap-2 mb-2 flex-wrap">
                           <span className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded">
@@ -423,7 +462,9 @@ export default function AdminContactMessagesPage() {
                           </span>
                         </div>
                         <p className="text-sm text-gray-700 line-clamp-2">
-                          {message.message}
+                          {message.message?.trim()
+                            ? message.message
+                            : 'No additional message provided.'}
                         </p>
                       </div>
                       <svg
@@ -449,12 +490,55 @@ export default function AdminContactMessagesPage() {
                   {/* Expanded Details */}
                   {selectedMessage?.id === message.id && (
                     <div className="border-t border-gray-200 bg-gray-50 p-4">
+                      <div className="mb-4 grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+                        <div className="bg-white p-3 rounded border border-gray-200">
+                          <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">
+                            Company
+                          </p>
+                          <p className="text-sm text-gray-900">{message.company}</p>
+                        </div>
+                        <div className="bg-white p-3 rounded border border-gray-200">
+                          <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">
+                            Phone
+                          </p>
+                          <p className="text-sm text-gray-900">
+                            {formatPhoneDisplay(message.country_code, message.phone)}
+                          </p>
+                        </div>
+                        <div className="bg-white p-3 rounded border border-gray-200">
+                          <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">
+                            Email
+                          </p>
+                          <p className="text-sm text-gray-900">
+                            {message.email || 'Not provided'}
+                          </p>
+                        </div>
+                        <div className="bg-white p-3 rounded border border-gray-200">
+                          <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">
+                            Topic
+                          </p>
+                          <p className="text-sm text-gray-900">
+                            {getTopicLabel(message.topic)}
+                          </p>
+                        </div>
+                        <div className="bg-white p-3 rounded border border-gray-200 md:col-span-1 sm:col-span-2">
+                          <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">
+                            Submitted
+                          </p>
+                          <p className="text-sm text-gray-900">
+                            {formatDate(message.created_at)}
+                          </p>
+                        </div>
+                      </div>
+
                       <div className="mb-4">
                         <h4 className="text-sm font-semibold text-gray-900 mb-2">
                           Full Message:
                         </h4>
                         <p className="text-sm text-gray-700 whitespace-pre-wrap bg-white p-3 rounded border border-gray-200">
-                          {message.message}
+                          {message.message?.trim()
+                            ? message.message
+                            : 'No additional message provided.'}
                         </p>
                       </div>
 
@@ -496,12 +580,6 @@ export default function AdminContactMessagesPage() {
                             </button>
                           )
                         )}
-                        <a
-                          href={`mailto:${message.email}?subject=Re: ${getTopicLabel(message.topic)}`}
-                          className="ml-auto px-3 py-1.5 bg-primary text-white rounded text-xs font-medium hover:bg-primary/90 transition-colors"
-                        >
-                          Reply via Email
-                        </a>
                       </div>
                     </div>
                   )}

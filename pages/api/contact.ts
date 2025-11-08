@@ -8,10 +8,13 @@ import { sendEmail } from '@/lib/email';
 import { createClient } from '@supabase/supabase-js';
 
 interface ContactFormData {
-  name: string;
-  email: string;
-  topic: string;
-  message: string;
+  name?: string;
+  company?: string;
+  country_code?: string;
+  phone?: string;
+  email?: string | null;
+  topic?: string | null;
+  message?: string | null;
 }
 
 export default async function handler(
@@ -23,36 +26,93 @@ export default async function handler(
   }
 
   try {
-    const { name, email, topic, message }: ContactFormData = req.body;
+    const {
+      name,
+      company,
+      country_code,
+      phone,
+      email,
+      topic,
+      message,
+    }: ContactFormData = req.body;
+
+    const trimmedName = (name ?? '').trim();
+    const trimmedCompany = (company ?? '').trim();
+    const countryCode = (country_code ?? '+91').trim();
+    const rawPhone = (phone ?? '').replace(/\D/g, '');
+    const trimmedEmail = email?.trim() ?? '';
+    const trimmedMessage = message?.trim() ?? '';
+    const allowedTopics = new Set([
+      'pricing',
+      'features',
+      'technical',
+      'demo',
+      'partnership',
+      'other',
+    ]);
 
     // Validation
-    if (!name || !email || !topic || !message) {
+    if (!trimmedName) {
       return res.status(400).json({
-        error: 'Missing required fields',
-        message: 'Please fill in all required fields.',
+        error: 'Invalid name',
+        message: 'Name is required.',
       });
     }
 
-    if (name.length < 2) {
+    if (trimmedName.length < 2) {
       return res.status(400).json({
         error: 'Invalid name',
         message: 'Name must be at least 2 characters.',
       });
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!trimmedCompany) {
+      return res.status(400).json({
+        error: 'Invalid company',
+        message: 'Company is required.',
+      });
+    }
+
+    if (trimmedCompany.length < 2) {
+      return res.status(400).json({
+        error: 'Invalid company',
+        message: 'Company must be at least 2 characters.',
+      });
+    }
+
+    if (!/^\+\d{1,4}$/.test(countryCode)) {
+      return res.status(400).json({
+        error: 'Invalid country code',
+        message: 'Please select a valid country code.',
+      });
+    }
+
+    if (!/^\d{10}$/.test(rawPhone)) {
+      return res.status(400).json({
+        error: 'Invalid phone',
+        message: 'Phone number must be a valid 10-digit number.',
+      });
+    }
+
+    if (trimmedEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
       return res.status(400).json({
         error: 'Invalid email',
         message: 'Please enter a valid email address.',
       });
     }
 
-    if (message.length < 10) {
+    const normalizedTopic = topic && allowedTopics.has(topic) ? topic : null;
+
+    if (trimmedMessage && trimmedMessage.length < 10) {
       return res.status(400).json({
         error: 'Invalid message',
-        message: 'Message must be at least 10 characters.',
+        message: 'Message must be at least 10 characters when provided.',
       });
     }
+
+    const fullPhone = `${countryCode}${rawPhone}`;
+    const normalizedEmail = trimmedEmail || null;
+    const normalizedMessage = trimmedMessage || null;
 
     // Format topic for display
     const topicLabels: Record<string, string> = {
@@ -63,7 +123,9 @@ export default async function handler(
       partnership: 'Partnership Inquiry',
       other: 'Other Questions',
     };
-    const topicLabel = topicLabels[topic] || topic;
+    const topicLabel = normalizedTopic
+      ? topicLabels[normalizedTopic] || normalizedTopic
+      : 'General inquiry';
 
     // Store in database
     try {
@@ -76,10 +138,13 @@ export default async function handler(
         const { error: dbError } = await supabase
           .from('contact_messages')
           .insert({
-            name,
-            email,
-            topic,
-            message,
+            name: trimmedName,
+            company: trimmedCompany,
+            country_code: countryCode,
+            phone: fullPhone,
+            email: normalizedEmail,
+            topic: normalizedTopic,
+            message: normalizedMessage,
             status: 'new',
           });
 
@@ -95,7 +160,10 @@ export default async function handler(
 
     // Send email to support
     const supportEmail = process.env.SUPPORT_EMAIL || 'support@automet.app';
-    const emailSubject = `[Contact Form - ${topicLabel}] New message from ${name}`;
+    const emailSubject = normalizedTopic
+      ? `[Contact Form - ${topicLabel}] New message from ${trimmedName}`
+      : `[Contact Form] New message from ${trimmedName}`;
+    const phoneForDisplay = `${countryCode} ${rawPhone}`;
     const emailHtml = `
       <!DOCTYPE html>
       <html>
@@ -117,13 +185,19 @@ export default async function handler(
 
           <div style="background: white; padding: 20px; border-left: 4px solid #EF7722; border-radius: 4px; margin-bottom: 20px;">
             <p style="margin: 0; font-weight: 600; color: #1f2937;">From:</p>
-            <p style="margin: 5px 0 0 0; color: #4b5563;">${name}</p>
-            <p style="margin: 5px 0 0 0; color: #4b5563;">${email}</p>
+            <p style="margin: 5px 0 0 0; color: #4b5563;">${trimmedName}</p>
+            <p style="margin: 5px 0 0 0; color: #4b5563;">${trimmedCompany}</p>
+            <p style="margin: 5px 0 0 0; color: #4b5563;">${phoneForDisplay}</p>
+            <p style="margin: 5px 0 0 0; color: #4b5563;">${
+              normalizedEmail ?? 'No email provided'
+            }</p>
           </div>
 
           <div style="background: white; padding: 20px; border-left: 4px solid #EF7722; border-radius: 4px;">
             <p style="margin: 0; font-weight: 600; color: #1f2937; margin-bottom: 10px;">Message:</p>
-            <p style="margin: 0; color: #4b5563; white-space: pre-wrap;">${message}</p>
+            <p style="margin: 0; color: #4b5563; white-space: pre-wrap;">${
+              normalizedMessage ?? 'No additional message provided.'
+            }</p>
           </div>
 
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
@@ -141,10 +215,13 @@ New Contact Form Submission
 
 Topic: ${topicLabel}
 
-From: ${name} <${email}>
+From: ${trimmedName}
+Company: ${trimmedCompany}
+Phone: ${phoneForDisplay}
+Email: ${normalizedEmail ?? 'No email provided'}
 
 Message:
-${message}
+${normalizedMessage ?? 'No additional message provided.'}
 
 ---
 This message was sent from the Automet contact form.

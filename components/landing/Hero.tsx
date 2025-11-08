@@ -59,7 +59,7 @@ export default function Hero({ onPreorderClick }: HeroProps) {
                     clipRule="evenodd"
                   />
                 </svg>
-                Only 47 Early Access Spots Left • Closes Dec 31
+                Only 47 Spots Left • Ends Dec 31
               </div>
 
               {/* Main Headline - Pain + Promise */}

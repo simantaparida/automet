@@ -44,7 +44,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 SUPABASE_URL=https://your-project-ref.supabase.co
 SUPABASE_ANON_KEY=your-anon-key-here
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
-DATABASE_URL=postgresql://postgres:your-password@db.your-project-ref.supabase.co:5432/postgres
+# Connection string (replace placeholders; keep format)
+DATABASE_URL=postgresql://DB_USER:DB_PASSWORD@db.YOUR_PROJECT_REF.supabase.co:5432/postgres
 
 # Email (Add later - leave empty for now)
 # RESEND_API_KEY=

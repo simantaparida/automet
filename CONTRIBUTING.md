@@ -53,28 +53,33 @@ We are committed to providing a welcoming and inclusive environment for all cont
    - Click "Fork" button in top right
 
 2. **Clone your fork**
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/automet.git
    cd automet
    ```
 
 3. **Add upstream remote**
+
    ```bash
    git remote add upstream https://github.com/simantaparida/automet.git
    ```
 
 4. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 5. **Set up environment variables**
+
    ```bash
    cp .env.example .env.local
    # Edit .env.local with your Supabase credentials
    ```
 
 6. **Run database migrations**
+
    ```bash
    chmod +x scripts/*.sh
    ./scripts/migrate.sh
@@ -105,12 +110,14 @@ We use **Git Flow** methodology:
 ### Creating a Feature Branch
 
 1. **Sync with upstream**
+
    ```bash
    git checkout develop
    git pull upstream develop
    ```
 
 2. **Create feature branch**
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -121,12 +128,14 @@ We use **Git Flow** methodology:
    - Update documentation
 
 4. **Commit your changes**
+
    ```bash
    git add .
    git commit -m "feat: add your feature description"
    ```
 
 5. **Push to your fork**
+
    ```bash
    git push origin feature/your-feature-name
    ```
@@ -179,8 +188,9 @@ import styles from './Component.module.css';
 ### Path Aliases
 
 Use `@/` prefix for imports:
+
 ```typescript
-import { supabase } from '@/lib/supabase';  // ✅
+import { supabase } from '@/lib/supabase'; // ✅
 import { supabase } from '../lib/supabase'; // ❌
 ```
 
@@ -192,6 +202,7 @@ import { supabase } from '../lib/supabase'; // ❌
 - **Trailing commas**: Required for multiline
 
 Run the linter to check your code:
+
 ```bash
 npm run lint
 ```
@@ -248,6 +259,7 @@ docs(readme): add contribution guidelines
 ### Before Submitting
 
 1. **Sync with upstream develop**
+
    ```bash
    git checkout develop
    git pull upstream develop
@@ -256,11 +268,13 @@ docs(readme): add contribution guidelines
    ```
 
 2. **Run tests**
+
    ```bash
    npm test
    ```
 
 3. **Run linter**
+
    ```bash
    npm run lint
    ```
@@ -273,6 +287,7 @@ docs(readme): add contribution guidelines
 ### Creating a Pull Request
 
 1. **Push your branch** to your fork
+
    ```bash
    git push origin feature/your-feature-name
    ```
@@ -330,6 +345,7 @@ Open an issue with:
 **Title**: Clear, descriptive title (e.g., "ROI calculator crashes with negative values")
 
 **Description**:
+
 - What happened?
 - What did you expect to happen?
 - Steps to reproduce
@@ -337,11 +353,14 @@ Open an issue with:
 - Screenshots or error messages
 
 **Example**:
+
 ```markdown
 ## Bug Description
+
 ROI calculator crashes when entering negative values in the "Jobs per Month" field.
 
 ## Steps to Reproduce
+
 1. Go to landing page
 2. Scroll to ROI calculator
 3. Select "Free Plan"
@@ -349,14 +368,17 @@ ROI calculator crashes when entering negative values in the "Jobs per Month" fie
 5. See error in console
 
 ## Expected Behavior
+
 Should validate input and show error message, not crash.
 
 ## Environment
+
 - OS: macOS 13.4
 - Browser: Chrome 120
 - Node: 18.17.0
 
 ## Screenshots
+
 [Attach screenshot of error]
 ```
 
@@ -371,30 +393,37 @@ Open an issue with:
 **Title**: Clear feature description (e.g., "Add export to Excel functionality")
 
 **Description**:
+
 - **Problem**: What problem does this solve?
 - **Proposed Solution**: How should it work?
 - **Alternatives**: Other approaches you considered
 - **Priority**: How important is this? (Low/Medium/High)
 
 **Example**:
+
 ```markdown
 ## Feature Request: Export Reports to Excel
 
 ### Problem
+
 Users need to export job completion reports for offline analysis and sharing with clients who don't have system access.
 
 ### Proposed Solution
+
 Add "Export to Excel" button on reports page that generates .xlsx file with:
+
 - Job details (ID, title, client, site)
 - Technician assignments
 - Completion status and dates
 - Notes and attachments
 
 ### Alternatives Considered
+
 1. PDF export (less flexible for data analysis)
 2. CSV export (no formatting, less user-friendly)
 
 ### Priority
+
 Medium - Nice to have for improved UX
 ```
 
@@ -405,6 +434,7 @@ Medium - Nice to have for improved UX
 ### Creating a Migration
 
 1. **Create migration files**
+
    ```bash
    # Up migration (apply changes)
    touch migrations/012_your_migration_name.sql
@@ -418,6 +448,7 @@ Medium - Nice to have for improved UX
    - Down migration: Undo the changes (drop tables, remove columns)
 
 3. **Test migration**
+
    ```bash
    ./scripts/migrate.sh         # Apply migration
    ./scripts/rollback.sh        # Test rollback

@@ -1,0 +1,26 @@
+# Global code owners
+* @simantaparida
+
+# Critical security and configuration files
+/.github/ @simantaparida
+/.github/workflows/ @simantaparida
+package.json @simantaparida
+package-lock.json @simantaparida
+tsconfig.json @simantaparida
+next.config.js @simantaparida
+
+# Database migrations - require review
+/migrations/ @simantaparida
+
+# API routes - require review
+/pages/api/ @simantaparida
+
+# Authentication and security
+/pages/auth/ @simantaparida
+/src/lib/supabase*.ts @simantaparida
+
+# Configuration files
+/.env* @simantaparida
+/*.config.js @simantaparida
+/*.config.ts @simantaparida
+

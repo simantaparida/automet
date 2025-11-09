@@ -28,6 +28,7 @@ This guide covers setting up Razorpay for payment processing and subscriptions i
 For **Test Mode**, you can skip KYC and start immediately.
 
 For **Live Mode** (production), you'll need:
+
 - PAN card
 - Business registration documents
 - Bank account details
@@ -86,13 +87,13 @@ Razorpay requires plans to be created in the dashboard for subscriptions.
 1. Click **"+ Create Plan"**
 2. Fill in:
 
-| Field | Value |
-|-------|-------|
-| **Plan Name** | `Automet Free Plan` |
+| Field                | Value                                      |
+| -------------------- | ------------------------------------------ |
+| **Plan Name**        | `Automet Free Plan`                        |
 | **Plan Description** | `Free tier with 5 users and 50 jobs/month` |
-| **Billing Interval** | `Monthly` |
-| **Billing Amount** | `0` INR |
-| **Plan Currency** | `INR` |
+| **Billing Interval** | `Monthly`                                  |
+| **Billing Amount**   | `0` INR                                    |
+| **Plan Currency**    | `INR`                                      |
 
 3. Advanced settings:
    - **Trial period**: (Optional) 0 days
@@ -106,13 +107,13 @@ Razorpay requires plans to be created in the dashboard for subscriptions.
 1. Click **"+ Create Plan"** again
 2. Fill in:
 
-| Field | Value |
-|-------|-------|
-| **Plan Name** | `Automet Pro Plan` |
+| Field                | Value                                          |
+| -------------------- | ---------------------------------------------- |
+| **Plan Name**        | `Automet Pro Plan`                             |
 | **Plan Description** | `Unlimited users, jobs, and advanced features` |
-| **Billing Interval** | `Monthly` |
-| **Billing Amount** | `999` INR (₹999/month) |
-| **Plan Currency** | `INR` |
+| **Billing Interval** | `Monthly`                                      |
+| **Billing Amount**   | `999` INR (₹999/month)                         |
+| **Plan Currency**    | `INR`                                          |
 
 3. Click **"Create Plan"**
 4. **Copy the Plan ID** (e.g., `plan_yyyyyyyyyyyyy`)
@@ -120,6 +121,7 @@ Razorpay requires plans to be created in the dashboard for subscriptions.
 ### 3.4 Create Annual Pro Plan (Optional)
 
 Repeat for annual billing:
+
 - **Plan Name**: `Automet Pro Plan (Annual)`
 - **Billing Interval**: `Yearly`
 - **Billing Amount**: `9999` INR (₹9,999/year - save ₹2,000)
@@ -172,6 +174,7 @@ ngrok http 3000
 ```
 
 You'll get a public URL like:
+
 ```
 https://a1b2c3d4.ngrok.io
 ```
@@ -224,22 +227,26 @@ RZ_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxx
 Razorpay provides test cards for development:
 
 #### Successful Payment:
+
 - **Card Number**: `4111 1111 1111 1111` (Visa)
 - **CVV**: Any 3 digits (e.g., `123`)
 - **Expiry**: Any future date (e.g., `12/25`)
 - **Name**: Any name
 
 #### Failed Payment:
+
 - **Card Number**: `4000 0000 0000 0002`
 - **CVV**: `123`
 - **Expiry**: `12/25`
 
 #### More test cards:
+
 - [Razorpay Test Cards Documentation](https://razorpay.com/docs/payments/payments/test-card-upi-details/)
 
 ### 5.2 Test Checkout Flow
 
 1. In your app, initiate a payment:
+
    ```javascript
    // Example: Subscribe to Pro Plan
    const options = {
@@ -249,7 +256,7 @@ Razorpay provides test cards for development:
      name: 'Automet',
      description: 'Pro Plan Subscription',
      order_id: 'order_xxxxx', // from Razorpay Orders API
-     handler: function(response) {
+     handler: function (response) {
        console.log('Payment ID:', response.razorpay_payment_id);
      },
    };
@@ -334,6 +341,7 @@ if (!isValid) {
 ⚠️ **Never store raw card numbers, CVV, or expiry dates.**
 
 Razorpay handles all sensitive data. You only store:
+
 - ✅ Payment IDs
 - ✅ Order IDs
 - ✅ Customer IDs
@@ -357,6 +365,7 @@ Browser → Your API Route → Razorpay API
 ### Webhook not receiving events
 
 **Check:**
+
 1. ngrok is running and URL is correct
 2. Webhook URL ends with `/api/webhooks/razorpay`
 3. Events are selected in Razorpay Dashboard
@@ -364,6 +373,7 @@ Browser → Your API Route → Razorpay API
 5. Firewall/antivirus not blocking ngrok
 
 **Debug:**
+
 - Check Razorpay Dashboard → Webhooks → Recent Deliveries
 - Look for error messages (e.g., "Connection refused", "Timeout")
 - Check your API logs for incoming requests
@@ -373,6 +383,7 @@ Browser → Your API Route → Razorpay API
 **Cause:** Using wrong Key ID or Live key in Test mode.
 
 **Fix:**
+
 1. Verify `RZ_KEY_ID` starts with `rzp_test_`
 2. Check `.env.local` has no typos or extra spaces
 3. Restart dev server after changing env vars
@@ -382,6 +393,7 @@ Browser → Your API Route → Razorpay API
 **Cause:** Secret mismatch or body modification.
 
 **Fix:**
+
 1. Ensure `RZ_WEBHOOK_SECRET` matches Razorpay Dashboard
 2. Use raw body (don't parse JSON before verification)
 3. Check for middleware that modifies request body
@@ -389,6 +401,7 @@ Browser → Your API Route → Razorpay API
 ### Test cards not working
 
 **Ensure:**
+
 - You're in **Test Mode** (check Razorpay dashboard top-right toggle)
 - Using correct test card numbers from Razorpay docs
 - Card expiry is in the future
@@ -421,6 +434,7 @@ Browser → Your API Route → Razorpay API
 - ✅ Webhooks configured
 
 **Continue to:**
+
 - [Complete Setup Guide](./SETUP.md)
 - Run migrations and test the app
 

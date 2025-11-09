@@ -11,35 +11,49 @@ import ProblemSolution from '@/components/landing/ProblemSolution';
 import Features from '@/components/landing/Features';
 import ROICalculator from '@/components/landing/roi/ROICalculator';
 import Pricing from '@/components/landing/Pricing';
-import BlogPreview from '@/components/landing/BlogPreview';
+import Trust from '@/components/landing/Trust';
 import FAQ from '@/components/landing/FAQ';
 import Footer from '@/components/landing/Footer';
 import PreorderModal from '@/components/landing/PreorderModal';
+import ContactSupportModal from '@/components/landing/ContactSupportModal';
 
 export default function LandingPage() {
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://automet.in';
   const [preorderModalOpen, setPreorderModalOpen] = useState(false);
+  const [contactModalOpen, setContactModalOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<string>('starter');
 
   return (
     <>
       <Head>
-        <title>Automet - Field Job Management Made Simple for Indian AMC Vendors</title>
+        <title>
+          Automet - Field Job Management Made Simple for Indian AMC Vendors
+        </title>
         <meta
           name="description"
           content="Complete field service management platform built for Indian AMC vendors. Manage technicians, track jobs, handle inventory, and get paid faster - all in one place."
         />
-        <meta name="keywords" content="AMC management, field service management, technician tracking, job management, inventory tracking, Indian field service software" />
+        <meta
+          name="keywords"
+          content="AMC management, field service management, technician tracking, job management, inventory tracking, Indian field service software"
+        />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
         {/* Open Graph */}
+        <link rel="canonical" href={siteUrl} />
         <meta property="og:title" content="Automet - Field Job Management Made Simple" />
         <meta property="og:description" content="Built for Indian AMC vendors. Manage technicians, track jobs, and get paid faster." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://automet.in" />
+        <meta property="og:url" content={siteUrl} />
+        <meta property="og:image" content={`${siteUrl}/og-image.png`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Automet - Field Job Management Made Simple" />
         <meta name="twitter:description" content="Built for Indian AMC vendors. Manage technicians, track jobs, and get paid faster." />
+        <meta name="twitter:image" content={`${siteUrl}/og-image.png`} />
 
         {/* Favicon */}
         <link rel="icon" href="/favicon.ico" />
@@ -53,22 +67,27 @@ export default function LandingPage() {
         <Hero onPreorderClick={() => setPreorderModalOpen(true)} />
 
         {/* Problem-Solution Section */}
-        <ProblemSolution />
+        <ProblemSolution onPreorderClick={() => setPreorderModalOpen(true)} />
 
         {/* Features Section */}
         <Features />
 
-        {/* ROI Calculator Section */}
+        {/* Pricing Section */}
+        <Pricing
+          onPreorderClick={(planName) => {
+            if (planName) setSelectedPlan(planName);
+            setPreorderModalOpen(true);
+          }}
+        />
+
+        {/* ROI Calculator Section - Moved after Pricing */}
         <ROICalculator />
 
-        {/* Pricing Section */}
-        <Pricing onPreorderClick={() => setPreorderModalOpen(true)} />
-
-        {/* Blog Preview Section */}
-        <BlogPreview />
+        {/* Trust Section */}
+        <Trust />
 
         {/* FAQ Section */}
-        <FAQ />
+        <FAQ onContactClick={() => setContactModalOpen(true)} />
 
         {/* Footer */}
         <Footer />
@@ -77,6 +96,13 @@ export default function LandingPage() {
         <PreorderModal
           isOpen={preorderModalOpen}
           onClose={() => setPreorderModalOpen(false)}
+          defaultPlan={selectedPlan}
+        />
+
+        {/* Contact Support Modal */}
+        <ContactSupportModal
+          isOpen={contactModalOpen}
+          onClose={() => setContactModalOpen(false)}
         />
       </div>
     </>

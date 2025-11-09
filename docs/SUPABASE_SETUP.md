@@ -5,6 +5,7 @@ This guide covers creating and configuring Supabase projects for development and
 ## Overview
 
 You'll need **two Supabase projects**:
+
 1. **Dev Project** - For local development and testing features
 2. **Test Project** - For automated CI/CD testing
 
@@ -45,9 +46,11 @@ Once the project is ready:
 
 3. Add to `.env.local`:
    ```bash
-   SUPABASE_URL=https://xxxxx.supabase.co
-   SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-   SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+   NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+   SUPABASE_URL=https://your-project-ref.supabase.co
+   SUPABASE_ANON_KEY=your-anon-key-here
+   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
    ```
 
 ### Step 4: Configure Authentication
@@ -126,7 +129,7 @@ For running migrations via `psql` or migration tools:
 4. Replace `[YOUR-PASSWORD]` with your database password
 5. Add to `.env.local`:
    ```bash
-   DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@db.xxxxx.supabase.co:5432/postgres
+   DATABASE_URL=postgresql://postgres:your-password@db.your-project-ref.supabase.co:5432/postgres
    ```
 
 ---
@@ -164,6 +167,7 @@ Now that Supabase is set up, you can run the database migrations:
 ```
 
 This will:
+
 - Connect to your Supabase project
 - Create all tables (organizations, users, jobs, inventory, etc.)
 - Set up triggers and functions
@@ -205,6 +209,7 @@ By default, storage buckets have no policies. You can add RLS-style policies:
 1. Go to **Storage** → **Policies** → `job-media` bucket
 2. Click **New Policy**
 3. **Select** policy:
+
    ```sql
    -- Allow authenticated users in same org to view
    (
@@ -247,26 +252,31 @@ If you want real-time updates for job status changes:
 ## Troubleshooting
 
 ### Project provisioning stuck
+
 - Wait up to 5 minutes
 - Refresh the page
 - If still stuck, contact Supabase support
 
 ### "Invalid API key" error
+
 - Double-check you copied the full key (very long string)
 - Ensure no extra spaces or line breaks
 - Verify you're using keys from the correct project (dev vs. test)
 
 ### Cannot connect to database
+
 - Check that project is not paused (free tier pauses after 1 week inactivity)
 - Go to **Settings** → **General** → Click **Resume project**
 - Verify database password is correct
 
 ### Storage bucket creation fails
+
 - Ensure bucket name is lowercase, no spaces
 - Use hyphens instead of underscores
 - Check that name is unique in your project
 
 ### Migrations fail
+
 - Check SQL Editor for syntax errors
 - Verify you're connected to the correct project
 - Try running migrations one-by-one to isolate the issue
@@ -282,6 +292,7 @@ If you want real-time updates for job status changes:
 - ✅ Auth providers enabled
 
 **Continue to:**
+
 - [Google OAuth Setup](./GOOGLE_OAUTH_SETUP.md)
 - [Razorpay Setup](./RAZORPAY_SETUP.md)
 - [Run Migrations](./MIGRATIONS.md)

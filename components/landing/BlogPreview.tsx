@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface BlogPost {
   id: string;
@@ -26,7 +27,7 @@ export default function BlogPreview() {
       try {
         const response = await fetch('/api/blog?limit=3');
         if (response.ok) {
-          const data = await response.json();
+          const data = (await response.json()) as BlogPost[];
           setPosts(data);
         }
       } catch (error) {
@@ -36,7 +37,7 @@ export default function BlogPreview() {
       }
     }
 
-    fetchPosts();
+    void fetchPosts();
   }, []);
 
   const formatDate = (dateString: string) => {
@@ -50,10 +51,10 @@ export default function BlogPreview() {
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      'product-updates': 'bg-blue-100 text-blue-700',
-      'industry-insights': 'bg-purple-100 text-purple-700',
-      'best-practices': 'bg-green-100 text-green-700',
-      'case-studies': 'bg-orange-100 text-orange-700',
+      'product-updates': 'bg-primary/10 text-primary',
+      'industry-insights': 'bg-primary/10 text-primary',
+      'best-practices': 'bg-primary/10 text-primary',
+      'case-studies': 'bg-secondary/10 text-secondary',
     };
     return colors[category] || 'bg-gray-100 text-gray-700';
   };
@@ -82,41 +83,44 @@ export default function BlogPreview() {
   }
 
   return (
-    <section id="blog" className="py-20 bg-white">
+    <section id="blog" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4 sm:px-6">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="inline-block px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-medium mb-4">
+        <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in">
+          <span className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4 animate-slide-down">
             BLOG
           </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 animate-slide-up">
             Latest insights & updates
           </h2>
-          <p className="text-lg text-gray-600">
-            Industry tips, best practices, and product updates to help you grow your AMC business.
+          <p className="text-lg text-gray-600 animate-fade-in">
+            Industry tips, best practices, and product updates to help you grow
+            your AMC business.
           </p>
         </div>
 
         {/* Blog Posts Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {posts.map((post) => (
+          {posts.map((post, index) => (
             <Link
               key={post.id}
               href={`/blog/${post.slug}`}
-              className="group bg-white rounded-xl border-2 border-gray-200 overflow-hidden hover:border-blue-300 hover:shadow-lg transition-all duration-300"
+              className="group bg-white rounded-xl border-2 border-primary/20 overflow-hidden hover:border-primary/40 hover:shadow-lg transition-all duration-300 animate-slide-up backdrop-blur-sm"
+              style={{ animationDelay: `${index * 100}ms` }}
             >
               {/* Cover Image */}
-              <div className="aspect-video bg-gradient-to-br from-blue-100 to-indigo-100 relative overflow-hidden">
+              <div className="aspect-video bg-primary/10 relative overflow-hidden">
                 {post.cover_image_url ? (
-                  <img
+                  <Image
                     src={post.cover_image_url}
                     alt={post.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <svg
-                      className="w-16 h-16 text-blue-300"
+                      className="w-16 h-16 text-primary/30"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -144,7 +148,7 @@ export default function BlogPreview() {
                 </span>
 
                 {/* Title */}
-                <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
+                <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors duration-300 line-clamp-2">
                   {post.title}
                 </h3>
 
@@ -160,10 +164,10 @@ export default function BlogPreview() {
                 </div>
 
                 {/* Read More Link */}
-                <div className="mt-4 flex items-center text-blue-600 font-semibold text-sm group-hover:text-blue-700">
+                <div className="mt-4 flex items-center text-primary font-semibold text-sm group-hover:text-primary/80 transition-colors duration-300">
                   Read Article
                   <svg
-                    className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform"
+                    className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -182,10 +186,10 @@ export default function BlogPreview() {
         </div>
 
         {/* View All Link */}
-        <div className="text-center mt-12">
+        <div className="text-center mt-12 animate-fade-in">
           <Link
             href="/blog"
-            className="inline-block px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors shadow-md hover:shadow-lg"
+            className="inline-block px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
           >
             View All Articles
           </Link>

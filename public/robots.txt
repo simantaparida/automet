@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://automet.in/sitemap.xml
+Sitemap: https://automet.in/blog-sitemap.xml

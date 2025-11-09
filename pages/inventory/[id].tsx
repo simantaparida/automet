@@ -24,7 +24,9 @@ export default function InventoryDetailPage() {
   const [adjusting, setAdjusting] = useState(false);
   const [showAdjustModal, setShowAdjustModal] = useState(false);
   const [adjustmentAmount, setAdjustmentAmount] = useState('');
-  const [adjustmentType, setAdjustmentType] = useState<'add' | 'subtract'>('add');
+  const [adjustmentType, setAdjustmentType] = useState<'add' | 'subtract'>(
+    'add'
+  );
 
   useEffect(() => {
     if (id) {
@@ -56,9 +58,10 @@ export default function InventoryDetailPage() {
 
     setAdjusting(true);
     try {
-      const newQuantity = adjustmentType === 'add'
-        ? item.quantity_available + amount
-        : Math.max(0, item.quantity_available - amount);
+      const newQuantity =
+        adjustmentType === 'add'
+          ? item.quantity_available + amount
+          : Math.max(0, item.quantity_available - amount);
 
       const response = await fetch(`/api/inventory/${id}`, {
         method: 'PATCH',
@@ -115,24 +118,30 @@ export default function InventoryDetailPage() {
   if (loading) {
     return (
       <ProtectedRoute>
-        <div style={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#f5f5f5'
-        }}>
-          <div style={{
-            width: '40px',
-            height: '40px',
-            border: '4px solid #e5e7eb',
-            borderTopColor: '#2563eb',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite'
-          }}></div>
+        <div
+          style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#f5f5f5',
+          }}
+        >
+          <div
+            style={{
+              width: '40px',
+              height: '40px',
+              border: '4px solid #e5e7eb',
+              borderTopColor: '#2563eb',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+            }}
+          ></div>
           <style jsx>{`
             @keyframes spin {
-              to { transform: rotate(360deg); }
+              to {
+                transform: rotate(360deg);
+              }
             }
           `}</style>
         </div>
@@ -143,16 +152,20 @@ export default function InventoryDetailPage() {
   if (!item) {
     return (
       <ProtectedRoute>
-        <div style={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          gap: '1rem',
-          padding: '1rem'
-        }}>
-          <p style={{ fontSize: '1.125rem', color: '#6b7280' }}>Item not found</p>
+        <div
+          style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            gap: '1rem',
+            padding: '1rem',
+          }}
+        >
+          <p style={{ fontSize: '1.125rem', color: '#6b7280' }}>
+            Item not found
+          </p>
           <button
             onClick={() => router.push('/inventory')}
             style={{
@@ -163,7 +176,7 @@ export default function InventoryDetailPage() {
               borderRadius: '8px',
               fontSize: '1rem',
               cursor: 'pointer',
-              minHeight: '44px'
+              minHeight: '44px',
             }}
           >
             Back to Inventory
@@ -177,23 +190,29 @@ export default function InventoryDetailPage() {
 
   return (
     <ProtectedRoute>
-      <div style={{
-        minHeight: '100vh',
-        backgroundColor: '#f5f5f5',
-        paddingBottom: '80px',
-        fontFamily: 'system-ui, -apple-system, sans-serif'
-      }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: '#f5f5f5',
+          paddingBottom: '80px',
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+        }}
+      >
         {/* Header */}
-        <header style={{
-          backgroundColor: '#2563eb',
-          color: 'white',
-          padding: '1rem',
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <header
+          style={{
+            backgroundColor: '#2563eb',
+            color: 'white',
+            padding: '1rem',
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}
+        >
+          <div
+            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}
+          >
             <button
               onClick={() => router.push('/inventory')}
               style={{
@@ -204,7 +223,7 @@ export default function InventoryDetailPage() {
                 cursor: 'pointer',
                 padding: '0.25rem',
                 minWidth: '44px',
-                minHeight: '44px'
+                minHeight: '44px',
               }}
             >
               ←
@@ -213,7 +232,13 @@ export default function InventoryDetailPage() {
               <h1 style={{ fontSize: '1.25rem', fontWeight: '600', margin: 0 }}>
                 {item.item_name}
               </h1>
-              <p style={{ fontSize: '0.75rem', margin: '0.25rem 0 0 0', opacity: 0.9 }}>
+              <p
+                style={{
+                  fontSize: '0.75rem',
+                  margin: '0.25rem 0 0 0',
+                  opacity: 0.9,
+                }}
+              >
                 {item.category}
               </p>
             </div>
@@ -221,14 +246,16 @@ export default function InventoryDetailPage() {
         </header>
 
         {/* Quick Actions */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '0.75rem',
-          padding: '1rem',
-          backgroundColor: 'white',
-          borderBottom: '1px solid #e5e7eb'
-        }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '0.75rem',
+            padding: '1rem',
+            backgroundColor: 'white',
+            borderBottom: '1px solid #e5e7eb',
+          }}
+        >
           <button
             onClick={() => router.push(`/inventory/${id}/edit`)}
             style={{
@@ -244,7 +271,7 @@ export default function InventoryDetailPage() {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '0.5rem',
-              minHeight: '44px'
+              minHeight: '44px',
             }}
           >
             <span>✏️</span> Edit
@@ -264,7 +291,7 @@ export default function InventoryDetailPage() {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '0.5rem',
-              minHeight: '44px'
+              minHeight: '44px',
             }}
           >
             <span>📊</span> Adjust Stock
@@ -273,38 +300,65 @@ export default function InventoryDetailPage() {
 
         <main style={{ padding: '1rem' }}>
           {/* Stock Status */}
-          <div style={{ backgroundColor: 'white', padding: '1rem', marginBottom: '0.75rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <h3 style={{ fontSize: '0.875rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
+          <div
+            style={{
+              backgroundColor: 'white',
+              padding: '1rem',
+              marginBottom: '0.75rem',
+              borderRadius: '8px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            }}
+          >
+            <h3
+              style={{
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                color: '#6b7280',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                marginBottom: '0.75rem',
+              }}
+            >
               Current Stock
             </h3>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '1rem',
-              backgroundColor: `${stockStatus.color}10`,
-              borderRadius: '8px',
-              border: `2px solid ${stockStatus.color}`,
-            }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '1rem',
+                backgroundColor: `${stockStatus.color}10`,
+                borderRadius: '8px',
+                border: `2px solid ${stockStatus.color}`,
+              }}
+            >
               <div>
-                <div style={{ fontSize: '2rem', fontWeight: '600', color: stockStatus.color }}>
+                <div
+                  style={{
+                    fontSize: '2rem',
+                    fontWeight: '600',
+                    color: stockStatus.color,
+                  }}
+                >
                   {item.quantity_available}
                 </div>
                 <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
                   {item.unit_of_measure}
                 </div>
               </div>
-              <div style={{
-                padding: '0.5rem 1rem',
-                backgroundColor: stockStatus.color,
-                color: 'white',
-                borderRadius: '999px',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-              }}>
+              <div
+                style={{
+                  padding: '0.5rem 1rem',
+                  backgroundColor: stockStatus.color,
+                  color: 'white',
+                  borderRadius: '999px',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                }}
+              >
                 <span>{stockStatus.icon}</span>
                 {stockStatus.label}
               </div>
@@ -312,38 +366,114 @@ export default function InventoryDetailPage() {
           </div>
 
           {/* Item Details */}
-          <div style={{ backgroundColor: 'white', padding: '1rem', marginBottom: '0.75rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <h3 style={{ fontSize: '0.875rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
+          <div
+            style={{
+              backgroundColor: 'white',
+              padding: '1rem',
+              marginBottom: '0.75rem',
+              borderRadius: '8px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            }}
+          >
+            <h3
+              style={{
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                color: '#6b7280',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                marginBottom: '0.75rem',
+              }}
+            >
               Item Details
             </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem',
+              }}
+            >
               {item.sku && (
                 <div>
-                  <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.25rem' }}>SKU</div>
-                  <div style={{ fontSize: '0.875rem', color: '#1f2937' }}>{item.sku}</div>
+                  <div
+                    style={{
+                      fontSize: '0.75rem',
+                      color: '#6b7280',
+                      marginBottom: '0.25rem',
+                    }}
+                  >
+                    SKU
+                  </div>
+                  <div style={{ fontSize: '0.875rem', color: '#1f2937' }}>
+                    {item.sku}
+                  </div>
                 </div>
               )}
               <div>
-                <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.25rem' }}>Reorder Level</div>
-                <div style={{ fontSize: '0.875rem', color: '#1f2937' }}>{item.reorder_level} {item.unit_of_measure}</div>
+                <div
+                  style={{
+                    fontSize: '0.75rem',
+                    color: '#6b7280',
+                    marginBottom: '0.25rem',
+                  }}
+                >
+                  Reorder Level
+                </div>
+                <div style={{ fontSize: '0.875rem', color: '#1f2937' }}>
+                  {item.reorder_level} {item.unit_of_measure}
+                </div>
               </div>
               {item.unit_cost && (
                 <div>
-                  <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.25rem' }}>Unit Cost</div>
-                  <div style={{ fontSize: '0.875rem', color: '#1f2937' }}>₹{item.unit_cost.toFixed(2)}</div>
+                  <div
+                    style={{
+                      fontSize: '0.75rem',
+                      color: '#6b7280',
+                      marginBottom: '0.25rem',
+                    }}
+                  >
+                    Unit Cost
+                  </div>
+                  <div style={{ fontSize: '0.875rem', color: '#1f2937' }}>
+                    ₹{item.unit_cost.toFixed(2)}
+                  </div>
                 </div>
               )}
               {item.notes && (
                 <div>
-                  <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.25rem' }}>Notes</div>
-                  <div style={{ fontSize: '0.875rem', color: '#1f2937', fontStyle: 'italic' }}>{item.notes}</div>
+                  <div
+                    style={{
+                      fontSize: '0.75rem',
+                      color: '#6b7280',
+                      marginBottom: '0.25rem',
+                    }}
+                  >
+                    Notes
+                  </div>
+                  <div
+                    style={{
+                      fontSize: '0.875rem',
+                      color: '#1f2937',
+                      fontStyle: 'italic',
+                    }}
+                  >
+                    {item.notes}
+                  </div>
                 </div>
               )}
             </div>
           </div>
 
           {/* Delete Button */}
-          <div style={{ backgroundColor: 'white', padding: '1rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+          <div
+            style={{
+              backgroundColor: 'white',
+              padding: '1rem',
+              borderRadius: '8px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            }}
+          >
             <button
               onClick={deleteItem}
               style={{
@@ -356,7 +486,7 @@ export default function InventoryDetailPage() {
                 fontSize: '0.875rem',
                 fontWeight: '500',
                 cursor: 'pointer',
-                minHeight: '44px'
+                minHeight: '44px',
               }}
             >
               🗑️ Delete Item
@@ -392,20 +522,41 @@ export default function InventoryDetailPage() {
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>
+              <h2
+                style={{
+                  fontSize: '1.25rem',
+                  fontWeight: '600',
+                  marginBottom: '1rem',
+                }}
+              >
                 Adjust Stock
               </h2>
               <div style={{ marginBottom: '1rem' }}>
-                <label style={{ fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem', display: 'block' }}>
+                <label
+                  style={{
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    marginBottom: '0.5rem',
+                    display: 'block',
+                  }}
+                >
                   Current: {item.quantity_available} {item.unit_of_measure}
                 </label>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '1rem' }}>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '0.5rem',
+                  marginBottom: '1rem',
+                }}
+              >
                 <button
                   onClick={() => setAdjustmentType('add')}
                   style={{
                     padding: '0.75rem',
-                    backgroundColor: adjustmentType === 'add' ? '#10b981' : 'white',
+                    backgroundColor:
+                      adjustmentType === 'add' ? '#10b981' : 'white',
                     color: adjustmentType === 'add' ? 'white' : '#6b7280',
                     border: '1px solid #d1d5db',
                     borderRadius: '6px',
@@ -421,7 +572,8 @@ export default function InventoryDetailPage() {
                   onClick={() => setAdjustmentType('subtract')}
                   style={{
                     padding: '0.75rem',
-                    backgroundColor: adjustmentType === 'subtract' ? '#ef4444' : 'white',
+                    backgroundColor:
+                      adjustmentType === 'subtract' ? '#ef4444' : 'white',
                     color: adjustmentType === 'subtract' ? 'white' : '#6b7280',
                     border: '1px solid #d1d5db',
                     borderRadius: '6px',
@@ -458,13 +610,17 @@ export default function InventoryDetailPage() {
                   style={{
                     flex: 1,
                     padding: '0.75rem',
-                    backgroundColor: adjusting || !adjustmentAmount ? '#9ca3af' : '#2563eb',
+                    backgroundColor:
+                      adjusting || !adjustmentAmount ? '#9ca3af' : '#2563eb',
                     color: 'white',
                     border: 'none',
                     borderRadius: '6px',
                     fontSize: '1rem',
                     fontWeight: '500',
-                    cursor: adjusting || !adjustmentAmount ? 'not-allowed' : 'pointer',
+                    cursor:
+                      adjusting || !adjustmentAmount
+                        ? 'not-allowed'
+                        : 'pointer',
                     minHeight: '48px',
                   }}
                 >

@@ -40,18 +40,20 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
 
       {/* More Menu Slide-Up */}
       {showMoreMenu && (
-        <div style={{
-          position: 'fixed',
-          bottom: '72px',
-          left: 0,
-          right: 0,
-          backgroundColor: 'white',
-          borderTopLeftRadius: '16px',
-          borderTopRightRadius: '16px',
-          boxShadow: '0 -4px 12px rgba(0,0,0,0.15)',
-          zIndex: 20,
-          animation: 'slideUp 0.2s ease-out',
-        }}>
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '72px',
+            left: 0,
+            right: 0,
+            backgroundColor: 'white',
+            borderTopLeftRadius: '16px',
+            borderTopRightRadius: '16px',
+            boxShadow: '0 -4px 12px rgba(0,0,0,0.15)',
+            zIndex: 20,
+            animation: 'slideUp 0.2s ease-out',
+          }}
+        >
           <style jsx>{`
             @keyframes slideUp {
               from {
@@ -64,19 +66,23 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
           `}</style>
 
           {/* Menu Header */}
-          <div style={{
-            padding: '1rem',
-            borderBottom: '1px solid #e5e7eb',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}>
-            <h3 style={{
-              fontSize: '1rem',
-              fontWeight: '600',
-              color: '#1f2937',
-              margin: 0,
-            }}>
+          <div
+            style={{
+              padding: '1rem',
+              borderBottom: '1px solid #e5e7eb',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <h3
+              style={{
+                fontSize: '1rem',
+                fontWeight: '600',
+                color: '#1f2937',
+                margin: 0,
+              }}
+            >
               More Options
             </h3>
             <button
@@ -114,17 +120,21 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
             >
               <span style={{ fontSize: '1.5rem' }}>📍</span>
               <div style={{ textAlign: 'left' }}>
-                <div style={{
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  color: '#1f2937',
-                }}>
+                <div
+                  style={{
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    color: '#1f2937',
+                  }}
+                >
                   Sites
                 </div>
-                <div style={{
-                  fontSize: '0.75rem',
-                  color: '#6b7280',
-                }}>
+                <div
+                  style={{
+                    fontSize: '0.75rem',
+                    color: '#6b7280',
+                  }}
+                >
                   Manage client sites
                 </div>
               </div>
@@ -147,17 +157,21 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
             >
               <span style={{ fontSize: '1.5rem' }}>🔧</span>
               <div style={{ textAlign: 'left' }}>
-                <div style={{
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  color: '#1f2937',
-                }}>
+                <div
+                  style={{
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    color: '#1f2937',
+                  }}
+                >
                   Assets
                 </div>
-                <div style={{
-                  fontSize: '0.75rem',
-                  color: '#6b7280',
-                }}>
+                <div
+                  style={{
+                    fontSize: '0.75rem',
+                    color: '#6b7280',
+                  }}
+                >
                   Track equipment & assets
                 </div>
               </div>
@@ -180,17 +194,21 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
             >
               <span style={{ fontSize: '1.5rem' }}>📦</span>
               <div style={{ textAlign: 'left' }}>
-                <div style={{
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  color: '#1f2937',
-                }}>
+                <div
+                  style={{
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    color: '#1f2937',
+                  }}
+                >
                   Inventory
                 </div>
-                <div style={{
-                  fontSize: '0.75rem',
-                  color: '#6b7280',
-                }}>
+                <div
+                  style={{
+                    fontSize: '0.75rem',
+                    color: '#6b7280',
+                  }}
+                >
                   Manage stock & supplies
                 </div>
               </div>
@@ -200,18 +218,20 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
       )}
 
       {/* Bottom Navigation Bar */}
-      <nav style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: 'white',
-        borderTop: '1px solid #e5e7eb',
-        display: 'flex',
-        justifyContent: 'space-around',
-        padding: '0.5rem 0',
-        zIndex: 10,
-      }}>
+      <nav
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: 'white',
+          borderTop: '1px solid #e5e7eb',
+          display: 'flex',
+          justifyContent: 'space-around',
+          padding: '0.5rem 0',
+          zIndex: 10,
+        }}
+      >
         {/* Home */}
         <button
           onClick={() => router.push('/dashboard')}
@@ -229,11 +249,13 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
           }}
         >
           <span style={{ fontSize: '1.5rem' }}>🏠</span>
-          <span style={{
-            fontSize: '0.75rem',
-            color: isActive('home') ? '#2563eb' : '#6b7280',
-            fontWeight: isActive('home') ? '500' : '400',
-          }}>
+          <span
+            style={{
+              fontSize: '0.75rem',
+              color: isActive('home') ? '#2563eb' : '#6b7280',
+              fontWeight: isActive('home') ? '500' : '400',
+            }}
+          >
             Home
           </span>
         </button>
@@ -255,11 +277,13 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
           }}
         >
           <span style={{ fontSize: '1.5rem' }}>📋</span>
-          <span style={{
-            fontSize: '0.75rem',
-            color: isActive('jobs') ? '#2563eb' : '#6b7280',
-            fontWeight: isActive('jobs') ? '500' : '400',
-          }}>
+          <span
+            style={{
+              fontSize: '0.75rem',
+              color: isActive('jobs') ? '#2563eb' : '#6b7280',
+              fontWeight: isActive('jobs') ? '500' : '400',
+            }}
+          >
             Jobs
           </span>
         </button>
@@ -281,11 +305,13 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
           }}
         >
           <span style={{ fontSize: '1.5rem' }}>⋮⋮</span>
-          <span style={{
-            fontSize: '0.75rem',
-            color: isActive('more') ? '#2563eb' : '#6b7280',
-            fontWeight: isActive('more') ? '500' : '400',
-          }}>
+          <span
+            style={{
+              fontSize: '0.75rem',
+              color: isActive('more') ? '#2563eb' : '#6b7280',
+              fontWeight: isActive('more') ? '500' : '400',
+            }}
+          >
             More
           </span>
         </button>
@@ -307,11 +333,13 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
           }}
         >
           <span style={{ fontSize: '1.5rem' }}>👥</span>
-          <span style={{
-            fontSize: '0.75rem',
-            color: isActive('clients') ? '#2563eb' : '#6b7280',
-            fontWeight: isActive('clients') ? '500' : '400',
-          }}>
+          <span
+            style={{
+              fontSize: '0.75rem',
+              color: isActive('clients') ? '#2563eb' : '#6b7280',
+              fontWeight: isActive('clients') ? '500' : '400',
+            }}
+          >
             Clients
           </span>
         </button>
@@ -333,11 +361,13 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
           }}
         >
           <span style={{ fontSize: '1.5rem' }}>👤</span>
-          <span style={{
-            fontSize: '0.75rem',
-            color: isActive('profile') ? '#2563eb' : '#6b7280',
-            fontWeight: isActive('profile') ? '500' : '400',
-          }}>
+          <span
+            style={{
+              fontSize: '0.75rem',
+              color: isActive('profile') ? '#2563eb' : '#6b7280',
+              fontWeight: isActive('profile') ? '500' : '400',
+            }}
+          >
             Profile
           </span>
         </button>

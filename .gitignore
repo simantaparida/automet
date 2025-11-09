@@ -79,3 +79,4 @@ CREATE_AUTH_TRIGGER.sql
 # Claude Code cache/logs (keep config)
 .claude/cache/
 .claude/logs/
+.env.staging

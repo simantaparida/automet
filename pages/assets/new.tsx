@@ -37,7 +37,7 @@ export default function NewAssetPage() {
 
   useEffect(() => {
     if (site_id && typeof site_id === 'string') {
-      setFormData(prev => ({ ...prev, site_id }));
+      setFormData((prev) => ({ ...prev, site_id }));
       // Fetch the site to get client_id
       fetchSiteInfo(site_id);
     }
@@ -49,7 +49,7 @@ export default function NewAssetPage() {
     } else {
       setSites([]);
       if (!site_id) {
-        setFormData(prev => ({ ...prev, site_id: '' }));
+        setFormData((prev) => ({ ...prev, site_id: '' }));
       }
     }
   }, [formData.client_id]);
@@ -84,7 +84,7 @@ export default function NewAssetPage() {
       if (response.ok) {
         const data = await response.json();
         const site = data.site;
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           client_id: site.client.id,
           site_id: siteId,
@@ -131,23 +131,29 @@ export default function NewAssetPage() {
 
   return (
     <ProtectedRoute>
-      <div style={{
-        minHeight: '100vh',
-        backgroundColor: '#f5f5f5',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        paddingBottom: '80px',
-      }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: '#f5f5f5',
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+          paddingBottom: '80px',
+        }}
+      >
         {/* Sticky Header */}
-        <header style={{
-          backgroundColor: '#2563eb',
-          color: 'white',
-          padding: '1rem',
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <header
+          style={{
+            backgroundColor: '#2563eb',
+            color: 'white',
+            padding: '1rem',
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}
+        >
+          <div
+            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}
+          >
             <button
               onClick={() => router.back()}
               style={{
@@ -174,19 +180,23 @@ export default function NewAssetPage() {
           <form onSubmit={handleSubmit}>
             {/* Client */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Client *
               </label>
               <select
                 required
                 value={formData.client_id}
-                onChange={(e) => setFormData({ ...formData, client_id: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, client_id: e.target.value })
+                }
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -198,27 +208,33 @@ export default function NewAssetPage() {
                 }}
               >
                 <option value="">Select a client...</option>
-                {clients.map(client => (
-                  <option key={client.id} value={client.id}>{client.name}</option>
+                {clients.map((client) => (
+                  <option key={client.id} value={client.id}>
+                    {client.name}
+                  </option>
                 ))}
               </select>
             </div>
 
             {/* Site */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Site *
               </label>
               <select
                 required
                 value={formData.site_id}
-                onChange={(e) => setFormData({ ...formData, site_id: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, site_id: e.target.value })
+                }
                 disabled={!formData.client_id}
                 style={{
                   width: '100%',
@@ -232,28 +248,34 @@ export default function NewAssetPage() {
                 }}
               >
                 <option value="">Select a site...</option>
-                {sites.map(site => (
-                  <option key={site.id} value={site.id}>{site.name}</option>
+                {sites.map((site) => (
+                  <option key={site.id} value={site.id}>
+                    {site.name}
+                  </option>
                 ))}
               </select>
             </div>
 
             {/* Asset Type */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Asset Type *
               </label>
               <input
                 type="text"
                 required
                 value={formData.asset_type}
-                onChange={(e) => setFormData({ ...formData, asset_type: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, asset_type: e.target.value })
+                }
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -269,20 +291,24 @@ export default function NewAssetPage() {
 
             {/* Model */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Model *
               </label>
               <input
                 type="text"
                 required
                 value={formData.model}
-                onChange={(e) => setFormData({ ...formData, model: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, model: e.target.value })
+                }
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -298,19 +324,23 @@ export default function NewAssetPage() {
 
             {/* Serial Number */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Serial Number (Optional)
               </label>
               <input
                 type="text"
                 value={formData.serial_number}
-                onChange={(e) => setFormData({ ...formData, serial_number: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, serial_number: e.target.value })
+                }
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -326,19 +356,23 @@ export default function NewAssetPage() {
 
             {/* Purchase Date */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Purchase Date (Optional)
               </label>
               <input
                 type="date"
                 value={formData.purchase_date}
-                onChange={(e) => setFormData({ ...formData, purchase_date: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, purchase_date: e.target.value })
+                }
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -353,19 +387,23 @@ export default function NewAssetPage() {
 
             {/* Warranty Expiry */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Warranty Expiry (Optional)
               </label>
               <input
                 type="date"
                 value={formData.warranty_expiry}
-                onChange={(e) => setFormData({ ...formData, warranty_expiry: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, warranty_expiry: e.target.value })
+                }
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -380,18 +418,22 @@ export default function NewAssetPage() {
 
             {/* Notes */}
             <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Notes
               </label>
               <textarea
                 value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
                 rows={4}
                 style={{
                   width: '100%',
@@ -407,7 +449,13 @@ export default function NewAssetPage() {
             </div>
 
             {/* Action Buttons */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+              }}
+            >
               <button
                 type="submit"
                 disabled={saving}

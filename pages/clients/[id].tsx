@@ -70,7 +70,10 @@ export default function ClientDetailPage() {
 
   const handleNavigate = () => {
     if (client?.address) {
-      window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(client.address)}`, '_blank');
+      window.open(
+        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(client.address)}`,
+        '_blank'
+      );
     }
   };
 
@@ -96,45 +99,61 @@ export default function ClientDetailPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'scheduled': return '#3b82f6';
-      case 'in_progress': return '#f59e0b';
-      case 'completed': return '#10b981';
-      case 'cancelled': return '#ef4444';
-      default: return '#6b7280';
+      case 'scheduled':
+        return '#3b82f6';
+      case 'in_progress':
+        return '#f59e0b';
+      case 'completed':
+        return '#10b981';
+      case 'cancelled':
+        return '#ef4444';
+      default:
+        return '#6b7280';
     }
   };
 
   const getPriorityIcon = (priority: string) => {
     switch (priority) {
-      case 'urgent': return '🔴';
-      case 'high': return '🟠';
-      case 'medium': return '🟡';
-      case 'low': return '🟢';
-      default: return '⚪';
+      case 'urgent':
+        return '🔴';
+      case 'high':
+        return '🟠';
+      case 'medium':
+        return '🟡';
+      case 'low':
+        return '🟢';
+      default:
+        return '⚪';
     }
   };
 
   if (loading) {
     return (
       <ProtectedRoute>
-        <div style={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#f5f5f5'
-        }}>
-          <div style={{
-            width: '40px',
-            height: '40px',
-            border: '4px solid #e5e7eb',
-            borderTopColor: '#2563eb',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite'
-          }}></div>
+        <div
+          style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#f5f5f5',
+          }}
+        >
+          <div
+            style={{
+              width: '40px',
+              height: '40px',
+              border: '4px solid #e5e7eb',
+              borderTopColor: '#2563eb',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+            }}
+          ></div>
           <style jsx>{`
             @keyframes spin {
-              to { transform: rotate(360deg); }
+              to {
+                transform: rotate(360deg);
+              }
             }
           `}</style>
         </div>
@@ -145,16 +164,20 @@ export default function ClientDetailPage() {
   if (!client) {
     return (
       <ProtectedRoute>
-        <div style={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          gap: '1rem',
-          padding: '1rem'
-        }}>
-          <p style={{ fontSize: '1.125rem', color: '#6b7280' }}>Client not found</p>
+        <div
+          style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            gap: '1rem',
+            padding: '1rem',
+          }}
+        >
+          <p style={{ fontSize: '1.125rem', color: '#6b7280' }}>
+            Client not found
+          </p>
           <button
             onClick={() => router.push('/clients')}
             style={{
@@ -165,7 +188,7 @@ export default function ClientDetailPage() {
               borderRadius: '8px',
               fontSize: '1rem',
               cursor: 'pointer',
-              minHeight: '44px'
+              minHeight: '44px',
             }}
           >
             Back to Clients
@@ -177,23 +200,29 @@ export default function ClientDetailPage() {
 
   return (
     <ProtectedRoute>
-      <div style={{
-        minHeight: '100vh',
-        backgroundColor: '#f5f5f5',
-        paddingBottom: '80px',
-        fontFamily: 'system-ui, -apple-system, sans-serif'
-      }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: '#f5f5f5',
+          paddingBottom: '80px',
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+        }}
+      >
         {/* Header */}
-        <header style={{
-          backgroundColor: '#2563eb',
-          color: 'white',
-          padding: '1rem',
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <header
+          style={{
+            backgroundColor: '#2563eb',
+            color: 'white',
+            padding: '1rem',
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}
+        >
+          <div
+            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}
+          >
             <button
               onClick={() => router.push('/clients')}
               style={{
@@ -204,7 +233,7 @@ export default function ClientDetailPage() {
                 cursor: 'pointer',
                 padding: '0.25rem',
                 minWidth: '44px',
-                minHeight: '44px'
+                minHeight: '44px',
               }}
             >
               ←
@@ -218,14 +247,16 @@ export default function ClientDetailPage() {
         </header>
 
         {/* Quick Actions */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr 1fr',
-          gap: '0.75rem',
-          padding: '1rem',
-          backgroundColor: 'white',
-          borderBottom: '1px solid #e5e7eb'
-        }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr 1fr',
+            gap: '0.75rem',
+            padding: '1rem',
+            backgroundColor: 'white',
+            borderBottom: '1px solid #e5e7eb',
+          }}
+        >
           <button
             onClick={() => router.push(`/clients/${id}/edit`)}
             style={{
@@ -241,7 +272,7 @@ export default function ClientDetailPage() {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '0.5rem',
-              minHeight: '44px'
+              minHeight: '44px',
             }}
           >
             <span>✏️</span> Edit
@@ -262,7 +293,7 @@ export default function ClientDetailPage() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '0.5rem',
-                minHeight: '44px'
+                minHeight: '44px',
               }}
             >
               <span>📞</span> Call
@@ -284,7 +315,7 @@ export default function ClientDetailPage() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '0.5rem',
-                minHeight: '44px'
+                minHeight: '44px',
               }}
             >
               <span>✉️</span> Email
@@ -294,27 +325,86 @@ export default function ClientDetailPage() {
 
         <main style={{ padding: '1rem' }}>
           {/* Contact Information */}
-          <div style={{ backgroundColor: 'white', padding: '1rem', marginBottom: '0.75rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <h3 style={{ fontSize: '0.875rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
+          <div
+            style={{
+              backgroundColor: 'white',
+              padding: '1rem',
+              marginBottom: '0.75rem',
+              borderRadius: '8px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            }}
+          >
+            <h3
+              style={{
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                color: '#6b7280',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                marginBottom: '0.75rem',
+              }}
+            >
               Contact Information
             </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem',
+              }}
+            >
               {client.contact_email && (
                 <div>
-                  <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.25rem' }}>Email</div>
-                  <div style={{ fontSize: '0.875rem', color: '#1f2937' }}>{client.contact_email}</div>
+                  <div
+                    style={{
+                      fontSize: '0.75rem',
+                      color: '#6b7280',
+                      marginBottom: '0.25rem',
+                    }}
+                  >
+                    Email
+                  </div>
+                  <div style={{ fontSize: '0.875rem', color: '#1f2937' }}>
+                    {client.contact_email}
+                  </div>
                 </div>
               )}
               {client.contact_phone && (
                 <div>
-                  <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.25rem' }}>Phone</div>
-                  <div style={{ fontSize: '0.875rem', color: '#1f2937' }}>{client.contact_phone}</div>
+                  <div
+                    style={{
+                      fontSize: '0.75rem',
+                      color: '#6b7280',
+                      marginBottom: '0.25rem',
+                    }}
+                  >
+                    Phone
+                  </div>
+                  <div style={{ fontSize: '0.875rem', color: '#1f2937' }}>
+                    {client.contact_phone}
+                  </div>
                 </div>
               )}
               {client.address && (
                 <div>
-                  <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.25rem' }}>Address</div>
-                  <div style={{ fontSize: '0.875rem', color: '#1f2937', marginBottom: '0.5rem' }}>{client.address}</div>
+                  <div
+                    style={{
+                      fontSize: '0.75rem',
+                      color: '#6b7280',
+                      marginBottom: '0.25rem',
+                    }}
+                  >
+                    Address
+                  </div>
+                  <div
+                    style={{
+                      fontSize: '0.875rem',
+                      color: '#1f2937',
+                      marginBottom: '0.5rem',
+                    }}
+                  >
+                    {client.address}
+                  </div>
                   <button
                     onClick={handleNavigate}
                     style={{
@@ -335,17 +425,57 @@ export default function ClientDetailPage() {
               )}
               {client.notes && (
                 <div>
-                  <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.25rem' }}>Notes</div>
-                  <div style={{ fontSize: '0.875rem', color: '#1f2937', fontStyle: 'italic' }}>{client.notes}</div>
+                  <div
+                    style={{
+                      fontSize: '0.75rem',
+                      color: '#6b7280',
+                      marginBottom: '0.25rem',
+                    }}
+                  >
+                    Notes
+                  </div>
+                  <div
+                    style={{
+                      fontSize: '0.875rem',
+                      color: '#1f2937',
+                      fontStyle: 'italic',
+                    }}
+                  >
+                    {client.notes}
+                  </div>
                 </div>
               )}
             </div>
           </div>
 
           {/* Sites */}
-          <div style={{ backgroundColor: 'white', padding: '1rem', marginBottom: '0.75rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-              <h3 style={{ fontSize: '0.875rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
+          <div
+            style={{
+              backgroundColor: 'white',
+              padding: '1rem',
+              marginBottom: '0.75rem',
+              borderRadius: '8px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '0.75rem',
+              }}
+            >
+              <h3
+                style={{
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  margin: 0,
+                }}
+              >
                 Sites ({client.sites.length})
               </h3>
               <button
@@ -366,7 +496,13 @@ export default function ClientDetailPage() {
               </button>
             </div>
             {client.sites.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.5rem',
+                }}
+              >
                 {client.sites.map((site) => (
                   <button
                     key={site.id}
@@ -380,7 +516,14 @@ export default function ClientDetailPage() {
                       cursor: 'pointer',
                     }}
                   >
-                    <div style={{ fontSize: '0.875rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.25rem' }}>
+                    <div
+                      style={{
+                        fontSize: '0.875rem',
+                        fontWeight: '600',
+                        color: '#1f2937',
+                        marginBottom: '0.25rem',
+                      }}
+                    >
                       {site.name}
                     </div>
                     <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
@@ -390,17 +533,42 @@ export default function ClientDetailPage() {
                 ))}
               </div>
             ) : (
-              <p style={{ fontSize: '0.875rem', color: '#9ca3af', margin: 0 }}>No sites yet</p>
+              <p style={{ fontSize: '0.875rem', color: '#9ca3af', margin: 0 }}>
+                No sites yet
+              </p>
             )}
           </div>
 
           {/* Recent Jobs */}
-          <div style={{ backgroundColor: 'white', padding: '1rem', marginBottom: '0.75rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <h3 style={{ fontSize: '0.875rem', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
+          <div
+            style={{
+              backgroundColor: 'white',
+              padding: '1rem',
+              marginBottom: '0.75rem',
+              borderRadius: '8px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            }}
+          >
+            <h3
+              style={{
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                color: '#6b7280',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                marginBottom: '0.75rem',
+              }}
+            >
               Recent Jobs ({client.jobs.length})
             </h3>
             {client.jobs.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.5rem',
+                }}
+              >
                 {client.jobs.map((job) => (
                   <button
                     key={job.id}
@@ -414,36 +582,71 @@ export default function ClientDetailPage() {
                       cursor: 'pointer',
                     }}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '0.5rem' }}>
-                      <div style={{ fontSize: '0.875rem', fontWeight: '600', color: '#1f2937' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'start',
+                        marginBottom: '0.5rem',
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontSize: '0.875rem',
+                          fontWeight: '600',
+                          color: '#1f2937',
+                        }}
+                      >
                         {job.title}
                       </div>
-                      <span style={{ fontSize: '0.875rem' }}>{getPriorityIcon(job.priority)}</span>
+                      <span style={{ fontSize: '0.875rem' }}>
+                        {getPriorityIcon(job.priority)}
+                      </span>
                     </div>
-                    <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.75rem' }}>
-                      <span style={{
-                        padding: '0.25rem 0.5rem',
-                        backgroundColor: `${getStatusColor(job.status)}20`,
-                        color: getStatusColor(job.status),
-                        borderRadius: '4px',
-                        fontWeight: '500',
-                      }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        gap: '0.5rem',
+                        fontSize: '0.75rem',
+                      }}
+                    >
+                      <span
+                        style={{
+                          padding: '0.25rem 0.5rem',
+                          backgroundColor: `${getStatusColor(job.status)}20`,
+                          color: getStatusColor(job.status),
+                          borderRadius: '4px',
+                          fontWeight: '500',
+                        }}
+                      >
                         {job.status.replace('_', ' ')}
                       </span>
                       <span style={{ color: '#6b7280' }}>
-                        {new Date(job.scheduled_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                        {new Date(job.scheduled_at).toLocaleDateString(
+                          'en-IN',
+                          { day: 'numeric', month: 'short' }
+                        )}
                       </span>
                     </div>
                   </button>
                 ))}
               </div>
             ) : (
-              <p style={{ fontSize: '0.875rem', color: '#9ca3af', margin: 0 }}>No jobs yet</p>
+              <p style={{ fontSize: '0.875rem', color: '#9ca3af', margin: 0 }}>
+                No jobs yet
+              </p>
             )}
           </div>
 
           {/* Delete Button */}
-          <div style={{ backgroundColor: 'white', padding: '1rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+          <div
+            style={{
+              backgroundColor: 'white',
+              padding: '1rem',
+              borderRadius: '8px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            }}
+          >
             <button
               onClick={deleteClient}
               style={{
@@ -456,7 +659,7 @@ export default function ClientDetailPage() {
                 fontSize: '0.875rem',
                 fontWeight: '500',
                 cursor: 'pointer',
-                minHeight: '44px'
+                minHeight: '44px',
               }}
             >
               🗑️ Delete Client

@@ -56,11 +56,14 @@ jobs:
 
       - name: Check for sensitive data
         run: |
-          if grep -r "password\|secret\|api_key\|private_key" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.json" . | grep -v "node_modules" | grep -v ".next" | grep -v ".git" | grep -v "test" | grep -v "example"; then
-            echo "⚠️  Warning: Potential sensitive data detected. Please review."
+          PATTERN='(password|secret|api_key|private_key)[[:space:]]*[:=][[:space:]]*["'\''][^"'\''[:space:]]+["'\'']'
+          MATCHES=$(git grep -nE "$PATTERN" -- '*.ts' '*.tsx' '*.js' '*.json' || true)
+          if [ -n "$MATCHES" ]; then
+            echo "⚠️  Warning: Potential hardcoded credential detected:"
+            echo "$MATCHES"
             exit 1
           fi
-          echo "✅ No obvious sensitive data found"
+          echo "✅ No obvious hardcoded credentials found"
 
       - name: Validate package.json
         run: |

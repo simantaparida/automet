@@ -8,6 +8,7 @@
  */
 
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { Database } from '@/types/database';
 import { getSupabaseAdmin } from '@/lib/supabase-server';
 import { confirmationSchema } from '@/lib/validations/preorder';
 
@@ -96,13 +97,14 @@ export default async function handler(
     }
 
     // Mark email as confirmed
+    const updatePayload: Database['public']['Tables']['preorders']['Update'] = {
+      email_confirmed: true,
+      updated_at: new Date().toISOString(),
+    };
+
     const { error: updateError } = await supabaseAdmin
       .from('preorders')
-      // @ts-expect-error - Supabase type inference issue with update
-      .update({
-        email_confirmed: true,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updatePayload)
       .eq('id', preorderData.id);
 
     if (updateError) {

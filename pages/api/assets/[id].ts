@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { Database } from '@/types/database';
 import { getSupabaseAdmin } from '@/lib/supabase-server';
 
 export default async function handler(
@@ -90,18 +91,19 @@ export default async function handler(
           .json({ error: 'asset_type and model are required' });
       }
 
+      const updatePayload: Database['public']['Tables']['assets']['Update'] = {
+        asset_type,
+        model,
+        serial_number: serial_number || null,
+        purchase_date: purchase_date || null,
+        warranty_expiry: warranty_expiry || null,
+        notes: notes || null,
+        updated_at: new Date().toISOString(),
+      };
+
       const { data, error } = await supabaseAdmin
         .from('assets')
-        // @ts-expect-error - Supabase type inference issue with update
-        .update({
-          asset_type,
-          model,
-          serial_number: serial_number || null,
-          purchase_date: purchase_date || null,
-          warranty_expiry: warranty_expiry || null,
-          notes: notes || null,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updatePayload)
         .eq('id', assetId)
         .select(
           'id, asset_type, model, serial_number, purchase_date, warranty_expiry, notes'

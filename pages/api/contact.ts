@@ -4,6 +4,7 @@
  */
 
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { Database } from '@/types/database';
 import { sendEmail } from '@/lib/email';
 import { getSupabaseAdmin } from '@/lib/supabase-server';
 import { logError, logWarn } from '@/lib/logger';
@@ -18,21 +19,17 @@ const ALLOWED_TOPICS = [
 ] as const;
 type AllowedTopic = (typeof ALLOWED_TOPICS)[number];
 
-interface ContactMessageInsert {
-  name: string;
-  company: string;
-  country_code: string;
-  phone: string;
-  email: string | null;
-  topic: AllowedTopic | null;
-  message: string | null;
-  status: 'new';
-}
+type ContactMessageInsert =
+  Database['public']['Tables']['contact_messages']['Insert'];
 
-interface ParsedContactPayload extends ContactMessageInsert {
+type ContactParseSuccess = {
+  ok: true;
+  record: ContactMessageInsert;
   topicLabel: string;
   phoneDisplay: string;
-}
+};
+
+type ContactParseFailure = { ok: false; message: string };
 
 const topicLabels: Record<AllowedTopic, string> = {
   pricing: 'Pricing & Plans',
@@ -48,9 +45,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 
 const parseContactPayload = (
   payload: unknown
-):
-  | { ok: true; data: ParsedContactPayload }
-  | { ok: false; message: string } => {
+): ContactParseSuccess | ContactParseFailure => {
   if (!isRecord(payload)) {
     return { ok: false, message: 'Invalid payload format.' };
   }
@@ -115,21 +110,22 @@ const parseContactPayload = (
   const topicLabel = topic ? topicLabels[topic] : 'General inquiry';
   const normalizedMessage = message || null;
   const normalizedEmail = email || null;
+  const record: ContactMessageInsert = {
+    name,
+    company,
+    country_code: countryCode,
+    phone: fullPhone,
+    email: normalizedEmail,
+    topic,
+    message: normalizedMessage,
+    status: 'new',
+  };
 
   return {
     ok: true,
-    data: {
-      name,
-      company,
-      country_code: countryCode,
-      phone: fullPhone,
-      email: normalizedEmail,
-      topic,
-      message: normalizedMessage,
-      status: 'new',
-      topicLabel,
-      phoneDisplay: `${countryCode} ${rawPhone}`,
-    },
+    record,
+    topicLabel,
+    phoneDisplay: `${countryCode} ${rawPhone}`,
   };
 };
 
@@ -151,7 +147,7 @@ export default async function handler(
       });
     }
 
-    const { topicLabel, phoneDisplay, ...contactRecord } = parsed.data;
+    const { topicLabel, phoneDisplay, record: contactRecord } = parsed;
 
     // Store in database (best effort)
     try {
@@ -162,7 +158,7 @@ export default async function handler(
         );
       } else {
         const { error: dbError } = await supabase
-          .from<ContactMessageInsert>('contact_messages')
+          .from('contact_messages')
           .insert(contactRecord);
 
         if (dbError) {

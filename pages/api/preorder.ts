@@ -8,6 +8,7 @@
  */
 
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { Database } from '@/types/database';
 import { getSupabaseAdmin, supabaseServer } from '@/lib/supabase-server';
 import { preorderSchema } from '@/lib/validations/preorder';
 import { sendWaitlistWelcomeEmail } from '@/lib/email';
@@ -105,27 +106,28 @@ export default async function handler(
 
     // Insert waitlist entry into database
     // Using admin client if available (bypasses RLS), otherwise using public RLS policy
+    const preorderInsert: Database['public']['Tables']['preorders']['Insert'] = {
+      org_name: data.org_name || null,
+      contact_name: data.contact_name || null,
+      email: data.email.toLowerCase(),
+      phone: data.phone,
+      tech_count: data.tech_count ?? null,
+      city: data.city ?? null,
+      plan_interest: data.plan_interest ?? null,
+      payment_status: 'pending',
+      amount_paid: 0,
+      email_confirmed: true,
+      confirmation_token: null,
+      token_expires_at: null,
+      utm_source: data.utm_source ?? null,
+      utm_medium: data.utm_medium ?? null,
+      utm_campaign: data.utm_campaign ?? null,
+      referrer: data.referrer ?? null,
+    };
+
     const { data: preorder, error: insertError } = await supabase
       .from('preorders')
-      // @ts-expect-error - Supabase type inference issue with insert
-      .insert({
-        org_name: data.org_name || null,
-        contact_name: data.contact_name || null,
-        email: data.email.toLowerCase(), // Normalize email to lowercase
-        phone: data.phone,
-        tech_count: data.tech_count || null,
-        city: data.city || null,
-        plan_interest: data.plan_interest || null,
-        payment_status: 'pending', // No payment required for waitlist
-        amount_paid: 0,
-        email_confirmed: true, // No email verification required
-        confirmation_token: null,
-        token_expires_at: null,
-        utm_source: data.utm_source || null,
-        utm_medium: data.utm_medium || null,
-        utm_campaign: data.utm_campaign || null,
-        referrer: data.referrer || null,
-      })
+      .insert(preorderInsert)
       .select('id, email, contact_name')
       .single();
 

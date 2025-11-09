@@ -1,21 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { Database } from '@/types/database';
 import { getSupabaseAdmin } from '@/lib/supabase-server';
 import { logError, logWarn } from '@/lib/logger';
 
-interface InventoryItemRow {
-  id: string;
-  org_id: string;
-  item_name: string;
-  category: string;
-  sku: string | null;
-  unit_of_measure: string;
-  quantity_available: number | null;
-  reorder_level: number | null;
-  unit_cost: number | null;
-  notes: string | null;
-  updated_at: string | null;
-  created_at: string;
-}
+type InventoryItemRow = Database['public']['Tables']['inventory_items']['Row'];
+type InventoryUpdate = Database['public']['Tables']['inventory']['Update'];
 
 type ParsedUpdatePayload = Pick<
   InventoryItemRow,
@@ -31,6 +20,42 @@ type ParsedUpdatePayload = Pick<
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
+
+const isInventoryItemRow = (value: unknown): value is InventoryItemRow => {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  const {
+    id,
+    org_id,
+    item_name,
+    category,
+    unit_of_measure,
+    sku,
+    quantity_available,
+    reorder_level,
+    unit_cost,
+    notes,
+    updated_at,
+    created_at,
+  } = value;
+
+  return (
+    typeof id === 'string' &&
+    typeof org_id === 'string' &&
+    typeof item_name === 'string' &&
+    typeof category === 'string' &&
+    typeof unit_of_measure === 'string' &&
+    (typeof sku === 'string' || sku === null) &&
+    (typeof quantity_available === 'number' || quantity_available === null) &&
+    (typeof reorder_level === 'number' || reorder_level === null) &&
+    (typeof unit_cost === 'number' || unit_cost === null) &&
+    (typeof notes === 'string' || notes === null) &&
+    (typeof updated_at === 'string' || updated_at === null) &&
+    typeof created_at === 'string'
+  );
+};
 
 const toNullableNumber = (value: unknown): number | null => {
   if (typeof value === 'number' && Number.isFinite(value)) {
@@ -122,7 +147,7 @@ export default async function handler(
     try {
       const { data: item, error: itemError } = await supabase
         .from('inventory_items')
-        .select<InventoryItemRow>('*')
+        .select('*')
         .eq('id', itemId)
         .maybeSingle();
 
@@ -130,7 +155,7 @@ export default async function handler(
         throw itemError;
       }
 
-      if (!item) {
+      if (!isInventoryItemRow(item)) {
         return res.status(404).json({ error: 'Inventory item not found' });
       }
 
@@ -148,22 +173,23 @@ export default async function handler(
         return res.status(400).json({ error: parsed.message });
       }
 
+      const updatePayload: InventoryUpdate = {
+        ...parsed.data,
+        updated_at: new Date().toISOString(),
+      };
+
       const { data, error } = await supabase
         .from('inventory')
-        // @ts-expect-error Supabase type definitions do not include inventory table metadata locally
-        .update({
-          ...parsed.data,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updatePayload)
         .eq('id', itemId)
-        .select<InventoryItemRow>('*')
+        .select('*')
         .maybeSingle();
 
       if (error) {
         throw error;
       }
 
-      if (!data) {
+      if (!isInventoryItemRow(data)) {
         return res.status(404).json({ error: 'Inventory item not found' });
       }
 
@@ -185,7 +211,8 @@ export default async function handler(
         throw error;
       }
 
-      if (!data || data.length === 0) {
+      const deletedData: unknown = data;
+      if (!Array.isArray(deletedData) || deletedData.length === 0) {
         return res.status(404).json({ error: 'Inventory item not found' });
       }
 

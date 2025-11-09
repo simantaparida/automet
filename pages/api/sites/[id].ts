@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { Database } from '@/types/database';
 import { getSupabaseAdmin } from '@/lib/supabase-server';
 
 export default async function handler(
@@ -81,17 +82,18 @@ export default async function handler(
         return res.status(400).json({ error: 'Name is required' });
       }
 
+      const updatePayload: Database['public']['Tables']['sites']['Update'] = {
+        name,
+        address: address || null,
+        gps_lat: gps_lat || null,
+        gps_lng: gps_lng || null,
+        notes: notes || null,
+        updated_at: new Date().toISOString(),
+      };
+
       const { data, error } = await supabaseAdmin
         .from('sites')
-        // @ts-expect-error - Supabase type inference issue with update
-        .update({
-          name,
-          address: address || null,
-          gps_lat: gps_lat || null,
-          gps_lng: gps_lng || null,
-          notes: notes || null,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updatePayload)
         .eq('id', siteId)
         .select('id, name, address, gps_lat, gps_lng, notes')
         .single();

@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { Database } from '@/types/database';
 import { getSupabaseAdmin } from '@/lib/supabase-server';
 
 export default async function handler(
@@ -38,7 +39,7 @@ export default async function handler(
         .json({ error: 'action must be "checkin" or "checkout"' });
     }
 
-    const updates: any = {
+    const updates: Database['public']['Tables']['job_assignments']['Update'] = {
       updated_at: new Date().toISOString(),
     };
 
@@ -53,7 +54,6 @@ export default async function handler(
 
     const { data, error } = await supabaseAdmin
       .from('job_assignments')
-      // @ts-expect-error - Supabase type inference issue with update
       .update(updates)
       .eq('id', assignment_id)
       .eq('job_id', jobId)
@@ -72,13 +72,13 @@ export default async function handler(
 
     // If checking in, auto-update job status to in_progress
     if (action === 'checkin') {
+      const jobUpdate: Database['public']['Tables']['jobs']['Update'] = {
+        status: 'in_progress',
+        updated_at: new Date().toISOString(),
+      };
       await supabaseAdmin
         .from('jobs')
-        // @ts-expect-error - Supabase type inference issue with update
-        .update({
-          status: 'in_progress',
-          updated_at: new Date().toISOString(),
-        })
+        .update(jobUpdate)
         .eq('id', jobId);
     }
 

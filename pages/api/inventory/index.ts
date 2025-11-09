@@ -1,27 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/database';
 import { withAuth, requireRole } from '@/lib/auth-middleware';
 import { logError, logWarn } from '@/lib/logger';
 
-interface InventoryItemRow {
-  id: string;
-  org_id: string;
-  item_name: string;
-  category: string;
-  sku: string | null;
-  unit_of_measure: string;
-  quantity_available: number | null;
-  reorder_level: number | null;
-  unit_cost: number | null;
-  notes: string | null;
-  created_at: string;
-  updated_at: string | null;
-}
-
-type InventoryItemInsert = Omit<
-  InventoryItemRow,
-  'id' | 'created_at' | 'updated_at'
->;
+type InventoryItemRow = Database['public']['Tables']['inventory_items']['Row'];
+type InventoryItemInsert =
+  Database['public']['Tables']['inventory_items']['Insert'];
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
@@ -123,14 +109,17 @@ export default async function handler(
   }
 
   const { user } = authResult;
-  const supabase = createServerSupabaseClient({ req, res });
+  const supabase = createServerSupabaseClient<Database>({
+    req,
+    res,
+  }) as unknown as SupabaseClient<Database>;
 
   if (req.method === 'GET') {
     try {
       const { low_stock } = req.query;
 
       const { data, error } = await supabase
-        .from<InventoryItemRow>('inventory_items')
+        .from('inventory_items')
         .select('*')
         .order('item_name', { ascending: true });
 
@@ -186,7 +175,7 @@ export default async function handler(
       };
 
       const createResponse = await supabase
-        .from<InventoryItemRow>('inventory_items')
+        .from('inventory_items')
         .insert(payload)
         .select('*')
         .maybeSingle();

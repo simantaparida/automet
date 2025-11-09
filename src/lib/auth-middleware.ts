@@ -59,13 +59,25 @@ export async function withAuth(
       'id' | 'email' | 'org_id' | 'role'
     >;
 
+    const isUserProfile = (value: unknown): value is UserProfile => {
+      return (
+        typeof value === 'object' &&
+        value !== null &&
+        typeof (value as { id?: unknown }).id === 'string' &&
+        (typeof (value as { email?: unknown }).email === 'string' ||
+          (value as { email?: unknown }).email === null) &&
+        typeof (value as { org_id?: unknown }).org_id === 'string' &&
+        typeof (value as { role?: unknown }).role === 'string'
+      );
+    };
+
     const { data: userProfile, error: profileError } = await supabase
       .from('users')
       .select('id, email, org_id, role')
       .eq('id', session.user.id)
       .maybeSingle<UserProfile>();
 
-    if (profileError || !userProfile) {
+    if (profileError || !isUserProfile(userProfile)) {
       logError('Error fetching user profile:', profileError);
       res.status(403).json({
         error: 'Forbidden',
@@ -74,12 +86,14 @@ export async function withAuth(
       return { authenticated: false };
     }
 
+    const sanitizedEmail = userProfile.email ?? '';
+
     // Return authenticated user context
     return {
       authenticated: true,
       user: {
         id: userProfile.id,
-        email: userProfile.email || session.user.email || '',
+        email: sanitizedEmail || '',
         org_id: userProfile.org_id,
         role: userProfile.role as 'owner' | 'coordinator' | 'technician',
       },

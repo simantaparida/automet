@@ -12,6 +12,18 @@ interface BlogPostRow {
   view_count: number | null;
 }
 
+const isBlogPostRow = (value: unknown): value is BlogPostRow => {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'id' in value &&
+    'view_count' in value &&
+    typeof (value as { id: unknown }).id === 'string' &&
+    (typeof (value as { view_count: unknown }).view_count === 'number' ||
+      (value as { view_count: unknown }).view_count === null)
+  );
+};
+
 const isSlug = (value: unknown): value is string =>
   typeof value === 'string' && value.trim().length > 0;
 
@@ -39,30 +51,33 @@ export default async function handler(
       return res.status(200).json({ success: true, view_count: 0 });
     }
 
-    const { data: post, error: fetchError } = await adminClient
-      .from<BlogPostRow>('blog_posts')
+    const { data: postData, error: fetchError } = await adminClient
+      .from('blog_posts')
       .select('id, view_count')
       .eq('slug', slug)
       .eq('published', true)
-      .maybeSingle<BlogPostRow>();
+      .maybeSingle();
 
-    if (fetchError || !post) {
+    const post: unknown = postData;
+
+    if (fetchError || !isBlogPostRow(post)) {
       logWarn('Error fetching post for view tracking:', fetchError);
       return res.status(200).json({ success: true, view_count: 0 });
     }
 
-    const newCount = (post.view_count ?? 0) + 1;
+    const typedPost: BlogPostRow = post;
+    const newCount = (typedPost.view_count ?? 0) + 1;
 
     const { error: updateError } = await adminClient
-      .from<BlogPostRow>('blog_posts')
+      .from('blog_posts')
       .update({ view_count: newCount })
-      .eq('id', post.id);
+      .eq('id', typedPost.id);
 
     if (updateError) {
       logWarn('Error incrementing view count:', updateError);
       return res.status(200).json({
         success: true,
-        view_count: post.view_count ?? 0,
+        view_count: typedPost.view_count ?? 0,
       });
     }
 

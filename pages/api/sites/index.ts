@@ -1,7 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { withAuth, requireRole } from '@/lib/auth-middleware';
 import { logError } from '@/lib/logger';
+import type { Database } from '@/types/database';
 
 interface SiteRelation {
   id: string;
@@ -152,7 +154,10 @@ export default async function handler(
   if (req.method === 'GET') {
     try {
       const filters = parseSiteFilters(req.query);
-      const supabase = createServerSupabaseClient({ req, res });
+      const supabase = createServerSupabaseClient<Database>({
+        req,
+        res,
+      }) as unknown as SupabaseClient<Database>;
 
       let query = supabase
         .from('sites')
@@ -203,13 +208,16 @@ export default async function handler(
         return res.status(400).json({ error: parsed.message });
       }
 
-      const supabase = createServerSupabaseClient({ req, res });
+      const typedClient = createServerSupabaseClient<Database>({
+        req,
+        res,
+      }) as unknown as SupabaseClient<Database>;
       const payload: SiteInsert = {
         ...parsed.data,
         org_id: user.org_id,
       };
 
-      const response = await supabase
+      const response = await typedClient
         .from('sites')
         .insert(payload)
         .select(

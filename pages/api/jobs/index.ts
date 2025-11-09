@@ -1,7 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { withAuth, requireRole } from '@/lib/auth-middleware';
 import { logError, logWarn } from '@/lib/logger';
+import type { Database } from '@/types/database';
 
 const ALLOWED_STATUSES = [
   'scheduled',
@@ -294,7 +296,10 @@ export default async function handler(
 
 async function handleGetJobs(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const supabase = createServerSupabaseClient({ req, res });
+    const supabase = createServerSupabaseClient<Database>({
+      req,
+      res,
+    }) as unknown as SupabaseClient<Database>;
     const filters = parseFilters(req.query);
     const rangeEnd = filters.offset + filters.limit - 1;
 
@@ -364,7 +369,10 @@ async function handleCreateJob(
   orgId: string
 ) {
   try {
-    const supabase = createServerSupabaseClient({ req, res });
+    const supabase = createServerSupabaseClient<Database>({
+      req,
+      res,
+    }) as unknown as SupabaseClient<Database>;
     const parsed = parseJobPayload(req.body);
     if (!parsed.ok) {
       return res.status(400).json({ error: parsed.message });

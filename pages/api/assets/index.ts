@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { withAuth, requireRole } from '@/lib/auth-middleware';
 import type { Database } from '@/types/database';
 
@@ -20,11 +21,20 @@ export default async function handler(
   if (!authResult.authenticated) return;
 
   const { user } = authResult;
-  const supabase = createServerSupabaseClient<Database>({ req, res });
+  const supabase = createServerSupabaseClient<Database>({
+    req,
+    res,
+  }) as unknown as SupabaseClient<Database>;
 
   if (req.method === 'GET') {
     try {
       const { site_id, client_id } = req.query;
+      const siteFilter =
+        typeof site_id === 'string' && site_id.trim() !== '' ? site_id : undefined;
+      const clientFilter =
+        typeof client_id === 'string' && client_id.trim() !== ''
+          ? client_id
+          : undefined;
 
       // RLS policies automatically filter by user's org_id
       let query = supabase
@@ -43,8 +53,8 @@ export default async function handler(
         )
         .order('asset_type', { ascending: true });
 
-      if (site_id) {
-        query = query.eq('site_id', site_id);
+      if (siteFilter) {
+        query = query.eq('site_id', siteFilter);
       }
 
       const { data, error } = await query;
@@ -59,9 +69,9 @@ export default async function handler(
         site?: { client?: { id?: string } };
         [key: string]: unknown;
       }>;
-      if (client_id && filteredData.length > 0) {
+      if (clientFilter && filteredData.length > 0) {
         filteredData = filteredData.filter(
-          (asset) => asset.site?.client?.id === client_id
+          (asset) => asset.site?.client?.id === clientFilter
         );
       }
 
@@ -89,25 +99,31 @@ export default async function handler(
         notes,
       } = req.body;
 
-      if (!site_id || !asset_type || !model) {
+      if (
+        typeof site_id !== 'string' ||
+        typeof asset_type !== 'string' ||
+        typeof model !== 'string'
+      ) {
         return res
           .status(400)
           .json({ error: 'site_id, asset_type, and model are required' });
       }
 
       // RLS policies automatically enforce org_id from authenticated user
+      const payload: Database['public']['Tables']['assets']['Insert'] = {
+        org_id: user.org_id,
+        site_id,
+        asset_type,
+        model,
+        serial_number: serial_number || null,
+        purchase_date: purchase_date || null,
+        warranty_expiry: warranty_expiry || null,
+        notes: notes || null,
+      };
+
       const { data, error } = await supabase
         .from('assets')
-        .insert({
-          org_id: user.org_id, // Use authenticated user's org_id
-          site_id,
-          asset_type,
-          model,
-          serial_number: serial_number || null,
-          purchase_date: purchase_date || null,
-          warranty_expiry: warranty_expiry || null,
-          notes: notes || null,
-        })
+        .insert(payload)
         .select(
           `
           id,

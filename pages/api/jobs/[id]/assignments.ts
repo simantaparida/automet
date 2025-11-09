@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { Database } from '@/types/database';
 import { getSupabaseAdmin } from '@/lib/supabase-server';
 
 export default async function handler(
@@ -43,15 +44,17 @@ export default async function handler(
       }
 
       // Create new assignment
-      const { data, error } = await supabaseAdmin
-        .from('job_assignments')
-        // @ts-expect-error - Supabase type inference issue with insert
-        .insert({
+      const insertPayload: Database['public']['Tables']['job_assignments']['Insert'] =
+        {
           job_id: jobId,
           user_id,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-        })
+        };
+
+      const { data, error } = await supabaseAdmin
+        .from('job_assignments')
+        .insert(insertPayload)
         .select(
           `
           id,

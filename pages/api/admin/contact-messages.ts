@@ -5,21 +5,14 @@
  */
 
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { Database } from '@/types/database';
 import { getSupabaseAdmin } from '@/lib/supabase-server';
 import { logDev, logError } from '@/lib/logger';
 
-interface ContactMessageRow {
-  id: string;
-  name: string;
-  email: string | null;
-  topic: string | null;
-  message: string | null;
-  status: AllowedStatus;
-  created_at: string;
-  updated_at: string;
-  resolved_at: string | null;
-  notes: string | null;
-}
+type ContactMessageRow =
+  Database['public']['Tables']['contact_messages']['Row'];
+type ContactMessageUpdate =
+  Database['public']['Tables']['contact_messages']['Update'];
 
 interface ContactMessagesStats {
   total: number;
@@ -64,6 +57,47 @@ const parseUpdatePayload = (
   }
 
   return { id, status: status as AllowedStatus, notes: normalizedNotes };
+};
+
+const isContactMessageRow = (value: unknown): value is ContactMessageRow => {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  const {
+    id,
+    name,
+    company,
+    country_code,
+    phone,
+    email,
+    topic,
+    message,
+    status,
+    created_at,
+    updated_at,
+    resolved_at,
+    notes,
+    assigned_to,
+  } = value;
+
+  return (
+    typeof id === 'string' &&
+    typeof name === 'string' &&
+    typeof company === 'string' &&
+    typeof country_code === 'string' &&
+    typeof phone === 'string' &&
+    (typeof email === 'string' || email === null) &&
+    (typeof topic === 'string' || topic === null) &&
+    (typeof message === 'string' || message === null) &&
+    typeof status === 'string' &&
+    ALLOWED_STATUSES.includes(status as AllowedStatus) &&
+    typeof created_at === 'string' &&
+    typeof updated_at === 'string' &&
+    (typeof resolved_at === 'string' || resolved_at === null) &&
+    (typeof notes === 'string' || notes === null) &&
+    (typeof assigned_to === 'string' || assigned_to === null)
+  );
 };
 
 const toStats = (messages: ContactMessageRow[]): ContactMessagesStats => {
@@ -142,7 +176,7 @@ export default async function handler(
     try {
       const { data: messages, error } = await supabase
         .from('contact_messages')
-        .select<ContactMessageRow[]>('*')
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -154,40 +188,8 @@ export default async function handler(
         });
       }
 
-      const typedMessages: ContactMessageRow[] = Array.isArray(messages)
-        ? messages.filter((message): message is ContactMessageRow => {
-            if (!isRecord(message)) {
-              return false;
-            }
-
-            const {
-              id,
-              name,
-              email,
-              topic,
-              message: body,
-              status,
-              created_at,
-              updated_at,
-              resolved_at,
-              notes,
-            } = message;
-
-            return (
-              typeof id === 'string' &&
-              typeof name === 'string' &&
-              (typeof email === 'string' || email === null) &&
-              (typeof topic === 'string' || topic === null) &&
-              (typeof body === 'string' || body === null) &&
-              typeof status === 'string' &&
-              ALLOWED_STATUSES.includes(status as AllowedStatus) &&
-              typeof created_at === 'string' &&
-              typeof updated_at === 'string' &&
-              (typeof resolved_at === 'string' || resolved_at === null) &&
-              (typeof notes === 'string' || notes === null)
-            );
-          })
-        : [];
+      const rawMessages: unknown[] = Array.isArray(messages) ? messages : [];
+      const typedMessages = rawMessages.filter(isContactMessageRow);
 
       return res.status(200).json({
         success: true,
@@ -217,12 +219,7 @@ export default async function handler(
 
       const { id, status, notes } = updatePayload;
 
-      const updateData: {
-        status: AllowedStatus;
-        updated_at: string;
-        resolved_at: string | null;
-        notes?: string | null;
-      } = {
+      const updateData: ContactMessageUpdate = {
         status,
         updated_at: new Date().toISOString(),
         resolved_at: status === 'resolved' ? new Date().toISOString() : null,
@@ -236,7 +233,7 @@ export default async function handler(
         .from('contact_messages')
         .update(updateData)
         .eq('id', id)
-        .select<ContactMessageRow>('*')
+        .select('*')
         .maybeSingle();
 
       if (error) {
@@ -248,7 +245,7 @@ export default async function handler(
         });
       }
 
-      if (!updatedMessage) {
+      if (!updatedMessage || !isContactMessageRow(updatedMessage)) {
         return res.status(404).json({
           success: false,
           message: 'Contact message not found',

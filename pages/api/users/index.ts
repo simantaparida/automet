@@ -16,6 +16,12 @@ export default async function handler(
 
   try {
     const { role } = req.query;
+    const roleOptions = ['owner', 'coordinator', 'technician'] as const;
+    type RoleOption = (typeof roleOptions)[number];
+    const roleFilter: RoleOption | undefined =
+      typeof role === 'string' && roleOptions.includes(role as RoleOption)
+        ? (role as RoleOption)
+        : undefined;
 
     let query = supabaseAdmin
       .from('users')
@@ -23,8 +29,8 @@ export default async function handler(
       .order('email');
 
     // Filter by role if specified (e.g., technician)
-    if (role) {
-      query = query.eq('role', role);
+    if (roleFilter) {
+      query = query.eq('role', roleFilter);
     }
 
     const { data, error } = await query;

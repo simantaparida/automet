@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { Database } from '@/types/database';
 import { getSupabaseAdmin } from '@/lib/supabase-server';
 
 /**
@@ -89,20 +90,36 @@ async function handleUpdateJob(
     return res.status(500).json({ error: 'Server configuration error' });
   }
 
-  const updates = req.body;
+  const body = req.body as Record<string, unknown>;
+  const allowedFields: Array<
+    keyof Database['public']['Tables']['jobs']['Update']
+  > = [
+    'client_id',
+    'site_id',
+    'asset_id',
+    'title',
+    'description',
+    'status',
+    'priority',
+    'scheduled_at',
+    'completed_at',
+    'notes',
+  ];
 
-  // Don't allow updating org_id or id
-  delete updates.org_id;
-  delete updates.id;
-  delete updates.created_at;
+  const updatePayload: Database['public']['Tables']['jobs']['Update'] = {
+    updated_at: new Date().toISOString(),
+  };
 
-  // Add updated_at
-  updates.updated_at = new Date().toISOString();
+  for (const field of allowedFields) {
+    if (field in body && typeof body[field] !== 'undefined') {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      updatePayload[field] = body[field] as never;
+    }
+  }
 
   const { data, error } = await supabaseAdmin
     .from('jobs')
-    // @ts-expect-error - Supabase type inference issue with update
-    .update(updates)
+    .update(updatePayload)
     .eq('id', id)
     .select()
     .single();

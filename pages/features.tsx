@@ -26,6 +26,8 @@ interface Feature {
 export default function FeaturesPage() {
   const [preorderModalOpen, setPreorderModalOpen] = useState(false);
   const [contactModalOpen, setContactModalOpen] = useState(false);
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://automet.in';
+  const pageUrl = `${siteUrl}/features`;
 
   const features: Feature[] = [
     {
@@ -229,6 +231,30 @@ export default function FeaturesPage() {
           content="Discover all features of Automet: Job management, technician tracking, billing & payments, inventory control. Built specifically for Indian AMC vendors."
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="canonical" href={pageUrl} />
+        <meta
+          property="og:title"
+          content="Features - Automet | Complete Field Service Management"
+        />
+        <meta
+          property="og:description"
+          content="Discover all features of Automet: Job management, technician tracking, billing & payments, inventory control. Built specifically for Indian AMC vendors."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:image" content={`${siteUrl}/og-image.png`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+          name="twitter:title"
+          content="Features - Automet | Complete Field Service Management"
+        />
+        <meta
+          name="twitter:description"
+          content="Discover all features of Automet: Job management, technician tracking, billing & payments, inventory control. Built specifically for Indian AMC vendors."
+        />
+        <meta name="twitter:image" content={`${siteUrl}/og-image.png`} />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

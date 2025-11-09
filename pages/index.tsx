@@ -18,6 +18,7 @@ import PreorderModal from '@/components/landing/PreorderModal';
 import ContactSupportModal from '@/components/landing/ContactSupportModal';
 
 export default function LandingPage() {
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://automet.in';
   const [preorderModalOpen, setPreorderModalOpen] = useState(false);
   const [contactModalOpen, setContactModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string>('starter');
@@ -39,31 +40,20 @@ export default function LandingPage() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
         {/* Open Graph */}
-        <meta
-          property="og:title"
-          content="Automet - Field Job Management Made Simple"
-        />
-        <meta
-          property="og:description"
-          content="Built for Indian AMC vendors. Manage technicians, track jobs, and get paid faster."
-        />
+        <link rel="canonical" href={siteUrl} />
+        <meta property="og:title" content="Automet - Field Job Management Made Simple" />
+        <meta property="og:description" content="Built for Indian AMC vendors. Manage technicians, track jobs, and get paid faster." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://automet.in" />
-        <meta property="og:image" content="https://automet.in/og-image.png" />
+        <meta property="og:url" content={siteUrl} />
+        <meta property="og:image" content={`${siteUrl}/og-image.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta
-          name="twitter:title"
-          content="Automet - Field Job Management Made Simple"
-        />
-        <meta
-          name="twitter:description"
-          content="Built for Indian AMC vendors. Manage technicians, track jobs, and get paid faster."
-        />
-        <meta name="twitter:image" content="https://automet.in/og-image.png" />
+        <meta name="twitter:title" content="Automet - Field Job Management Made Simple" />
+        <meta name="twitter:description" content="Built for Indian AMC vendors. Manage technicians, track jobs, and get paid faster." />
+        <meta name="twitter:image" content={`${siteUrl}/og-image.png`} />
 
         {/* Favicon */}
         <link rel="icon" href="/favicon.ico" />

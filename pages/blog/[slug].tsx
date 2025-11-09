@@ -420,6 +420,8 @@ export default function BlogPostPage() {
     hr: () => <hr className="my-8 border-t border-gray-200" />,
   });
 
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://automet.in';
+
   if (!post) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -463,18 +465,19 @@ export default function BlogPostPage() {
         />
         
         {/* Canonical URL */}
-        <link rel="canonical" href={`https://automet.in/blog/${post.slug}`} />
+        <link rel="canonical" href={`${siteUrl}/blog/${post.slug}`} />
         
         {/* Open Graph */}
         <meta property="og:title" content={post.title} />
         <meta property="og:description" content={post.excerpt} />
         <meta property="og:type" content="article" />
-        <meta property="og:url" content={`https://automet.in/blog/${post.slug}`} />
+        <meta property="og:url" content={`${siteUrl}/blog/${post.slug}`} />
         <meta property="og:site_name" content="Automet" />
         <meta property="og:locale" content="en_IN" />
-        {post.cover_image_url && (
-          <meta property="og:image" content={post.cover_image_url} />
-        )}
+        <meta
+          property="og:image"
+          content={post.cover_image_url || `${siteUrl}/og-image.png`}
+        />
         <meta property="article:published_time" content={post.published_at} />
         <meta property="article:author" content={post.author_name} />
         <meta property="article:section" content={formatCategory(post.category)} />
@@ -487,9 +490,10 @@ export default function BlogPostPage() {
         <meta name="twitter:site" content="@automet" />
         <meta name="twitter:title" content={post.title} />
         <meta name="twitter:description" content={post.excerpt} />
-        {post.cover_image_url && (
-          <meta name="twitter:image" content={post.cover_image_url} />
-        )}
+        <meta
+          name="twitter:image"
+          content={post.cover_image_url || `${siteUrl}/og-image.png`}
+        />
         
         <link rel="icon" href="/favicon.ico" />
         
@@ -501,26 +505,26 @@ export default function BlogPostPage() {
               '@context': 'https://schema.org',
               '@type': 'BlogPosting',
               headline: post.title,
-              image: post.cover_image_url || 'https://automet.in/og-image.png',
+              image: post.cover_image_url || `${siteUrl}/og-image.png`,
               datePublished: post.published_at,
               dateModified: post.updated_at || post.published_at,
               author: {
                 '@type': 'Person',
                 name: post.author_name,
-                url: 'https://automet.in/about',
+                url: `${siteUrl}/about`,
               },
               publisher: {
                 '@type': 'Organization',
                 name: 'Automet',
                 logo: {
                   '@type': 'ImageObject',
-                  url: 'https://automet.in/logo.png',
+                  url: `${siteUrl}/og-image.png`,
                 },
               },
               description: post.excerpt,
               mainEntityOfPage: {
                 '@type': 'WebPage',
-                '@id': `https://automet.in/blog/${post.slug}`,
+                '@id': `${siteUrl}/blog/${post.slug}`,
               },
               articleSection: formatCategory(post.category),
               keywords: post.tags ? post.tags.join(', ') : '',

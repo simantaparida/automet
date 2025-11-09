@@ -27,6 +27,8 @@ export default function PricingPage() {
   const [contactModalOpen, setContactModalOpen] = useState(false);
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<string>('starter');
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://automet.in';
+  const pageUrl = `${siteUrl}/pricing`;
 
   const plans: PricingPlan[] = [
     {
@@ -263,6 +265,18 @@ export default function PricingPage() {
           content="Simple, transparent pricing for Automet. Choose the plan that fits your team size. Free tier available. 30-day money-back guarantee."
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="canonical" href={pageUrl} />
+        <meta property="og:title" content="Pricing - Automet | Field Service Management" />
+        <meta property="og:description" content="Simple, transparent pricing for Automet. Choose the plan that fits your team size. Free tier available. 30-day money-back guarantee." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:image" content={`${siteUrl}/og-image.png`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Pricing - Automet | Field Service Management" />
+        <meta name="twitter:description" content="Simple, transparent pricing for Automet. Choose the plan that fits your team size. Free tier available. 30-day money-back guarantee." />
+        <meta name="twitter:image" content={`${siteUrl}/og-image.png`} />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

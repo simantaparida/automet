@@ -13,6 +13,8 @@ import ROICalculator from '@/components/landing/roi/ROICalculator';
 
 export default function ROICalculatorPage() {
   const [preorderModalOpen, setPreorderModalOpen] = useState(false);
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://automet.in';
+  const pageUrl = `${siteUrl}/roi-calculator`;
 
   return (
     <>
@@ -23,6 +25,30 @@ export default function ROICalculatorPage() {
           content="Calculate how much you can save with Automet. See your ROI, time savings, and recovered revenue. Free interactive calculator for AMC vendors."
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="canonical" href={pageUrl} />
+        <meta
+          property="og:title"
+          content="ROI Calculator - Automet | Calculate Your Savings"
+        />
+        <meta
+          property="og:description"
+          content="Calculate how much you can save with Automet. See your ROI, time savings, and recovered revenue. Free interactive calculator for AMC vendors."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:image" content={`${siteUrl}/og-image.png`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+          name="twitter:title"
+          content="ROI Calculator - Automet | Calculate Your Savings"
+        />
+        <meta
+          name="twitter:description"
+          content="Calculate how much you can save with Automet. See your ROI, time savings, and recovered revenue. Free interactive calculator for AMC vendors."
+        />
+        <meta name="twitter:image" content={`${siteUrl}/og-image.png`} />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

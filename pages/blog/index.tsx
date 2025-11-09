@@ -42,6 +42,8 @@ export default function BlogListPage() {
   const [preorderModalOpen, setPreorderModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<'newest' | 'oldest'>('newest');
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://automet.in';
+  const pageUrl = `${siteUrl}/blog`;
 
   useEffect(() => {
     async function fetchPosts() {
@@ -170,20 +172,24 @@ export default function BlogListPage() {
         />
         
         {/* Canonical URL */}
-        <link rel="canonical" href="https://automet.in/blog" />
+        <link rel="canonical" href={pageUrl} />
         
         {/* Open Graph */}
         <meta property="og:title" content="Blog - Automet | Industry Insights & Best Practices" />
         <meta property="og:description" content="Explore industry insights, best practices, and product updates for field service management and AMC operations." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://automet.in/blog" />
+        <meta property="og:url" content={pageUrl} />
         <meta property="og:site_name" content="Automet" />
+        <meta property="og:image" content={`${siteUrl}/og-image.png`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
         
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@automet" />
         <meta name="twitter:title" content="Blog - Automet | Industry Insights & Best Practices" />
         <meta name="twitter:description" content="Explore industry insights, best practices, and product updates for field service management and AMC operations." />
+        <meta name="twitter:image" content={`${siteUrl}/og-image.png`} />
         
         <link rel="icon" href="/favicon.ico" />
       </Head>

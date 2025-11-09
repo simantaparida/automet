@@ -56,7 +56,7 @@ jobs:
 
       - name: Check for sensitive data
         run: |
-          PATTERN='\b(password|secret|api_key|private_key)\b[[:space:]]*[:=][[:space:]]*["'\''][^"'\''[:space:]]+["'\'']'
+          PATTERN="\\b(password|secret|api_key|private_key)\\b[[:space:]]*[:=][[:space:]]*['\"][^'\"[:space:]]+['\"]"
           MATCHES=$(git grep -nE "$PATTERN" -- '*.ts' '*.tsx' '*.js' '*.json' || true)
           if [ -n "$MATCHES" ]; then
             echo "⚠️  Warning: Potential hardcoded credential detected:"

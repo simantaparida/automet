@@ -99,13 +99,24 @@ export default async function handler(
       }
     );
 
-    const { error: userError } = await serviceRoleSupabase.from('users').insert({
-      id: session.user.id,
-      email: session.user.email!,
-      org_id: org.id,
-      role: 'owner',
-      phone: phone || null,
-    });
+    console.log('About to insert user with service role...');
+    console.log('User ID:', session.user.id);
+    console.log('Org ID:', org.id);
+
+    // Use raw SQL to bypass RLS entirely
+    // The service role key allows us to execute SQL directly
+    const { data: insertedUser, error: userError } = await serviceRoleSupabase.rpc(
+      'create_user_profile',
+      {
+        user_id: session.user.id,
+        user_email: session.user.email!,
+        user_org_id: org.id,
+        user_role: 'owner',
+        user_phone: phone || null,
+      }
+    );
+
+    console.log('User insert result:', { insertedUser, userError });
 
     if (userError) {
       console.error('User creation error:', userError);

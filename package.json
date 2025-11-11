@@ -18,7 +18,7 @@
     "migrate": "./scripts/migrate.sh",
     "seed": "./scripts/seed.sh",
     "reset-db": "./scripts/reset-db.sh",
-    "prepare": "husky install",
+    "prepare": "node -e \"try { process.env.CI !== 'true' && require('husky').install() } catch (e) {}\"",
     "lint:core": "eslint components/landing/ContactSupportModal.tsx components/landing/Hero.tsx components/landing/Trust.tsx pages/admin/contact-messages.tsx pages/api/contact.ts pages/api/admin/contact-messages.ts pages/api/blog/[slug]/view.ts pages/api/inventory/[id].ts pages/api/inventory/index.ts pages/api/jobs/index.ts pages/api/clients/index.ts pages/api/sites/index.ts src/lib"
   },
   "dependencies": {

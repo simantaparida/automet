@@ -25,7 +25,7 @@ export default function SignupPage() {
         .from('users')
         .select('org_id')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       if (data?.org_id) {
         // User has organization, go to dashboard
@@ -37,7 +37,8 @@ export default function SignupPage() {
     };
 
     checkUserAndRedirect();
-  }, [user, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]); // Only depend on user, not router
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({

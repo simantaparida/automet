@@ -8,6 +8,7 @@
 
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createPagesServerClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
 
 export default async function handler(
@@ -82,12 +83,21 @@ export default async function handler(
     // Create user profile using service_role (bypass RLS)
     // This is needed because RLS policies check for existing user record
     // but this is the first time we're creating it
-    const serviceRoleSupabase = createPagesServerClient<Database>({
-      req,
-      res,
-      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-      supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY, // Service role key
-    });
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.error('Missing Supabase environment variables');
+      return res.status(500).json({ error: 'Server configuration error' });
+    }
+
+    const serviceRoleSupabase = createClient<Database>(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    );
 
     const { error: userError } = await serviceRoleSupabase.from('users').insert({
       id: session.user.id,

@@ -1,5 +1,10 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://automet.in/sitemap.xml
-Sitemap: https://automet.in/blog-sitemap.xml
+# Disallow admin and API routes
+Disallow: /admin
+Disallow: /api/
+
+# Sitemaps
+Sitemap: https://automet.app/sitemap.xml
+Sitemap: https://automet.app/blog-sitemap.xml

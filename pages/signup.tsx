@@ -70,7 +70,12 @@ export default function SignupPage() {
     console.log('Signup response:', { data, error }); // DEBUG
 
     if (error) {
-      setError(error.message);
+      // Show user-friendly error messages
+      if (error.message.includes('Email signups are disabled')) {
+        setError('Email signups are currently disabled. Please use Google sign-in or contact support.');
+      } else {
+        setError(error.message);
+      }
       setLoading(false);
     } else {
       // Check if the user was immediately logged in or needs email confirmation

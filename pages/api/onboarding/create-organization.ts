@@ -38,6 +38,24 @@ export default async function handler(
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
+    // Use service role client for both operations to bypass RLS completely
+    // This is necessary during onboarding before the user profile exists
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.error('Missing Supabase environment variables');
+      return res.status(500).json({ error: 'Server configuration error' });
+    }
+
+    const serviceRoleSupabase = createClient<Database>(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    );
+
     // Generate unique slug
     const baseSlug = organizationName
       .toLowerCase()
@@ -49,11 +67,11 @@ export default async function handler(
 
     // Check if slug exists, add number if needed
     while (attempts < 10) {
-      const { data: existing } = await supabase
+      const { data: existing } = await serviceRoleSupabase
         .from('organizations')
         .select('id')
         .eq('slug', slug)
-        .single();
+        .maybeSingle();
 
       if (!existing) break;
 
@@ -61,8 +79,11 @@ export default async function handler(
       slug = `${baseSlug}-${attempts}`;
     }
 
-    // Create organization (this should work with RLS policy)
-    const { data: org, error: orgError } = await supabase
+    console.log('Creating organization:', { name: organizationName, slug });
+    console.log('Service role key loaded:', process.env.SUPABASE_SERVICE_ROLE_KEY?.substring(0, 30) + '...');
+
+    // Create organization using service role
+    const { data: org, error: orgError } = await serviceRoleSupabase
       .from('organizations')
       .insert({
         name: organizationName,
@@ -80,48 +101,28 @@ export default async function handler(
       return res.status(500).json({ error: orgError.message });
     }
 
-    // Create user profile using service_role (bypass RLS)
-    // This is needed because RLS policies check for existing user record
-    // but this is the first time we're creating it
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      console.error('Missing Supabase environment variables');
-      return res.status(500).json({ error: 'Server configuration error' });
-    }
+    console.log('Organization created:', org.id);
+    console.log('Creating user profile:', { userId: session.user.id, orgId: org.id });
 
-    const serviceRoleSupabase = createClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY,
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
-      }
-    );
-
-    console.log('About to insert user with service role...');
-    console.log('User ID:', session.user.id);
-    console.log('Org ID:', org.id);
-
-    // Use raw SQL to bypass RLS entirely
-    // The service role key allows us to execute SQL directly
-    const { data: insertedUser, error: userError } = await serviceRoleSupabase.rpc(
-      'create_user_profile',
-      {
-        user_id: session.user.id,
-        user_email: session.user.email!,
-        user_org_id: org.id,
-        user_role: 'owner',
-        user_phone: phone || null,
-      }
-    );
+    // Create user profile using service role
+    const { data: insertedUser, error: userError } = await serviceRoleSupabase
+      .from('users')
+      .insert({
+        id: session.user.id,
+        email: session.user.email!,
+        org_id: org.id,
+        role: 'owner',
+        phone: phone || null,
+      })
+      .select()
+      .single();
 
     console.log('User insert result:', { insertedUser, userError });
 
     if (userError) {
       console.error('User creation error:', userError);
       // Rollback organization
-      await supabase.from('organizations').delete().eq('id', org.id);
+      await serviceRoleSupabase.from('organizations').delete().eq('id', org.id);
       return res.status(500).json({ error: userError.message });
     }
 

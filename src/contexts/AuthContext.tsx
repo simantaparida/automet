@@ -14,7 +14,7 @@ interface AuthContextType {
   signUp: (
     email: string,
     password: string
-  ) => Promise<{ error: AuthError | null }>;
+  ) => Promise<{ data: any; error: AuthError | null }>;
   signInWithGoogle: () => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
 }
@@ -73,11 +73,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
-    return { error };
+    return { data, error };
   };
 
   const signInWithGoogle = async () => {

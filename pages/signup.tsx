@@ -64,17 +64,36 @@ export default function SignupPage() {
       return;
     }
 
-    const { error } = await signUp(formData.email, formData.password);
+    // Sign up with Supabase
+    const { data, error } = await signUp(formData.email, formData.password);
 
     if (error) {
       setError(error.message);
       setLoading(false);
     } else {
-      // Check if email confirmation is required
-      // If Supabase email confirmation is disabled, user will be auto-logged in
-      // and redirected to onboarding via the auth state change
-      setSuccess(true);
-      setLoading(false);
+      // Check if the user was immediately logged in or needs email confirmation
+      // data.user exists but data.session determines if they're logged in
+
+      if (data?.session) {
+        // User is immediately logged in (email confirmation disabled)
+        // The auth state change will trigger useEffect to redirect
+        // But let's also manually trigger redirect for faster UX
+        const { data: userData } = await supabase
+          .from('users')
+          .select('org_id')
+          .eq('id', data.user.id)
+          .single();
+
+        if (userData?.org_id) {
+          router.push('/dashboard');
+        } else {
+          router.push('/onboarding/organization');
+        }
+      } else {
+        // Email confirmation required - show success screen
+        setSuccess(true);
+        setLoading(false);
+      }
     }
   };
 

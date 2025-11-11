@@ -67,6 +67,8 @@ export default function SignupPage() {
     // Sign up with Supabase
     const { data, error } = await signUp(formData.email, formData.password);
 
+    console.log('Signup response:', { data, error }); // DEBUG
+
     if (error) {
       setError(error.message);
       setLoading(false);
@@ -75,21 +77,28 @@ export default function SignupPage() {
       // data.user exists but data.session determines if they're logged in
 
       if (data?.session) {
+        console.log('User has session, checking onboarding status...'); // DEBUG
         // User is immediately logged in (email confirmation disabled)
-        // The auth state change will trigger useEffect to redirect
-        // But let's also manually trigger redirect for faster UX
-        const { data: userData } = await supabase
+        // Check if they already completed onboarding (edge case: returning user)
+        const { data: userData, error: userError } = await supabase
           .from('users')
           .select('org_id')
           .eq('id', data.user.id)
-          .single();
+          .maybeSingle(); // Use maybeSingle() instead of single() to handle no rows
 
+        console.log('User data from DB:', userData, userError); // DEBUG
+
+        // If user has org_id, go to dashboard
+        // Otherwise (new user or no org), go to onboarding
         if (userData?.org_id) {
+          console.log('Redirecting to dashboard'); // DEBUG
           router.push('/dashboard');
         } else {
+          console.log('Redirecting to onboarding'); // DEBUG
           router.push('/onboarding/organization');
         }
       } else {
+        console.log('No session - showing email confirmation screen'); // DEBUG
         // Email confirmation required - show success screen
         setSuccess(true);
         setLoading(false);

@@ -107,23 +107,27 @@ Vercel allows you to set different environment variables for:
 
 2. **For PRODUCTION (main branch only)**:
    ```
-   NEXT_PUBLIC_SUPABASE_URL=https://ubpiyoqrftagocthuowh.supabase.co
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGci... (prod anon key)
-   DATABASE_URL=postgresql://postgres:2VYyefySkbGweOIR@db.ubpiyoqrftagocthuowh.supabase.co:6543/postgres
+   NEXT_PUBLIC_SUPABASE_URL=<your-production-supabase-url>
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-production-anon-key>
+   DATABASE_URL=<your-production-database-url>
    NEXT_PUBLIC_APP_URL=https://automet.app
-   NEXT_PUBLIC_ADMIN_SECRET=<your-prod-secret>
+   NEXT_PUBLIC_ADMIN_SECRET=<your-production-admin-secret>
    ```
    Check: ✅ Production
 
+   **Important:** Get these values from your production Supabase project settings.
+
 3. **For PREVIEW (develop branch)**:
    ```
-   NEXT_PUBLIC_SUPABASE_URL=https://dogzgbppyiokvipvsgln.supabase.co
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGci... (dev anon key - from .env.local)
-   DATABASE_URL=postgresql://postgres:aI9w6qStdr2Hr0QK@db.dogzgbppyiokvipvsgln.supabase.co:5432/postgres
-   NEXT_PUBLIC_APP_URL=https://automet-git-develop-simantaparida.vercel.app
-   NEXT_PUBLIC_ADMIN_SECRET=dev-test-secret-123
+   NEXT_PUBLIC_SUPABASE_URL=<your-development-supabase-url>
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-development-anon-key>
+   DATABASE_URL=<your-development-database-url>
+   NEXT_PUBLIC_APP_URL=https://automet-git-develop-{your-vercel-username}.vercel.app
+   NEXT_PUBLIC_ADMIN_SECRET=<your-dev-admin-secret>
    ```
    Check: ✅ Preview, ✅ Development
+
+   **Important:** Get these values from your development Supabase project settings or `.env.local` file.
 
 4. **For LOCAL DEVELOPMENT**:
    - Already configured in `.env.local` (dev Supabase project)
@@ -154,24 +158,24 @@ Then:
 
 | Environment | Supabase Project | Branch | Purpose |
 |-------------|-----------------|--------|---------|
-| **Production** | `automet-prod` (ubpiyoqr...) | `main` | Live users, real data |
-| **Development** | `automet-dev` (dogzgbpp...) | `develop` | Testing, seed data |
+| **Production** | `automet-prod` | `main` | Live users, real data |
+| **Development** | `automet-dev` | `develop` | Testing, seed data |
 
 ### Step 3.1: Verify Local Dev Uses Dev Supabase
 
-Your `.env.local` already points to `automet-dev`:
+Your `.env.local` should point to your development Supabase project:
 ```bash
 # Confirm this in .env.local:
-NEXT_PUBLIC_SUPABASE_URL=https://dogzgbppyiokvipvsgln.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=<your-development-supabase-url>
 ```
 
-✅ This is correct - local dev uses dev project.
+✅ Make sure this points to your DEV project, not production.
 
 ### Step 3.2: Run Migrations on Dev Database
 
 ```bash
 # Make sure you're connected to DEV Supabase project
-# Go to Supabase Dashboard: https://supabase.com/dashboard/project/dogzgbppyiokvipvsgln
+# Go to Supabase Dashboard → Select your development project
 
 # Option 1: Run migrations via SQL Editor (recommended)
 # - Copy migration files from migrations/ folder
@@ -198,13 +202,9 @@ npm run seed
 
 ### Step 3.4: Test Authentication on Dev
 
-1. Go to Supabase Dashboard: https://supabase.com/dashboard/project/dogzgbppyiokvipvsgln
+1. Go to Supabase Dashboard → Select your development project
 2. Navigate to **Authentication → Users**
-3. You should see seed users OR create a test user:
-   ```
-   Email: test@automet.dev
-   Password: Test123!@#
-   ```
+3. You should see seed users OR create a test user for testing
 
 ---
 
@@ -354,8 +354,8 @@ git pull origin develop
 
 | Project | URL | Purpose |
 |---------|-----|---------|
-| **automet-prod** | https://supabase.com/dashboard/project/ubpiyoqrftagocthuowh | Production data (LIVE) |
-| **automet-dev** | https://supabase.com/dashboard/project/dogzgbppyiokvipvsgln | Development testing |
+| **automet-prod** | Your production Supabase project | Production data (LIVE) |
+| **automet-dev** | Your development Supabase project | Development testing |
 
 ---
 
@@ -368,8 +368,8 @@ git pull origin develop
 # Check .env.local
 cat .env.local | grep SUPABASE_URL
 
-# Should show: https://dogzgbppyiokvipvsgln.supabase.co (dev)
-# NOT: https://ubpiyoqrftagocthuowh.supabase.co (prod)
+# Should show your DEVELOPMENT Supabase URL
+# NOT your PRODUCTION Supabase URL
 
 # If wrong, update .env.local and restart dev server
 ```

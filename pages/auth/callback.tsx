@@ -18,8 +18,20 @@ export default function AuthCallback() {
         if (error) throw error;
 
         if (session) {
-          // Successful authentication - redirect to dashboard
-          router.push('/dashboard');
+          // Check if user has completed onboarding
+          const { data: userData } = await supabase
+            .from('users')
+            .select('org_id')
+            .eq('id', session.user.id)
+            .single();
+
+          if (userData?.org_id) {
+            // User has organization, go to dashboard
+            router.push('/dashboard');
+          } else {
+            // New user, needs onboarding
+            router.push('/onboarding/organization');
+          }
         } else {
           // No session - redirect to login
           router.push('/login');

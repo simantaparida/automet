@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -12,9 +13,26 @@ export default function LoginPage() {
 
   // Redirect if already logged in
   useEffect(() => {
-    if (user) {
-      router.push('/dashboard');
-    }
+    const checkUserAndRedirect = async () => {
+      if (!user) return;
+
+      // Check if user has completed onboarding
+      const { data } = await supabase
+        .from('users')
+        .select('org_id')
+        .eq('id', user.id)
+        .single();
+
+      if (data?.org_id) {
+        // User has organization, go to dashboard
+        router.push('/dashboard');
+      } else {
+        // User needs to complete onboarding
+        router.push('/onboarding/organization');
+      }
+    };
+
+    checkUserAndRedirect();
   }, [user, router]);
 
   const handleEmailLogin = async (e: React.FormEvent) => {

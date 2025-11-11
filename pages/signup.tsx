@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -16,9 +17,26 @@ export default function SignupPage() {
 
   // Redirect if already logged in
   useEffect(() => {
-    if (user) {
-      router.push('/dashboard');
-    }
+    const checkUserAndRedirect = async () => {
+      if (!user) return;
+
+      // Check if user has completed onboarding
+      const { data } = await supabase
+        .from('users')
+        .select('org_id')
+        .eq('id', user.id)
+        .single();
+
+      if (data?.org_id) {
+        // User has organization, go to dashboard
+        router.push('/dashboard');
+      } else {
+        // User needs to complete onboarding
+        router.push('/onboarding/organization');
+      }
+    };
+
+    checkUserAndRedirect();
   }, [user, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,6 +70,9 @@ export default function SignupPage() {
       setError(error.message);
       setLoading(false);
     } else {
+      // Check if email confirmation is required
+      // If Supabase email confirmation is disabled, user will be auto-logged in
+      // and redirected to onboarding via the auth state change
       setSuccess(true);
       setLoading(false);
     }

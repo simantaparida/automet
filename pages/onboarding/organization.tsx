@@ -72,62 +72,28 @@ export default function OrganizationOnboarding() {
     try {
       if (!user) throw new Error('Not authenticated');
 
-      console.log('User object:', user); // DEBUG
-      console.log('User ID:', user.id); // DEBUG
-
-      // Verify the session is valid
-      const { data: sessionData } = await supabase.auth.getSession();
-      console.log('Session check:', sessionData); // DEBUG
-
-      // Generate unique slug
-      const baseSlug = generateSlug(formData.organizationName);
-      let slug = baseSlug;
-      let attempts = 0;
-
-      // Check if slug exists, add number if needed
-      while (attempts < 10) {
-        const { data: existing } = await supabase
-          .from('organizations')
-          .select('id')
-          .eq('slug', slug)
-          .single();
-
-        if (!existing) break;
-
-        attempts++;
-        slug = `${baseSlug}-${attempts}`;
-      }
-
-      // Create organization
-      const { data: org, error: orgError } = await supabase
-        .from('organizations')
-        .insert({
-          name: formData.organizationName,
-          slug: slug,
-          settings: {
-            industry: formData.industry,
-            team_size: formData.teamSize,
-          },
-        })
-        .select()
-        .single();
-
-      if (orgError) throw orgError;
-
-      // Create user profile linked to organization
-      const { error: userError } = await supabase.from('users').insert({
-        id: user.id,
-        email: user.email!,
-        org_id: org.id,
-        role: 'owner', // First user is always owner
-        phone: formData.phone || null,
+      // Call API route instead of direct database access
+      // This bypasses RLS issues by using service_role key on the server
+      const response = await fetch('/api/onboarding/create-organization', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          organizationName: formData.organizationName,
+          industry: formData.industry,
+          teamSize: formData.teamSize,
+          phone: formData.phone,
+        }),
       });
 
-      if (userError) {
-        // If user insert fails, rollback organization
-        await supabase.from('organizations').delete().eq('id', org.id);
-        throw userError;
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create organization');
       }
+
+      console.log('Organization created successfully:', data.organization);
 
       // Success! Go to profile setup
       router.push('/onboarding/profile');

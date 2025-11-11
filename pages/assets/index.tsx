@@ -51,22 +51,30 @@ export default function AssetsPage() {
 
     // Filter by client if selected
     if (selectedClientId) {
-      filtered = filtered.filter(asset => asset.site.client.id === selectedClientId);
+      filtered = filtered.filter(
+        (asset) => asset.site.client.id === selectedClientId
+      );
     }
 
     // Filter by site if selected
     if (selectedSiteId) {
-      filtered = filtered.filter(asset => asset.site.id === selectedSiteId);
+      filtered = filtered.filter((asset) => asset.site.id === selectedSiteId);
     }
 
     // Filter by search term
     if (searchTerm.trim() !== '') {
-      filtered = filtered.filter(asset =>
-        asset.asset_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        asset.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (asset.serial_number && asset.serial_number.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        asset.site.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        asset.site.client.name.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (asset) =>
+          asset.asset_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          asset.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (asset.serial_number &&
+            asset.serial_number
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase())) ||
+          asset.site.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          asset.site.client.name
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
       );
     }
 
@@ -127,39 +135,52 @@ export default function AssetsPage() {
 
   return (
     <ProtectedRoute>
-      <div style={{
-        minHeight: '100vh',
-        backgroundColor: '#f5f5f5',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        paddingBottom: '80px',
-      }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: '#f5f5f5',
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+          paddingBottom: '80px',
+        }}
+      >
         {/* Sticky Header */}
-        <header style={{
-          backgroundColor: '#2563eb',
-          color: 'white',
-          padding: '1rem',
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        }}>
-          <h1 style={{ fontSize: '1.25rem', fontWeight: '600', margin: '0 0 0.5rem 0' }}>
+        <header
+          style={{
+            backgroundColor: '#2563eb',
+            color: 'white',
+            padding: '1rem',
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}
+        >
+          <h1
+            style={{
+              fontSize: '1.25rem',
+              fontWeight: '600',
+              margin: '0 0 0.5rem 0',
+            }}
+          >
             Assets
           </h1>
           <p style={{ fontSize: '0.875rem', margin: 0, opacity: 0.9 }}>
-            {filteredAssets.length} {filteredAssets.length === 1 ? 'asset' : 'assets'}
+            {filteredAssets.length}{' '}
+            {filteredAssets.length === 1 ? 'asset' : 'assets'}
           </p>
         </header>
 
         {/* Search & Filter Bar */}
-        <div style={{
-          backgroundColor: 'white',
-          padding: '1rem',
-          borderBottom: '1px solid #e5e7eb',
-          position: 'sticky',
-          top: '66px',
-          zIndex: 9,
-        }}>
+        <div
+          style={{
+            backgroundColor: 'white',
+            padding: '1rem',
+            borderBottom: '1px solid #e5e7eb',
+            position: 'sticky',
+            top: '66px',
+            zIndex: 9,
+          }}
+        >
           <input
             type="text"
             placeholder="Search assets..."
@@ -176,7 +197,13 @@ export default function AssetsPage() {
               marginBottom: '0.75rem',
             }}
           />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '0.5rem',
+            }}
+          >
             <select
               value={selectedClientId}
               onChange={(e) => {
@@ -193,8 +220,10 @@ export default function AssetsPage() {
               }}
             >
               <option value="">All Clients</option>
-              {clients.map(client => (
-                <option key={client.id} value={client.id}>{client.name}</option>
+              {clients.map((client) => (
+                <option key={client.id} value={client.id}>
+                  {client.name}
+                </option>
               ))}
             </select>
             <select
@@ -212,8 +241,10 @@ export default function AssetsPage() {
               }}
             >
               <option value="">All Sites</option>
-              {sites.map(site => (
-                <option key={site.id} value={site.id}>{site.name}</option>
+              {sites.map((site) => (
+                <option key={site.id} value={site.id}>
+                  {site.name}
+                </option>
               ))}
             </select>
           </div>
@@ -222,35 +253,45 @@ export default function AssetsPage() {
         {/* Assets List */}
         <main style={{ padding: '1rem' }}>
           {loading ? (
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              minHeight: '200px',
-            }}>
-              <div style={{
-                width: '40px',
-                height: '40px',
-                border: '4px solid #e5e7eb',
-                borderTopColor: '#2563eb',
-                borderRadius: '50%',
-                animation: 'spin 1s linear infinite'
-              }}></div>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '200px',
+              }}
+            >
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  border: '4px solid #e5e7eb',
+                  borderTopColor: '#2563eb',
+                  borderRadius: '50%',
+                  animation: 'spin 1s linear infinite',
+                }}
+              ></div>
               <style jsx>{`
                 @keyframes spin {
-                  to { transform: rotate(360deg); }
+                  to {
+                    transform: rotate(360deg);
+                  }
                 }
               `}</style>
             </div>
           ) : filteredAssets.length === 0 ? (
-            <div style={{
-              backgroundColor: 'white',
-              padding: '2rem',
-              borderRadius: '8px',
-              textAlign: 'center',
-            }}>
+            <div
+              style={{
+                backgroundColor: 'white',
+                padding: '2rem',
+                borderRadius: '8px',
+                textAlign: 'center',
+              }}
+            >
               <p style={{ fontSize: '1rem', color: '#6b7280', margin: 0 }}>
-                {searchTerm || selectedClientId || selectedSiteId ? 'No assets found matching your filters' : 'No assets yet'}
+                {searchTerm || selectedClientId || selectedSiteId
+                  ? 'No assets found matching your filters'
+                  : 'No assets yet'}
               </p>
               {!searchTerm && !selectedClientId && !selectedSiteId && (
                 <button
@@ -273,7 +314,13 @@ export default function AssetsPage() {
               )}
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem',
+              }}
+            >
               {filteredAssets.map((asset) => (
                 <button
                   key={asset.id}
@@ -289,25 +336,31 @@ export default function AssetsPage() {
                     minHeight: '80px',
                   }}
                 >
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'start',
-                    marginBottom: '0.5rem',
-                  }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'start',
+                      marginBottom: '0.5rem',
+                    }}
+                  >
                     <div>
-                      <h3 style={{
-                        fontSize: '1rem',
-                        fontWeight: '600',
-                        color: '#1f2937',
-                        margin: '0 0 0.25rem 0',
-                      }}>
+                      <h3
+                        style={{
+                          fontSize: '1rem',
+                          fontWeight: '600',
+                          color: '#1f2937',
+                          margin: '0 0 0.25rem 0',
+                        }}
+                      >
                         {asset.asset_type} - {asset.model}
                       </h3>
-                      <div style={{
-                        fontSize: '0.75rem',
-                        color: '#6b7280',
-                      }}>
+                      <div
+                        style={{
+                          fontSize: '0.75rem',
+                          color: '#6b7280',
+                        }}
+                      >
                         {asset.site.client.name} → {asset.site.name}
                       </div>
                     </div>
@@ -315,23 +368,34 @@ export default function AssetsPage() {
                   </div>
 
                   {asset.serial_number && (
-                    <div style={{
-                      fontSize: '0.875rem',
-                      color: '#6b7280',
-                      marginBottom: '0.25rem',
-                    }}>
+                    <div
+                      style={{
+                        fontSize: '0.875rem',
+                        color: '#6b7280',
+                        marginBottom: '0.25rem',
+                      }}
+                    >
                       S/N: {asset.serial_number}
                     </div>
                   )}
                   {asset.warranty_expiry && (
-                    <div style={{
-                      fontSize: '0.75rem',
-                      color: isWarrantyExpired(asset.warranty_expiry) ? '#ef4444' : '#10b981',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.25rem',
-                    }}>
-                      {isWarrantyExpired(asset.warranty_expiry) ? '⚠️' : '✓'} Warranty: {new Date(asset.warranty_expiry).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    <div
+                      style={{
+                        fontSize: '0.75rem',
+                        color: isWarrantyExpired(asset.warranty_expiry)
+                          ? '#ef4444'
+                          : '#10b981',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                      }}
+                    >
+                      {isWarrantyExpired(asset.warranty_expiry) ? '⚠️' : '✓'}{' '}
+                      Warranty:{' '}
+                      {new Date(asset.warranty_expiry).toLocaleDateString(
+                        'en-IN',
+                        { day: 'numeric', month: 'short', year: 'numeric' }
+                      )}
                     </div>
                   )}
                 </button>

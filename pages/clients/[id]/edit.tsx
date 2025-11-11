@@ -71,13 +71,15 @@ export default function EditClientPage() {
   if (loading) {
     return (
       <ProtectedRoute>
-        <div style={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#f5f5f5',
-        }}>
+        <div
+          style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#f5f5f5',
+          }}
+        >
           <p>Loading...</p>
         </div>
       </ProtectedRoute>
@@ -86,23 +88,29 @@ export default function EditClientPage() {
 
   return (
     <ProtectedRoute>
-      <div style={{
-        minHeight: '100vh',
-        backgroundColor: '#f5f5f5',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        paddingBottom: '80px',
-      }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: '#f5f5f5',
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+          paddingBottom: '80px',
+        }}
+      >
         {/* Sticky Header */}
-        <header style={{
-          backgroundColor: '#2563eb',
-          color: 'white',
-          padding: '1rem',
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <header
+          style={{
+            backgroundColor: '#2563eb',
+            color: 'white',
+            padding: '1rem',
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}
+        >
+          <div
+            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}
+          >
             <button
               onClick={() => router.back()}
               style={{
@@ -129,20 +137,24 @@ export default function EditClientPage() {
           <form onSubmit={handleSubmit}>
             {/* Name */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Client Name *
               </label>
               <input
                 type="text"
                 required
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -158,19 +170,23 @@ export default function EditClientPage() {
 
             {/* Email */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Contact Email
               </label>
               <input
                 type="email"
                 value={formData.contact_email}
-                onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, contact_email: e.target.value })
+                }
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -186,19 +202,23 @@ export default function EditClientPage() {
 
             {/* Phone */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Contact Phone
               </label>
               <input
                 type="tel"
                 value={formData.contact_phone}
-                onChange={(e) => setFormData({ ...formData, contact_phone: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, contact_phone: e.target.value })
+                }
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -214,18 +234,22 @@ export default function EditClientPage() {
 
             {/* Address */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Address
               </label>
               <textarea
                 value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, address: e.target.value })
+                }
                 rows={3}
                 style={{
                   width: '100%',
@@ -242,18 +266,22 @@ export default function EditClientPage() {
 
             {/* Notes */}
             <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                marginBottom: '0.5rem',
-                color: '#374151',
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  marginBottom: '0.5rem',
+                  color: '#374151',
+                }}
+              >
                 Notes
               </label>
               <textarea
                 value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
                 rows={4}
                 style={{
                   width: '100%',
@@ -269,7 +297,13 @@ export default function EditClientPage() {
             </div>
 
             {/* Action Buttons */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+              }}
+            >
               <button
                 type="submit"
                 disabled={saving}

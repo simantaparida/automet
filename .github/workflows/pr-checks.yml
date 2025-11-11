@@ -1,0 +1,81 @@
+name: PR Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  check-pr:
+    name: PR Quality Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check PR title
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            test
+            chore
+            ci
+            perf
+          scopes: |
+            auth
+            api
+            ui
+            db
+            config
+            deps
+          requireScope: false
+
+      - name: Check for large files
+        run: |
+          MAX_SIZE=10485760  # 10MB
+          large_files=$(find . -type f -size +${MAX_SIZE}c ! -path "./node_modules/*" ! -path "./.next/*" ! -path "./.git/*")
+          if [ -n "$large_files" ]; then
+            echo "❌ Found files larger than 10MB:"
+            echo "$large_files"
+            exit 1
+          fi
+          echo "✅ No large files detected"
+
+      - name: Check for sensitive data
+        run: |
+          PATTERN="\\b(password|secret|api_key|private_key)\\b[[:space:]]*[:=][[:space:]]*['\"][^'\"[:space:]]+['\"]"
+          MATCHES=$(git grep -nE "$PATTERN" -- '*.ts' '*.tsx' '*.js' '*.json' || true)
+          if [ -n "$MATCHES" ]; then
+            echo "⚠️  Warning: Potential hardcoded credential detected:"
+            echo "$MATCHES"
+            exit 1
+          fi
+          echo "✅ No obvious hardcoded credentials found"
+
+      - name: Validate package.json
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('package.json', 'utf8'))"
+          echo "✅ package.json is valid"
+
+      - name: Check for TODO/FIXME comments
+        run: |
+          TODO_COUNT=$(grep -r "TODO\|FIXME" --include="*.ts" --include="*.tsx" --include="*.js" . | grep -v "node_modules" | grep -v ".next" | wc -l)
+          if [ "$TODO_COUNT" -gt 0 ]; then
+            echo "⚠️  Found $TODO_COUNT TODO/FIXME comments. Consider addressing them."
+            grep -r "TODO\|FIXME" --include="*.ts" --include="*.tsx" --include="*.js" . | grep -v "node_modules" | grep -v ".next" || true
+          else
+            echo "✅ No TODO/FIXME comments found"
+          fi

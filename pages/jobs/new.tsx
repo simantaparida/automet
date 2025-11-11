@@ -50,7 +50,7 @@ export default function NewJobPage() {
       fetchSites(formData.client_id);
     } else {
       setSites([]);
-      setFormData(prev => ({ ...prev, site_id: '', asset_id: '' }));
+      setFormData((prev) => ({ ...prev, site_id: '', asset_id: '' }));
     }
   }, [formData.client_id]);
 
@@ -59,7 +59,7 @@ export default function NewJobPage() {
       fetchAssets(formData.site_id);
     } else {
       setAssets([]);
-      setFormData(prev => ({ ...prev, asset_id: '' }));
+      setFormData((prev) => ({ ...prev, asset_id: '' }));
     }
   }, [formData.site_id]);
 
@@ -100,7 +100,9 @@ export default function NewJobPage() {
 
     try {
       // Combine date and time
-      const scheduledAt = new Date(`${formData.scheduled_date}T${formData.scheduled_time}`).toISOString();
+      const scheduledAt = new Date(
+        `${formData.scheduled_date}T${formData.scheduled_time}`
+      ).toISOString();
 
       const response = await fetch('/api/jobs', {
         method: 'POST',
@@ -131,7 +133,11 @@ export default function NewJobPage() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -145,22 +151,26 @@ export default function NewJobPage() {
 
   return (
     <ProtectedRoute>
-      <div style={{
-        minHeight: '100vh',
-        backgroundColor: '#f5f5f5',
-        paddingBottom: '80px',
-        fontFamily: 'system-ui, -apple-system, sans-serif'
-      }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: '#f5f5f5',
+          paddingBottom: '80px',
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+        }}
+      >
         {/* Mobile Header */}
-        <header style={{
-          backgroundColor: '#2563eb',
-          color: 'white',
-          padding: '1rem',
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-        }}>
+        <header
+          style={{
+            backgroundColor: '#2563eb',
+            color: 'white',
+            padding: '1rem',
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button
               onClick={() => router.push('/jobs')}
@@ -172,7 +182,7 @@ export default function NewJobPage() {
                 cursor: 'pointer',
                 padding: '0.25rem',
                 minWidth: '44px',
-                minHeight: '44px'
+                minHeight: '44px',
               }}
             >
               ←
@@ -187,27 +197,31 @@ export default function NewJobPage() {
         <main style={{ padding: '1rem' }}>
           <form onSubmit={handleSubmit}>
             {error && (
-              <div style={{
-                padding: '1rem',
-                marginBottom: '1rem',
-                backgroundColor: '#fee2e2',
-                color: '#991b1b',
-                borderRadius: '8px',
-                fontSize: '0.875rem'
-              }}>
+              <div
+                style={{
+                  padding: '1rem',
+                  marginBottom: '1rem',
+                  backgroundColor: '#fee2e2',
+                  color: '#991b1b',
+                  borderRadius: '8px',
+                  fontSize: '0.875rem',
+                }}
+              >
                 {error}
               </div>
             )}
 
             {/* Job Title */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '0.5rem',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                color: '#374151'
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: '#374151',
+                }}
+              >
                 Job Title *
               </label>
               <input
@@ -223,20 +237,22 @@ export default function NewJobPage() {
                   border: '1px solid #d1d5db',
                   borderRadius: '8px',
                   fontSize: '1rem',
-                  minHeight: '48px'
+                  minHeight: '48px',
                 }}
               />
             </div>
 
             {/* Description */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '0.5rem',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                color: '#374151'
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: '#374151',
+                }}
+              >
                 Description
               </label>
               <textarea
@@ -252,20 +268,22 @@ export default function NewJobPage() {
                   borderRadius: '8px',
                   fontSize: '1rem',
                   resize: 'vertical',
-                  fontFamily: 'inherit'
+                  fontFamily: 'inherit',
                 }}
               />
             </div>
 
             {/* Client */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '0.5rem',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                color: '#374151'
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: '#374151',
+                }}
+              >
                 Client *
               </label>
               <select
@@ -280,11 +298,11 @@ export default function NewJobPage() {
                   borderRadius: '8px',
                   fontSize: '1rem',
                   backgroundColor: 'white',
-                  minHeight: '48px'
+                  minHeight: '48px',
                 }}
               >
                 <option value="">Select a client</option>
-                {clients.map(client => (
+                {clients.map((client) => (
                   <option key={client.id} value={client.id}>
                     {client.name}
                   </option>
@@ -294,13 +312,15 @@ export default function NewJobPage() {
 
             {/* Site */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '0.5rem',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                color: '#374151'
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: '#374151',
+                }}
+              >
                 Site *
               </label>
               <select
@@ -317,13 +337,15 @@ export default function NewJobPage() {
                   fontSize: '1rem',
                   backgroundColor: formData.client_id ? 'white' : '#f3f4f6',
                   minHeight: '48px',
-                  opacity: formData.client_id ? 1 : 0.6
+                  opacity: formData.client_id ? 1 : 0.6,
                 }}
               >
                 <option value="">
-                  {formData.client_id ? 'Select a site' : 'Select a client first'}
+                  {formData.client_id
+                    ? 'Select a site'
+                    : 'Select a client first'}
                 </option>
-                {sites.map(site => (
+                {sites.map((site) => (
                   <option key={site.id} value={site.id}>
                     {site.name}
                   </option>
@@ -333,13 +355,15 @@ export default function NewJobPage() {
 
             {/* Asset (Optional) */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '0.5rem',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                color: '#374151'
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: '#374151',
+                }}
+              >
                 Asset (Optional)
               </label>
               <select
@@ -355,15 +379,18 @@ export default function NewJobPage() {
                   fontSize: '1rem',
                   backgroundColor: formData.site_id ? 'white' : '#f3f4f6',
                   minHeight: '48px',
-                  opacity: formData.site_id ? 1 : 0.6
+                  opacity: formData.site_id ? 1 : 0.6,
                 }}
               >
                 <option value="">
-                  {formData.site_id ? 'No specific asset' : 'Select a site first'}
+                  {formData.site_id
+                    ? 'No specific asset'
+                    : 'Select a site first'}
                 </option>
-                {assets.map(asset => (
+                {assets.map((asset) => (
                   <option key={asset.id} value={asset.id}>
-                    {asset.asset_type.replace('_', ' ')} - {asset.model} ({asset.serial_number})
+                    {asset.asset_type.replace('_', ' ')} - {asset.model} (
+                    {asset.serial_number})
                   </option>
                 ))}
               </select>
@@ -371,40 +398,56 @@ export default function NewJobPage() {
 
             {/* Priority */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '0.5rem',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                color: '#374151'
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: '#374151',
+                }}
+              >
                 Priority *
               </label>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: '0.5rem'
-              }}>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2, 1fr)',
+                  gap: '0.5rem',
+                }}
+              >
                 {[
                   { value: 'low', label: '🟢 Low', color: '#6b7280' },
                   { value: 'medium', label: '🟡 Medium', color: '#3b82f6' },
                   { value: 'high', label: '🟠 High', color: '#f59e0b' },
                   { value: 'urgent', label: '🔴 Urgent', color: '#ef4444' },
-                ].map(priority => (
+                ].map((priority) => (
                   <button
                     key={priority.value}
                     type="button"
-                    onClick={() => setFormData({ ...formData, priority: priority.value })}
+                    onClick={() =>
+                      setFormData({ ...formData, priority: priority.value })
+                    }
                     style={{
                       padding: '0.875rem',
-                      backgroundColor: formData.priority === priority.value ? `${priority.color}15` : 'white',
-                      color: formData.priority === priority.value ? priority.color : '#6b7280',
-                      border: formData.priority === priority.value ? `2px solid ${priority.color}` : '1px solid #d1d5db',
+                      backgroundColor:
+                        formData.priority === priority.value
+                          ? `${priority.color}15`
+                          : 'white',
+                      color:
+                        formData.priority === priority.value
+                          ? priority.color
+                          : '#6b7280',
+                      border:
+                        formData.priority === priority.value
+                          ? `2px solid ${priority.color}`
+                          : '1px solid #d1d5db',
                       borderRadius: '8px',
                       fontSize: '0.875rem',
-                      fontWeight: formData.priority === priority.value ? '600' : '500',
+                      fontWeight:
+                        formData.priority === priority.value ? '600' : '500',
                       cursor: 'pointer',
-                      minHeight: '48px'
+                      minHeight: '48px',
                     }}
                   >
                     {priority.label}
@@ -415,13 +458,15 @@ export default function NewJobPage() {
 
             {/* Schedule Date */}
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '0.5rem',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                color: '#374151'
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: '#374151',
+                }}
+              >
                 Schedule Date *
               </label>
               <input
@@ -437,20 +482,22 @@ export default function NewJobPage() {
                   border: '1px solid #d1d5db',
                   borderRadius: '8px',
                   fontSize: '1rem',
-                  minHeight: '48px'
+                  minHeight: '48px',
                 }}
               />
             </div>
 
             {/* Schedule Time */}
             <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '0.5rem',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                color: '#374151'
-              }}>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: '#374151',
+                }}
+              >
                 Schedule Time *
               </label>
               <input
@@ -465,13 +512,19 @@ export default function NewJobPage() {
                   border: '1px solid #d1d5db',
                   borderRadius: '8px',
                   fontSize: '1rem',
-                  minHeight: '48px'
+                  minHeight: '48px',
                 }}
               />
             </div>
 
             {/* Submit Buttons */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem',
+              }}
+            >
               <button
                 type="submit"
                 disabled={loading}
@@ -485,7 +538,7 @@ export default function NewJobPage() {
                   fontWeight: '600',
                   cursor: loading ? 'not-allowed' : 'pointer',
                   minHeight: '52px',
-                  opacity: loading ? 0.6 : 1
+                  opacity: loading ? 0.6 : 1,
                 }}
               >
                 {loading ? 'Creating Job...' : '✅ Create Job'}
@@ -503,7 +556,7 @@ export default function NewJobPage() {
                   fontSize: '1rem',
                   fontWeight: '500',
                   cursor: loading ? 'not-allowed' : 'pointer',
-                  minHeight: '52px'
+                  minHeight: '52px',
                 }}
               >
                 Cancel

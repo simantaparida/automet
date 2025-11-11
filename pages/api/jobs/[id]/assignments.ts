@@ -1,22 +1,24 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  }
-);
+import type { Database } from '@/types/database';
+import { getSupabaseAdmin } from '@/lib/supabase-server';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const supabaseAdmin = getSupabaseAdmin();
+  if (!supabaseAdmin) {
+    return res.status(500).json({ error: 'Server configuration error' });
+  }
+
   const { id } = req.query;
+
+  // Validate id parameter
+  if (!id || Array.isArray(id)) {
+    return res.status(400).json({ error: 'Invalid job ID' });
+  }
+
+  const jobId = id;
 
   if (req.method === 'POST') {
     // Assign technician to job
@@ -31,30 +33,37 @@ export default async function handler(
       const { data: existing } = await supabaseAdmin
         .from('job_assignments')
         .select('id')
-        .eq('job_id', id)
+        .eq('job_id', jobId)
         .eq('user_id', user_id)
         .single();
 
       if (existing) {
-        return res.status(400).json({ error: 'Technician already assigned to this job' });
+        return res
+          .status(400)
+          .json({ error: 'Technician already assigned to this job' });
       }
 
       // Create new assignment
-      const { data, error } = await supabaseAdmin
-        .from('job_assignments')
-        .insert({
-          job_id: id,
+      const insertPayload: Database['public']['Tables']['job_assignments']['Insert'] =
+        {
+          job_id: jobId,
           user_id,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-        })
-        .select(`
+        };
+
+      const { data, error } = await supabaseAdmin
+        .from('job_assignments')
+        .insert(insertPayload)
+        .select(
+          `
           id,
           started_at,
           completed_at,
           notes,
           user:users(id, email, role)
-        `)
+        `
+        )
         .single();
 
       if (error) throw error;
@@ -79,11 +88,13 @@ export default async function handler(
         .from('job_assignments')
         .delete()
         .eq('id', assignment_id)
-        .eq('job_id', id);
+        .eq('job_id', jobId);
 
       if (error) throw error;
 
-      return res.status(200).json({ message: 'Assignment removed successfully' });
+      return res
+        .status(200)
+        .json({ message: 'Assignment removed successfully' });
     } catch (error: any) {
       console.error('Error removing assignment:', error);
       return res.status(500).json({ error: error.message });

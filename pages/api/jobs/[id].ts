@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseAdmin } from '@/lib/supabase-server';
+import type { Database } from '@/types/database';
+import { getSupabaseAdmin } from '@/lib/supabase-server';
 
 /**
  * Individual Job API Route
@@ -39,9 +40,15 @@ export default async function handler(
  * GET /api/jobs/[id]
  */
 async function handleGetJob(id: string, res: NextApiResponse) {
+  const supabaseAdmin = getSupabaseAdmin();
+  if (!supabaseAdmin) {
+    return res.status(500).json({ error: 'Server configuration error' });
+  }
+
   const { data, error } = await supabaseAdmin
     .from('jobs')
-    .select(`
+    .select(
+      `
       *,
       client:clients(id, name, contact_email, contact_phone, address),
       site:sites(id, name, address, gps_lat, gps_lng, metadata),
@@ -53,7 +60,8 @@ async function handleGetJob(id: string, res: NextApiResponse) {
         notes,
         user:users(id, email, role)
       )
-    `)
+    `
+    )
     .eq('id', id)
     .single();
 
@@ -77,19 +85,41 @@ async function handleUpdateJob(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const updates = req.body;
+  const supabaseAdmin = getSupabaseAdmin();
+  if (!supabaseAdmin) {
+    return res.status(500).json({ error: 'Server configuration error' });
+  }
 
-  // Don't allow updating org_id or id
-  delete updates.org_id;
-  delete updates.id;
-  delete updates.created_at;
+  const body = req.body as Record<string, unknown>;
+  const allowedFields: Array<
+    keyof Database['public']['Tables']['jobs']['Update']
+  > = [
+    'client_id',
+    'site_id',
+    'asset_id',
+    'title',
+    'description',
+    'status',
+    'priority',
+    'scheduled_at',
+    'completed_at',
+    'notes',
+  ];
 
-  // Add updated_at
-  updates.updated_at = new Date().toISOString();
+  const updatePayload: Database['public']['Tables']['jobs']['Update'] = {
+    updated_at: new Date().toISOString(),
+  };
+
+  for (const field of allowedFields) {
+    if (field in body && typeof body[field] !== 'undefined') {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      updatePayload[field] = body[field] as never;
+    }
+  }
 
   const { data, error } = await supabaseAdmin
     .from('jobs')
-    .update(updates)
+    .update(updatePayload)
     .eq('id', id)
     .select()
     .single();
@@ -109,10 +139,12 @@ async function handleUpdateJob(
  * DELETE /api/jobs/[id]
  */
 async function handleDeleteJob(id: string, res: NextApiResponse) {
-  const { error } = await supabaseAdmin
-    .from('jobs')
-    .delete()
-    .eq('id', id);
+  const supabaseAdmin = getSupabaseAdmin();
+  if (!supabaseAdmin) {
+    return res.status(500).json({ error: 'Server configuration error' });
+  }
+
+  const { error } = await supabaseAdmin.from('jobs').delete().eq('id', id);
 
   if (error) {
     console.error('Error deleting job:', error);

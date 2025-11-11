@@ -1,0 +1,4 @@
+# Prevent accidental commits of secrets
+*.md filter=git-secrets
+*.md !filter
+

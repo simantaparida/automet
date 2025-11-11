@@ -8,6 +8,7 @@
 ---
 
 ## Table of Contents
+
 1. [Project Overview](#project-overview)
 2. [Tech Stack & Architecture](#tech-stack--architecture)
 3. [Project Structure](#project-structure)
@@ -26,18 +27,22 @@
 **Automet** is a field service management platform built specifically for Indian AMC (Annual Maintenance Contract) vendors and facility management companies.
 
 ### Target Users
+
 - Small contractors (2-10 technicians)
 - Growing FM vendors (10-50 technicians)
 - Large FM partners (50-200 technicians)
 
 ### Core Problem Solved
+
 Indian AMC vendors struggle with:
+
 - Manual job tracking (WhatsApp, Excel, paper)
 - Missed billing and forgotten charges (5% revenue loss)
 - Delayed payments due to slow invoicing (5% cashflow impact)
 - Excessive admin time (30-80 hours/week on paperwork)
 
 ### Value Proposition
+
 - 50% reduction in admin time
 - 5% revenue recovery through better tracking
 - 5% cashflow improvement via faster invoicing
@@ -48,6 +53,7 @@ Indian AMC vendors struggle with:
 ## Tech Stack & Architecture
 
 ### Frontend
+
 - **Framework**: Next.js 14.2.33 (Pages Router - NOT App Router)
 - **Language**: TypeScript (strict mode)
 - **Styling**: Tailwind CSS 3.x
@@ -55,12 +61,14 @@ Indian AMC vendors struggle with:
 - **PWA**: next-pwa for offline support
 
 ### Backend
+
 - **Database**: Supabase (PostgreSQL)
 - **Auth**: Supabase Auth (email/password, magic links, Google OAuth ready)
 - **Storage**: Supabase Storage (for photos, PDFs)
 - **Real-time**: Supabase Realtime (for live updates)
 
 ### Infrastructure
+
 - **Deployment**: Not yet deployed (local dev only)
 - **Version Control**: Git with GitHub (public repository)
 - **Branch Strategy**: Git Flow (`main` ← `develop` ← `feature/*`)
@@ -70,6 +78,7 @@ Indian AMC vendors struggle with:
   - Production: Separate Supabase project (when ready)
 
 ### Key Architecture Decisions
+
 1. **Pages Router** (not App Router) - Stability and compatibility
 2. **No `'use client'` directives** - Pages Router components are client by default
 3. **Path aliases**: `@/*` resolves to both `./src/*` and `./*` (tsconfig.json)
@@ -88,18 +97,21 @@ Indian AMC vendors struggle with:
 **Automet** is developed as an open-source project while being commercially viable. This approach provides multiple benefits:
 
 **For the Project**:
+
 - **Portfolio Value**: Demonstrates real-world full-stack development skills
 - **Learning in Public**: Builds reputation and attracts opportunities
 - **Free GitHub Features**: Branch protection, environments, and security tools at no cost
 - **Community Feedback**: Potential for bug reports and feature suggestions
 
 **For Security**:
+
 - **Secrets Are Safe**: All API keys and credentials are in `.env.local` (gitignored)
 - **Data Is Protected**: Row Level Security (RLS) ensures multi-tenant isolation at database level
 - **No Vulnerabilities**: Code visibility helps identify security issues early
 - **Industry Standard**: Many successful SaaS products are open source (Ghost, Plausible, Cal.com, Supabase itself)
 
 **Business Model**:
+
 - Open source code doesn't mean free service
 - Commercial value comes from:
   - Hosted service (deployment, maintenance, uptime)
@@ -228,9 +240,11 @@ Indian AMC vendors struggle with:
 ## Completed Modules
 
 ### ✅ Module 1: Foundation & Database Setup (Completed)
+
 **Summary**: Core infrastructure, database schema, and development environment.
 
 **Deliverables**:
+
 - ✅ Next.js 14 with TypeScript initialized
 - ✅ Supabase projects created (dev + test)
 - ✅ Database migrations (001-008) implemented
@@ -245,6 +259,7 @@ Indian AMC vendors struggle with:
 - ✅ Documentation: 7 comprehensive guides in `/docs`
 
 **Key Files**:
+
 - Database: `/migrations/001-008_*.sql`
 - Seeds: `/seeds/001-005_*.sql`
 - Docs: `/docs/01-07_*.md`
@@ -252,9 +267,11 @@ Indian AMC vendors struggle with:
 ---
 
 ### ✅ Module 2: Authentication & Session Management (Completed)
+
 **Summary**: Full authentication system with Supabase Auth.
 
 **Deliverables**:
+
 - ✅ AuthContext with React Context API
 - ✅ Login page with email/password
 - ✅ Signup page with organization creation
@@ -265,6 +282,7 @@ Indian AMC vendors struggle with:
 - ✅ Auth callback handler for OAuth flows
 
 **Key Files**:
+
 - `/src/contexts/AuthContext.tsx` - Main auth logic
 - `/pages/login.tsx` - Login UI
 - `/pages/signup.tsx` - Signup UI
@@ -272,6 +290,7 @@ Indian AMC vendors struggle with:
 - `/pages/auth/callback.tsx` - OAuth callback
 
 **Auth Flow**:
+
 1. User signs up → Creates user + organization + billing_customer
 2. User logs in → Sets session cookie
 3. Protected pages check `user` from AuthContext
@@ -286,6 +305,7 @@ Indian AMC vendors struggle with:
 **Current Status**: Core landing page complete, ROI calculator redesigned with plan-driven sliders.
 
 **Completed**:
+
 - ✅ Landing page sections:
   - ✅ Navigation (sticky header)
   - ✅ Hero section with CTA
@@ -306,12 +326,14 @@ Indian AMC vendors struggle with:
 - ✅ Migration 009: Added `notes` column to `clients` table
 
 **In Progress**:
+
 - ⏳ Pre-order payment integration (Razorpay)
   - API endpoints created: `/api/preorder/create.ts`, `/api/preorder/verify.ts`, `/api/preorder/webhook.ts`
   - Need to complete Razorpay integration
 - ⏳ Email notifications for pre-orders
 
 **Key Files**:
+
 - `/pages/index.tsx` - Landing page (imports all sections)
 - `/components/landing/roi/ROICalculator.tsx` - **REDESIGNED** ROI calculator
 - `/src/lib/roiCalculator.ts` - ROI calculation logic (5% recovered revenue, 5% cashflow gain)
@@ -320,6 +342,7 @@ Indian AMC vendors struggle with:
 - `/migrations/011_blog_posts_rls.sql` - Blog RLS policies
 
 **ROI Calculator Architecture** (Recently Redesigned):
+
 - **Plan-driven flow**: User selects plan first (Free/Starter/Growth/Business)
 - **Auto-population**: Sliders auto-set to suggested values based on plan
 - **5 slider inputs**:
@@ -344,14 +367,18 @@ Indian AMC vendors struggle with:
 ### Core Tables
 
 #### `organizations`
+
 Multi-tenant parent entity. Each organization is isolated via RLS.
+
 - `id` (uuid, PK)
 - `name` (text)
 - `contact_email`, `contact_phone`
 - `created_at`, `updated_at`
 
 #### `users`
+
 All users (owners, coordinators, technicians). Links to Supabase auth.users.
+
 - `id` (uuid, PK, FK → auth.users)
 - `organization_id` (uuid, FK → organizations)
 - `email`, `name`, `phone`
@@ -360,7 +387,9 @@ All users (owners, coordinators, technicians). Links to Supabase auth.users.
 - `created_at`, `updated_at`
 
 #### `clients`
+
 Customer companies.
+
 - `id` (uuid, PK)
 - `organization_id` (uuid, FK → organizations)
 - `name`, `contact_name`, `contact_email`, `contact_phone`
@@ -369,7 +398,9 @@ Customer companies.
 - `created_at`, `updated_at`
 
 #### `sites`
+
 Physical locations where work happens.
+
 - `id` (uuid, PK)
 - `organization_id`, `client_id`
 - `name`, `address`, `city`, `state`, `pincode`
@@ -378,7 +409,9 @@ Physical locations where work happens.
 - `created_at`, `updated_at`
 
 #### `assets`
+
 Equipment/machines maintained by technicians.
+
 - `id` (uuid, PK)
 - `organization_id`, `site_id`
 - `name`, `asset_type`, `brand`, `model`, `serial_number`
@@ -387,7 +420,9 @@ Equipment/machines maintained by technicians.
 - `created_at`, `updated_at`
 
 #### `jobs`
+
 Work orders/tickets.
+
 - `id` (uuid, PK)
 - `organization_id`, `client_id`, `site_id`, `asset_id` (optional)
 - `title`, `description`
@@ -400,7 +435,9 @@ Work orders/tickets.
 - `created_at`, `updated_at`
 
 #### `job_assignments`
+
 Which technician is assigned to which job.
+
 - `id` (uuid, PK)
 - `organization_id`, `job_id`, `technician_id`
 - `status` (assigned | checked_in | checked_out | completed)
@@ -408,7 +445,9 @@ Which technician is assigned to which job.
 - `notes`
 
 #### `inventory_items`
+
 Spare parts and consumables.
+
 - `id` (uuid, PK)
 - `organization_id`
 - `name`, `sku`, `description`
@@ -418,7 +457,9 @@ Spare parts and consumables.
 - `created_at`, `updated_at`
 
 #### `inventory_serial_numbers`
+
 Serial-tracked inventory items.
+
 - `id` (uuid, PK)
 - `organization_id`, `inventory_item_id`
 - `serial_number` (unique)
@@ -427,7 +468,9 @@ Serial-tracked inventory items.
 - `notes`
 
 #### `subscription_plans`
+
 Pricing tiers (Free, Starter, Growth, Business).
+
 - `id` (uuid, PK)
 - `name`, `slug`
 - `price_inr_monthly`, `price_inr_annual`
@@ -436,7 +479,9 @@ Pricing tiers (Free, Starter, Growth, Business).
 - `is_active`
 
 #### `billing_customers`
+
 Customer billing info (one per organization).
+
 - `id` (uuid, PK)
 - `organization_id` (FK → organizations, unique)
 - `subscription_plan_id` (FK → subscription_plans)
@@ -446,7 +491,9 @@ Customer billing info (one per organization).
 - `razorpay_customer_id`, `razorpay_subscription_id`
 
 #### `payments`
+
 Payment history.
+
 - `id` (uuid, PK)
 - `organization_id`, `billing_customer_id`
 - `amount_inr`, `currency`
@@ -455,7 +502,9 @@ Payment history.
 - `paid_at`, `created_at`
 
 #### `usage_counters`
+
 Track usage against plan limits.
+
 - `id` (uuid, PK)
 - `organization_id`
 - `month` (date)
@@ -463,7 +512,9 @@ Track usage against plan limits.
 - `created_at`, `updated_at`
 
 #### `blog_posts`
+
 Public blog content.
+
 - `id` (uuid, PK)
 - `slug` (text, unique)
 - `title`, `excerpt`, `content` (markdown)
@@ -474,7 +525,9 @@ Public blog content.
 - `created_at`, `updated_at`
 
 ### RLS Policies
+
 All tables have Row Level Security enabled:
+
 - Organization-level isolation (users can only see their org's data)
 - Role-based access (owners can manage users, coordinators assign jobs)
 - Public read for blog_posts (if published)
@@ -484,6 +537,7 @@ All tables have Row Level Security enabled:
 ## Key Features Implemented
 
 ### Authentication & Authorization
+
 - ✅ Email/password signup with automatic org creation
 - ✅ Magic link login (ready, not tested)
 - ✅ Google OAuth (configured, ready to enable)
@@ -492,6 +546,7 @@ All tables have Row Level Security enabled:
 - ✅ Role-based access control (RLS policies)
 
 ### Landing Page
+
 - ✅ Responsive, mobile-first design
 - ✅ SEO-optimized meta tags
 - ✅ Sticky navigation with smooth scrolling
@@ -505,6 +560,7 @@ All tables have Row Level Security enabled:
 - ✅ Footer with links
 
 ### ROI Calculator (Redesigned - Nov 3, 2025)
+
 - ✅ Plan-first flow (dropdown at top)
 - ✅ 4 slider inputs (auto-populated based on plan)
 - ✅ Real-time calculations (useEffect on input changes)
@@ -520,6 +576,7 @@ All tables have Row Level Security enabled:
 - ✅ Mobile responsive
 
 ### Blog System
+
 - ✅ Database table with RLS
 - ✅ API endpoints (list + detail)
 - ✅ Blog listing page
@@ -529,6 +586,7 @@ All tables have Row Level Security enabled:
 - ✅ 6 demo blog posts seeded
 
 ### Database & Migrations
+
 - ✅ 11 migrations covering full schema
 - ✅ Audit logging triggers
 - ✅ Auto-update triggers (updated_at)
@@ -541,6 +599,7 @@ All tables have Row Level Security enabled:
 ## Development Guidelines
 
 ### Code Style & Conventions
+
 1. **TypeScript strict mode** - All code must be typed
 2. **No `'use client'` directives** - Pages Router doesn't need them
 3. **Import aliases**: Use `@/` for imports from `src/` or root
@@ -558,6 +617,7 @@ All tables have Row Level Security enabled:
    - Pages: lowercase/kebab-case (Next.js convention)
 
 ### Git Workflow
+
 1. **Branch Strategy**: Git Flow
    - `main` - Production-ready code
    - `develop` - Integration branch (default)
@@ -565,6 +625,7 @@ All tables have Row Level Security enabled:
    - Protected branches: `main` and `develop` (require PR + approval)
 
 2. **Commit messages**: Use conventional commits
+
    ```
    feat: add ROI calculator with plan-driven sliders
    fix: resolve continuous reload issue in dev server
@@ -586,7 +647,9 @@ All tables have Row Level Security enabled:
    - Credentials or API keys
 
 ### Environment Variables
+
 Required in `.env.local`:
+
 ```bash
 # Supabase (Dev)
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
@@ -608,6 +671,7 @@ RESEND_API_KEY=re_xxx
 ### Running the Project
 
 **First-time setup**:
+
 ```bash
 npm install
 chmod +x scripts/*.sh
@@ -617,11 +681,13 @@ npm run dev           # Start dev server
 ```
 
 **Dev server**:
+
 ```bash
 npm run dev  # Starts on http://localhost:3000
 ```
 
 **Database operations**:
+
 ```bash
 ./scripts/migrate.sh           # Run pending migrations
 ./scripts/seed.sh              # Seed demo data
@@ -630,6 +696,7 @@ npm run dev  # Starts on http://localhost:3000
 ```
 
 **Testing**:
+
 ```bash
 npm test                       # Run all tests
 npm test roiCalculator.test.ts # Run specific test
@@ -640,13 +707,16 @@ npm test roiCalculator.test.ts # Run specific test
 ## Known Issues & Fixes
 
 ### Issue 1: Continuous Page Reload (FIXED - Nov 3, 2025)
+
 **Problem**: Dev server was triggering infinite `client-full-reload` events.
 
 **Root Causes**:
+
 1. `'use client'` directive in Pages Router component (incompatible)
 2. Path ambiguity: `@/*` mapped to both `./src/*` and `./*`, causing file watcher conflicts
 
 **Fixes Applied**:
+
 1. ✅ Removed `'use client'` from `/components/landing/roi/ROICalculator.tsx`
 2. ✅ Moved `/lib/roiCalculator.ts` → `/src/lib/roiCalculator.ts` to resolve path ambiguity
 3. ✅ Cleared `.next` cache and restarted dev server
@@ -654,6 +724,7 @@ npm test roiCalculator.test.ts # Run specific test
 **Prevention**: Never use `'use client'` in Pages Router; always use `/src/lib` for business logic.
 
 ### Issue 2: Blog Posts Permission Error
+
 **Problem**: `/api/blog` returns 500 error: "permission denied for table blog_posts"
 
 **Root Cause**: RLS policies not configured correctly for anonymous access.
@@ -663,6 +734,7 @@ npm test roiCalculator.test.ts # Run specific test
 **Fix Needed**: Update RLS policy in migration 011 to allow public read access.
 
 ### Issue 3: ROI Calculator Values Not Changing (FIXED - Nov 2, 2025)
+
 **Problem**: Input changes didn't update results.
 
 **Root Cause**: Smart defaults were hardcoded, not reactive to user input.
@@ -674,6 +746,7 @@ npm test roiCalculator.test.ts # Run specific test
 ## Next Steps
 
 ### Immediate (Current Sprint)
+
 1. **Complete Pre-order System**:
    - [ ] Integrate Razorpay payment gateway
    - [ ] Test pre-order flow end-to-end
@@ -691,6 +764,7 @@ npm test roiCalculator.test.ts # Run specific test
    - [ ] Cross-browser testing (Chrome, Safari, Firefox)
 
 ### Module 4: Dashboard & Job Management (Next)
+
 - [ ] Dashboard layout with sidebar navigation
 - [ ] Job listing page with filters
 - [ ] Job creation form
@@ -699,6 +773,7 @@ npm test roiCalculator.test.ts # Run specific test
 - [ ] Status updates and completion flow
 
 ### Module 5: Mobile App (PWA)
+
 - [ ] Offline job sync
 - [ ] Photo capture and upload
 - [ ] GPS-based check-in/check-out
@@ -706,6 +781,7 @@ npm test roiCalculator.test.ts # Run specific test
 - [ ] Push notifications
 
 ### Module 6: Inventory Management
+
 - [ ] Inventory listing and search
 - [ ] Stock tracking
 - [ ] Serial number management
@@ -713,12 +789,14 @@ npm test roiCalculator.test.ts # Run specific test
 - [ ] Usage tracking per job
 
 ### Module 7: Reporting & Analytics
+
 - [ ] Job completion reports
 - [ ] Technician performance metrics
 - [ ] Revenue analytics
 - [ ] Export to PDF/Excel
 
 ### Module 8: Billing & Payments
+
 - [ ] Razorpay subscription integration
 - [ ] Usage-based billing
 - [ ] Invoice generation
@@ -787,4 +865,4 @@ npm test roiCalculator.test.ts # Run specific test
 ---
 
 **End of Document**
-*This document should be updated whenever major architectural decisions are made or new modules are completed.*
+_This document should be updated whenever major architectural decisions are made or new modules are completed._

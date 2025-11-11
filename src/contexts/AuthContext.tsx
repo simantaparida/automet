@@ -7,8 +7,14 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
-  signUp: (email: string, password: string) => Promise<{ error: AuthError | null }>;
+  signIn: (
+    email: string,
+    password: string
+  ) => Promise<{ error: AuthError | null }>;
+  signUp: (
+    email: string,
+    password: string
+  ) => Promise<{ error: AuthError | null }>;
   signInWithGoogle: () => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
 }
@@ -20,12 +26,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  
+  // Check if we're in landing-only mode
+  const isLandingOnly = process.env.NEXT_PUBLIC_LANDING_ONLY === 'true';
+  
+  // Check if Supabase is properly configured
+  const hasSupabaseConfig = 
+    (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) ||
+    (process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY);
 
   useEffect(() => {
+    // Skip auth initialization in landing-only mode or if Supabase not configured
+    if (isLandingOnly || !hasSupabaseConfig) {
+      setLoading(false);
+      return;
+    }
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      setLoading(false);
+    }).catch((error) => {
+      console.error('Failed to get session:', error);
       setLoading(false);
     });
 
@@ -39,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [isLandingOnly, hasSupabaseConfig]);
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({

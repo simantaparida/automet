@@ -59,6 +59,7 @@ System design and architecture for Automet Field Job & Asset Tracker.
 ## Tech Stack
 
 ### Frontend
+
 - **Framework**: Next.js 14 (App Router + Pages Router hybrid)
 - **Language**: TypeScript (strict mode)
 - **UI**: React 18
@@ -68,6 +69,7 @@ System design and architecture for Automet Field Job & Asset Tracker.
 - **Offline**: localForage (IndexedDB wrapper)
 
 ### Backend
+
 - **API**: Next.js API Routes (serverless functions)
 - **Database**: PostgreSQL (Supabase managed)
 - **Authentication**: Supabase Auth (Google OAuth + Email)
@@ -75,17 +77,20 @@ System design and architecture for Automet Field Job & Asset Tracker.
 - **ORM**: Supabase JS Client (auto-generated types)
 
 ### Payments
+
 - **Gateway**: Razorpay (India-focused)
 - **Methods**: Cards, UPI, Netbanking, Wallets
 - **Subscriptions**: Razorpay Plans + Webhooks
 
 ### DevOps
+
 - **Hosting**: Vercel (Next.js optimized)
 - **CI/CD**: GitHub Actions
 - **Monitoring**: Vercel Analytics + Sentry (optional)
 - **Region**: Asia South (Mumbai) for lowest latency
 
 ### Testing
+
 - **Unit/Integration**: Jest + React Testing Library
 - **E2E**: Playwright (mobile viewport support)
 - **API**: Supertest (future)
@@ -120,42 +125,50 @@ organizations
 ### Core Tables
 
 #### organizations
+
 - Primary entity for multi-tenancy
 - Each vendor company = 1 org
 - Settings stored as JSONB (flexible config)
 
 #### users
+
 - Links to Supabase Auth (`auth.users`)
 - One user → one org (for MVP)
 - Role: `owner`, `coordinator`, `technician`
 - Email verification enforced
 
 #### clients
+
 - AMC customers of the vendor
 - Belongs to organization
 - Contact info for invoicing (future)
 
 #### sites
+
 - Physical locations where assets are installed
 - Belongs to client + org (denormalized for RLS)
 - GPS coordinates for navigation
 
 #### assets
+
 - Equipment being serviced (fire extinguishers, HVAC, generators)
 - Belongs to site + org
 - Metadata JSONB for asset-specific fields
 
 #### jobs
+
 - Work orders assigned to technicians
 - Status: `scheduled` → `in_progress` → `completed`
 - Links to client, site, asset (optional)
 
 #### job_assignments
+
 - Assignment history (who was assigned when)
 - Supports reassignments
 - `is_primary` flag for main assignee
 
 #### inventory_items
+
 - Consumables/tools tracked at org level
 - Quantity-based by default
 - `is_serialized = true` enables serial number tracking
@@ -211,6 +224,7 @@ User                  Next.js              Supabase Auth       Google
 All tables have RLS enabled. Policies enforce:
 
 #### Org Isolation
+
 ```sql
 -- Example: jobs table
 CREATE POLICY "Users can only see jobs in their org"
@@ -224,11 +238,11 @@ USING (
 
 #### Role-Based Access
 
-| Role | Jobs | Inventory | Billing |
-|------|------|-----------|---------|
-| `owner` | Full CRUD | Full CRUD | Read/Write |
-| `coordinator` | Full CRUD | Full CRUD | Read-only |
-| `technician` | Read + Update assigned | Read-only | No access |
+| Role          | Jobs                   | Inventory | Billing    |
+| ------------- | ---------------------- | --------- | ---------- |
+| `owner`       | Full CRUD              | Full CRUD | Read/Write |
+| `coordinator` | Full CRUD              | Full CRUD | Read-only  |
+| `technician`  | Read + Update assigned | Read-only | No access  |
 
 #### Email Verification Gate
 
@@ -357,28 +371,33 @@ interface QueuedAction {
 ### Checklist
 
 ✅ **Authentication**
+
 - Email verification required
 - Google OAuth configured
 - Secure session management (httpOnly cookies)
 
 ✅ **Authorization**
+
 - RLS on all tables
 - Role-based access control
 - Org isolation enforced
 
 ✅ **API Security**
+
 - Service role key server-side only
 - Webhook signature verification
 - Input validation (Zod schemas)
 - Rate limiting (future)
 
 ✅ **Data Security**
+
 - No raw card data stored
 - Signed URLs for storage (10min TTL)
 - HTTPS enforced in production
 - SQL injection prevention (parameterized queries)
 
 ✅ **Secrets Management**
+
 - `.env.local` gitignored
 - GitHub Secrets for CI
 - Vercel Environment Variables for production
@@ -436,6 +455,7 @@ npm install @sentry/nextjs
 ```
 
 Track:
+
 - Client-side errors
 - Server-side errors
 - API route failures

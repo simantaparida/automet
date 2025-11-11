@@ -17,7 +17,9 @@ interface InventoryItem {
 export default function InventoryPage() {
   const router = useRouter();
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
-  const [filteredInventory, setFilteredInventory] = useState<InventoryItem[]>([]);
+  const [filteredInventory, setFilteredInventory] = useState<InventoryItem[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
@@ -32,20 +34,24 @@ export default function InventoryPage() {
 
     // Filter by category
     if (categoryFilter) {
-      filtered = filtered.filter(item => item.category === categoryFilter);
+      filtered = filtered.filter((item) => item.category === categoryFilter);
     }
 
     // Filter by low stock
     if (showLowStockOnly) {
-      filtered = filtered.filter(item => item.quantity_available <= item.reorder_level);
+      filtered = filtered.filter(
+        (item) => item.quantity_available <= item.reorder_level
+      );
     }
 
     // Filter by search term
     if (searchTerm.trim() !== '') {
-      filtered = filtered.filter(item =>
-        item.item_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (item.sku && item.sku.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        item.category.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (item) =>
+          item.item_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (item.sku &&
+            item.sku.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          item.category.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -68,8 +74,12 @@ export default function InventoryPage() {
     }
   };
 
-  const uniqueCategories = Array.from(new Set(inventory.map(item => item.category)));
-  const lowStockCount = inventory.filter(item => item.quantity_available <= item.reorder_level).length;
+  const uniqueCategories = Array.from(
+    new Set(inventory.map((item) => item.category))
+  );
+  const lowStockCount = inventory.filter(
+    (item) => item.quantity_available <= item.reorder_level
+  ).length;
 
   const getStockStatus = (item: InventoryItem) => {
     if (item.quantity_available === 0) {
@@ -83,42 +93,63 @@ export default function InventoryPage() {
 
   return (
     <ProtectedRoute>
-      <div style={{
-        minHeight: '100vh',
-        backgroundColor: '#f5f5f5',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        paddingBottom: '80px',
-      }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          backgroundColor: '#f5f5f5',
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+          paddingBottom: '80px',
+        }}
+      >
         {/* Sticky Header */}
-        <header style={{
-          backgroundColor: '#2563eb',
-          color: 'white',
-          padding: '1rem',
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        }}>
-          <h1 style={{ fontSize: '1.25rem', fontWeight: '600', margin: '0 0 0.5rem 0' }}>
+        <header
+          style={{
+            backgroundColor: '#2563eb',
+            color: 'white',
+            padding: '1rem',
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}
+        >
+          <h1
+            style={{
+              fontSize: '1.25rem',
+              fontWeight: '600',
+              margin: '0 0 0.5rem 0',
+            }}
+          >
             Inventory
           </h1>
-          <div style={{ display: 'flex', gap: '1rem', fontSize: '0.875rem', opacity: 0.9 }}>
+          <div
+            style={{
+              display: 'flex',
+              gap: '1rem',
+              fontSize: '0.875rem',
+              opacity: 0.9,
+            }}
+          >
             <span>{filteredInventory.length} items</span>
             {lowStockCount > 0 && (
-              <span style={{ color: '#fbbf24' }}>⚠️ {lowStockCount} low stock</span>
+              <span style={{ color: '#fbbf24' }}>
+                ⚠️ {lowStockCount} low stock
+              </span>
             )}
           </div>
         </header>
 
         {/* Search & Filter Bar */}
-        <div style={{
-          backgroundColor: 'white',
-          padding: '1rem',
-          borderBottom: '1px solid #e5e7eb',
-          position: 'sticky',
-          top: '66px',
-          zIndex: 9,
-        }}>
+        <div
+          style={{
+            backgroundColor: 'white',
+            padding: '1rem',
+            borderBottom: '1px solid #e5e7eb',
+            position: 'sticky',
+            top: '66px',
+            zIndex: 9,
+          }}
+        >
           <input
             type="text"
             placeholder="Search inventory..."
@@ -135,7 +166,13 @@ export default function InventoryPage() {
               marginBottom: '0.75rem',
             }}
           />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '0.5rem',
+            }}
+          >
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
@@ -149,8 +186,10 @@ export default function InventoryPage() {
               }}
             >
               <option value="">All Categories</option>
-              {uniqueCategories.map(category => (
-                <option key={category} value={category}>{category}</option>
+              {uniqueCategories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
               ))}
             </select>
             <button
@@ -175,33 +214,41 @@ export default function InventoryPage() {
         {/* Inventory List */}
         <main style={{ padding: '1rem' }}>
           {loading ? (
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              minHeight: '200px',
-            }}>
-              <div style={{
-                width: '40px',
-                height: '40px',
-                border: '4px solid #e5e7eb',
-                borderTopColor: '#2563eb',
-                borderRadius: '50%',
-                animation: 'spin 1s linear infinite'
-              }}></div>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '200px',
+              }}
+            >
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  border: '4px solid #e5e7eb',
+                  borderTopColor: '#2563eb',
+                  borderRadius: '50%',
+                  animation: 'spin 1s linear infinite',
+                }}
+              ></div>
               <style jsx>{`
                 @keyframes spin {
-                  to { transform: rotate(360deg); }
+                  to {
+                    transform: rotate(360deg);
+                  }
                 }
               `}</style>
             </div>
           ) : filteredInventory.length === 0 ? (
-            <div style={{
-              backgroundColor: 'white',
-              padding: '2rem',
-              borderRadius: '8px',
-              textAlign: 'center',
-            }}>
+            <div
+              style={{
+                backgroundColor: 'white',
+                padding: '2rem',
+                borderRadius: '8px',
+                textAlign: 'center',
+              }}
+            >
               <p style={{ fontSize: '1rem', color: '#6b7280', margin: 0 }}>
                 {searchTerm || categoryFilter || showLowStockOnly
                   ? 'No items found matching your filters'
@@ -228,7 +275,13 @@ export default function InventoryPage() {
               )}
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem',
+              }}
+            >
               {filteredInventory.map((item) => {
                 const stockStatus = getStockStatus(item);
                 return (
@@ -246,19 +299,23 @@ export default function InventoryPage() {
                       minHeight: '80px',
                     }}
                   >
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'start',
-                      marginBottom: '0.5rem',
-                    }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'start',
+                        marginBottom: '0.5rem',
+                      }}
+                    >
                       <div>
-                        <h3 style={{
-                          fontSize: '1rem',
-                          fontWeight: '600',
-                          color: '#1f2937',
-                          margin: '0 0 0.25rem 0',
-                        }}>
+                        <h3
+                          style={{
+                            fontSize: '1rem',
+                            fontWeight: '600',
+                            color: '#1f2937',
+                            margin: '0 0 0.25rem 0',
+                          }}
+                        >
                           {item.item_name}
                         </h3>
                         <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
@@ -269,46 +326,54 @@ export default function InventoryPage() {
                       <span style={{ fontSize: '1.25rem' }}>📦</span>
                     </div>
 
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginTop: '0.5rem',
-                    }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginTop: '0.5rem',
+                      }}
+                    >
                       <div>
-                        <div style={{
-                          fontSize: '1.125rem',
-                          fontWeight: '600',
-                          color: stockStatus.color,
-                        }}>
+                        <div
+                          style={{
+                            fontSize: '1.125rem',
+                            fontWeight: '600',
+                            color: stockStatus.color,
+                          }}
+                        >
                           {item.quantity_available} {item.unit_of_measure}
                         </div>
                         <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
                           Reorder at: {item.reorder_level}
                         </div>
                       </div>
-                      <div style={{
-                        padding: '0.25rem 0.75rem',
-                        backgroundColor: `${stockStatus.color}20`,
-                        color: stockStatus.color,
-                        borderRadius: '999px',
-                        fontSize: '0.75rem',
-                        fontWeight: '500',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.25rem',
-                      }}>
+                      <div
+                        style={{
+                          padding: '0.25rem 0.75rem',
+                          backgroundColor: `${stockStatus.color}20`,
+                          color: stockStatus.color,
+                          borderRadius: '999px',
+                          fontSize: '0.75rem',
+                          fontWeight: '500',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.25rem',
+                        }}
+                      >
                         <span>{stockStatus.icon}</span>
                         {stockStatus.label}
                       </div>
                     </div>
 
                     {item.unit_cost && (
-                      <div style={{
-                        fontSize: '0.75rem',
-                        color: '#6b7280',
-                        marginTop: '0.5rem',
-                      }}>
+                      <div
+                        style={{
+                          fontSize: '0.75rem',
+                          color: '#6b7280',
+                          marginTop: '0.5rem',
+                        }}
+                      >
                         ₹{item.unit_cost.toFixed(2)}/{item.unit_of_measure}
                       </div>
                     )}

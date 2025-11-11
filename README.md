@@ -10,6 +10,8 @@ A mobile-first Progressive Web App (PWA) to manage field jobs, track assets, and
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.1-blue)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-14.2-black)](https://nextjs.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-green)](https://supabase.com/)
+[![CI](https://github.com/simantaparida/automet/workflows/CI/badge.svg)](https://github.com/simantaparida/automet/actions/workflows/ci.yml)
+[![Security Scanning](https://github.com/simantaparida/automet/workflows/Security%20Scanning/badge.svg)](https://github.com/simantaparida/automet/actions/workflows/security.yml)
 
 [Features](#-features) • [Quick Start](#-quick-start) • [Documentation](#-documentation) • [Contributing](#-contributing)
 
@@ -56,6 +58,7 @@ Visit [http://localhost:3000](http://localhost:3000) to see the app.
 ### Demo Account
 
 After running seeds, login with:
+
 - **Email**: `owner@sharmaservices.com`
 - **Password**: `sharma123`
 
@@ -64,11 +67,13 @@ This demo account includes sample data: clients, sites, assets, and jobs.
 ## 📚 Documentation
 
 ### For Developers
+
 - **[PROJECT_CONTEXT.md](PROJECT_CONTEXT.md)** - Comprehensive project overview and development guide
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** - Contribution guidelines and workflow
 - **[GITHUB_SETUP_GUIDE.md](GITHUB_SETUP_GUIDE.md)** - GitHub repository configuration
 
 ### Setup Guides (in `/docs`)
+
 - **[01_setup_guide.md](docs/01_setup_guide.md)** - Complete environment setup
 - **[02_supabase_setup.md](docs/02_supabase_setup.md)** - Database and auth configuration
 - **[03_google_oauth_setup.md](docs/03_google_oauth_setup.md)** - OAuth provider configuration
@@ -76,6 +81,7 @@ This demo account includes sample data: clients, sites, assets, and jobs.
 - **[05_migrations_guide.md](docs/05_migrations_guide.md)** - Database migrations and rollback
 - **[06_api_endpoints.md](docs/06_api_endpoints.md)** - API endpoint reference
 - **[07_architecture.md](docs/07_architecture.md)** - System design overview
+- **[CI_CD_SETUP.md](docs/CI_CD_SETUP.md)** - CI/CD pipeline configuration and best practices
 
 ## 🛠️ Tech Stack
 
@@ -87,7 +93,8 @@ This demo account includes sample data: clients, sites, assets, and jobs.
 - **PWA**: [next-pwa](https://github.com/shadowwalker/next-pwa)
 - **Payments**: [Razorpay](https://razorpay.com/) (for Indian market)
 - **Testing**: Jest (unit tests), Playwright (E2E)
-- **Deployment**: Vercel (planned)
+- **Deployment**: Vercel with automated CI/CD
+- **CI/CD**: GitHub Actions with parallel jobs, security scanning, and automated deployments
 
 ## 🗂️ Project Structure
 
@@ -134,18 +141,22 @@ npm run test:e2e
 ## 🔐 Security
 
 ### Database Security
+
 - **Row Level Security (RLS)**: Multi-tenant data isolation at database level
 - **Service Role Key**: Never exposed to client, only used in API routes
 - **Organization Isolation**: Users can only access their organization's data
 
 ### Application Security
+
 - **Email Verification**: Required for critical actions
 - **Webhook Verification**: Razorpay webhook signature validation
 - **Signed URLs**: Time-limited (10 min TTL) for file uploads
 - **Environment Variables**: Secrets managed via `.env.local` (gitignored)
 
 ### Open Source Security
+
 This repository is public, but:
+
 - All API keys and credentials are in `.env.local` (not committed)
 - Customer data is protected by RLS policies
 - Code visibility helps identify security issues early
@@ -212,6 +223,7 @@ See [GITHUB_SETUP_GUIDE.md](GITHUB_SETUP_GUIDE.md) for GitHub configuration deta
 ## 🌟 Roadmap
 
 ### Current (Module 3) - Landing Page & Pre-order
+
 - ✅ Landing page with all sections
 - ✅ ROI calculator with plan-driven sliders
 - ✅ Blog system
@@ -219,12 +231,14 @@ See [GITHUB_SETUP_GUIDE.md](GITHUB_SETUP_GUIDE.md) for GitHub configuration deta
 - ⏳ Pre-order payment integration (Razorpay)
 
 ### Next (Module 4) - Dashboard & Job Management
+
 - Dashboard with real-time updates
 - Job creation and assignment
 - Technician mobile interface
 - Photo capture and upload
 
 ### Future Modules
+
 - **Module 5**: Mobile PWA (offline sync, GPS check-in)
 - **Module 6**: Inventory management
 - **Module 7**: Reporting and analytics

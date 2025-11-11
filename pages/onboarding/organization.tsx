@@ -72,6 +72,13 @@ export default function OrganizationOnboarding() {
     try {
       if (!user) throw new Error('Not authenticated');
 
+      console.log('User object:', user); // DEBUG
+      console.log('User ID:', user.id); // DEBUG
+
+      // Verify the session is valid
+      const { data: sessionData } = await supabase.auth.getSession();
+      console.log('Session check:', sessionData); // DEBUG
+
       // Generate unique slug
       const baseSlug = generateSlug(formData.organizationName);
       let slug = baseSlug;

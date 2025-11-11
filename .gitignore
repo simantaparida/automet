@@ -76,7 +76,14 @@ test-*.ts
 RUN_*.sql
 CREATE_AUTH_TRIGGER.sql
 
+# Production deployment files (contain credentials - if created locally)
+.env.production
+.env.staging
+*PRODUCTION_SETUP*.md
+*SECURITY_SCAN*.md
+*-consolidated.sql
+drop-*.sql
+
 # Claude Code cache/logs (keep config)
 .claude/cache/
 .claude/logs/
-.env.staging

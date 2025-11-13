@@ -196,7 +196,7 @@ export default function BlogListPage() {
 
       <div className="min-h-screen bg-white">
         {/* Navigation */}
-        <Navigation onPreorderClick={() => setPreorderModalOpen(true)} />
+        <Navigation />
 
         {/* Hero Section */}
         <section className="relative pt-24 pb-16 md:pt-32 md:pb-20 overflow-hidden bg-white">

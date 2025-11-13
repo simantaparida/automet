@@ -527,10 +527,12 @@ export type Database = {
         Row: {
           id: string;
           email: string;
+          full_name: string;
+          phone: string | null;
           email_confirmed: boolean;
           google_provider_id: string | null;
-          org_id: string;
-          role: 'owner' | 'coordinator' | 'technician';
+          org_id: string | null;
+          role: 'owner' | 'coordinator' | 'technician' | null;
           profile_photo_url: string | null;
           created_at: string;
           updated_at: string;
@@ -538,10 +540,12 @@ export type Database = {
         Insert: {
           id: string;
           email: string;
+          full_name: string;
+          phone?: string | null;
           email_confirmed?: boolean;
           google_provider_id?: string | null;
-          org_id: string;
-          role: 'owner' | 'coordinator' | 'technician';
+          org_id?: string | null;
+          role?: 'owner' | 'coordinator' | 'technician' | null;
           profile_photo_url?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -549,15 +553,93 @@ export type Database = {
         Update: {
           id?: string;
           email?: string;
+          full_name?: string;
+          phone?: string | null;
           email_confirmed?: boolean;
           google_provider_id?: string | null;
-          org_id?: string;
-          role?: 'owner' | 'coordinator' | 'technician';
+          org_id?: string | null;
+          role?: 'owner' | 'coordinator' | 'technician' | null;
           profile_photo_url?: string | null;
           created_at?: string;
           updated_at?: string;
         };
         Relationships: [];
+      };
+      user_invites: {
+        Row: {
+          id: string;
+          org_id: string;
+          invited_by: string;
+          name: string;
+          contact: string;
+          contact_type: 'phone' | 'email';
+          role: 'technician' | 'coordinator';
+          invite_code: string;
+          invite_token: string;
+          status: 'pending' | 'accepted' | 'cancelled' | 'expired';
+          expires_at: string;
+          accepted_at: string | null;
+          accepted_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          invited_by: string;
+          name: string;
+          contact: string;
+          contact_type: 'phone' | 'email';
+          role: 'technician' | 'coordinator';
+          invite_code: string;
+          invite_token: string;
+          status?: 'pending' | 'accepted' | 'cancelled' | 'expired';
+          expires_at: string;
+          accepted_at?: string | null;
+          accepted_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          invited_by?: string;
+          name?: string;
+          contact?: string;
+          contact_type?: 'phone' | 'email';
+          role?: 'technician' | 'coordinator';
+          invite_code?: string;
+          invite_token?: string;
+          status?: 'pending' | 'accepted' | 'cancelled' | 'expired';
+          expires_at?: string;
+          accepted_at?: string | null;
+          accepted_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'user_invites_org_id_fkey';
+            columns: ['org_id'];
+            isOneToOne: false;
+            referencedRelation: 'organizations';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'user_invites_invited_by_fkey';
+            columns: ['invited_by'];
+            isOneToOne: false;
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'user_invites_accepted_by_fkey';
+            columns: ['accepted_by'];
+            isOneToOne: false;
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          }
+        ];
       };
     };
     Views: {

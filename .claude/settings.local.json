@@ -25,7 +25,13 @@
       "Bash(npm run dev)",
       "Bash(curl:*)",
       "Bash(python3:*)",
-      "Bash(xargs ps:*)"
+      "Bash(xargs ps:*)",
+      "Bash(xargs kill:*)",
+      "Read(//Users/simantparida/Desktop/**)",
+      "Bash(cat:*)",
+      "Bash(psql \"$DATABASE_URL\" -f migrations/20251112_001_create_user_invites.sql)",
+      "Bash(npm run build)",
+      "Bash(pkill:*)"
     ],
     "deny": [],
     "ask": []

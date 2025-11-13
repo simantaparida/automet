@@ -32,10 +32,17 @@ export default async function handler(
       return res.status(401).json({ error: 'Not authenticated' });
     }
 
-    const { organizationName, industry, teamSize, phone } = req.body;
+    const { organizationName, industry, workingHours, currency } = req.body;
 
-    if (!organizationName || !industry || !teamSize) {
+    if (!organizationName || !industry) {
       return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    // Validate working hours if provided
+    if (workingHours) {
+      if (!workingHours.from || !workingHours.to) {
+        return res.status(400).json({ error: 'Invalid working hours format' });
+      }
     }
 
     // Use service role client for both operations to bypass RLS completely
@@ -90,7 +97,8 @@ export default async function handler(
         slug: slug,
         settings: {
           industry,
-          team_size: teamSize,
+          working_hours: workingHours || { from: '09:00', to: '18:00' },
+          currency: currency || 'INR',
         },
       })
       .select()
@@ -102,22 +110,31 @@ export default async function handler(
     }
 
     console.log('Organization created:', org.id);
-    console.log('Creating user profile:', { userId: session.user.id, orgId: org.id });
+    console.log('Creating/updating user profile:', { userId: session.user.id, orgId: org.id });
 
-    // Create user profile using service role
+    // Create or update user profile using service role
+    // Use UPSERT because user might already exist from:
+    // - Previous onboarding attempts
+    // - Auth triggers
+    // - Database seeds
+    const fullName = session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User';
+
     const { data: insertedUser, error: userError } = await serviceRoleSupabase
       .from('users')
-      .insert({
+      .upsert({
         id: session.user.id,
         email: session.user.email!,
+        full_name: fullName,
+        phone: session.user.user_metadata?.phone || null,
         org_id: org.id,
         role: 'owner',
-        phone: phone || null,
+      }, {
+        onConflict: 'id'  // Update on conflict with existing user ID
       })
       .select()
       .single();
 
-    console.log('User insert result:', { insertedUser, userError });
+    console.log('User upsert result:', { insertedUser, userError });
 
     if (userError) {
       console.error('User creation error:', userError);

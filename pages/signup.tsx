@@ -1,46 +1,71 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
+import { OnboardingEvents, trackPageView } from '@/lib/analytics';
+import { getAuthRedirectPath, getPostSignupRedirectPath } from '@/lib/auth-redirect';
 
 export default function SignupPage() {
+  const [mounted, setMounted] = useState(false);
   const [formData, setFormData] = useState({
+    fullName: '',
     email: '',
     password: '',
     confirmPassword: '',
+    countryCode: '+91',
+    phoneNumber: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const router = useRouter();
   const { signUp, signInWithGoogle, user } = useAuth();
+  const { redirect } = router.query;
+
+  // Ensure client-side rendering
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Track page view
+  useEffect(() => {
+    if (mounted) {
+      OnboardingEvents.signupStarted('email');
+      trackPageView('/signup');
+    }
+  }, [mounted]);
 
   // Redirect if already logged in
   useEffect(() => {
     const checkUserAndRedirect = async () => {
       if (!user) return;
 
+      // If there's a redirect parameter, use it
+      if (redirect && typeof redirect === 'string') {
+        router.push(redirect);
+        return;
+      }
+
       // Check if user has completed onboarding
-      const { data } = await supabase
+      const userResult = await supabase
         .from('users')
         .select('org_id')
         .eq('id', user.id)
         .maybeSingle();
 
-      if (data?.org_id) {
-        // User has organization, go to dashboard
-        router.push('/dashboard');
-      } else {
-        // User needs to complete onboarding
-        router.push('/onboarding/organization');
-      }
+      const data = userResult.data as { org_id: string | null } | null;
+
+      // Use centralized redirect logic
+      const redirectPath = getAuthRedirectPath(user, data);
+      router.push(redirectPath);
     };
 
     checkUserAndRedirect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]); // Only depend on user, not router
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -65,46 +90,61 @@ export default function SignupPage() {
       return;
     }
 
-    // Sign up with Supabase
-    const { data, error } = await signUp(formData.email, formData.password);
+    // Combine country code and phone number
+    const fullPhone = formData.phoneNumber
+      ? `${formData.countryCode} ${formData.phoneNumber}`.trim()
+      : '';
 
-    console.log('Signup response:', { data, error }); // DEBUG
+    // Sign up with Supabase
+    const { data, error } = await signUp(
+      formData.email,
+      formData.password,
+      formData.fullName,
+      fullPhone
+    );
 
     if (error) {
+      // Track signup failure
+      OnboardingEvents.signupFailed(error.message);
+
       // Show user-friendly error messages
       if (error.message.includes('Email signups are disabled')) {
         setError('Email signups are currently disabled. Please use Google sign-in or contact support.');
+      } else if (
+        error.message.toLowerCase().includes('already registered') ||
+        error.message.toLowerCase().includes('already exists') ||
+        error.message.toLowerCase().includes('user already exists')
+      ) {
+        // User already exists - redirect to login
+        setError('An account with this email already exists. Redirecting to login...');
+        setTimeout(() => {
+          router.push('/login?message=Account already exists. Please login.');
+        }, 2000);
       } else {
         setError(error.message);
       }
       setLoading(false);
     } else {
+      // Track signup success
+      OnboardingEvents.signupCompleted('email');
       // Check if the user was immediately logged in or needs email confirmation
       // data.user exists but data.session determines if they're logged in
 
       if (data?.session) {
-        console.log('User has session, checking onboarding status...'); // DEBUG
         // User is immediately logged in (email confirmation disabled)
         // Check if they already completed onboarding (edge case: returning user)
-        const { data: userData, error: userError } = await supabase
+        const userCheckResult = await supabase
           .from('users')
           .select('org_id')
           .eq('id', data.user.id)
           .maybeSingle(); // Use maybeSingle() instead of single() to handle no rows
 
-        console.log('User data from DB:', userData, userError); // DEBUG
+        const userData = userCheckResult.data as { org_id: string | null } | null;
 
-        // If user has org_id, go to dashboard
-        // Otherwise (new user or no org), go to onboarding
-        if (userData?.org_id) {
-          console.log('Redirecting to dashboard'); // DEBUG
-          router.push('/dashboard');
-        } else {
-          console.log('Redirecting to onboarding'); // DEBUG
-          router.push('/onboarding/organization');
-        }
+        // Use centralized post-signup redirect logic
+        const redirectPath = getPostSignupRedirectPath(userData);
+        router.push(redirectPath);
       } else {
-        console.log('No session - showing email confirmation screen'); // DEBUG
         // Email confirmation required - show success screen
         setSuccess(true);
         setLoading(false);
@@ -125,18 +165,28 @@ export default function SignupPage() {
     // Redirect happens via OAuth callback
   };
 
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!mounted) {
+    return null;
+  }
+
   if (success) {
     return (
-      <div
-        style={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#f5f5f5',
-          fontFamily: 'system-ui, -apple-system, sans-serif',
-        }}
-      >
+      <>
+        <Head>
+          <title>Check Your Email - Automet</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        </Head>
+        <div
+          style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#f5f5f5',
+            fontFamily: 'system-ui, -apple-system, sans-serif',
+          }}
+        >
         <div
           style={{
             backgroundColor: 'white',
@@ -194,11 +244,17 @@ export default function SignupPage() {
           </a>
         </div>
       </div>
+      </>
     );
   }
 
   return (
-    <div
+    <>
+      <Head>
+        <title>Create Your Account - Automet</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+      </Head>
+      <div
       style={{
         minHeight: '100vh',
         display: 'flex',
@@ -253,7 +309,35 @@ export default function SignupPage() {
                 fontWeight: '500',
               }}
             >
-              Email
+              Full Name *
+            </label>
+            <input
+              type="text"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleChange}
+              required
+              style={{
+                width: '100%',
+                padding: '0.5rem',
+                border: '1px solid #d1d5db',
+                borderRadius: '4px',
+                fontSize: '1rem',
+              }}
+              placeholder="e.g., Rajesh Kumar"
+            />
+          </div>
+
+          <div style={{ marginBottom: '1rem' }}>
+            <label
+              style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+              }}
+            >
+              Email *
             </label>
             <input
               type="email"
@@ -300,7 +384,7 @@ export default function SignupPage() {
             />
           </div>
 
-          <div style={{ marginBottom: '1.5rem' }}>
+          <div style={{ marginBottom: '1rem' }}>
             <label
               style={{
                 display: 'block',
@@ -327,6 +411,71 @@ export default function SignupPage() {
               placeholder="••••••••"
             />
           </div>
+
+          <div style={{ marginBottom: '1rem' }}>
+            <label
+              style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+              }}
+            >
+              Phone (Optional)
+            </label>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <select
+                name="countryCode"
+                value={formData.countryCode}
+                onChange={handleChange}
+                style={{
+                  width: '110px',
+                  padding: '0.5rem',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '4px',
+                  fontSize: '1rem',
+                  backgroundColor: 'white',
+                }}
+              >
+                <option value="+91">🇮🇳 +91</option>
+                <option value="+1">🇺🇸 +1</option>
+                <option value="+44">🇬🇧 +44</option>
+                <option value="+86">🇨🇳 +86</option>
+                <option value="+81">🇯🇵 +81</option>
+                <option value="+82">🇰🇷 +82</option>
+                <option value="+65">🇸🇬 +65</option>
+                <option value="+971">🇦🇪 +971</option>
+                <option value="+966">🇸🇦 +966</option>
+                <option value="+61">🇦🇺 +61</option>
+              </select>
+              <input
+                type="tel"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={(e) => {
+                  // Only allow digits and limit to 10 characters
+                  const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                  setFormData({ ...formData, phoneNumber: value });
+                }}
+                maxLength={10}
+                style={{
+                  flex: 1,
+                  padding: '0.5rem',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '4px',
+                  fontSize: '1rem',
+                }}
+                placeholder="9876543210"
+              />
+            </div>
+            <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem', marginBottom: 0 }}>
+              Enter 10-digit mobile number
+            </p>
+          </div>
+
+          <p style={{ fontSize: '0.75rem', color: '#9ca3af', textAlign: 'center', marginBottom: '1rem' }}>
+            By creating an account, you agree to our Terms of Service and Privacy Policy
+          </p>
 
           <button
             type="submit"
@@ -433,5 +582,6 @@ export default function SignupPage() {
         </p>
       </div>
     </div>
+    </>
   );
 }

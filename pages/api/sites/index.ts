@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { withAuth, requireRole } from '@/lib/auth-middleware';
+import { withOnboardedAuth, requireRole } from '@/lib/auth-middleware';
 import { logError } from '@/lib/logger';
 import type { Database } from '@/types/database';
 
@@ -144,7 +144,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const authResult = await withAuth(req, res);
+  const authResult = await withOnboardedAuth(req, res);
   if (!authResult.authenticated) {
     return;
   }

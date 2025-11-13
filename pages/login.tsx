@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
+import { getPostLoginRedirectPath } from '@/lib/auth-redirect';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -10,26 +11,31 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { signIn, signInWithGoogle, user } = useAuth();
+  const { redirect } = router.query;
 
   // Redirect if already logged in
   useEffect(() => {
     const checkUserAndRedirect = async () => {
       if (!user) return;
 
+      // If there's a redirect parameter, use it
+      if (redirect && typeof redirect === 'string') {
+        router.push(redirect);
+        return;
+      }
+
       // Check if user has completed onboarding
-      const { data } = await supabase
+      const userResult = await supabase
         .from('users')
         .select('org_id')
         .eq('id', user.id)
         .maybeSingle();
 
-      if (data?.org_id) {
-        // User has organization, go to dashboard
-        router.push('/dashboard');
-      } else {
-        // User needs to complete onboarding
-        router.push('/onboarding/organization');
-      }
+      const data = userResult.data as { org_id: string | null } | null;
+
+      // Use centralized redirect logic
+      const redirectPath = getPostLoginRedirectPath(data);
+      router.push(redirectPath);
     };
 
     checkUserAndRedirect();
@@ -47,7 +53,9 @@ export default function LoginPage() {
       setError(error.message);
       setLoading(false);
     } else {
-      router.push('/dashboard');
+      // Redirect to specified page or dashboard
+      const redirectUrl = typeof redirect === 'string' ? redirect : '/dashboard';
+      router.push(redirectUrl);
     }
   };
 

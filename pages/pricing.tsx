@@ -280,7 +280,7 @@ export default function PricingPage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Navigation onPreorderClick={() => setPreorderModalOpen(true)} />
+      <Navigation />
 
       {/* Hero Section */}
       <section className="pt-32 pb-16 bg-gradient-to-br from-orange-50 via-white to-amber-50">

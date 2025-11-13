@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { supabase } from '@/lib/supabase';
+import { getOAuthCallbackRedirectPath } from '@/lib/auth-redirect';
 
 export default function AuthCallback() {
   const router = useRouter();
@@ -19,19 +20,17 @@ export default function AuthCallback() {
 
         if (session) {
           // Check if user has completed onboarding
-          const { data: userData } = await supabase
+          const userResult = await supabase
             .from('users')
             .select('org_id')
             .eq('id', session.user.id)
-            .single();
+            .maybeSingle();
 
-          if (userData?.org_id) {
-            // User has organization, go to dashboard
-            router.push('/dashboard');
-          } else {
-            // New user, needs onboarding
-            router.push('/onboarding/organization');
-          }
+          const userData = userResult.data as { org_id: string | null } | null;
+
+          // Use centralized OAuth redirect logic
+          const redirectPath = getOAuthCallbackRedirectPath(userData);
+          router.push(redirectPath);
         } else {
           // No session - redirect to login
           router.push('/login');

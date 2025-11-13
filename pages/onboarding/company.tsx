@@ -1,5 +1,5 @@
 /**
- * Organization Onboarding - Step 1
+ * Company Details - Onboarding Step 1
  * Create organization profile after user signs up
  */
 
@@ -7,9 +7,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/lib/supabase';
+import { OnboardingEvents, trackPageView } from '@/lib/analytics';
 
-export default function OrganizationOnboarding() {
+export default function CompanyOnboarding() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -17,9 +17,16 @@ export default function OrganizationOnboarding() {
   const [formData, setFormData] = useState({
     organizationName: '',
     industry: '',
-    teamSize: '',
-    phone: '',
+    workingHoursFrom: '09:00',
+    workingHoursTo: '18:00',
+    currency: 'INR',
   });
+
+  // Track page view
+  useEffect(() => {
+    OnboardingEvents.companyDetailsViewed();
+    trackPageView('/onboarding/company');
+  }, []);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -27,26 +34,6 @@ export default function OrganizationOnboarding() {
       router.push('/login');
     }
   }, [user, authLoading, router]);
-
-  // Check if user already has an organization
-  useEffect(() => {
-    const checkExistingOrg = async () => {
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from('users')
-        .select('org_id, organizations(*)')
-        .eq('id', user.id)
-        .single();
-
-      if (data?.org_id) {
-        // User already has an organization, go to dashboard
-        router.push('/dashboard');
-      }
-    };
-
-    checkExistingOrg();
-  }, [user, router]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -57,13 +44,6 @@ export default function OrganizationOnboarding() {
     });
   };
 
-  const generateSlug = (name: string): string => {
-    return name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -72,8 +52,14 @@ export default function OrganizationOnboarding() {
     try {
       if (!user) throw new Error('Not authenticated');
 
-      // Call API route instead of direct database access
-      // This bypasses RLS issues by using service_role key on the server
+      // Validate working hours
+      if (formData.workingHoursFrom >= formData.workingHoursTo) {
+        setError('End time must be after start time');
+        setLoading(false);
+        return;
+      }
+
+      // Call API route
       const response = await fetch('/api/onboarding/create-organization', {
         method: 'POST',
         headers: {
@@ -82,8 +68,11 @@ export default function OrganizationOnboarding() {
         body: JSON.stringify({
           organizationName: formData.organizationName,
           industry: formData.industry,
-          teamSize: formData.teamSize,
-          phone: formData.phone,
+          workingHours: {
+            from: formData.workingHoursFrom,
+            to: formData.workingHoursTo,
+          },
+          currency: formData.currency,
         }),
       });
 
@@ -95,11 +84,15 @@ export default function OrganizationOnboarding() {
 
       console.log('Organization created successfully:', data.organization);
 
-      // Success! Go to profile setup
-      router.push('/onboarding/profile');
+      // Track success
+      OnboardingEvents.companyDetailsCompleted(formData.industry, formData.currency);
+
+      // Success! Go to team invite
+      router.push('/onboarding/team');
     } catch (err: any) {
       console.error('Onboarding error:', err);
       setError(err.message || 'Failed to create organization');
+      OnboardingEvents.companyDetailsFailed(err.message);
       setLoading(false);
     }
   };
@@ -115,7 +108,8 @@ export default function OrganizationOnboarding() {
   return (
     <>
       <Head>
-        <title>Create Your Organization - Automet</title>
+        <title>Tell us about your company - Automet</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
       </Head>
 
       <div
@@ -142,16 +136,16 @@ export default function OrganizationOnboarding() {
           {/* Progress indicator */}
           <div style={{ marginBottom: '2rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-              <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Step 1 of 2</span>
-              <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>50%</span>
+              <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Step 1 of 5</span>
+              <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>20%</span>
             </div>
             <div style={{ width: '100%', height: '4px', backgroundColor: '#e5e7eb', borderRadius: '2px' }}>
-              <div style={{ width: '50%', height: '100%', backgroundColor: '#2563eb', borderRadius: '2px' }}></div>
+              <div style={{ width: '20%', height: '100%', backgroundColor: '#2563eb', borderRadius: '2px' }}></div>
             </div>
           </div>
 
           <h1 style={{ marginBottom: '0.5rem', fontSize: '1.75rem', fontWeight: '600' }}>
-            Create Your Organization
+            Tell us about your company
           </h1>
           <p style={{ color: '#6b7280', marginBottom: '2rem', fontSize: '0.875rem' }}>
             Set up your company profile to get started with Automet
@@ -183,7 +177,7 @@ export default function OrganizationOnboarding() {
                   fontWeight: '500',
                 }}
               >
-                Organization Name *
+                Company Name *
               </label>
               <input
                 type="text"
@@ -244,7 +238,6 @@ export default function OrganizationOnboarding() {
 
             <div style={{ marginBottom: '1.5rem' }}>
               <label
-                htmlFor="teamSize"
                 style={{
                   display: 'block',
                   marginBottom: '0.5rem',
@@ -252,34 +245,52 @@ export default function OrganizationOnboarding() {
                   fontWeight: '500',
                 }}
               >
-                Team Size *
+                Working Hours *
               </label>
-              <select
-                id="teamSize"
-                name="teamSize"
-                value={formData.teamSize}
-                onChange={handleChange}
-                required
-                style={{
-                  width: '100%',
-                  padding: '0.5rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '4px',
-                  fontSize: '1rem',
-                }}
-              >
-                <option value="">Select team size</option>
-                <option value="1-5">1-5 technicians</option>
-                <option value="6-10">6-10 technicians</option>
-                <option value="11-20">11-20 technicians</option>
-                <option value="21-50">21-50 technicians</option>
-                <option value="50+">50+ technicians</option>
-              </select>
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                <div style={{ flex: 1 }}>
+                  <input
+                    type="time"
+                    name="workingHoursFrom"
+                    value={formData.workingHoursFrom}
+                    onChange={handleChange}
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '4px',
+                      fontSize: '1rem',
+                    }}
+                  />
+                  <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem', marginBottom: 0 }}>
+                    From
+                  </p>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <input
+                    type="time"
+                    name="workingHoursTo"
+                    value={formData.workingHoursTo}
+                    onChange={handleChange}
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '4px',
+                      fontSize: '1rem',
+                    }}
+                  />
+                  <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem', marginBottom: 0 }}>
+                    To
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div style={{ marginBottom: '2rem' }}>
               <label
-                htmlFor="phone"
                 style={{
                   display: 'block',
                   marginBottom: '0.5rem',
@@ -287,23 +298,43 @@ export default function OrganizationOnboarding() {
                   fontWeight: '500',
                 }}
               >
-                Phone Number (Optional)
+                Currency *
               </label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                style={{
-                  width: '100%',
-                  padding: '0.5rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '4px',
-                  fontSize: '1rem',
-                }}
-                placeholder="+91 98765 43210"
-              />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                  <input
+                    type="radio"
+                    name="currency"
+                    value="INR"
+                    checked={formData.currency === 'INR'}
+                    onChange={handleChange}
+                    style={{ marginRight: '0.5rem' }}
+                  />
+                  <span>Indian Rupee (₹)</span>
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                  <input
+                    type="radio"
+                    name="currency"
+                    value="USD"
+                    checked={formData.currency === 'USD'}
+                    onChange={handleChange}
+                    style={{ marginRight: '0.5rem' }}
+                  />
+                  <span>US Dollar ($)</span>
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                  <input
+                    type="radio"
+                    name="currency"
+                    value="OTHER"
+                    checked={formData.currency === 'OTHER'}
+                    onChange={handleChange}
+                    style={{ marginRight: '0.5rem' }}
+                  />
+                  <span>Other</span>
+                </label>
+              </div>
             </div>
 
             <button
@@ -319,15 +350,31 @@ export default function OrganizationOnboarding() {
                 fontSize: '1rem',
                 fontWeight: '500',
                 cursor: loading ? 'not-allowed' : 'pointer',
+                marginBottom: '0.75rem',
               }}
             >
-              {loading ? 'Creating...' : 'Continue'}
+              {loading ? 'Creating...' : 'Save & continue →'}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => router.push('/dashboard')}
+              disabled={loading}
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                backgroundColor: 'transparent',
+                color: '#6b7280',
+                border: '1px solid #d1d5db',
+                borderRadius: '4px',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                cursor: loading ? 'not-allowed' : 'pointer',
+              }}
+            >
+              Skip for now
             </button>
           </form>
-
-          <p style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.75rem', color: '#9ca3af' }}>
-            By continuing, you agree to our Terms of Service and Privacy Policy
-          </p>
         </div>
       </div>
     </>

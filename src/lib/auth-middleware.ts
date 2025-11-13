@@ -10,6 +10,18 @@ export interface AuthenticatedApiRequest extends NextApiRequest {
   user: {
     id: string;
     email: string;
+    org_id: string | null;
+    role: 'owner' | 'coordinator' | 'technician' | null;
+  };
+}
+
+/**
+ * Authenticated API Response with user who has completed onboarding
+ */
+export interface OnboardedApiRequest extends NextApiRequest {
+  user: {
+    id: string;
+    email: string;
     org_id: string;
     role: 'owner' | 'coordinator' | 'technician';
   };
@@ -66,8 +78,10 @@ export async function withAuth(
         typeof (value as { id?: unknown }).id === 'string' &&
         (typeof (value as { email?: unknown }).email === 'string' ||
           (value as { email?: unknown }).email === null) &&
-        typeof (value as { org_id?: unknown }).org_id === 'string' &&
-        typeof (value as { role?: unknown }).role === 'string'
+        (typeof (value as { org_id?: unknown }).org_id === 'string' ||
+          (value as { org_id?: unknown }).org_id === null) &&
+        (typeof (value as { role?: unknown }).role === 'string' ||
+          (value as { role?: unknown }).role === null)
       );
     };
 
@@ -95,7 +109,7 @@ export async function withAuth(
         id: userProfile.id,
         email: sanitizedEmail || '',
         org_id: userProfile.org_id,
-        role: userProfile.role as 'owner' | 'coordinator' | 'technician',
+        role: userProfile.role,
       },
     };
   } catch (error) {
@@ -109,11 +123,49 @@ export async function withAuth(
 }
 
 /**
+ * Authentication middleware that requires completed onboarding
+ * Use this for API routes that need org_id to be present
+ */
+export async function withOnboardedAuth(
+  req: NextApiRequest,
+  res: NextApiResponse
+): Promise<
+  | { authenticated: true; user: OnboardedApiRequest['user'] }
+  | { authenticated: false }
+> {
+  const authResult = await withAuth(req, res);
+
+  if (!authResult.authenticated) {
+    return { authenticated: false };
+  }
+
+  // Check if user has completed onboarding
+  if (!authResult.user.org_id || !authResult.user.role) {
+    res.status(403).json({
+      error: 'Onboarding Required',
+      message: 'You must complete onboarding before accessing this resource',
+    });
+    return { authenticated: false };
+  }
+
+  // TypeScript now knows org_id and role are non-null
+  return {
+    authenticated: true,
+    user: {
+      id: authResult.user.id,
+      email: authResult.user.email,
+      org_id: authResult.user.org_id,
+      role: authResult.user.role,
+    },
+  };
+}
+
+/**
  * Role-based authorization check
- * Use after withAuth to verify user has required role
+ * Use after withOnboardedAuth to verify user has required role
  */
 export function requireRole(
-  user: AuthenticatedApiRequest['user'],
+  user: OnboardedApiRequest['user'],
   allowedRoles: Array<'owner' | 'coordinator' | 'technician'>,
   res: NextApiResponse
 ): boolean {

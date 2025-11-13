@@ -31,7 +31,7 @@ export default function ContactPage() {
       </Head>
 
       <div className="min-h-screen bg-white">
-        <Navigation onPreorderClick={() => setPreorderModalOpen(true)} />
+        <Navigation />
 
         {/* Hero & Overview */}
         <section className="relative pt-24 pb-16 md:pt-32 md:pb-20 overflow-hidden bg-gradient-to-b from-white via-primary/5 to-white">

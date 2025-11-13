@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import BottomNav from '@/components/BottomNav';
+import { supabase } from '@/lib/supabase';
 
 interface DashboardStats {
   scheduledJobs: number;
@@ -21,9 +22,39 @@ export default function DashboardPage() {
     totalClients: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [hasOrganization, setHasOrganization] = useState<boolean | null>(null);
+
+  // Check if user has organization
+  useEffect(() => {
+    const checkOrganization = async () => {
+      if (!user) return;
+
+      try {
+        const { data } = await supabase
+          .from('users')
+          .select('org_id')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        const userData = data as { org_id: string | null } | null;
+        setHasOrganization(!!userData?.org_id);
+      } catch (error) {
+        console.error('Error checking organization:', error);
+        setHasOrganization(false);
+      }
+    };
+
+    checkOrganization();
+  }, [user]);
 
   useEffect(() => {
     const fetchStats = async () => {
+      // Don't fetch stats if user doesn't have an organization
+      if (hasOrganization === false) {
+        setLoading(false);
+        return;
+      }
+
       try {
         // Fetch jobs by status to get accurate counts
         const [scheduledRes, inProgressRes, completedRes, verifyRes] =
@@ -52,8 +83,10 @@ export default function DashboardPage() {
       }
     };
 
-    fetchStats();
-  }, []);
+    if (hasOrganization !== null) {
+      fetchStats();
+    }
+  }, [hasOrganization]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -121,6 +154,54 @@ export default function DashboardPage() {
             </button>
           </div>
         </header>
+
+        {/* Setup Banner - Show if user doesn't have organization */}
+        {hasOrganization === false && (
+          <div
+            style={{
+              backgroundColor: '#fef3c7',
+              borderLeft: '4px solid #f59e0b',
+              padding: '1rem',
+              margin: '1rem',
+              borderRadius: '8px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+              <div style={{ fontSize: '1.5rem' }}>⚠️</div>
+              <div style={{ flex: 1 }}>
+                <h3
+                  style={{
+                    fontSize: '1rem',
+                    fontWeight: '600',
+                    color: '#92400e',
+                    margin: '0 0 0.5rem 0',
+                  }}
+                >
+                  Complete your setup
+                </h3>
+                <p style={{ fontSize: '0.875rem', color: '#78350f', margin: '0 0 0.75rem 0' }}>
+                  You skipped the onboarding process. Complete your company setup to start using all features.
+                </p>
+                <button
+                  onClick={() => router.push('/onboarding/company')}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    backgroundColor: '#f59e0b',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Complete setup now →
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Main Content */}
         <main style={{ padding: '1rem' }}>

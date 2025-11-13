@@ -94,7 +94,7 @@ export default function LandingPage() {
 
       <div className="min-h-screen bg-white">
         {/* Navigation */}
-        <Navigation onPreorderClick={() => setPreorderModalOpen(true)} />
+        <Navigation />
 
         {/* Hero Section */}
         <Hero onPreorderClick={() => setPreorderModalOpen(true)} />

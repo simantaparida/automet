@@ -6,11 +6,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
-interface NavigationProps {
-  onPreorderClick: () => void;
-}
-
-export default function Navigation({ onPreorderClick }: NavigationProps) {
+export default function Navigation() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -128,12 +124,12 @@ export default function Navigation({ onPreorderClick }: NavigationProps) {
 
           {/* CTA Button */}
           <div className="hidden md:block">
-            <button
-              onClick={onPreorderClick}
-              className="px-6 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+            <Link
+              href="/onboarding/welcome"
+              className="px-6 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 inline-block"
             >
-              Join Waitlist
-            </button>
+              Get started
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -203,15 +199,13 @@ export default function Navigation({ onPreorderClick }: NavigationProps) {
                   </Component>
                 );
               })}
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onPreorderClick();
-                }}
-                className="px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-all duration-300 text-center shadow-md"
+              <Link
+                href="/onboarding/welcome"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-all duration-300 text-center shadow-md block"
               >
-                Join Waitlist
-              </button>
+                Get started
+              </Link>
             </div>
           </div>
       </div>

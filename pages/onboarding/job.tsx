@@ -45,19 +45,24 @@ export default function CreateJob() {
   // Redirect if not authenticated
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push('/login');
+      router.push('/onboarding/welcome');
     }
   }, [user, authLoading, router]);
 
   // Load customers and technicians
   useEffect(() => {
     const loadData = async () => {
-      if (!user) return;
+      if (!user) {
+        console.log('[Job Page] No user found');
+        return;
+      }
+
+      console.log('[Job Page] Loading data for user:', user.id);
 
       try {
         // Use a timeout to prevent infinite loading
         const timeoutId = setTimeout(() => {
-          console.warn('Data loading timed out');
+          console.warn('[Job Page] Data loading timed out');
           setLoadingData(false);
         }, 5000);
 
@@ -68,14 +73,19 @@ export default function CreateJob() {
           .eq('id', user.id)
           .maybeSingle();
 
+        console.log('[Job Page] User query result:', userResult);
+
         const userData = userResult.data as { org_id: string | null } | null;
 
         // Even if we don't find org_id due to cache, continue anyway
         // The create-job API will handle validation
         const orgId = userData?.org_id;
 
+        console.log('[Job Page] User org_id:', orgId);
+
         if (orgId) {
           // Fetch customers
+          console.log('[Job Page] Fetching customers for org:', orgId);
           const customerResult = await supabase
             .from('clients')
             .select('id, name')
@@ -83,16 +93,26 @@ export default function CreateJob() {
             .order('created_at', { ascending: false })
             .limit(10);
 
+          console.log('[Job Page] Customer query result:', customerResult);
+
           const customerData = customerResult.data as Array<{ id: string; name: string }> | null;
           const customerError = customerResult.error;
 
+          if (customerError) {
+            console.error('[Job Page] Customer query error:', customerError);
+          }
+
           if (!customerError && customerData && customerData.length > 0) {
+            console.log('[Job Page] Found customers:', customerData);
             setCustomers(customerData);
             // Pre-select the first customer (most recent = just created)
             setFormData(prev => ({ ...prev, customerId: customerData[0]!.id }));
+          } else {
+            console.warn('[Job Page] No customers found');
           }
 
           // Fetch technicians (optional)
+          console.log('[Job Page] Fetching technicians for org:', orgId);
           const techResult = await supabase
             .from('users')
             .select('id, full_name')
@@ -100,18 +120,29 @@ export default function CreateJob() {
             .eq('role', 'technician')
             .order('full_name', { ascending: true});
 
+          console.log('[Job Page] Technician query result:', techResult);
+
           const techData = techResult.data as Array<{ id: string; full_name: string }> | null;
           const techError = techResult.error;
 
-          if (!techError && techData) {
-            setTechnicians(techData);
+          if (techError) {
+            console.error('[Job Page] Technician query error:', techError);
           }
+
+          if (!techError && techData) {
+            console.log('[Job Page] Found technicians:', techData);
+            setTechnicians(techData);
+          } else {
+            console.warn('[Job Page] No technicians found');
+          }
+        } else {
+          console.error('[Job Page] No org_id found for user');
         }
 
         clearTimeout(timeoutId);
         setLoadingData(false);
       } catch (err) {
-        console.error('Error loading data:', err);
+        console.error('[Job Page] Error loading data:', err);
         setLoadingData(false);
       }
     };
@@ -227,42 +258,127 @@ export default function CreateJob() {
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
       </Head>
 
+      <style jsx>{`
+        .job-container {
+          padding: 1.5rem 1rem;
+        }
+        .job-form {
+          max-width: 500px;
+          padding: 1.25rem;
+        }
+        .job-title {
+          font-size: 1.125rem;
+          margin-bottom: 0.375rem;
+        }
+        .job-subtitle {
+          font-size: 0.8125rem;
+          margin-bottom: 1.125rem;
+        }
+        .field-wrapper {
+          margin-bottom: 0.875rem;
+        }
+        @media (min-width: 768px) {
+          .job-container {
+            padding: 2rem 2rem;
+          }
+          .job-form {
+            max-width: 520px;
+            padding: 1.75rem;
+          }
+          .job-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+          }
+          .job-subtitle {
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+          }
+          .field-wrapper {
+            margin-bottom: 1rem;
+          }
+        }
+      `}</style>
+
       <div
+        className="job-container"
         style={{
           minHeight: '100vh',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#f5f5f5',
+          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
-          padding: '2rem 1rem',
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
+        {/* Decorative background element */}
         <div
           style={{
+            position: 'absolute',
+            top: '-100px',
+            right: '-100px',
+            width: '300px',
+            height: '300px',
+            background: 'radial-gradient(circle, rgba(239,119,34,0.1) 0%, transparent 70%)',
+            borderRadius: '50%',
+            pointerEvents: 'none',
+          }}
+        />
+
+        <div
+          className="job-form"
+          style={{
             backgroundColor: 'white',
-            padding: '2rem',
-            borderRadius: '8px',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+            borderRadius: '12px',
+            boxShadow: '0 10px 40px rgba(0,0,0,0.08)',
             width: '100%',
-            maxWidth: '600px',
+            margin: '0 auto',
+            border: '1px solid rgba(239,119,34,0.1)',
           }}
         >
           {/* Progress indicator */}
-          <div style={{ marginBottom: '2rem' }}>
+          <div style={{ marginBottom: '1.25rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-              <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Step 4 of 5</span>
-              <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>80%</span>
+              <span style={{ fontSize: '0.8125rem', color: '#6b7280', fontWeight: '500' }}>Step 4 of 5</span>
+              <span style={{ fontSize: '0.8125rem', color: '#EF7722', fontWeight: '600' }}>80%</span>
             </div>
-            <div style={{ width: '100%', height: '4px', backgroundColor: '#e5e7eb', borderRadius: '2px' }}>
-              <div style={{ width: '80%', height: '100%', backgroundColor: '#2563eb', borderRadius: '2px' }}></div>
+            <div style={{ width: '100%', height: '6px', backgroundColor: '#ffe8d6', borderRadius: '3px' }}>
+              <div style={{ width: '80%', height: '100%', background: 'linear-gradient(90deg, #EF7722 0%, #ff8833 100%)', borderRadius: '3px' }}></div>
             </div>
           </div>
 
-          <h1 style={{ marginBottom: '0.5rem', fontSize: '1.75rem', fontWeight: '600' }}>
+          {/* Back button */}
+          <button
+            type="button"
+            onClick={() => router.push('/onboarding/customer')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.5rem 0.75rem',
+              backgroundColor: 'transparent',
+              border: 'none',
+              color: '#6b7280',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              cursor: 'pointer',
+              marginBottom: '1rem',
+              transition: 'color 0.2s',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = '#EF7722')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = '#6b7280')}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back
+          </button>
+
+          <h1 className="job-title" style={{ fontWeight: '700', color: '#111827', textAlign: 'center' }}>
             Create your first job
           </h1>
-          <p style={{ color: '#6b7280', marginBottom: '2rem', fontSize: '0.875rem' }}>
+          <p className="job-subtitle" style={{ color: '#6b7280', textAlign: 'center' }}>
             Schedule a job and optionally assign it to a technician.
           </p>
 
@@ -319,12 +435,17 @@ export default function CreateJob() {
                 disabled={customers.length === 0}
                 style={{
                   width: '100%',
-                  padding: '0.625rem',
+                  padding: '0.5625rem 0.75rem',
                   border: '1px solid #d1d5db',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   fontSize: '0.875rem',
                   backgroundColor: customers.length === 0 ? '#f9fafb' : 'white',
+                  outline: 'none',
+                  transition: 'border-color 0.2s',
+                  cursor: customers.length === 0 ? 'not-allowed' : 'pointer',
                 }}
+                onFocus={(e) => (e.target.style.borderColor = '#EF7722')}
+                onBlur={(e) => (e.target.style.borderColor = '#d1d5db')}
               >
                 <option value="">Select a customer</option>
                 {customers.map((customer) => (
@@ -358,12 +479,16 @@ export default function CreateJob() {
                 required
                 style={{
                   width: '100%',
-                  padding: '0.625rem',
+                  padding: '0.5625rem 0.75rem',
                   border: '1px solid #d1d5db',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   fontSize: '0.875rem',
                   backgroundColor: 'white',
+                  outline: 'none',
+                  transition: 'border-color 0.2s',
                 }}
+                onFocus={(e) => (e.target.style.borderColor = '#EF7722')}
+                onBlur={(e) => (e.target.style.borderColor = '#d1d5db')}
               />
             </div>
 
@@ -387,12 +512,17 @@ export default function CreateJob() {
                 onChange={handleChange}
                 style={{
                   width: '100%',
-                  padding: '0.625rem',
+                  padding: '0.5625rem 0.75rem',
                   border: '1px solid #d1d5db',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   fontSize: '0.875rem',
                   backgroundColor: 'white',
+                  outline: 'none',
+                  transition: 'border-color 0.2s',
+                  cursor: 'pointer',
                 }}
+                onFocus={(e) => (e.target.style.borderColor = '#EF7722')}
+                onBlur={(e) => (e.target.style.borderColor = '#d1d5db')}
               >
                 <option value="">Unassigned</option>
                 {technicians.map((tech) => (
@@ -431,12 +561,16 @@ export default function CreateJob() {
                   required
                   style={{
                     width: '100%',
-                    padding: '0.625rem',
+                    padding: '0.5625rem 0.75rem',
                     border: '1px solid #d1d5db',
-                    borderRadius: '4px',
+                    borderRadius: '6px',
                     fontSize: '0.875rem',
                     backgroundColor: 'white',
+                    outline: 'none',
+                    transition: 'border-color 0.2s',
                   }}
+                  onFocus={(e) => (e.target.style.borderColor = '#EF7722')}
+                  onBlur={(e) => (e.target.style.borderColor = '#d1d5db')}
                 />
               </div>
 
@@ -462,12 +596,16 @@ export default function CreateJob() {
                   required
                   style={{
                     width: '100%',
-                    padding: '0.625rem',
+                    padding: '0.5625rem 0.75rem',
                     border: '1px solid #d1d5db',
-                    borderRadius: '4px',
+                    borderRadius: '6px',
                     fontSize: '0.875rem',
                     backgroundColor: 'white',
+                    outline: 'none',
+                    transition: 'border-color 0.2s',
                   }}
+                  onFocus={(e) => (e.target.style.borderColor = '#EF7722')}
+                  onBlur={(e) => (e.target.style.borderColor = '#d1d5db')}
                 />
               </div>
             </div>
@@ -477,15 +615,27 @@ export default function CreateJob() {
               disabled={loading || customers.length === 0}
               style={{
                 width: '100%',
-                padding: '0.75rem',
+                padding: '0.625rem',
                 marginBottom: '0.75rem',
-                backgroundColor: loading || customers.length === 0 ? '#9ca3af' : '#2563eb',
+                background: loading || customers.length === 0 ? '#9ca3af' : 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
                 color: 'white',
                 border: 'none',
-                borderRadius: '4px',
-                fontSize: '1rem',
-                fontWeight: '500',
+                borderRadius: '6px',
+                fontSize: '0.9375rem',
+                fontWeight: '600',
                 cursor: loading || customers.length === 0 ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s',
+                boxShadow: loading || customers.length === 0 ? 'none' : '0 2px 8px rgba(239,119,34,0.25)',
+              }}
+              onMouseEnter={(e) => {
+                if (!loading && customers.length > 0) {
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
               }}
             >
               {loading ? 'Creating job...' : 'Create job →'}
@@ -497,15 +647,18 @@ export default function CreateJob() {
               disabled={loading}
               style={{
                 width: '100%',
-                padding: '0.75rem',
+                padding: '0.625rem',
                 backgroundColor: 'transparent',
                 color: '#6b7280',
                 border: '1px solid #d1d5db',
-                borderRadius: '4px',
-                fontSize: '1rem',
+                borderRadius: '6px',
+                fontSize: '0.875rem',
                 fontWeight: '500',
                 cursor: loading ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s',
               }}
+              onMouseEnter={(e) => !loading && (e.currentTarget.style.borderColor = '#EF7722', e.currentTarget.style.color = '#EF7722')}
+              onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#d1d5db', e.currentTarget.style.color = '#6b7280')}
             >
               Skip for now
             </button>

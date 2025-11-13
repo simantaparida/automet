@@ -3,7 +3,9 @@ import { useRouter } from 'next/router';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import BottomNav from '@/components/BottomNav';
+import Sidebar from '@/components/Sidebar';
 import { supabase } from '@/lib/supabase';
+import { Calendar, Wrench, CheckCircle2, Users, Plus, ClipboardList, AlertTriangle } from 'lucide-react';
 
 interface DashboardStats {
   scheduledJobs: number;
@@ -13,7 +15,7 @@ interface DashboardStats {
 }
 
 export default function DashboardPage() {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
   const [stats, setStats] = useState<DashboardStats>({
     scheduledJobs: 0,
@@ -88,31 +90,54 @@ export default function DashboardPage() {
     }
   }, [hasOrganization]);
 
-  const handleSignOut = async () => {
-    await signOut();
-    router.push('/login');
-  };
-
   return (
     <ProtectedRoute>
+      <style jsx>{`
+        .dashboard-container {
+          padding-bottom: 80px;
+        }
+        .main-content {
+          padding: 1rem;
+        }
+        .mobile-header {
+          display: block;
+        }
+        @media (min-width: 768px) {
+          .dashboard-container {
+            margin-left: 260px;
+            padding-bottom: 0;
+          }
+          .main-content {
+            padding: 2rem;
+          }
+          .mobile-header {
+            display: none;
+          }
+        }
+      `}</style>
+
       <div
+        className="dashboard-container"
         style={{
           minHeight: '100vh',
-          backgroundColor: '#f5f5f5',
+          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
-          paddingBottom: '80px', // Space for bottom nav
         }}
       >
-        {/* Sticky Header */}
+        {/* Desktop Sidebar */}
+        <Sidebar activeTab="home" />
+
+        {/* Mobile Header - Only visible on mobile */}
         <header
+          className="mobile-header"
           style={{
-            backgroundColor: '#2563eb',
+            background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
             color: 'white',
             padding: '1rem',
             position: 'sticky',
             top: 0,
-            zIndex: 10,
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            zIndex: 20,
+            boxShadow: '0 2px 10px rgba(239,119,34,0.2)',
           }}
         >
           <div
@@ -123,7 +148,7 @@ export default function DashboardPage() {
             }}
           >
             <div>
-              <h1 style={{ fontSize: '1.25rem', fontWeight: '600', margin: 0 }}>
+              <h1 style={{ fontSize: '1.25rem', fontWeight: '700', margin: 0 }}>
                 Dashboard
               </h1>
               <p
@@ -136,22 +161,6 @@ export default function DashboardPage() {
                 {user?.email}
               </p>
             </div>
-            <button
-              onClick={handleSignOut}
-              style={{
-                padding: '0.5rem 1rem',
-                backgroundColor: 'rgba(255,255,255,0.2)',
-                color: 'white',
-                border: '1px solid rgba(255,255,255,0.3)',
-                borderRadius: '6px',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                cursor: 'pointer',
-                minHeight: '44px',
-              }}
-            >
-              Sign Out
-            </button>
           </div>
         </header>
 
@@ -160,20 +169,33 @@ export default function DashboardPage() {
           <div
             style={{
               backgroundColor: '#fef3c7',
-              borderLeft: '4px solid #f59e0b',
+              borderLeft: '4px solid #EF7722',
               padding: '1rem',
               margin: '1rem',
-              borderRadius: '8px',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+              borderRadius: '12px',
+              boxShadow: '0 2px 8px rgba(239,119,34,0.15)',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
-              <div style={{ fontSize: '1.5rem' }}>⚠️</div>
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: 'rgba(239,119,34,0.1)',
+                  borderRadius: '8px',
+                  color: '#EF7722',
+                }}
+              >
+                <AlertTriangle size={24} />
+              </div>
               <div style={{ flex: 1 }}>
                 <h3
                   style={{
                     fontSize: '1rem',
-                    fontWeight: '600',
+                    fontWeight: '700',
                     color: '#92400e',
                     margin: '0 0 0.5rem 0',
                   }}
@@ -186,14 +208,15 @@ export default function DashboardPage() {
                 <button
                   onClick={() => router.push('/onboarding/company')}
                   style={{
-                    padding: '0.5rem 1rem',
-                    backgroundColor: '#f59e0b',
+                    padding: '0.625rem 1.25rem',
+                    background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
                     color: 'white',
                     border: 'none',
-                    borderRadius: '6px',
+                    borderRadius: '8px',
                     fontSize: '0.875rem',
-                    fontWeight: '500',
+                    fontWeight: '600',
                     cursor: 'pointer',
+                    boxShadow: '0 2px 8px rgba(239,119,34,0.3)',
                   }}
                 >
                   Complete setup now →
@@ -204,27 +227,29 @@ export default function DashboardPage() {
         )}
 
         {/* Main Content */}
-        <main style={{ padding: '1rem' }}>
+        <main className="main-content">
           {/* Welcome Card */}
           <div
             style={{
               backgroundColor: 'white',
-              padding: '1rem',
-              borderRadius: '8px',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-              marginBottom: '1rem',
+              padding: '1.5rem',
+              borderRadius: '12px',
+              boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
+              marginBottom: '1.5rem',
+              border: '1px solid rgba(239,119,34,0.1)',
             }}
           >
             <h2
               style={{
-                fontSize: '1.125rem',
-                fontWeight: '600',
+                fontSize: '1.5rem',
+                fontWeight: '700',
                 marginBottom: '0.5rem',
+                color: '#111827',
               }}
             >
               Welcome! 👋
             </h2>
-            <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: 0 }}>
+            <p style={{ fontSize: '0.9375rem', color: '#6b7280', margin: 0 }}>
               Here's your overview for today
             </p>
           </div>
@@ -235,7 +260,7 @@ export default function DashboardPage() {
               display: 'grid',
               gridTemplateColumns: 'repeat(2, 1fr)',
               gap: '1rem',
-              marginBottom: '1rem',
+              marginBottom: '1.5rem',
             }}
           >
             {/* Scheduled Jobs */}
@@ -243,35 +268,44 @@ export default function DashboardPage() {
               onClick={() => router.push('/jobs?status=scheduled')}
               style={{
                 backgroundColor: 'white',
-                padding: '1rem',
-                borderRadius: '8px',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                border: 'none',
+                padding: '1.25rem',
+                borderRadius: '12px',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
+                border: '1px solid rgba(239,119,34,0.1)',
                 cursor: 'pointer',
-                minHeight: '100px',
+                minHeight: '120px',
                 textAlign: 'left',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 4px 15px rgba(239,119,34,0.15)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.06)';
               }}
             >
               <div
                 style={{
-                  width: '40px',
-                  height: '40px',
-                  backgroundColor: '#dbeafe',
-                  borderRadius: '8px',
+                  width: '48px',
+                  height: '48px',
+                  background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
+                  borderRadius: '10px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '1.5rem',
-                  marginBottom: '0.5rem',
+                  marginBottom: '0.75rem',
+                  color: '#EF7722',
                 }}
               >
-                📅
+                <Calendar size={24} />
               </div>
               <p
                 style={{
-                  fontSize: '1.5rem',
-                  fontWeight: '600',
-                  color: '#1f2937',
+                  fontSize: '1.875rem',
+                  fontWeight: '700',
+                  color: '#111827',
                   margin: '0 0 0.25rem 0',
                 }}
               >
@@ -279,9 +313,10 @@ export default function DashboardPage() {
               </p>
               <p
                 style={{
-                  fontSize: '0.75rem',
+                  fontSize: '0.8125rem',
                   color: '#6b7280',
                   margin: 0,
+                  fontWeight: '500',
                 }}
               >
                 Scheduled
@@ -293,35 +328,44 @@ export default function DashboardPage() {
               onClick={() => router.push('/jobs?status=in_progress')}
               style={{
                 backgroundColor: 'white',
-                padding: '1rem',
-                borderRadius: '8px',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                border: 'none',
+                padding: '1.25rem',
+                borderRadius: '12px',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
+                border: '1px solid rgba(239,119,34,0.1)',
                 cursor: 'pointer',
-                minHeight: '100px',
+                minHeight: '120px',
                 textAlign: 'left',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 4px 15px rgba(239,119,34,0.15)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.06)';
               }}
             >
               <div
                 style={{
-                  width: '40px',
-                  height: '40px',
-                  backgroundColor: '#fef3c7',
-                  borderRadius: '8px',
+                  width: '48px',
+                  height: '48px',
+                  background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+                  borderRadius: '10px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '1.5rem',
-                  marginBottom: '0.5rem',
+                  marginBottom: '0.75rem',
+                  color: '#f59e0b',
                 }}
               >
-                🔧
+                <Wrench size={24} />
               </div>
               <p
                 style={{
-                  fontSize: '1.5rem',
-                  fontWeight: '600',
-                  color: '#1f2937',
+                  fontSize: '1.875rem',
+                  fontWeight: '700',
+                  color: '#111827',
                   margin: '0 0 0.25rem 0',
                 }}
               >
@@ -329,9 +373,10 @@ export default function DashboardPage() {
               </p>
               <p
                 style={{
-                  fontSize: '0.75rem',
+                  fontSize: '0.8125rem',
                   color: '#6b7280',
                   margin: 0,
+                  fontWeight: '500',
                 }}
               >
                 In Progress
@@ -343,35 +388,44 @@ export default function DashboardPage() {
               onClick={() => router.push('/jobs?status=completed')}
               style={{
                 backgroundColor: 'white',
-                padding: '1rem',
-                borderRadius: '8px',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                border: 'none',
+                padding: '1.25rem',
+                borderRadius: '12px',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
+                border: '1px solid rgba(239,119,34,0.1)',
                 cursor: 'pointer',
-                minHeight: '100px',
+                minHeight: '120px',
                 textAlign: 'left',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 4px 15px rgba(239,119,34,0.15)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.06)';
               }}
             >
               <div
                 style={{
-                  width: '40px',
-                  height: '40px',
-                  backgroundColor: '#d1fae5',
-                  borderRadius: '8px',
+                  width: '48px',
+                  height: '48px',
+                  background: 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)',
+                  borderRadius: '10px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '1.5rem',
-                  marginBottom: '0.5rem',
+                  marginBottom: '0.75rem',
+                  color: '#10b981',
                 }}
               >
-                ✅
+                <CheckCircle2 size={24} />
               </div>
               <p
                 style={{
-                  fontSize: '1.5rem',
-                  fontWeight: '600',
-                  color: '#1f2937',
+                  fontSize: '1.875rem',
+                  fontWeight: '700',
+                  color: '#111827',
                   margin: '0 0 0.25rem 0',
                 }}
               >
@@ -379,9 +433,10 @@ export default function DashboardPage() {
               </p>
               <p
                 style={{
-                  fontSize: '0.75rem',
+                  fontSize: '0.8125rem',
                   color: '#6b7280',
                   margin: 0,
+                  fontWeight: '500',
                 }}
               >
                 Completed
@@ -392,33 +447,34 @@ export default function DashboardPage() {
             <div
               style={{
                 backgroundColor: 'white',
-                padding: '1rem',
-                borderRadius: '8px',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                minHeight: '100px',
+                padding: '1.25rem',
+                borderRadius: '12px',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
+                border: '1px solid rgba(239,119,34,0.1)',
+                minHeight: '120px',
                 textAlign: 'left',
               }}
             >
               <div
                 style={{
-                  width: '40px',
-                  height: '40px',
-                  backgroundColor: '#e0e7ff',
-                  borderRadius: '8px',
+                  width: '48px',
+                  height: '48px',
+                  background: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)',
+                  borderRadius: '10px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '1.5rem',
-                  marginBottom: '0.5rem',
+                  marginBottom: '0.75rem',
+                  color: '#6366f1',
                 }}
               >
-                👥
+                <Users size={24} />
               </div>
               <p
                 style={{
-                  fontSize: '1.5rem',
-                  fontWeight: '600',
-                  color: '#1f2937',
+                  fontSize: '1.875rem',
+                  fontWeight: '700',
+                  color: '#111827',
                   margin: '0 0 0.25rem 0',
                 }}
               >
@@ -426,9 +482,10 @@ export default function DashboardPage() {
               </p>
               <p
                 style={{
-                  fontSize: '0.75rem',
+                  fontSize: '0.8125rem',
                   color: '#6b7280',
                   margin: 0,
+                  fontWeight: '500',
                 }}
               >
                 Clients
@@ -440,17 +497,19 @@ export default function DashboardPage() {
           <div
             style={{
               backgroundColor: 'white',
-              padding: '1rem',
-              borderRadius: '8px',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-              marginBottom: '1rem',
+              padding: '1.5rem',
+              borderRadius: '12px',
+              boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
+              marginBottom: '1.5rem',
+              border: '1px solid rgba(239,119,34,0.1)',
             }}
           >
             <h3
               style={{
-                fontSize: '1rem',
-                fontWeight: '600',
-                marginBottom: '0.75rem',
+                fontSize: '1.125rem',
+                fontWeight: '700',
+                marginBottom: '1rem',
+                color: '#111827',
               }}
             >
               Quick Actions
@@ -459,48 +518,65 @@ export default function DashboardPage() {
               style={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '0.5rem',
+                gap: '0.75rem',
               }}
             >
               <button
                 onClick={() => router.push('/jobs/new')}
                 style={{
-                  backgroundColor: '#2563eb',
+                  background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '6px',
-                  padding: '0.75rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
+                  borderRadius: '8px',
+                  padding: '0.875rem',
+                  fontSize: '0.9375rem',
+                  fontWeight: '600',
                   cursor: 'pointer',
-                  minHeight: '48px',
+                  minHeight: '52px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '0.5rem',
+                  boxShadow: '0 2px 8px rgba(239,119,34,0.25)',
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.35)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
                 }}
               >
-                <span>➕</span> Create New Job
+                <Plus size={20} /> Create New Job
               </button>
               <button
                 onClick={() => router.push('/jobs')}
                 style={{
                   backgroundColor: 'white',
-                  color: '#2563eb',
-                  border: '1px solid #2563eb',
-                  borderRadius: '6px',
-                  padding: '0.75rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
+                  color: '#EF7722',
+                  border: '2px solid #EF7722',
+                  borderRadius: '8px',
+                  padding: '0.875rem',
+                  fontSize: '0.9375rem',
+                  fontWeight: '600',
                   cursor: 'pointer',
-                  minHeight: '48px',
+                  minHeight: '52px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '0.5rem',
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#fff5ed';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'white';
                 }}
               >
-                <span>📋</span> View All Jobs
+                <ClipboardList size={20} /> View All Jobs
               </button>
             </div>
           </div>
@@ -508,21 +584,21 @@ export default function DashboardPage() {
           {/* Info Card */}
           <div
             style={{
-              backgroundColor: '#eff6ff',
-              padding: '1rem',
-              borderRadius: '8px',
-              border: '1px solid #bfdbfe',
+              background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
+              padding: '1.25rem',
+              borderRadius: '12px',
+              border: '2px solid rgba(239,119,34,0.2)',
             }}
           >
-            <p style={{ fontSize: '0.875rem', color: '#1e40af', margin: 0 }}>
-              <strong>Mobile-First PWA Ready!</strong> You can use this app on
+            <p style={{ fontSize: '0.875rem', color: '#92400e', margin: 0, lineHeight: '1.6' }}>
+              <strong style={{ color: '#EF7722' }}>Mobile-First PWA Ready!</strong> You can use this app on
               any device. Tap the job status cards above to filter jobs by
               status.
             </p>
           </div>
         </main>
 
-        {/* Bottom Navigation */}
+        {/* Bottom Navigation - Only visible on mobile */}
         <BottomNav activeTab="home" />
       </div>
     </ProtectedRoute>

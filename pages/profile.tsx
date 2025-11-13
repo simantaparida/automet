@@ -14,7 +14,7 @@ export default function ProfilePage() {
     setLoading(true);
     try {
       await signOut();
-      router.push('/login');
+      router.push('/onboarding/welcome');
     } catch (error) {
       console.error('Sign out error:', error);
       setLoading(false);

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import { Home, Briefcase, MoreHorizontal, Users, User, MapPin, Wrench, Package, X } from 'lucide-react';
 
 interface BottomNavProps {
   activeTab?: 'home' | 'jobs' | 'more' | 'clients' | 'profile';
@@ -22,9 +23,31 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
 
   return (
     <>
+      <style jsx>{`
+        @keyframes slideUp {
+          from {
+            transform: translateY(100%);
+          }
+          to {
+            transform: translateY(0);
+          }
+        }
+        @media (min-width: 768px) {
+          .bottom-nav {
+            display: none !important;
+          }
+          .bottom-nav-overlay {
+            display: none !important;
+          }
+          .bottom-nav-menu {
+            display: none !important;
+          }
+        }
+      `}</style>
       {/* More Menu Overlay */}
       {showMoreMenu && (
         <div
+          className="bottom-nav-overlay"
           onClick={() => setShowMoreMenu(false)}
           style={{
             position: 'fixed',
@@ -41,6 +64,7 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
       {/* More Menu Slide-Up */}
       {showMoreMenu && (
         <div
+          className="bottom-nav-menu"
           style={{
             position: 'fixed',
             bottom: '72px',
@@ -54,22 +78,12 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
             animation: 'slideUp 0.2s ease-out',
           }}
         >
-          <style jsx>{`
-            @keyframes slideUp {
-              from {
-                transform: translateY(100%);
-              }
-              to {
-                transform: translateY(0);
-              }
-            }
-          `}</style>
 
           {/* Menu Header */}
           <div
             style={{
               padding: '1rem',
-              borderBottom: '1px solid #e5e7eb',
+              borderBottom: '1px solid rgba(239,119,34,0.1)',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
@@ -78,8 +92,8 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
             <h3
               style={{
                 fontSize: '1rem',
-                fontWeight: '600',
-                color: '#1f2937',
+                fontWeight: '700',
+                color: '#EF7722',
                 margin: 0,
               }}
             >
@@ -90,14 +104,17 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
               style={{
                 backgroundColor: 'transparent',
                 border: 'none',
-                fontSize: '1.5rem',
                 cursor: 'pointer',
-                padding: '0.25rem',
+                padding: '0.5rem',
                 minHeight: '44px',
                 minWidth: '44px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#6b7280',
               }}
             >
-              ✕
+              <X size={24} />
             </button>
           </div>
 
@@ -116,14 +133,30 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
                 border: 'none',
                 cursor: 'pointer',
                 minHeight: '56px',
+                transition: 'background-color 0.2s',
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#fff5ed')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'white')}
             >
-              <span style={{ fontSize: '1.5rem' }}>📍</span>
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: '#fff5ed',
+                  borderRadius: '8px',
+                  color: '#EF7722',
+                }}
+              >
+                <MapPin size={22} />
+              </div>
               <div style={{ textAlign: 'left' }}>
                 <div
                   style={{
                     fontSize: '0.875rem',
-                    fontWeight: '500',
+                    fontWeight: '600',
                     color: '#1f2937',
                   }}
                 >
@@ -153,14 +186,30 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
                 border: 'none',
                 cursor: 'pointer',
                 minHeight: '56px',
+                transition: 'background-color 0.2s',
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#fff5ed')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'white')}
             >
-              <span style={{ fontSize: '1.5rem' }}>🔧</span>
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: '#fff5ed',
+                  borderRadius: '8px',
+                  color: '#EF7722',
+                }}
+              >
+                <Wrench size={22} />
+              </div>
               <div style={{ textAlign: 'left' }}>
                 <div
                   style={{
                     fontSize: '0.875rem',
-                    fontWeight: '500',
+                    fontWeight: '600',
                     color: '#1f2937',
                   }}
                 >
@@ -190,14 +239,30 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
                 border: 'none',
                 cursor: 'pointer',
                 minHeight: '56px',
+                transition: 'background-color 0.2s',
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#fff5ed')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'white')}
             >
-              <span style={{ fontSize: '1.5rem' }}>📦</span>
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: '#fff5ed',
+                  borderRadius: '8px',
+                  color: '#EF7722',
+                }}
+              >
+                <Package size={22} />
+              </div>
               <div style={{ textAlign: 'left' }}>
                 <div
                   style={{
                     fontSize: '0.875rem',
-                    fontWeight: '500',
+                    fontWeight: '600',
                     color: '#1f2937',
                   }}
                 >
@@ -219,17 +284,19 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
 
       {/* Bottom Navigation Bar */}
       <nav
+        className="bottom-nav"
         style={{
           position: 'fixed',
           bottom: 0,
           left: 0,
           right: 0,
           backgroundColor: 'white',
-          borderTop: '1px solid #e5e7eb',
+          borderTop: '1px solid rgba(239,119,34,0.1)',
           display: 'flex',
           justifyContent: 'space-around',
           padding: '0.5rem 0',
           zIndex: 10,
+          boxShadow: '0 -2px 10px rgba(0,0,0,0.05)',
         }}
       >
         {/* Home */}
@@ -248,12 +315,12 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
             minHeight: '56px',
           }}
         >
-          <span style={{ fontSize: '1.5rem' }}>🏠</span>
+          <Home size={24} color={isActive('home') ? '#EF7722' : '#6b7280'} strokeWidth={isActive('home') ? 2.5 : 2} />
           <span
             style={{
-              fontSize: '0.75rem',
-              color: isActive('home') ? '#2563eb' : '#6b7280',
-              fontWeight: isActive('home') ? '500' : '400',
+              fontSize: '0.6875rem',
+              color: isActive('home') ? '#EF7722' : '#6b7280',
+              fontWeight: isActive('home') ? '600' : '500',
             }}
           >
             Home
@@ -276,12 +343,12 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
             minHeight: '56px',
           }}
         >
-          <span style={{ fontSize: '1.5rem' }}>📋</span>
+          <Briefcase size={24} color={isActive('jobs') ? '#EF7722' : '#6b7280'} strokeWidth={isActive('jobs') ? 2.5 : 2} />
           <span
             style={{
-              fontSize: '0.75rem',
-              color: isActive('jobs') ? '#2563eb' : '#6b7280',
-              fontWeight: isActive('jobs') ? '500' : '400',
+              fontSize: '0.6875rem',
+              color: isActive('jobs') ? '#EF7722' : '#6b7280',
+              fontWeight: isActive('jobs') ? '600' : '500',
             }}
           >
             Jobs
@@ -304,12 +371,12 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
             minHeight: '56px',
           }}
         >
-          <span style={{ fontSize: '1.5rem' }}>⋮⋮</span>
+          <MoreHorizontal size={24} color={isActive('more') ? '#EF7722' : '#6b7280'} strokeWidth={isActive('more') ? 2.5 : 2} />
           <span
             style={{
-              fontSize: '0.75rem',
-              color: isActive('more') ? '#2563eb' : '#6b7280',
-              fontWeight: isActive('more') ? '500' : '400',
+              fontSize: '0.6875rem',
+              color: isActive('more') ? '#EF7722' : '#6b7280',
+              fontWeight: isActive('more') ? '600' : '500',
             }}
           >
             More
@@ -332,12 +399,12 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
             minHeight: '56px',
           }}
         >
-          <span style={{ fontSize: '1.5rem' }}>👥</span>
+          <Users size={24} color={isActive('clients') ? '#EF7722' : '#6b7280'} strokeWidth={isActive('clients') ? 2.5 : 2} />
           <span
             style={{
-              fontSize: '0.75rem',
-              color: isActive('clients') ? '#2563eb' : '#6b7280',
-              fontWeight: isActive('clients') ? '500' : '400',
+              fontSize: '0.6875rem',
+              color: isActive('clients') ? '#EF7722' : '#6b7280',
+              fontWeight: isActive('clients') ? '600' : '500',
             }}
           >
             Clients
@@ -360,12 +427,12 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
             minHeight: '56px',
           }}
         >
-          <span style={{ fontSize: '1.5rem' }}>👤</span>
+          <User size={24} color={isActive('profile') ? '#EF7722' : '#6b7280'} strokeWidth={isActive('profile') ? 2.5 : 2} />
           <span
             style={{
-              fontSize: '0.75rem',
-              color: isActive('profile') ? '#2563eb' : '#6b7280',
-              fontWeight: isActive('profile') ? '500' : '400',
+              fontSize: '0.6875rem',
+              color: isActive('profile') ? '#EF7722' : '#6b7280',
+              fontWeight: isActive('profile') ? '600' : '500',
             }}
           >
             Profile

@@ -33,12 +33,12 @@ export default function AuthCallback() {
           router.push(redirectPath);
         } else {
           // No session - redirect to login
-          router.push('/login');
+          router.push('/onboarding/welcome');
         }
       } catch (err) {
         console.error('Auth callback error:', err);
         setError(err instanceof Error ? err.message : 'Authentication failed');
-        setTimeout(() => router.push('/login'), 3000);
+        setTimeout(() => router.push('/onboarding/welcome'), 3000);
       }
     };
 

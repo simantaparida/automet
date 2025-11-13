@@ -36,34 +36,7 @@ export default function SignupPage() {
     }
   }, [mounted]);
 
-  // Redirect if already logged in
-  useEffect(() => {
-    const checkUserAndRedirect = async () => {
-      if (!user) return;
-
-      // If there's a redirect parameter, use it
-      if (redirect && typeof redirect === 'string') {
-        router.push(redirect);
-        return;
-      }
-
-      // Check if user has completed onboarding
-      const userResult = await supabase
-        .from('users')
-        .select('org_id')
-        .eq('id', user.id)
-        .maybeSingle();
-
-      const data = userResult.data as { org_id: string | null } | null;
-
-      // Use centralized redirect logic
-      const redirectPath = getAuthRedirectPath(user, data);
-      router.push(redirectPath);
-    };
-
-    checkUserAndRedirect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]); // Only depend on user, not router
+  // No automatic redirect - allow users to come back to signup page during onboarding
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
@@ -570,7 +543,7 @@ export default function SignupPage() {
         >
           Already have an account?{' '}
           <a
-            href="/login"
+            href="/onboarding/welcome"
             style={{
               color: '#2563eb',
               textDecoration: 'none',

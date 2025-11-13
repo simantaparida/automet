@@ -35,7 +35,7 @@ export default function TeamInvite() {
   // Redirect if not authenticated
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push('/login');
+      router.push('/onboarding/welcome');
     }
   }, [user, authLoading, router]);
 
@@ -153,42 +153,127 @@ export default function TeamInvite() {
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
       </Head>
 
+      <style jsx>{`
+        .team-container {
+          padding: 1.5rem 1rem;
+        }
+        .team-form {
+          max-width: 500px;
+          padding: 1.25rem;
+        }
+        .team-title {
+          font-size: 1.125rem;
+          margin-bottom: 0.375rem;
+        }
+        .team-subtitle {
+          font-size: 0.8125rem;
+          margin-bottom: 1.125rem;
+        }
+        .field-wrapper {
+          margin-bottom: 0.875rem;
+        }
+        @media (min-width: 768px) {
+          .team-container {
+            padding: 2rem 2rem;
+          }
+          .team-form {
+            max-width: 520px;
+            padding: 1.75rem;
+          }
+          .team-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+          }
+          .team-subtitle {
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+          }
+          .field-wrapper {
+            margin-bottom: 1rem;
+          }
+        }
+      `}</style>
+
       <div
+        className="team-container"
         style={{
           minHeight: '100vh',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#f5f5f5',
+          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
-          padding: '2rem 1rem',
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
+        {/* Decorative background element */}
         <div
           style={{
+            position: 'absolute',
+            top: '-100px',
+            right: '-100px',
+            width: '300px',
+            height: '300px',
+            background: 'radial-gradient(circle, rgba(239,119,34,0.1) 0%, transparent 70%)',
+            borderRadius: '50%',
+            pointerEvents: 'none',
+          }}
+        />
+
+        <div
+          className="team-form"
+          style={{
             backgroundColor: 'white',
-            padding: '2rem',
-            borderRadius: '8px',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+            borderRadius: '12px',
+            boxShadow: '0 10px 40px rgba(0,0,0,0.08)',
             width: '100%',
-            maxWidth: '600px',
+            margin: '0 auto',
+            border: '1px solid rgba(239,119,34,0.1)',
           }}
         >
           {/* Progress indicator */}
-          <div style={{ marginBottom: '2rem' }}>
+          <div style={{ marginBottom: '1.25rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-              <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Step 2 of 5</span>
-              <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>40%</span>
+              <span style={{ fontSize: '0.8125rem', color: '#6b7280', fontWeight: '500' }}>Step 2 of 5</span>
+              <span style={{ fontSize: '0.8125rem', color: '#EF7722', fontWeight: '600' }}>40%</span>
             </div>
-            <div style={{ width: '100%', height: '4px', backgroundColor: '#e5e7eb', borderRadius: '2px' }}>
-              <div style={{ width: '40%', height: '100%', backgroundColor: '#2563eb', borderRadius: '2px' }}></div>
+            <div style={{ width: '100%', height: '6px', backgroundColor: '#ffe8d6', borderRadius: '3px' }}>
+              <div style={{ width: '40%', height: '100%', background: 'linear-gradient(90deg, #EF7722 0%, #ff8833 100%)', borderRadius: '3px' }}></div>
             </div>
           </div>
 
-          <h1 style={{ marginBottom: '0.5rem', fontSize: '1.75rem', fontWeight: '600' }}>
+          {/* Back button */}
+          <button
+            type="button"
+            onClick={() => router.push('/onboarding/company')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.5rem 0.75rem',
+              backgroundColor: 'transparent',
+              border: 'none',
+              color: '#6b7280',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              cursor: 'pointer',
+              marginBottom: '1rem',
+              transition: 'color 0.2s',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = '#EF7722')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = '#6b7280')}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back
+          </button>
+
+          <h1 className="team-title" style={{ fontWeight: '700', color: '#111827', textAlign: 'center' }}>
             Invite your team
           </h1>
-          <p style={{ color: '#6b7280', marginBottom: '2rem', fontSize: '0.875rem' }}>
+          <p className="team-subtitle" style={{ color: '#6b7280', textAlign: 'center' }}>
             Add technicians and coordinators. You can skip this and add them later from Settings.
           </p>
 
@@ -230,11 +315,14 @@ export default function TeamInvite() {
                       style={{
                         padding: '0.25rem 0.5rem',
                         fontSize: '0.75rem',
-                        color: '#dc2626',
+                        color: '#EF7722',
                         backgroundColor: 'transparent',
                         border: 'none',
                         cursor: 'pointer',
+                        fontWeight: '500',
                       }}
+                      onMouseEnter={(e) => (e.currentTarget.style.color = '#ff8833')}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = '#EF7722')}
                     >
                       × Remove
                     </button>
@@ -249,12 +337,16 @@ export default function TeamInvite() {
                     placeholder="Name"
                     style={{
                       width: '100%',
-                      padding: '0.5rem',
+                      padding: '0.5625rem 0.75rem',
                       border: '1px solid #d1d5db',
-                      borderRadius: '4px',
+                      borderRadius: '6px',
                       fontSize: '0.875rem',
                       backgroundColor: 'white',
+                      outline: 'none',
+                      transition: 'border-color 0.2s',
                     }}
+                    onFocus={(e) => (e.target.style.borderColor = '#EF7722')}
+                    onBlur={(e) => (e.target.style.borderColor = '#d1d5db')}
                   />
                 </div>
 
@@ -266,12 +358,16 @@ export default function TeamInvite() {
                     placeholder="Phone (+91 98765 43210) or Email"
                     style={{
                       width: '100%',
-                      padding: '0.5rem',
+                      padding: '0.5625rem 0.75rem',
                       border: '1px solid #d1d5db',
-                      borderRadius: '4px',
+                      borderRadius: '6px',
                       fontSize: '0.875rem',
                       backgroundColor: 'white',
+                      outline: 'none',
+                      transition: 'border-color 0.2s',
                     }}
+                    onFocus={(e) => (e.target.style.borderColor = '#EF7722')}
+                    onBlur={(e) => (e.target.style.borderColor = '#d1d5db')}
                   />
                   <p style={{ fontSize: '0.625rem', color: '#6b7280', marginTop: '0.25rem', marginBottom: 0 }}>
                     Phone or email
@@ -284,12 +380,17 @@ export default function TeamInvite() {
                     onChange={(e) => updateTeamMember(member.id, 'role', e.target.value as 'technician' | 'coordinator')}
                     style={{
                       width: '100%',
-                      padding: '0.5rem',
+                      padding: '0.5625rem 0.75rem',
                       border: '1px solid #d1d5db',
-                      borderRadius: '4px',
+                      borderRadius: '6px',
                       fontSize: '0.875rem',
                       backgroundColor: 'white',
+                      outline: 'none',
+                      transition: 'border-color 0.2s',
+                      cursor: 'pointer',
                     }}
+                    onFocus={(e) => (e.target.style.borderColor = '#EF7722')}
+                    onBlur={(e) => (e.target.style.borderColor = '#d1d5db')}
                   >
                     <option value="technician">Technician</option>
                     <option value="coordinator">Coordinator</option>
@@ -307,12 +408,21 @@ export default function TeamInvite() {
                   padding: '0.75rem',
                   marginBottom: '1.5rem',
                   backgroundColor: 'white',
-                  color: '#2563eb',
-                  border: '1px dashed #2563eb',
-                  borderRadius: '4px',
+                  color: '#EF7722',
+                  border: '1px dashed #EF7722',
+                  borderRadius: '6px',
                   fontSize: '0.875rem',
                   fontWeight: '500',
                   cursor: 'pointer',
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#fff8f1';
+                  e.currentTarget.style.borderColor = '#ff8833';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'white';
+                  e.currentTarget.style.borderColor = '#EF7722';
                 }}
               >
                 + Add another team member
@@ -324,15 +434,27 @@ export default function TeamInvite() {
               disabled={loading}
               style={{
                 width: '100%',
-                padding: '0.75rem',
+                padding: '0.625rem',
                 marginBottom: '0.75rem',
-                backgroundColor: loading ? '#9ca3af' : '#2563eb',
+                background: loading ? '#9ca3af' : 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
                 color: 'white',
                 border: 'none',
-                borderRadius: '4px',
-                fontSize: '1rem',
-                fontWeight: '500',
+                borderRadius: '6px',
+                fontSize: '0.9375rem',
+                fontWeight: '600',
                 cursor: loading ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s',
+                boxShadow: loading ? 'none' : '0 2px 8px rgba(239,119,34,0.25)',
+              }}
+              onMouseEnter={(e) => {
+                if (!loading) {
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
               }}
             >
               {loading ? 'Sending invites...' : 'Send invites →'}
@@ -344,15 +466,18 @@ export default function TeamInvite() {
               disabled={loading}
               style={{
                 width: '100%',
-                padding: '0.75rem',
+                padding: '0.625rem',
                 backgroundColor: 'transparent',
                 color: '#6b7280',
-                border: 'none',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
                 fontSize: '0.875rem',
                 fontWeight: '500',
-                cursor: 'pointer',
-                textDecoration: 'underline',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s',
               }}
+              onMouseEnter={(e) => !loading && (e.currentTarget.style.borderColor = '#EF7722', e.currentTarget.style.color = '#EF7722')}
+              onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#d1d5db', e.currentTarget.style.color = '#6b7280')}
             >
               Skip for now
             </button>

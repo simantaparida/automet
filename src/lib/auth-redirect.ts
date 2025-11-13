@@ -31,9 +31,9 @@ export function getAuthRedirectPath(
   user: User | null,
   profile: PartialUserProfile | null
 ): string {
-  // Not authenticated → login page
+  // Not authenticated → welcome page (has login form)
   if (!user) {
-    return '/login';
+    return '/onboarding/welcome';
   }
 
   // Authenticated but no profile → this shouldn't happen, but handle gracefully

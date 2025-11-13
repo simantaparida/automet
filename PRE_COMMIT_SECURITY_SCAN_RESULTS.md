@@ -98,15 +98,16 @@ Status: ✅ PASS
 ```
 
 ### Resend API Key Scan
+```
+Pattern: re_[A-Za-z0-9]{20,}
+Results: 0 keys found
+Status: ✅ PASS
+```
+
 ### Dependency Audit
 ```
 Command: npm audit
 Results: 0 vulnerabilities
-Status: ✅ PASS
-```
-```
-Pattern: re_[A-Za-z0-9]{20,}
-Results: 0 keys found
 Status: ✅ PASS
 ```
 

@@ -56,6 +56,11 @@ export default function NewClientPage() {
   return (
     <ProtectedRoute>
       <style jsx>{`
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
         .client-form-container {
           padding-bottom: 80px;
         }
@@ -543,14 +548,6 @@ export default function NewClientPage() {
             </form>
           </div>
         </main>
-
-        <style jsx>{`
-          @keyframes spin {
-            to {
-              transform: rotate(360deg);
-            }
-          }
-        `}</style>
 
         <BottomNav activeTab="clients" />
       </div>

@@ -86,8 +86,7 @@ export default async function handler(
       slug = `${baseSlug}-${attempts}`;
     }
 
-    console.log('Creating organization:', { name: organizationName, slug });
-    console.log('Service role key loaded:', process.env.SUPABASE_SERVICE_ROLE_KEY?.substring(0, 30) + '...');
+    // Creating organization with slug
 
     // Create organization using service role
     const { data: org, error: orgError } = await serviceRoleSupabase

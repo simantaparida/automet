@@ -82,30 +82,49 @@ export default function NewJobPage() {
   const fetchClients = async () => {
     try {
       const response = await fetch('/api/clients');
-      const data = await response.json();
-      setClients(data.clients || data || []);
+      if (response.ok) {
+        const data = await response.json();
+        // API returns array directly
+        setClients(Array.isArray(data) ? data : []);
+      } else {
+        setClients([]);
+      }
     } catch (error) {
       console.error('Error fetching clients:', error);
+      setClients([]);
     }
   };
 
   const fetchSites = async (clientId: string) => {
     try {
       const response = await fetch(`/api/sites?client_id=${clientId}`);
-      const data = await response.json();
-      setSites(data.sites || data || []);
+      if (response.ok) {
+        const data = await response.json();
+        // API returns array directly
+        setSites(Array.isArray(data) ? data : []);
+      } else {
+        setSites([]);
+      }
     } catch (error) {
       console.error('Error fetching sites:', error);
+      setSites([]);
     }
   };
 
   const fetchAssets = async (siteId: string) => {
     try {
       const response = await fetch(`/api/assets?site_id=${siteId}`);
-      const data = await response.json();
-      setAssets(data.assets || data || []);
+      if (response.ok) {
+        const data = await response.json();
+        // API might return { assets: [...] } or array directly
+        const assetsList = Array.isArray(data) ? data : (data?.assets || []);
+        setAssets(Array.isArray(assetsList) ? assetsList : []);
+      } else {
+        setAssets([]);
+      }
     } catch (error) {
       console.error('Error fetching assets:', error);
+      setAssets([]);
     }
   };
 

@@ -2,6 +2,17 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import BottomNav from '@/components/BottomNav';
+import Sidebar from '@/components/Sidebar';
+import {
+  Plus,
+  Package,
+  Building2,
+  MapPin,
+  Search,
+  Filter,
+  CheckCircle2,
+  AlertTriangle,
+} from 'lucide-react';
 
 interface Asset {
   id: string;
@@ -135,30 +146,69 @@ export default function AssetsPage() {
 
   return (
     <ProtectedRoute>
+      <style jsx>{`
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+        .assets-container {
+          padding-bottom: 80px;
+        }
+        .main-content {
+          padding: 1rem;
+        }
+        .mobile-header {
+          display: block;
+        }
+        .fab-button {
+          bottom: 5rem;
+        }
+        @media (min-width: 768px) {
+          .assets-container {
+            margin-left: 260px;
+            padding-bottom: 0;
+          }
+          .main-content {
+            padding: 2rem;
+          }
+          .mobile-header {
+            display: none;
+          }
+          .fab-button {
+            bottom: 2rem;
+          }
+        }
+      `}</style>
+
       <div
+        className="assets-container"
         style={{
           minHeight: '100vh',
-          backgroundColor: '#f5f5f5',
+          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
-          paddingBottom: '80px',
         }}
       >
-        {/* Sticky Header */}
+        {/* Desktop Sidebar */}
+        <Sidebar activeTab="more" />
+
+        {/* Mobile Header */}
         <header
+          className="mobile-header"
           style={{
-            backgroundColor: '#2563eb',
+            background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
             color: 'white',
             padding: '1rem',
             position: 'sticky',
             top: 0,
-            zIndex: 10,
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            zIndex: 20,
+            boxShadow: '0 2px 10px rgba(239,119,34,0.2)',
           }}
         >
           <h1
             style={{
               fontSize: '1.25rem',
-              fontWeight: '600',
+              fontWeight: '700',
               margin: '0 0 0.5rem 0',
             }}
           >
@@ -175,83 +225,174 @@ export default function AssetsPage() {
           style={{
             backgroundColor: 'white',
             padding: '1rem',
-            borderBottom: '1px solid #e5e7eb',
+            borderBottom: '1px solid rgba(239,119,34,0.1)',
             position: 'sticky',
             top: '66px',
-            zIndex: 9,
+            zIndex: 19,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
           }}
         >
-          <input
-            type="text"
-            placeholder="Search assets..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '0.75rem',
-              border: '1px solid #d1d5db',
-              borderRadius: '8px',
-              fontSize: '1rem',
-              minHeight: '48px',
-              boxSizing: 'border-box',
-              marginBottom: '0.75rem',
-            }}
-          />
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '0.5rem',
-            }}
-          >
-            <select
-              value={selectedClientId}
-              onChange={(e) => {
-                setSelectedClientId(e.target.value);
-                setSelectedSiteId('');
-              }}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {/* Search Input */}
+            <div style={{ position: 'relative' }}>
+              <Search
+                size={20}
+                style={{
+                  position: 'absolute',
+                  left: '0.75rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#6b7280',
+                  pointerEvents: 'none',
+                }}
+              />
+              <input
+                type="text"
+                placeholder="Search assets by type, model, serial number, site..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 0.75rem 0.75rem 2.75rem',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  minHeight: '48px',
+                  boxSizing: 'border-box',
+                  transition: 'border-color 0.2s, box-shadow 0.2s',
+                  outline: 'none',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#EF7722';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#d1d5db';
+                  e.target.style.boxShadow = 'none';
+                }}
+              />
+            </div>
+
+            {/* Filters */}
+            <div
               style={{
-                padding: '0.75rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                minHeight: '48px',
-                boxSizing: 'border-box',
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '0.75rem',
               }}
             >
-              <option value="">All Clients</option>
-              {clients.map((client) => (
-                <option key={client.id} value={client.id}>
-                  {client.name}
-                </option>
-              ))}
-            </select>
-            <select
-              value={selectedSiteId}
-              onChange={(e) => setSelectedSiteId(e.target.value)}
-              disabled={!selectedClientId}
-              style={{
-                padding: '0.75rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                minHeight: '48px',
-                boxSizing: 'border-box',
-                backgroundColor: !selectedClientId ? '#f9fafb' : 'white',
-              }}
-            >
-              <option value="">All Sites</option>
-              {sites.map((site) => (
-                <option key={site.id} value={site.id}>
-                  {site.name}
-                </option>
-              ))}
-            </select>
+              {/* Client Filter */}
+              <div style={{ position: 'relative' }}>
+                <Filter
+                  size={20}
+                  style={{
+                    position: 'absolute',
+                    left: '0.75rem',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: '#6b7280',
+                    pointerEvents: 'none',
+                    zIndex: 1,
+                  }}
+                />
+                <select
+                  value={selectedClientId}
+                  onChange={(e) => {
+                    setSelectedClientId(e.target.value);
+                    setSelectedSiteId('');
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 0.75rem 0.75rem 2.75rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '8px',
+                    fontSize: '0.875rem',
+                    minHeight: '48px',
+                    boxSizing: 'border-box',
+                    backgroundColor: 'white',
+                    cursor: 'pointer',
+                    appearance: 'none',
+                    transition: 'border-color 0.2s, box-shadow 0.2s',
+                    outline: 'none',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#EF7722';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#d1d5db';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                >
+                  <option value="">All Clients</option>
+                  {clients.map((client) => (
+                    <option key={client.id} value={client.id}>
+                      {client.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Site Filter */}
+              <div style={{ position: 'relative' }}>
+                <MapPin
+                  size={20}
+                  style={{
+                    position: 'absolute',
+                    left: '0.75rem',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: '#6b7280',
+                    pointerEvents: 'none',
+                    zIndex: 1,
+                  }}
+                />
+                <select
+                  value={selectedSiteId}
+                  onChange={(e) => setSelectedSiteId(e.target.value)}
+                  disabled={!selectedClientId}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 0.75rem 0.75rem 2.75rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '8px',
+                    fontSize: '0.875rem',
+                    minHeight: '48px',
+                    boxSizing: 'border-box',
+                    backgroundColor: !selectedClientId ? '#f9fafb' : 'white',
+                    cursor: selectedClientId ? 'pointer' : 'not-allowed',
+                    appearance: 'none',
+                    transition: 'border-color 0.2s, box-shadow 0.2s',
+                    outline: 'none',
+                    opacity: selectedClientId ? 1 : 0.6,
+                  }}
+                  onFocus={(e) => {
+                    if (selectedClientId) {
+                      e.target.style.borderColor = '#EF7722';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
+                    }
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#d1d5db';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                >
+                  <option value="">
+                    {selectedClientId ? 'All Sites' : 'Select client first'}
+                  </option>
+                  {sites.map((site) => (
+                    <option key={site.id} value={site.id}>
+                      {site.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Assets List */}
-        <main style={{ padding: '1rem' }}>
+        <main className="main-content">
           {loading ? (
             <div
               style={{
@@ -263,50 +404,89 @@ export default function AssetsPage() {
             >
               <div
                 style={{
-                  width: '40px',
-                  height: '40px',
-                  border: '4px solid #e5e7eb',
-                  borderTopColor: '#2563eb',
+                  width: '48px',
+                  height: '48px',
+                  border: '4px solid #ffe8d6',
+                  borderTopColor: '#EF7722',
                   borderRadius: '50%',
                   animation: 'spin 1s linear infinite',
                 }}
               ></div>
-              <style jsx>{`
-                @keyframes spin {
-                  to {
-                    transform: rotate(360deg);
-                  }
-                }
-              `}</style>
             </div>
           ) : filteredAssets.length === 0 ? (
             <div
               style={{
                 backgroundColor: 'white',
-                padding: '2rem',
-                borderRadius: '8px',
+                padding: '3rem 2rem',
+                borderRadius: '12px',
                 textAlign: 'center',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.08)',
+                border: '1px solid rgba(239,119,34,0.1)',
+                maxWidth: '500px',
+                margin: '2rem auto',
               }}
             >
-              <p style={{ fontSize: '1rem', color: '#6b7280', margin: 0 }}>
+              <div
+                style={{
+                  width: '80px',
+                  height: '80px',
+                  margin: '0 auto 1.5rem',
+                  background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '3px solid rgba(239,119,34,0.2)',
+                }}
+              >
+                <Package size={40} color="#EF7722" />
+              </div>
+              <h2
+                style={{
+                  fontSize: '1.5rem',
+                  fontWeight: '700',
+                  color: '#111827',
+                  margin: '0 0 0.5rem 0',
+                }}
+              >
                 {searchTerm || selectedClientId || selectedSiteId
-                  ? 'No assets found matching your filters'
+                  ? 'No assets found'
                   : 'No assets yet'}
+              </h2>
+              <p
+                style={{
+                  fontSize: '0.875rem',
+                  color: '#6b7280',
+                  margin: '0 0 1.5rem 0',
+                }}
+              >
+                {searchTerm || selectedClientId || selectedSiteId
+                  ? 'Try adjusting your search or filter terms'
+                  : 'Get started by adding your first asset'}
               </p>
               {!searchTerm && !selectedClientId && !selectedSiteId && (
                 <button
                   onClick={() => router.push('/assets/new')}
                   style={{
-                    marginTop: '1rem',
                     padding: '0.75rem 1.5rem',
-                    backgroundColor: '#2563eb',
+                    background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
                     color: 'white',
                     border: 'none',
                     borderRadius: '8px',
                     fontSize: '1rem',
-                    fontWeight: '500',
+                    fontWeight: '600',
                     cursor: 'pointer',
                     minHeight: '48px',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 2px 8px rgba(239,119,34,0.25)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
                   }}
                 >
                   Create First Asset
@@ -316,9 +496,9 @@ export default function AssetsPage() {
           ) : (
             <div
               style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.75rem',
+                display: 'grid',
+                gridTemplateColumns: '1fr',
+                gap: '1rem',
               }}
             >
               {filteredAssets.map((asset) => (
@@ -327,13 +507,24 @@ export default function AssetsPage() {
                   onClick={() => router.push(`/assets/${asset.id}`)}
                   style={{
                     backgroundColor: 'white',
-                    padding: '1rem',
-                    borderRadius: '8px',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                    border: 'none',
+                    padding: '1.25rem',
+                    borderRadius: '12px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                    border: '1px solid rgba(239,119,34,0.1)',
                     cursor: 'pointer',
                     textAlign: 'left',
-                    minHeight: '80px',
+                    transition: 'all 0.2s',
+                    minHeight: '140px',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 10px 40px rgba(0,0,0,0.12)';
+                    e.currentTarget.style.borderColor = 'rgba(239,119,34,0.2)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+                    e.currentTarget.style.borderColor = 'rgba(239,119,34,0.1)';
                   }}
                 >
                   <div
@@ -341,63 +532,150 @@ export default function AssetsPage() {
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'start',
-                      marginBottom: '0.5rem',
+                      marginBottom: '0.75rem',
                     }}
                   >
-                    <div>
-                      <h3
-                        style={{
-                          fontSize: '1rem',
-                          fontWeight: '600',
-                          color: '#1f2937',
-                          margin: '0 0 0.25rem 0',
-                        }}
-                      >
-                        {asset.asset_type} - {asset.model}
-                      </h3>
-                      <div
-                        style={{
-                          fontSize: '0.75rem',
-                          color: '#6b7280',
-                        }}
-                      >
-                        {asset.site.client.name} → {asset.site.name}
-                      </div>
-                    </div>
-                    <span style={{ fontSize: '1.25rem' }}>📦</span>
-                  </div>
-
-                  {asset.serial_number && (
                     <div
                       style={{
-                        fontSize: '0.875rem',
-                        color: '#6b7280',
-                        marginBottom: '0.25rem',
-                      }}
-                    >
-                      S/N: {asset.serial_number}
-                    </div>
-                  )}
-                  {asset.warranty_expiry && (
-                    <div
-                      style={{
-                        fontSize: '0.75rem',
-                        color: isWarrantyExpired(asset.warranty_expiry)
-                          ? '#ef4444'
-                          : '#10b981',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.25rem',
+                        gap: '0.75rem',
+                        flex: 1,
                       }}
                     >
-                      {isWarrantyExpired(asset.warranty_expiry) ? '⚠️' : '✓'}{' '}
-                      Warranty:{' '}
-                      {new Date(asset.warranty_expiry).toLocaleDateString(
-                        'en-IN',
-                        { day: 'numeric', month: 'short', year: 'numeric' }
-                      )}
+                      <div
+                        style={{
+                          width: '48px',
+                          height: '48px',
+                          background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
+                          borderRadius: '10px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          border: '2px solid rgba(239,119,34,0.2)',
+                          flexShrink: 0,
+                        }}
+                      >
+                        <Package size={24} color="#EF7722" />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <h3
+                          style={{
+                            fontSize: '1.125rem',
+                            fontWeight: '700',
+                            color: '#111827',
+                            margin: '0 0 0.25rem 0',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {asset.asset_type} - {asset.model}
+                        </h3>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            fontSize: '0.8125rem',
+                            color: '#6b7280',
+                          }}
+                        >
+                          <Building2 size={14} color="#6b7280" />
+                          <span
+                            style={{
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {asset.site.client.name}
+                          </span>
+                          <span style={{ margin: '0 0.25rem' }}>→</span>
+                          <MapPin size={14} color="#6b7280" />
+                          <span
+                            style={{
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {asset.site.name}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                  )}
+                  </div>
+
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.5rem',
+                      paddingLeft: '3.5rem',
+                    }}
+                  >
+                    {asset.serial_number && (
+                      <div
+                        style={{
+                          fontSize: '0.875rem',
+                          color: '#6b7280',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                        }}
+                      >
+                        <span style={{ fontWeight: '600' }}>S/N:</span>
+                        <span>{asset.serial_number}</span>
+                      </div>
+                    )}
+                    {asset.warranty_expiry && (
+                      <div
+                        style={{
+                          fontSize: '0.8125rem',
+                          color: isWarrantyExpired(asset.warranty_expiry)
+                            ? '#ef4444'
+                            : '#10b981',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                          fontWeight: '500',
+                        }}
+                      >
+                        {isWarrantyExpired(asset.warranty_expiry) ? (
+                          <>
+                            <AlertTriangle size={16} color="#ef4444" />
+                            <span>
+                              Warranty expired:{' '}
+                              {new Date(asset.warranty_expiry).toLocaleDateString(
+                                'en-IN',
+                                {
+                                  day: 'numeric',
+                                  month: 'short',
+                                  year: 'numeric',
+                                }
+                              )}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle2 size={16} color="#10b981" />
+                            <span>
+                              Warranty until:{' '}
+                              {new Date(asset.warranty_expiry).toLocaleDateString(
+                                'en-IN',
+                                {
+                                  day: 'numeric',
+                                  month: 'short',
+                                  year: 'numeric',
+                                }
+                              )}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </button>
               ))}
             </div>
@@ -407,27 +685,36 @@ export default function AssetsPage() {
         {/* FAB Button */}
         <button
           onClick={() => router.push('/assets/new')}
+          className="fab-button"
           style={{
             position: 'fixed',
             right: '1rem',
-            bottom: '5rem',
             width: '56px',
             height: '56px',
             borderRadius: '50%',
-            backgroundColor: '#2563eb',
+            background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
             color: 'white',
             border: 'none',
-            fontSize: '1.5rem',
+            fontSize: '1.75rem',
             fontWeight: '300',
             cursor: 'pointer',
-            boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
+            boxShadow: '0 4px 12px rgba(239,119,34,0.3)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 10,
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.1)';
+            e.currentTarget.style.boxShadow = '0 6px 16px rgba(239,119,34,0.4)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
           }}
         >
-          +
+          <Plus size={28} />
         </button>
 
         <BottomNav activeTab="more" />

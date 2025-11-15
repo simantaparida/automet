@@ -255,7 +255,7 @@ export default function JoinTeam() {
               {error}
             </p>
 
-            <Link href="/login" style={{ textDecoration: 'none' }}>
+            <Link href="/onboarding/welcome" style={{ textDecoration: 'none' }}>
               <button
                 style={{
                   width: '100%',
@@ -413,7 +413,7 @@ export default function JoinTeam() {
               >
                 {loading ? 'Processing...' : 'Sign up to continue'}
               </button>
-              <Link href={`/login?redirect=${encodeURIComponent(`/join/${code}`)}`} style={{ textDecoration: 'none' }}>
+              <Link href={`/onboarding/welcome?redirect=${encodeURIComponent(`/join/${code}`)}`} style={{ textDecoration: 'none' }}>
                 <button
                   style={{
                     width: '100%',

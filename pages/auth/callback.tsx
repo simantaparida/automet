@@ -103,7 +103,7 @@ export default function AuthCallback() {
           </h2>
           <p style={{ color: '#6b7280', marginBottom: '1rem' }}>{error}</p>
           <p style={{ color: '#9ca3af', fontSize: '0.875rem' }}>
-            Redirecting to login page...
+            Redirecting to welcome page...
           </p>
         </div>
       </div>

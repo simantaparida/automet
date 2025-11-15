@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
+import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { OnboardingEvents, trackPageView } from '@/lib/analytics';
@@ -88,10 +89,10 @@ export default function SignupPage() {
         error.message.toLowerCase().includes('already exists') ||
         error.message.toLowerCase().includes('user already exists')
       ) {
-        // User already exists - redirect to login
-        setError('An account with this email already exists. Redirecting to login...');
+        // User already exists - redirect to welcome page
+        setError('An account with this email already exists. Redirecting to sign in...');
         setTimeout(() => {
-          router.push('/login?message=Account already exists. Please login.');
+          router.push('/onboarding/welcome?message=Account already exists. Please sign in.');
         }, 2000);
       } else {
         setError(error.message);
@@ -201,20 +202,30 @@ export default function SignupPage() {
             We've sent a confirmation link to <strong>{formData.email}</strong>.
             Please check your inbox and click the link to verify your account.
           </p>
-          <a
-            href="/login"
+          <Link
+            href="/onboarding/welcome"
             style={{
               display: 'inline-block',
               padding: '0.75rem 1.5rem',
-              backgroundColor: '#2563eb',
+              background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
               color: 'white',
               textDecoration: 'none',
-              borderRadius: '4px',
-              fontWeight: '500',
+              borderRadius: '8px',
+              fontWeight: '600',
+              transition: 'all 0.2s',
+              boxShadow: '0 2px 8px rgba(239,119,34,0.25)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
             }}
           >
-            Go to Login
-          </a>
+            Back to Welcome
+          </Link>
         </div>
       </div>
       </>
@@ -456,14 +467,26 @@ export default function SignupPage() {
             style={{
               width: '100%',
               padding: '0.75rem',
-              backgroundColor: loading ? '#9ca3af' : '#2563eb',
+              background: loading ? '#9ca3af' : 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
               color: 'white',
               border: 'none',
-              borderRadius: '4px',
+              borderRadius: '8px',
               fontSize: '1rem',
-              fontWeight: '500',
+              fontWeight: '600',
               cursor: loading ? 'not-allowed' : 'pointer',
               marginBottom: '1rem',
+              transition: 'all 0.2s',
+              boxShadow: loading ? 'none' : '0 2px 8px rgba(239,119,34,0.25)',
+            }}
+            onMouseEnter={(e) => {
+              if (!loading) {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = loading ? 'none' : '0 2px 8px rgba(239,119,34,0.25)';
             }}
           >
             {loading ? 'Creating account...' : 'Sign up with Email'}
@@ -545,10 +568,12 @@ export default function SignupPage() {
           <a
             href="/onboarding/welcome"
             style={{
-              color: '#2563eb',
+              color: '#EF7722',
               textDecoration: 'none',
-              fontWeight: '500',
+              fontWeight: '600',
             }}
+            onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
+            onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}
           >
             Sign in
           </a>

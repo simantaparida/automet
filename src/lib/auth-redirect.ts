@@ -68,7 +68,7 @@ export function getPostSignupRedirectPath(profile: PartialUserProfile | null): s
 }
 
 /**
- * Determines redirect path after successful login
+ * Determines redirect path after successful sign in
  * Always goes to dashboard (onboarding is skippable)
  *
  * @param _profile - User profile from public.users table (unused, kept for API compatibility)
@@ -105,9 +105,9 @@ export function checkRouteAccess(
   requireOrg: boolean,
   profile: UserProfile | null
 ): { allowed: boolean; redirectTo: string | null } {
-  // Not authenticated → redirect to login
+  // Not authenticated → redirect to welcome page
   if (!user) {
-    return { allowed: false, redirectTo: '/login' };
+    return { allowed: false, redirectTo: '/onboarding/welcome' };
   }
 
   // Route requires org but user doesn't have one → allow access but show banner

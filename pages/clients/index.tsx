@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import BottomNav from '@/components/BottomNav';
+import Sidebar from '@/components/Sidebar';
+import { Plus, Building2, Phone, Mail, MapPin, Search } from 'lucide-react';
 
 interface Client {
   id: string;
@@ -57,30 +59,69 @@ export default function ClientsPage() {
 
   return (
     <ProtectedRoute>
+      <style jsx>{`
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+        .clients-container {
+          padding-bottom: 80px;
+        }
+        .main-content {
+          padding: 1rem;
+        }
+        .mobile-header {
+          display: block;
+        }
+        .fab-button {
+          bottom: 5rem;
+        }
+        @media (min-width: 768px) {
+          .clients-container {
+            margin-left: 260px;
+            padding-bottom: 0;
+          }
+          .main-content {
+            padding: 2rem;
+          }
+          .mobile-header {
+            display: none;
+          }
+          .fab-button {
+            bottom: 2rem;
+          }
+        }
+      `}</style>
+
       <div
+        className="clients-container"
         style={{
           minHeight: '100vh',
-          backgroundColor: '#f5f5f5',
+          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
-          paddingBottom: '80px',
         }}
       >
-        {/* Sticky Header */}
+        {/* Desktop Sidebar */}
+        <Sidebar activeTab="clients" />
+
+        {/* Mobile Header */}
         <header
+          className="mobile-header"
           style={{
-            backgroundColor: '#2563eb',
+            background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
             color: 'white',
             padding: '1rem',
             position: 'sticky',
             top: 0,
-            zIndex: 10,
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            zIndex: 20,
+            boxShadow: '0 2px 10px rgba(239,119,34,0.2)',
           }}
         >
           <h1
             style={{
               fontSize: '1.25rem',
-              fontWeight: '600',
+              fontWeight: '700',
               margin: '0 0 0.5rem 0',
             }}
           >
@@ -97,31 +138,55 @@ export default function ClientsPage() {
           style={{
             backgroundColor: 'white',
             padding: '1rem',
-            borderBottom: '1px solid #e5e7eb',
+            borderBottom: '1px solid rgba(239,119,34,0.1)',
             position: 'sticky',
             top: '66px',
-            zIndex: 9,
+            zIndex: 19,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
           }}
         >
-          <input
-            type="text"
-            placeholder="Search clients..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '0.75rem',
-              border: '1px solid #d1d5db',
-              borderRadius: '8px',
-              fontSize: '1rem',
-              minHeight: '48px',
-              boxSizing: 'border-box',
-            }}
-          />
+          <div style={{ position: 'relative' }}>
+            <Search
+              size={20}
+              style={{
+                position: 'absolute',
+                left: '0.75rem',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: '#6b7280',
+                pointerEvents: 'none',
+              }}
+            />
+            <input
+              type="text"
+              placeholder="Search clients by name, email, or phone..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '0.75rem 0.75rem 0.75rem 2.75rem',
+                border: '1px solid #d1d5db',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                minHeight: '48px',
+                boxSizing: 'border-box',
+                transition: 'border-color 0.2s, box-shadow 0.2s',
+                outline: 'none',
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = '#EF7722';
+                e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = '#d1d5db';
+                e.target.style.boxShadow = 'none';
+              }}
+            />
+          </div>
         </div>
 
         {/* Clients List */}
-        <main style={{ padding: '1rem' }}>
+        <main className="main-content">
           {loading ? (
             <div
               style={{
@@ -133,50 +198,89 @@ export default function ClientsPage() {
             >
               <div
                 style={{
-                  width: '40px',
-                  height: '40px',
-                  border: '4px solid #e5e7eb',
-                  borderTopColor: '#2563eb',
+                  width: '48px',
+                  height: '48px',
+                  border: '4px solid #ffe8d6',
+                  borderTopColor: '#EF7722',
                   borderRadius: '50%',
                   animation: 'spin 1s linear infinite',
                 }}
               ></div>
-              <style jsx>{`
-                @keyframes spin {
-                  to {
-                    transform: rotate(360deg);
-                  }
-                }
-              `}</style>
             </div>
           ) : filteredClients.length === 0 ? (
             <div
               style={{
                 backgroundColor: 'white',
-                padding: '2rem',
-                borderRadius: '8px',
+                padding: '3rem 2rem',
+                borderRadius: '12px',
                 textAlign: 'center',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.08)',
+                border: '1px solid rgba(239,119,34,0.1)',
+                maxWidth: '500px',
+                margin: '2rem auto',
               }}
             >
-              <p style={{ fontSize: '1rem', color: '#6b7280', margin: 0 }}>
+              <div
+                style={{
+                  width: '80px',
+                  height: '80px',
+                  margin: '0 auto 1.5rem',
+                  background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '3px solid rgba(239,119,34,0.2)',
+                }}
+              >
+                <Building2 size={40} color="#EF7722" />
+              </div>
+              <h2
+                style={{
+                  fontSize: '1.5rem',
+                  fontWeight: '700',
+                  color: '#111827',
+                  margin: '0 0 0.5rem 0',
+                }}
+              >
                 {searchTerm
-                  ? 'No clients found matching your search'
+                  ? 'No clients found'
                   : 'No clients yet'}
+              </h2>
+              <p
+                style={{
+                  fontSize: '0.875rem',
+                  color: '#6b7280',
+                  margin: '0 0 1.5rem 0',
+                }}
+              >
+                {searchTerm
+                  ? 'Try adjusting your search terms'
+                  : 'Get started by adding your first client'}
               </p>
               {!searchTerm && (
                 <button
                   onClick={() => router.push('/clients/new')}
                   style={{
-                    marginTop: '1rem',
                     padding: '0.75rem 1.5rem',
-                    backgroundColor: '#2563eb',
+                    background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
                     color: 'white',
                     border: 'none',
                     borderRadius: '8px',
                     fontSize: '1rem',
-                    fontWeight: '500',
+                    fontWeight: '600',
                     cursor: 'pointer',
                     minHeight: '48px',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 2px 8px rgba(239,119,34,0.25)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
                   }}
                 >
                   Create First Client
@@ -186,9 +290,9 @@ export default function ClientsPage() {
           ) : (
             <div
               style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.75rem',
+                display: 'grid',
+                gridTemplateColumns: '1fr',
+                gap: '1rem',
               }}
             >
               {filteredClients.map((client) => (
@@ -197,13 +301,24 @@ export default function ClientsPage() {
                   onClick={() => router.push(`/clients/${client.id}`)}
                   style={{
                     backgroundColor: 'white',
-                    padding: '1rem',
-                    borderRadius: '8px',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                    border: 'none',
+                    padding: '1.25rem',
+                    borderRadius: '12px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                    border: '1px solid rgba(239,119,34,0.1)',
                     cursor: 'pointer',
                     textAlign: 'left',
-                    minHeight: '80px',
+                    transition: 'all 0.2s',
+                    minHeight: '100px',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 10px 40px rgba(0,0,0,0.12)';
+                    e.currentTarget.style.borderColor = 'rgba(239,119,34,0.2)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+                    e.currentTarget.style.borderColor = 'rgba(239,119,34,0.1)';
                   }}
                 >
                   <div
@@ -211,27 +326,50 @@ export default function ClientsPage() {
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'start',
-                      marginBottom: '0.5rem',
+                      marginBottom: '0.75rem',
                     }}
                   >
-                    <h3
+                    <div
                       style={{
-                        fontSize: '1rem',
-                        fontWeight: '600',
-                        color: '#1f2937',
-                        margin: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75rem',
                       }}
                     >
-                      {client.name}
-                    </h3>
-                    <span style={{ fontSize: '1.25rem' }}>👤</span>
+                      <div
+                        style={{
+                          width: '48px',
+                          height: '48px',
+                          background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
+                          borderRadius: '10px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          border: '2px solid rgba(239,119,34,0.2)',
+                          flexShrink: 0,
+                        }}
+                      >
+                        <Building2 size={24} color="#EF7722" />
+                      </div>
+                      <h3
+                        style={{
+                          fontSize: '1.125rem',
+                          fontWeight: '700',
+                          color: '#111827',
+                          margin: 0,
+                        }}
+                      >
+                        {client.name}
+                      </h3>
+                    </div>
                   </div>
 
                   <div
                     style={{
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: '0.25rem',
+                      gap: '0.5rem',
+                      paddingLeft: '3.5rem',
                     }}
                   >
                     {client.contact_phone && (
@@ -244,8 +382,8 @@ export default function ClientsPage() {
                           gap: '0.5rem',
                         }}
                       >
-                        <span>📞</span>
-                        {client.contact_phone}
+                        <Phone size={16} color="#6b7280" />
+                        <span>{client.contact_phone}</span>
                       </div>
                     )}
                     {client.contact_email && (
@@ -258,8 +396,8 @@ export default function ClientsPage() {
                           gap: '0.5rem',
                         }}
                       >
-                        <span>✉️</span>
-                        {client.contact_email}
+                        <Mail size={16} color="#6b7280" />
+                        <span>{client.contact_email}</span>
                       </div>
                     )}
                     {client.address && (
@@ -268,12 +406,16 @@ export default function ClientsPage() {
                           fontSize: '0.875rem',
                           color: '#6b7280',
                           display: 'flex',
-                          alignItems: 'center',
+                          alignItems: 'start',
                           gap: '0.5rem',
                         }}
                       >
-                        <span>📍</span>
-                        {client.address}
+                        <MapPin
+                          size={16}
+                          color="#6b7280"
+                          style={{ marginTop: '2px', flexShrink: 0 }}
+                        />
+                        <span style={{ lineHeight: '1.5' }}>{client.address}</span>
                       </div>
                     )}
                   </div>
@@ -286,27 +428,36 @@ export default function ClientsPage() {
         {/* FAB Button */}
         <button
           onClick={() => router.push('/clients/new')}
+          className="fab-button"
           style={{
             position: 'fixed',
             right: '1rem',
-            bottom: '5rem',
             width: '56px',
             height: '56px',
             borderRadius: '50%',
-            backgroundColor: '#2563eb',
+            background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
             color: 'white',
             border: 'none',
-            fontSize: '1.5rem',
+            fontSize: '1.75rem',
             fontWeight: '300',
             cursor: 'pointer',
-            boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
+            boxShadow: '0 4px 12px rgba(239,119,34,0.3)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 10,
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.1)';
+            e.currentTarget.style.boxShadow = '0 6px 16px rgba(239,119,34,0.4)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
           }}
         >
-          +
+          <Plus size={28} />
         </button>
 
         <BottomNav activeTab="clients" />

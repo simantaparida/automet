@@ -127,7 +127,7 @@ export default function SitesPage() {
         }}
       >
         {/* Desktop Sidebar */}
-        <Sidebar activeTab="more" />
+        <Sidebar activeTab="sites" />
 
         {/* Mobile Header */}
         <header

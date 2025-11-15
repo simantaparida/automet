@@ -161,7 +161,7 @@ export default function InventoryPage() {
         }}
       >
         {/* Desktop Sidebar */}
-        <Sidebar activeTab="more" />
+        <Sidebar activeTab="inventory" />
 
         {/* Mobile Header */}
         <header

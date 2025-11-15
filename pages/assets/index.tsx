@@ -190,7 +190,7 @@ export default function AssetsPage() {
         }}
       >
         {/* Desktop Sidebar */}
-        <Sidebar activeTab="more" />
+        <Sidebar activeTab="assets" />
 
         {/* Mobile Header */}
         <header

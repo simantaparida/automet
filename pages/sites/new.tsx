@@ -140,7 +140,7 @@ export default function NewSitePage() {
         }}
       >
         {/* Desktop Sidebar */}
-        <Sidebar activeTab="more" />
+        <Sidebar activeTab="sites" />
 
         {/* Mobile Header */}
         <header

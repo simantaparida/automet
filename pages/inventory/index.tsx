@@ -3,78 +3,77 @@ import { useRouter } from 'next/router';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import BottomNav from '@/components/BottomNav';
 import Sidebar from '@/components/Sidebar';
+import TopHeader from '@/components/TopHeader';
+import RoleBadge from '@/components/RoleBadge';
+import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
 import {
   Plus,
   Package,
   Search,
-  Filter,
   AlertTriangle,
   CheckCircle2,
   XCircle,
   Hash,
   Tag,
-  DollarSign,
 } from 'lucide-react';
 
 interface InventoryItem {
   id: string;
-  item_name: string;
-  category: string;
+  name: string;
   sku: string | null;
-  unit_of_measure: string;
-  quantity_available: number;
-  reorder_level: number;
-  unit_cost: number | null;
+  unit: string | null;
+  quantity: number | null;
+  reorder_level: number | null;
+  is_serialized: boolean;
+  org_id: string;
+  created_at: string;
+  updated_at: string | null;
 }
 
 export default function InventoryPage() {
   const router = useRouter();
+  const { apiFetch, activeRole } = useRoleSwitch();
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [filteredInventory, setFilteredInventory] = useState<InventoryItem[]>(
     []
   );
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
   const [showLowStockOnly, setShowLowStockOnly] = useState(false);
 
   useEffect(() => {
     fetchInventory();
-  }, []);
+  }, [activeRole]); // Refetch when role changes
 
   useEffect(() => {
     let filtered = inventory;
 
-    // Filter by category
-    if (categoryFilter) {
-      filtered = filtered.filter((item) => item.category === categoryFilter);
-    }
-
     // Filter by low stock
     if (showLowStockOnly) {
-      filtered = filtered.filter(
-        (item) => item.quantity_available <= item.reorder_level
-      );
+      filtered = filtered.filter((item) => {
+        const quantity = Number(item.quantity) || 0;
+        const reorderLevel = Number(item.reorder_level) || 0;
+        return quantity <= reorderLevel;
+      });
     }
 
     // Filter by search term
     if (searchTerm.trim() !== '') {
       filtered = filtered.filter(
         (item) =>
-          item.item_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           (item.sku &&
-            item.sku.toLowerCase().includes(searchTerm.toLowerCase())) ||
-          item.category.toLowerCase().includes(searchTerm.toLowerCase())
+            item.sku.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
 
     setFilteredInventory(filtered);
-  }, [searchTerm, categoryFilter, showLowStockOnly, inventory]);
+  }, [searchTerm, showLowStockOnly, inventory]);
 
   const fetchInventory = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/inventory');
+      const response = await apiFetch('/api/inventory');
       if (response.ok) {
         const data = await response.json();
         setInventory(data);
@@ -87,22 +86,24 @@ export default function InventoryPage() {
     }
   };
 
-  const uniqueCategories = Array.from(
-    new Set(inventory.map((item) => item.category))
-  );
-  const lowStockCount = inventory.filter(
-    (item) => item.quantity_available <= item.reorder_level
-  ).length;
+  const lowStockCount = inventory.filter((item) => {
+    const quantity = Number(item.quantity) || 0;
+    const reorderLevel = Number(item.reorder_level) || 0;
+    return quantity <= reorderLevel;
+  }).length;
 
   const getStockStatus = (item: InventoryItem) => {
-    if (item.quantity_available === 0) {
+    const quantity = Number(item.quantity) || 0;
+    const reorderLevel = Number(item.reorder_level) || 0;
+    
+    if (quantity === 0) {
       return {
         color: '#ef4444',
         label: 'Out of Stock',
         icon: XCircle,
         bgColor: '#fee2e2',
       };
-    } else if (item.quantity_available <= item.reorder_level) {
+    } else if (quantity <= reorderLevel) {
       return {
         color: '#f59e0b',
         label: 'Low Stock',
@@ -136,10 +137,14 @@ export default function InventoryPage() {
         .mobile-header {
           display: block;
         }
+        .desktop-header {
+          display: none;
+        }
         @media (min-width: 768px) {
           .inventory-container {
             margin-left: 260px;
             padding-bottom: 0;
+            padding-top: 64px;
           }
           .main-content {
             padding: 2rem;
@@ -148,6 +153,9 @@ export default function InventoryPage() {
           }
           .mobile-header {
             display: none;
+          }
+          .desktop-header {
+            display: block;
           }
         }
       `}</style>
@@ -162,6 +170,16 @@ export default function InventoryPage() {
       >
         {/* Desktop Sidebar */}
         <Sidebar activeTab="inventory" />
+
+        {/* Desktop Top Header */}
+        <div className="desktop-header">
+          <TopHeader />
+        </div>
+
+        {/* Desktop Role Badge - Shows when role is switched */}
+        <div className="desktop-header">
+          <RoleBadge />
+        </div>
 
         {/* Mobile Header */}
         <header
@@ -230,7 +248,7 @@ export default function InventoryPage() {
               />
               <input
                 type="text"
-                placeholder="Search inventory by name, SKU, or category..."
+                placeholder="Search inventory by name or SKU..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{
@@ -258,57 +276,12 @@ export default function InventoryPage() {
             {/* Filters */}
             <div
               style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr auto',
+                display: 'flex',
+                justifyContent: 'flex-end',
                 gap: '0.75rem',
                 alignItems: 'center',
               }}
             >
-              <div style={{ position: 'relative' }}>
-                <Filter
-                  size={18}
-                  color="#6b7280"
-                  style={{
-                    position: 'absolute',
-                    left: '0.75rem',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    pointerEvents: 'none',
-                  }}
-                />
-                <select
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem 0.75rem 0.75rem 2.5rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '8px',
-                    fontSize: '0.875rem',
-                    minHeight: '48px',
-                    boxSizing: 'border-box',
-                    backgroundColor: 'white',
-                    cursor: 'pointer',
-                    transition: 'border-color 0.2s, box-shadow 0.2s',
-                    outline: 'none',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#EF7722';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#d1d5db';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                >
-                  <option value="">All Categories</option>
-                  {uniqueCategories.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
-              </div>
               <button
                 onClick={() => setShowLowStockOnly(!showLowStockOnly)}
                 style={{
@@ -403,7 +376,7 @@ export default function InventoryPage() {
                   margin: '0 0 0.5rem 0',
                 }}
               >
-                {searchTerm || categoryFilter || showLowStockOnly
+                {searchTerm || showLowStockOnly
                   ? 'No items found'
                   : 'No inventory items yet'}
               </p>
@@ -414,11 +387,11 @@ export default function InventoryPage() {
                   margin: '0 0 1.5rem 0',
                 }}
               >
-                {searchTerm || categoryFilter || showLowStockOnly
+                {searchTerm || showLowStockOnly
                   ? 'Try adjusting your filters'
                   : 'Start tracking your inventory by adding your first item'}
               </p>
-              {!searchTerm && !categoryFilter && !showLowStockOnly && (
+              {!searchTerm && !showLowStockOnly && (
                 <button
                   onClick={() => router.push('/inventory/new')}
                   style={{
@@ -508,7 +481,7 @@ export default function InventoryPage() {
                       <Package size={24} color="#EF7722" />
                     </div>
 
-                    {/* Item Name & Category */}
+                    {/* Item Name & SKU */}
                     <div style={{ marginBottom: '0.75rem', paddingRight: '4rem' }}>
                       <h3
                         style={{
@@ -518,7 +491,7 @@ export default function InventoryPage() {
                           margin: '0 0 0.25rem 0',
                         }}
                       >
-                        {item.item_name}
+                        {item.name}
                       </h3>
                       <div
                         style={{
@@ -529,13 +502,17 @@ export default function InventoryPage() {
                           color: '#6b7280',
                         }}
                       >
-                        <Tag size={14} />
-                        <span>{item.category}</span>
                         {item.sku && (
                           <>
-                            <span>•</span>
                             <Hash size={14} />
                             <span>{item.sku}</span>
+                          </>
+                        )}
+                        {item.is_serialized && (
+                          <>
+                            {item.sku && <span>•</span>}
+                            <Tag size={14} />
+                            <span>Serialized</span>
                           </>
                         )}
                       </div>
@@ -561,7 +538,7 @@ export default function InventoryPage() {
                             marginBottom: '0.25rem',
                           }}
                         >
-                          {item.quantity_available} {item.unit_of_measure}
+                          {item.quantity || 0} {item.unit || 'units'}
                         </div>
                         <div
                           style={{
@@ -572,7 +549,7 @@ export default function InventoryPage() {
                             gap: '0.25rem',
                           }}
                         >
-                          Reorder at: {item.reorder_level} {item.unit_of_measure}
+                          Reorder at: {item.reorder_level || 0} {item.unit || 'units'}
                         </div>
                       </div>
                       <div
@@ -594,26 +571,6 @@ export default function InventoryPage() {
                       </div>
                     </div>
 
-                    {/* Unit Cost */}
-                    {item.unit_cost && (
-                      <div
-                        style={{
-                          marginTop: '0.75rem',
-                          paddingTop: '0.75rem',
-                          borderTop: '1px solid #f3f4f6',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.5rem',
-                          fontSize: '0.875rem',
-                          color: '#6b7280',
-                        }}
-                      >
-                        <DollarSign size={14} />
-                        <span>
-                          ₹{item.unit_cost.toFixed(2)}/{item.unit_of_measure}
-                        </span>
-                      </div>
-                    )}
                   </button>
                 );
               })}

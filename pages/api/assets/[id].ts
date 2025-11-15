@@ -1,15 +1,19 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { Database } from '@/types/database';
-import { getSupabaseAdmin } from '@/lib/supabase-server';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { withOnboardedAuth, requireRole } from '@/lib/auth-middleware';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const supabaseAdmin = getSupabaseAdmin();
-  if (!supabaseAdmin) {
-    return res.status(500).json({ error: 'Server configuration error' });
+  const authResult = await withOnboardedAuth(req, res);
+  if (!authResult.authenticated) {
+    return;
   }
+
+  const { supabase } = authResult;
+  const typedClient = supabase as unknown as SupabaseClient<Database>;
 
   const { id } = req.query;
 
@@ -22,8 +26,8 @@ export default async function handler(
 
   if (req.method === 'GET') {
     try {
-      // Fetch asset with related data
-      const { data: asset, error: assetError } = await supabaseAdmin
+      // Fetch asset with related data - try with joins first
+      let { data: asset, error: assetError } = await typedClient
         .from('assets')
         .select(
           `
@@ -31,9 +35,8 @@ export default async function handler(
           asset_type,
           model,
           serial_number,
-          purchase_date,
-          warranty_expiry,
-          notes,
+          install_date,
+          metadata,
           created_at,
           site:sites(
             id,
@@ -46,6 +49,23 @@ export default async function handler(
         .eq('id', assetId)
         .single();
 
+      // If join fails, try without join
+      if (assetError) {
+        console.error('Error fetching asset with joins:', assetError);
+        const simpleResult = await typedClient
+          .from('assets')
+          .select('id, asset_type, model, serial_number, install_date, metadata, created_at, site_id')
+          .eq('id', assetId)
+          .single();
+        
+        if (simpleResult.error) {
+          throw simpleResult.error;
+        }
+        
+        asset = simpleResult.data;
+        assetError = null;
+      }
+
       if (assetError) throw assetError;
 
       if (!asset) {
@@ -53,7 +73,7 @@ export default async function handler(
       }
 
       // Fetch related jobs
-      const { data: jobs } = await supabaseAdmin
+      const { data: jobs } = await typedClient
         .from('jobs')
         .select('id, title, status, priority, scheduled_at')
         .eq('asset_id', assetId)
@@ -75,39 +95,38 @@ export default async function handler(
   }
 
   if (req.method === 'PATCH') {
+    // Only owners and coordinators can update assets
+    if (!requireRole(authResult.user, ['owner', 'coordinator'], res)) return;
+
     try {
       const {
         asset_type,
         model,
         serial_number,
-        purchase_date,
-        warranty_expiry,
-        notes,
+        install_date,
+        metadata,
       } = req.body;
 
-      if (!asset_type || !model) {
+      if (!asset_type) {
         return res
           .status(400)
-          .json({ error: 'asset_type and model are required' });
+          .json({ error: 'asset_type is required' });
       }
 
       const updatePayload: Database['public']['Tables']['assets']['Update'] = {
         asset_type,
-        model,
+        model: model || null,
         serial_number: serial_number || null,
-        purchase_date: purchase_date || null,
-        warranty_expiry: warranty_expiry || null,
-        notes: notes || null,
+        install_date: install_date || null,
+        metadata: metadata || null,
         updated_at: new Date().toISOString(),
       };
 
-      const { data, error } = await supabaseAdmin
+      const { data, error } = await typedClient
         .from('assets')
         .update(updatePayload)
         .eq('id', assetId)
-        .select(
-          'id, asset_type, model, serial_number, purchase_date, warranty_expiry, notes'
-        )
+        .select('id, asset_type, model, serial_number, install_date, metadata')
         .single();
 
       if (error) throw error;
@@ -122,9 +141,12 @@ export default async function handler(
   }
 
   if (req.method === 'DELETE') {
+    // Only owners and coordinators can delete assets
+    if (!requireRole(authResult.user, ['owner', 'coordinator'], res)) return;
+
     try {
       // Check if asset has associated jobs
-      const { data: jobs } = await supabaseAdmin
+      const { data: jobs } = await typedClient
         .from('jobs')
         .select('id')
         .eq('asset_id', assetId)
@@ -137,7 +159,7 @@ export default async function handler(
         });
       }
 
-      const { error } = await supabaseAdmin
+      const { error } = await typedClient
         .from('assets')
         .delete()
         .eq('id', assetId);

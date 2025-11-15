@@ -3,6 +3,9 @@ import { useRouter } from 'next/router';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import BottomNav from '@/components/BottomNav';
 import Sidebar from '@/components/Sidebar';
+import TopHeader from '@/components/TopHeader';
+import RoleBadge from '@/components/RoleBadge';
+import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
 import { Plus, Building2, Phone, Mail, MapPin, Search } from 'lucide-react';
 
 interface Client {
@@ -16,6 +19,7 @@ interface Client {
 
 export default function ClientsPage() {
   const router = useRouter();
+  const { apiFetch, activeRole } = useRoleSwitch();
   const [clients, setClients] = useState<Client[]>([]);
   const [filteredClients, setFilteredClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +27,7 @@ export default function ClientsPage() {
 
   useEffect(() => {
     fetchClients();
-  }, []);
+  }, [activeRole]); // Refetch when role changes
 
   useEffect(() => {
     if (searchTerm.trim() === '') {
@@ -44,7 +48,7 @@ export default function ClientsPage() {
   const fetchClients = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/clients');
+      const response = await apiFetch('/api/clients');
       if (response.ok) {
         const data = await response.json();
         setClients(data);
@@ -74,6 +78,9 @@ export default function ClientsPage() {
         .mobile-header {
           display: block;
         }
+        .desktop-header {
+          display: none;
+        }
         .fab-button {
           bottom: 5rem;
         }
@@ -81,12 +88,16 @@ export default function ClientsPage() {
           .clients-container {
             margin-left: 260px;
             padding-bottom: 0;
+            padding-top: 64px;
           }
           .main-content {
             padding: 2rem;
           }
           .mobile-header {
             display: none;
+          }
+          .desktop-header {
+            display: block;
           }
           .fab-button {
             bottom: 2rem;
@@ -104,6 +115,16 @@ export default function ClientsPage() {
       >
         {/* Desktop Sidebar */}
         <Sidebar activeTab="clients" />
+
+        {/* Desktop Top Header */}
+        <div className="desktop-header">
+          <TopHeader />
+        </div>
+
+        {/* Desktop Role Badge - Shows when role is switched */}
+        <div className="desktop-header">
+          <RoleBadge />
+        </div>
 
         {/* Mobile Header */}
         <header
@@ -425,40 +446,42 @@ export default function ClientsPage() {
           )}
         </main>
 
-        {/* FAB Button */}
-        <button
-          onClick={() => router.push('/clients/new')}
-          className="fab-button"
-          style={{
-            position: 'fixed',
-            right: '1rem',
-            width: '56px',
-            height: '56px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-            color: 'white',
-            border: 'none',
-            fontSize: '1.75rem',
-            fontWeight: '300',
-            cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(239,119,34,0.3)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 10,
-            transition: 'all 0.2s',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.1)';
-            e.currentTarget.style.boxShadow = '0 6px 16px rgba(239,119,34,0.4)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
-          }}
-        >
-          <Plus size={28} />
-        </button>
+        {/* FAB Button - Hide for technicians */}
+        {activeRole !== 'technician' && (
+          <button
+            onClick={() => router.push('/clients/new')}
+            className="fab-button"
+            style={{
+              position: 'fixed',
+              right: '1rem',
+              width: '56px',
+              height: '56px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
+              color: 'white',
+              border: 'none',
+              fontSize: '1.75rem',
+              fontWeight: '300',
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(239,119,34,0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 10,
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.1)';
+              e.currentTarget.style.boxShadow = '0 6px 16px rgba(239,119,34,0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
+            }}
+          >
+            <Plus size={28} />
+          </button>
+        )}
 
         <BottomNav activeTab="clients" />
       </div>

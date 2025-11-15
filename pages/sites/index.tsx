@@ -3,6 +3,9 @@ import { useRouter } from 'next/router';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import BottomNav from '@/components/BottomNav';
 import Sidebar from '@/components/Sidebar';
+import TopHeader from '@/components/TopHeader';
+import RoleBadge from '@/components/RoleBadge';
+import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
 import { Plus, MapPin, Building2, Search, Filter } from 'lucide-react';
 
 interface Site {
@@ -11,7 +14,9 @@ interface Site {
   address: string;
   gps_lat: number | null;
   gps_lng: number | null;
-  client: {
+  metadata: Record<string, any> | null;
+  client_id?: string;
+  client?: {
     id: string;
     name: string;
   };
@@ -24,6 +29,7 @@ interface Client {
 
 export default function SitesPage() {
   const router = useRouter();
+  const { apiFetch, activeRole } = useRoleSwitch();
   const [sites, setSites] = useState<Site[]>([]);
   const [filteredSites, setFilteredSites] = useState<Site[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
@@ -33,14 +39,14 @@ export default function SitesPage() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [activeRole]); // Refetch when role changes
 
   useEffect(() => {
     let filtered = sites;
 
     // Filter by client if selected
     if (selectedClientId) {
-      filtered = filtered.filter((site) => site.client.id === selectedClientId);
+      filtered = filtered.filter((site) => site.client?.id === selectedClientId);
     }
 
     // Filter by search term
@@ -49,7 +55,7 @@ export default function SitesPage() {
         (site) =>
           site.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           site.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          site.client.name.toLowerCase().includes(searchTerm.toLowerCase())
+          site.client?.name?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -60,14 +66,71 @@ export default function SitesPage() {
     setLoading(true);
     try {
       const [sitesResponse, clientsResponse] = await Promise.all([
-        fetch('/api/sites'),
-        fetch('/api/clients'),
+        apiFetch('/api/sites'),
+        apiFetch('/api/clients'),
       ]);
 
       if (sitesResponse.ok) {
         const sitesData = await sitesResponse.json();
-        setSites(sitesData);
-        setFilteredSites(sitesData);
+        console.log('Sites data received:', sitesData);
+        
+        // If sites don't have nested client data, fetch clients separately and merge
+        let sitesWithClientData = sitesData;
+        
+        // Check if any sites are missing client data
+        const sitesNeedingClientData = sitesData.filter(
+          (site: Site) => !site.client?.name
+        );
+        
+        if (sitesNeedingClientData.length > 0) {
+          // Fetch all clients
+          try {
+            const clientsResponse = await apiFetch('/api/clients');
+            if (clientsResponse.ok) {
+              const clientsData = await clientsResponse.json();
+              
+              // Create a map of client_id -> client data
+              const clientsMap = new Map(
+                clientsData.map((client: Client) => [client.id, client])
+              );
+              
+              // Merge client data into sites
+              sitesWithClientData = sitesData.map((site: Site) => {
+                // If site already has client data, return as is
+                if (site.client?.name) {
+                  return site;
+                }
+                
+                // Otherwise, look up client data from the map
+                // Try to get client_id from the site object (it might be in the raw data)
+                const clientId = (site as any).client_id;
+                if (clientId && clientsMap.has(clientId)) {
+                  const client = clientsMap.get(clientId);
+                  return {
+                    ...site,
+                    client_id: clientId,
+                    client: {
+                      id: client.id,
+                      name: client.name,
+                    },
+                  };
+                }
+                
+                // Return site as is if we can't find client data
+                return site;
+              });
+            }
+          } catch (error) {
+            console.error('Error fetching clients for sites:', error);
+          }
+        }
+        
+        setSites(sitesWithClientData);
+        setFilteredSites(sitesWithClientData);
+      } else {
+        const errorData = await sitesResponse.json().catch(() => ({}));
+        console.error('Sites API error:', errorData);
+        alert(`Failed to load sites: ${errorData.error || 'Unknown error'}`);
       }
 
       if (clientsResponse.ok) {
@@ -98,6 +161,9 @@ export default function SitesPage() {
         .mobile-header {
           display: block;
         }
+        .desktop-header {
+          display: none;
+        }
         .fab-button {
           bottom: 5rem;
         }
@@ -105,12 +171,16 @@ export default function SitesPage() {
           .sites-container {
             margin-left: 260px;
             padding-bottom: 0;
+            padding-top: 64px;
           }
           .main-content {
             padding: 2rem;
           }
           .mobile-header {
             display: none;
+          }
+          .desktop-header {
+            display: block;
           }
           .fab-button {
             bottom: 2rem;
@@ -128,6 +198,16 @@ export default function SitesPage() {
       >
         {/* Desktop Sidebar */}
         <Sidebar activeTab="sites" />
+
+        {/* Desktop Top Header */}
+        <div className="desktop-header">
+          <TopHeader />
+        </div>
+
+        {/* Desktop Role Badge - Shows when role is switched */}
+        <div className="desktop-header">
+          <RoleBadge />
+        </div>
 
         {/* Mobile Header */}
         <header
@@ -459,7 +539,7 @@ export default function SitesPage() {
                               whiteSpace: 'nowrap',
                             }}
                           >
-                            {site.client.name}
+                            {site.client?.name || 'Unknown Client'}
                           </span>
                         </div>
                       </div>
@@ -505,7 +585,8 @@ export default function SitesPage() {
           )}
         </main>
 
-        {/* FAB Button */}
+        {/* FAB Button - Hide for technicians */}
+        {activeRole !== 'technician' && (
         <button
           onClick={() => router.push('/sites/new')}
           className="fab-button"
@@ -539,6 +620,7 @@ export default function SitesPage() {
         >
           <Plus size={28} />
         </button>
+        )}
 
         <BottomNav activeTab="more" />
       </div>

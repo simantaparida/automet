@@ -1,6 +1,9 @@
 import type { AppProps } from 'next/app';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { RoleSwitchProvider } from '@/contexts/RoleSwitchContext';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import CommandPalette from '@/components/CommandPalette';
+import { useCommandPalette } from '@/hooks/useCommandPalette';
 import '../styles/globals.css';
 
 /**
@@ -8,11 +11,24 @@ import '../styles/globals.css';
  * Includes AuthProvider for authentication state management
  * and ErrorBoundary for graceful error handling
  */
-export default function App({ Component, pageProps }: AppProps) {
+function AppContent({ Component, pageProps }: AppProps) {
+  const { isOpen, close } = useCommandPalette();
+
+  return (
+    <>
+      <Component {...pageProps} />
+      <CommandPalette isOpen={isOpen} onClose={close} />
+    </>
+  );
+}
+
+export default function App(props: AppProps) {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <Component {...pageProps} />
+        <RoleSwitchProvider>
+          <AppContent {...props} />
+        </RoleSwitchProvider>
       </AuthProvider>
     </ErrorBoundary>
   );

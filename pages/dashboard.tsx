@@ -2,8 +2,11 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
 import BottomNav from '@/components/BottomNav';
 import Sidebar from '@/components/Sidebar';
+import TopHeader from '@/components/TopHeader';
+import RoleBadge from '@/components/RoleBadge';
 import { supabase } from '@/lib/supabase';
 import { Calendar, Wrench, CheckCircle2, Users, Plus, ClipboardList, AlertTriangle } from 'lucide-react';
 
@@ -16,6 +19,7 @@ interface DashboardStats {
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const { apiFetch } = useRoleSwitch();
   const router = useRouter();
   const [stats, setStats] = useState<DashboardStats>({
     scheduledJobs: 0,
@@ -58,25 +62,39 @@ export default function DashboardPage() {
       }
 
       try {
+        // Use apiFetch to include authentication headers (X-Active-Role)
         // Fetch jobs by status to get accurate counts
-        const [scheduledRes, inProgressRes, completedRes, verifyRes] =
+        const [scheduledRes, inProgressRes, completedRes, clientsRes] =
           await Promise.all([
-            fetch('/api/jobs?status=scheduled'),
-            fetch('/api/jobs?status=in_progress'),
-            fetch('/api/jobs?status=completed'),
-            fetch('/api/verify-data'),
+            apiFetch('/api/jobs?status=scheduled'),
+            apiFetch('/api/jobs?status=in_progress'),
+            apiFetch('/api/jobs?status=completed'),
+            apiFetch('/api/clients'),
           ]);
 
-        const scheduled = await scheduledRes.json();
-        const inProgress = await inProgressRes.json();
-        const completed = await completedRes.json();
-        const verifyData = await verifyRes.json();
+        // Parse job responses - jobs API returns { jobs: [...], total: ... }
+        const scheduledData = await scheduledRes.json();
+        const inProgressData = await inProgressRes.json();
+        const completedData = await completedRes.json();
+        const clients = await clientsRes.json();
+
+        // Handle both array responses (old format) and object responses (new format)
+        const scheduledJobs = Array.isArray(scheduledData) 
+          ? scheduledData 
+          : (scheduledData?.jobs || []);
+        const inProgressJobs = Array.isArray(inProgressData) 
+          ? inProgressData 
+          : (inProgressData?.jobs || []);
+        const completedJobs = Array.isArray(completedData) 
+          ? completedData 
+          : (completedData?.jobs || []);
+        const clientsList = Array.isArray(clients) ? clients : [];
 
         setStats({
-          scheduledJobs: Array.isArray(scheduled) ? scheduled.length : 0,
-          inProgressJobs: Array.isArray(inProgress) ? inProgress.length : 0,
-          completedJobs: Array.isArray(completed) ? completed.length : 0,
-          totalClients: verifyData.clients || 0,
+          scheduledJobs: scheduledJobs.length,
+          inProgressJobs: inProgressJobs.length,
+          completedJobs: completedJobs.length,
+          totalClients: clientsList.length,
         });
       } catch (error) {
         console.error('Error fetching stats:', error);
@@ -85,10 +103,10 @@ export default function DashboardPage() {
       }
     };
 
-    if (hasOrganization !== null) {
+    if (hasOrganization !== null && apiFetch) {
       fetchStats();
     }
-  }, [hasOrganization]);
+  }, [hasOrganization, apiFetch]);
 
   return (
     <ProtectedRoute>
@@ -102,16 +120,26 @@ export default function DashboardPage() {
         .mobile-header {
           display: block;
         }
+        .desktop-header {
+          display: none;
+        }
         @media (min-width: 768px) {
           .dashboard-container {
             margin-left: 260px;
             padding-bottom: 0;
+            padding-top: 64px;
           }
           .main-content {
             padding: 2rem;
           }
           .mobile-header {
             display: none;
+          }
+          .desktop-header {
+            display: block;
+          }
+          .dashboard-container:has(.desktop-header:has(.role-badge)) {
+            padding-top: 96px;
           }
         }
       `}</style>
@@ -126,6 +154,16 @@ export default function DashboardPage() {
       >
         {/* Desktop Sidebar */}
         <Sidebar activeTab="home" />
+
+        {/* Desktop Top Header */}
+        <div className="desktop-header">
+          <TopHeader />
+        </div>
+
+        {/* Desktop Role Badge - Shows when role is switched */}
+        <div className="desktop-header">
+          <RoleBadge />
+        </div>
 
         {/* Mobile Header - Only visible on mobile */}
         <header

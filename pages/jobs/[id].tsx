@@ -2,6 +2,32 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import BottomNav from '@/components/BottomNav';
+import Sidebar from '@/components/Sidebar';
+import TopHeader from '@/components/TopHeader';
+import Breadcrumb from '@/components/Breadcrumb';
+import RoleBadge from '@/components/RoleBadge';
+import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  Building2,
+  Wrench,
+  User,
+  Phone,
+  Mail,
+  Navigation,
+  Edit,
+  Trash2,
+  CheckCircle2,
+  XCircle,
+  AlertCircle,
+  Plus,
+  X,
+  Play,
+  CheckCircle,
+  FileText,
+} from 'lucide-react';
 
 interface JobDetails {
   id: string;
@@ -10,27 +36,28 @@ interface JobDetails {
   status: 'scheduled' | 'in_progress' | 'completed' | 'cancelled';
   priority: 'low' | 'medium' | 'high' | 'urgent';
   scheduled_at: string;
+  due_date?: string;
   completed_at?: string;
   created_at: string;
   client: {
     id: string;
     name: string;
-    contact_email: string;
-    contact_phone: string;
-    address: string;
+    contact_email?: string;
+    contact_phone?: string;
+    address?: string;
   } | null;
   site: {
     id: string;
     name: string;
-    address: string;
-    gps_lat: number | null;
-    gps_lng: number | null;
+    address?: string;
+    gps_lat?: number | null;
+    gps_lng?: number | null;
   } | null;
   asset: {
     id: string;
     asset_type: string;
-    model: string;
-    serial_number: string;
+    model?: string | null;
+    serial_number?: string | null;
   } | null;
   assignments: Array<{
     id: string;
@@ -40,6 +67,7 @@ interface JobDetails {
     user: {
       id: string;
       email: string;
+      full_name?: string;
       role: string;
     };
   }>;
@@ -48,12 +76,14 @@ interface JobDetails {
 interface User {
   id: string;
   email: string;
+  full_name?: string;
   role: string;
 }
 
 export default function JobDetailPage() {
   const router = useRouter();
   const { id } = router.query;
+  const { apiFetch, activeRole } = useRoleSwitch();
   const [job, setJob] = useState<JobDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
@@ -70,11 +100,20 @@ export default function JobDetailPage() {
   const fetchJob = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/jobs/${id}`);
+      const response = await apiFetch(`/api/jobs/${id}`);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to fetch job');
+      }
       const data = await response.json();
+      if (!data.job) {
+        throw new Error('Job not found');
+      }
       setJob(data.job);
     } catch (error) {
       console.error('Error fetching job:', error);
+      alert(error instanceof Error ? error.message : 'Failed to load job');
+      router.push('/jobs');
     } finally {
       setLoading(false);
     }
@@ -91,7 +130,7 @@ export default function JobDetailPage() {
         updates.completed_at = new Date().toISOString();
       }
 
-      const response = await fetch(`/api/jobs/${id}`, {
+      const response = await apiFetch(`/api/jobs/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates),
@@ -99,9 +138,13 @@ export default function JobDetailPage() {
 
       if (response.ok) {
         await fetchJob();
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        alert(errorData.error || 'Failed to update job status');
       }
     } catch (error) {
       console.error('Error updating job:', error);
+      alert('Error updating job status');
     } finally {
       setUpdating(false);
     }
@@ -111,21 +154,25 @@ export default function JobDetailPage() {
     if (!confirm('Are you sure you want to delete this job?')) return;
 
     try {
-      const response = await fetch(`/api/jobs/${id}`, {
+      const response = await apiFetch(`/api/jobs/${id}`, {
         method: 'DELETE',
       });
 
       if (response.ok) {
         router.push('/jobs');
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        alert(errorData.error || 'Failed to delete job');
       }
     } catch (error) {
       console.error('Error deleting job:', error);
+      alert('Error deleting job');
     }
   };
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('/api/users?role=technician');
+      const response = await apiFetch('/api/users?role=technician');
       if (response.ok) {
         const data = await response.json();
         setUsers(data);
@@ -139,7 +186,7 @@ export default function JobDetailPage() {
     if (!selectedUserId) return;
 
     try {
-      const response = await fetch(`/api/jobs/${id}/assignments`, {
+      const response = await apiFetch(`/api/jobs/${id}/assignments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: selectedUserId }),
@@ -150,8 +197,8 @@ export default function JobDetailPage() {
         setSelectedUserId('');
         await fetchJob();
       } else {
-        const error = await response.json();
-        alert(error.error || 'Failed to assign technician');
+        const errorData = await response.json().catch(() => ({}));
+        alert(errorData.error || 'Failed to assign technician');
       }
     } catch (error) {
       console.error('Error assigning technician:', error);
@@ -163,7 +210,7 @@ export default function JobDetailPage() {
     if (!confirm('Remove this technician from the job?')) return;
 
     try {
-      const response = await fetch(`/api/jobs/${id}/assignments`, {
+      const response = await apiFetch(`/api/jobs/${id}/assignments`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ assignment_id: assignmentId }),
@@ -179,7 +226,7 @@ export default function JobDetailPage() {
 
   const handleCheckIn = async (assignmentId: string) => {
     try {
-      const response = await fetch(`/api/jobs/${id}/checkin`, {
+      const response = await apiFetch(`/api/jobs/${id}/checkin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -193,6 +240,7 @@ export default function JobDetailPage() {
       }
     } catch (error) {
       console.error('Error checking in:', error);
+      alert('Error checking in');
     }
   };
 
@@ -200,7 +248,7 @@ export default function JobDetailPage() {
     const notes = prompt('Add completion notes (optional):');
 
     try {
-      const response = await fetch(`/api/jobs/${id}/checkin`, {
+      const response = await apiFetch(`/api/jobs/${id}/checkin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -215,6 +263,7 @@ export default function JobDetailPage() {
       }
     } catch (error) {
       console.error('Error checking out:', error);
+      alert('Error checking out');
     }
   };
 
@@ -223,18 +272,33 @@ export default function JobDetailPage() {
     setShowAssignModal(true);
   };
 
-  const getPriorityIcon = (priority: string) => {
+  const getStatusConfig = (status: string) => {
+    switch (status) {
+      case 'scheduled':
+        return { color: '#3b82f6', bg: '#eff6ff', icon: Calendar, label: 'Scheduled' };
+      case 'in_progress':
+        return { color: '#f59e0b', bg: '#fffbeb', icon: Play, label: 'In Progress' };
+      case 'completed':
+        return { color: '#10b981', bg: '#f0fdf4', icon: CheckCircle2, label: 'Completed' };
+      case 'cancelled':
+        return { color: '#ef4444', bg: '#fef2f2', icon: XCircle, label: 'Cancelled' };
+      default:
+        return { color: '#6b7280', bg: '#f9fafb', icon: AlertCircle, label: status };
+    }
+  };
+
+  const getPriorityConfig = (priority: string) => {
     switch (priority) {
       case 'urgent':
-        return '🔴';
+        return { color: '#ef4444', label: 'Urgent', icon: AlertCircle };
       case 'high':
-        return '🟠';
+        return { color: '#f59e0b', label: 'High', icon: AlertCircle };
       case 'medium':
-        return '🟡';
+        return { color: '#3b82f6', label: 'Medium', icon: AlertCircle };
       case 'low':
-        return '🟢';
+        return { color: '#10b981', label: 'Low', icon: CheckCircle };
       default:
-        return '⚪';
+        return { color: '#6b7280', label: priority, icon: AlertCircle };
     }
   };
 
@@ -249,9 +313,24 @@ export default function JobDetailPage() {
     });
   };
 
+  const formatDateShort = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+  };
+
   const handleCall = () => {
     if (job?.client?.contact_phone) {
       window.location.href = `tel:${job.client.contact_phone}`;
+    }
+  };
+
+  const handleEmail = () => {
+    if (job?.client?.contact_email) {
+      window.location.href = `mailto:${job.client.contact_email}`;
     }
   };
 
@@ -259,6 +338,11 @@ export default function JobDetailPage() {
     if (job?.site?.gps_lat && job?.site?.gps_lng) {
       window.open(
         `https://www.google.com/maps/dir/?api=1&destination=${job.site.gps_lat},${job.site.gps_lng}`,
+        '_blank'
+      );
+    } else if (job?.site?.address) {
+      window.open(
+        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(job.site.address)}`,
         '_blank'
       );
     }
@@ -273,15 +357,15 @@ export default function JobDetailPage() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: '#f5f5f5',
+            background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           }}
         >
           <div
             style={{
-              width: '40px',
-              height: '40px',
-              border: '4px solid #e5e7eb',
-              borderTopColor: '#2563eb',
+              width: '48px',
+              height: '48px',
+              border: '4px solid #ffe8d6',
+              borderTopColor: '#EF7722',
               borderRadius: '50%',
               animation: 'spin 1s linear infinite',
             }}
@@ -310,6 +394,7 @@ export default function JobDetailPage() {
             flexDirection: 'column',
             gap: '1rem',
             padding: '1rem',
+            background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           }}
         >
           <p style={{ fontSize: '1.125rem', color: '#6b7280' }}>
@@ -319,13 +404,15 @@ export default function JobDetailPage() {
             onClick={() => router.push('/jobs')}
             style={{
               padding: '0.75rem 1.5rem',
-              backgroundColor: '#2563eb',
+              background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
               color: 'white',
               border: 'none',
               borderRadius: '8px',
               fontSize: '1rem',
+              fontWeight: '600',
               cursor: 'pointer',
               minHeight: '44px',
+              boxShadow: '0 2px 8px rgba(239,119,34,0.25)',
             }}
           >
             Back to Jobs
@@ -335,26 +422,94 @@ export default function JobDetailPage() {
     );
   }
 
+  const statusConfig = getStatusConfig(job.status);
+  const priorityConfig = getPriorityConfig(job.priority);
+  const StatusIcon = statusConfig.icon;
+  const PriorityIcon = priorityConfig.icon;
+
   return (
     <ProtectedRoute>
+      <style jsx>{`
+        .detail-container {
+          padding-bottom: 80px;
+        }
+        .main-content-area {
+          padding: 0;
+        }
+        .mobile-header {
+          display: block;
+        }
+        .desktop-header {
+          display: none;
+        }
+        @media (min-width: 768px) {
+          .detail-container {
+            margin-left: 260px;
+            padding-bottom: 0;
+            padding-top: 64px;
+          }
+          .main-content-area {
+            padding: 0;
+          }
+          .mobile-header {
+            display: none;
+          }
+          .desktop-header {
+            display: block;
+          }
+        }
+      `}</style>
+
       <div
+        className="detail-container"
         style={{
           minHeight: '100vh',
-          backgroundColor: '#f5f5f5',
-          paddingBottom: '80px',
+          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
         }}
       >
+        {/* Desktop Sidebar */}
+        <Sidebar activeTab="jobs" />
+
+        {/* Desktop Top Header */}
+        <div className="desktop-header">
+          <TopHeader />
+        </div>
+
+        {/* Desktop Role Badge */}
+        <div className="desktop-header">
+          <RoleBadge />
+        </div>
+
+        {/* Desktop Breadcrumb */}
+        <div
+          className="desktop-header"
+          style={{
+            position: 'sticky',
+            top: '64px',
+            zIndex: 19,
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+          }}
+        >
+          <Breadcrumb
+            items={[
+              { label: 'Jobs', href: '/jobs' },
+              { label: job.title || 'Job Details' },
+            ]}
+          />
+        </div>
+
         {/* Mobile Header */}
         <header
+          className="mobile-header"
           style={{
-            backgroundColor: '#2563eb',
+            background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
             color: 'white',
             padding: '1rem',
             position: 'sticky',
             top: 0,
-            zIndex: 10,
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            zIndex: 20,
+            boxShadow: '0 2px 10px rgba(239,119,34,0.2)',
           }}
         >
           <div
@@ -376,114 +531,80 @@ export default function JobDetailPage() {
                 padding: '0.25rem',
                 minWidth: '44px',
                 minHeight: '44px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
               ←
             </button>
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <h1
-                style={{ fontSize: '1.125rem', fontWeight: '600', margin: 0 }}
+                style={{
+                  fontSize: '1.125rem',
+                  fontWeight: '700',
+                  margin: 0,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
               >
-                Job Details
+                {job.title || 'Job Details'}
               </h1>
             </div>
-            <span style={{ fontSize: '1.5rem' }}>
-              {getPriorityIcon(job.priority)}
-            </span>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+              }}
+            >
+              <PriorityIcon size={20} color={priorityConfig.color} />
+            </div>
           </div>
           <div
             style={{
-              display: 'inline-block',
-              padding: '0.25rem 0.75rem',
-              backgroundColor: 'rgba(255,255,255,0.2)',
-              borderRadius: '999px',
-              fontSize: '0.75rem',
-              fontWeight: '600',
-              textTransform: 'uppercase',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
             }}
           >
-            {job.status.replace('_', ' ')}
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.375rem 0.75rem',
+                backgroundColor: 'rgba(255,255,255,0.2)',
+                borderRadius: '999px',
+                fontSize: '0.75rem',
+                fontWeight: '600',
+                textTransform: 'uppercase',
+              }}
+            >
+              <StatusIcon size={14} />
+              {statusConfig.label}
+            </div>
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.375rem',
+                padding: '0.375rem 0.75rem',
+                backgroundColor: 'rgba(255,255,255,0.2)',
+                borderRadius: '999px',
+                fontSize: '0.75rem',
+                fontWeight: '600',
+                textTransform: 'uppercase',
+              }}
+            >
+              <PriorityIcon size={14} />
+              {priorityConfig.label}
+            </div>
           </div>
         </header>
 
-        {/* Quick Actions */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '0.75rem',
-            padding: '1rem',
-            backgroundColor: 'white',
-            borderBottom: '1px solid #e5e7eb',
-          }}
-        >
-          <button
-            onClick={() => router.push(`/jobs/${id}/edit`)}
-            style={{
-              padding: '0.75rem',
-              backgroundColor: '#6b7280',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '0.875rem',
-              fontWeight: '500',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.5rem',
-              minHeight: '44px',
-            }}
-          >
-            <span>✏️</span> Edit Job
-          </button>
-          {job.client?.contact_phone && (
-            <button
-              onClick={handleCall}
-              style={{
-                padding: '0.75rem',
-                backgroundColor: '#10b981',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.5rem',
-                minHeight: '44px',
-              }}
-            >
-              <span>📞</span> Call Client
-            </button>
-          )}
-          {job.site?.gps_lat && job.site?.gps_lng && (
-            <button
-              onClick={handleNavigate}
-              style={{
-                padding: '0.75rem',
-                backgroundColor: '#3b82f6',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.5rem',
-                minHeight: '44px',
-              }}
-            >
-              <span>🗺️</span> Navigate
-            </button>
-          )}
-        </div>
-
-        {/* Status Actions */}
+        {/* Status Actions Banner */}
         {job.status !== 'completed' && job.status !== 'cancelled' && (
           <div
             style={{
@@ -492,21 +613,11 @@ export default function JobDetailPage() {
               borderBottom: '8px solid #f5f5f5',
             }}
           >
-            <p
-              style={{
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                marginBottom: '0.75rem',
-                color: '#1f2937',
-              }}
-            >
-              Update Status
-            </p>
             <div
               style={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '0.5rem',
+                gap: '0.75rem',
               }}
             >
               {job.status === 'scheduled' && (
@@ -514,19 +625,36 @@ export default function JobDetailPage() {
                   onClick={() => updateJobStatus('in_progress')}
                   disabled={updating}
                   style={{
-                    padding: '0.875rem',
-                    backgroundColor: '#f59e0b',
+                    padding: '1rem',
+                    background: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
                     color: 'white',
                     border: 'none',
-                    borderRadius: '8px',
+                    borderRadius: '12px',
                     fontSize: '1rem',
-                    fontWeight: '600',
+                    fontWeight: '700',
                     cursor: updating ? 'not-allowed' : 'pointer',
-                    minHeight: '48px',
+                    minHeight: '52px',
                     opacity: updating ? 0.6 : 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem',
+                    boxShadow: '0 4px 12px rgba(245,158,11,0.3)',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!updating) {
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                      e.currentTarget.style.boxShadow = '0 6px 16px rgba(245,158,11,0.4)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(245,158,11,0.3)';
                   }}
                 >
-                  {updating ? 'Updating...' : '▶️ Start Job'}
+                  <Play size={20} />
+                  {updating ? 'Starting...' : 'Start Job'}
                 </button>
               )}
               {job.status === 'in_progress' && (
@@ -534,296 +662,288 @@ export default function JobDetailPage() {
                   onClick={() => updateJobStatus('completed')}
                   disabled={updating}
                   style={{
-                    padding: '0.875rem',
-                    backgroundColor: '#10b981',
+                    padding: '1rem',
+                    background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
                     color: 'white',
                     border: 'none',
-                    borderRadius: '8px',
+                    borderRadius: '12px',
                     fontSize: '1rem',
-                    fontWeight: '600',
+                    fontWeight: '700',
                     cursor: updating ? 'not-allowed' : 'pointer',
-                    minHeight: '48px',
+                    minHeight: '52px',
                     opacity: updating ? 0.6 : 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem',
+                    boxShadow: '0 4px 12px rgba(16,185,129,0.3)',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!updating) {
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                      e.currentTarget.style.boxShadow = '0 6px 16px rgba(16,185,129,0.4)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(16,185,129,0.3)';
                   }}
                 >
-                  {updating ? 'Updating...' : '✅ Mark Completed'}
+                  <CheckCircle2 size={20} />
+                  {updating ? 'Completing...' : 'Mark Completed'}
                 </button>
               )}
               <button
                 onClick={() => updateJobStatus('cancelled')}
                 disabled={updating}
                 style={{
-                  padding: '0.875rem',
-                  backgroundColor: '#ef4444',
-                  color: 'white',
-                  border: 'none',
+                  padding: '0.75rem',
+                  backgroundColor: 'white',
+                  color: '#ef4444',
+                  border: '1px solid #ef4444',
                   borderRadius: '8px',
                   fontSize: '0.875rem',
-                  fontWeight: '500',
+                  fontWeight: '600',
                   cursor: updating ? 'not-allowed' : 'pointer',
                   minHeight: '44px',
                   opacity: updating ? 0.6 : 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem',
                 }}
               >
-                {updating ? 'Updating...' : '❌ Cancel Job'}
+                <XCircle size={18} />
+                Cancel Job
               </button>
             </div>
           </div>
         )}
 
+        {/* Quick Actions */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+            gap: '0.75rem',
+            padding: '1rem',
+            backgroundColor: 'white',
+            borderBottom: '1px solid rgba(239,119,34,0.1)',
+          }}
+        >
+          {activeRole !== 'technician' && (
+            <button
+              onClick={() => router.push(`/jobs/${id}/edit`)}
+              style={{
+                padding: '0.75rem',
+                backgroundColor: '#f9fafb',
+                color: '#1f2937',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.375rem',
+                minHeight: '72px',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#f3f4f6';
+                e.currentTarget.style.borderColor = '#d1d5db';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#f9fafb';
+                e.currentTarget.style.borderColor = '#e5e7eb';
+              }}
+            >
+              <Edit size={20} color="#1f2937" />
+              <span>Edit</span>
+            </button>
+          )}
+          {job.client?.contact_phone && (
+            <button
+              onClick={handleCall}
+              style={{
+                padding: '0.75rem',
+                backgroundColor: '#f0fdf4',
+                color: '#10b981',
+                border: '1px solid #86efac',
+                borderRadius: '8px',
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.375rem',
+                minHeight: '72px',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#dcfce7';
+                e.currentTarget.style.borderColor = '#4ade80';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#f0fdf4';
+                e.currentTarget.style.borderColor = '#86efac';
+              }}
+            >
+              <Phone size={20} color="#10b981" />
+              <span>Call</span>
+            </button>
+          )}
+          {job.client?.contact_email && (
+            <button
+              onClick={handleEmail}
+              style={{
+                padding: '0.75rem',
+                backgroundColor: '#eff6ff',
+                color: '#2563eb',
+                border: '1px solid #93c5fd',
+                borderRadius: '8px',
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.375rem',
+                minHeight: '72px',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#dbeafe';
+                e.currentTarget.style.borderColor = '#60a5fa';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#eff6ff';
+                e.currentTarget.style.borderColor = '#93c5fd';
+              }}
+            >
+              <Mail size={20} color="#2563eb" />
+              <span>Email</span>
+            </button>
+          )}
+          {(job.site?.gps_lat || job.site?.address) && (
+            <button
+              onClick={handleNavigate}
+              style={{
+                padding: '0.75rem',
+                backgroundColor: '#eff6ff',
+                color: '#2563eb',
+                border: '1px solid #93c5fd',
+                borderRadius: '8px',
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.375rem',
+                minHeight: '72px',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#dbeafe';
+                e.currentTarget.style.borderColor = '#60a5fa';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#eff6ff';
+                e.currentTarget.style.borderColor = '#93c5fd';
+              }}
+            >
+              <Navigation size={20} color="#2563eb" />
+              <span>Navigate</span>
+            </button>
+          )}
+        </div>
+
         {/* Main Content */}
-        <main style={{ padding: '0' }}>
+        <main className="main-content-area" style={{ padding: '1rem' }}>
           {/* Job Info Card */}
           <div
             style={{
               backgroundColor: 'white',
-              padding: '1rem',
-              marginBottom: '8px',
+              padding: '1.5rem',
+              marginBottom: '0.5rem',
+              borderRadius: '12px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+              border: '1px solid rgba(239,119,34,0.1)',
             }}
           >
-            <h2
+            <div
               style={{
-                fontSize: '1.25rem',
-                fontWeight: '600',
-                margin: '0 0 0.5rem 0',
-                color: '#1f2937',
+                display: 'flex',
+                alignItems: 'start',
+                justifyContent: 'space-between',
+                marginBottom: '1rem',
               }}
             >
-              {job.title}
-            </h2>
-            <p
-              style={{
-                fontSize: '0.875rem',
-                color: '#6b7280',
-                lineHeight: '1.5',
-                margin: 0,
-              }}
-            >
-              {job.description}
-            </p>
+              <h2
+                style={{
+                  fontSize: '1.5rem',
+                  fontWeight: '700',
+                  margin: 0,
+                  color: '#1f2937',
+                  flex: 1,
+                }}
+              >
+                {job.title}
+              </h2>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.5rem 0.75rem',
+                  backgroundColor: priorityConfig.color + '15',
+                  borderRadius: '8px',
+                }}
+              >
+                <PriorityIcon size={16} color={priorityConfig.color} />
+                <span
+                  style={{
+                    fontSize: '0.75rem',
+                    fontWeight: '600',
+                    color: priorityConfig.color,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {priorityConfig.label}
+                </span>
+              </div>
+            </div>
+            {job.description && (
+              <p
+                style={{
+                  fontSize: '0.9375rem',
+                  color: '#6b7280',
+                  lineHeight: '1.6',
+                  margin: 0,
+                }}
+              >
+                {job.description}
+              </p>
+            )}
           </div>
 
-          {/* Client Info */}
-          {job.client && (
-            <div
-              style={{
-                backgroundColor: 'white',
-                padding: '1rem',
-                marginBottom: '8px',
-              }}
-            >
-              <h3
-                style={{
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '0.75rem',
-                }}
-              >
-                Client
-              </h3>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.75rem',
-                }}
-              >
-                <div>
-                  <div
-                    style={{
-                      fontSize: '1rem',
-                      fontWeight: '600',
-                      color: '#1f2937',
-                      marginBottom: '0.25rem',
-                    }}
-                  >
-                    {job.client.name}
-                  </div>
-                  <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                    {job.client.address}
-                  </div>
-                </div>
-                {job.client.contact_email && (
-                  <a
-                    href={`mailto:${job.client.contact_email}`}
-                    style={{
-                      fontSize: '0.875rem',
-                      color: '#2563eb',
-                      textDecoration: 'none',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                    }}
-                  >
-                    <span>📧</span> {job.client.contact_email}
-                  </a>
-                )}
-                {job.client.contact_phone && (
-                  <a
-                    href={`tel:${job.client.contact_phone}`}
-                    style={{
-                      fontSize: '0.875rem',
-                      color: '#2563eb',
-                      textDecoration: 'none',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                    }}
-                  >
-                    <span>📞</span> {job.client.contact_phone}
-                  </a>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Site Info */}
-          {job.site && (
-            <div
-              style={{
-                backgroundColor: 'white',
-                padding: '1rem',
-                marginBottom: '8px',
-              }}
-            >
-              <h3
-                style={{
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '0.75rem',
-                }}
-              >
-                Site Location
-              </h3>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.75rem',
-                }}
-              >
-                <div>
-                  <div
-                    style={{
-                      fontSize: '1rem',
-                      fontWeight: '600',
-                      color: '#1f2937',
-                      marginBottom: '0.25rem',
-                    }}
-                  >
-                    {job.site.name}
-                  </div>
-                  <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                    {job.site.address}
-                  </div>
-                </div>
-                {job.site.gps_lat && job.site.gps_lng && (
-                  <button
-                    onClick={handleNavigate}
-                    style={{
-                      padding: '0.75rem',
-                      backgroundColor: '#eff6ff',
-                      color: '#2563eb',
-                      border: '1px solid #bfdbfe',
-                      borderRadius: '8px',
-                      fontSize: '0.875rem',
-                      fontWeight: '500',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '0.5rem',
-                      minHeight: '44px',
-                    }}
-                  >
-                    <span>🗺️</span> Open in Maps
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Asset Info */}
-          {job.asset && (
-            <div
-              style={{
-                backgroundColor: 'white',
-                padding: '1rem',
-                marginBottom: '8px',
-              }}
-            >
-              <h3
-                style={{
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '0.75rem',
-                }}
-              >
-                Asset
-              </h3>
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '0.75rem',
-                  fontSize: '0.875rem',
-                }}
-              >
-                <div>
-                  <div style={{ color: '#6b7280', marginBottom: '0.25rem' }}>
-                    Type
-                  </div>
-                  <div
-                    style={{
-                      fontWeight: '600',
-                      color: '#1f2937',
-                      textTransform: 'capitalize',
-                    }}
-                  >
-                    {job.asset.asset_type.replace('_', ' ')}
-                  </div>
-                </div>
-                <div>
-                  <div style={{ color: '#6b7280', marginBottom: '0.25rem' }}>
-                    Model
-                  </div>
-                  <div style={{ fontWeight: '600', color: '#1f2937' }}>
-                    {job.asset.model}
-                  </div>
-                </div>
-                <div style={{ gridColumn: '1 / -1' }}>
-                  <div style={{ color: '#6b7280', marginBottom: '0.25rem' }}>
-                    Serial Number
-                  </div>
-                  <div
-                    style={{
-                      fontWeight: '600',
-                      color: '#1f2937',
-                      fontFamily: 'monospace',
-                    }}
-                  >
-                    {job.asset.serial_number}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Schedule Info */}
+          {/* Status & Schedule Card */}
           <div
             style={{
               backgroundColor: 'white',
-              padding: '1rem',
-              marginBottom: '8px',
+              padding: '1.5rem',
+              marginBottom: '0.5rem',
+              borderRadius: '12px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+              border: '1px solid rgba(239,119,34,0.1)',
             }}
           >
             <h3
@@ -833,46 +953,137 @@ export default function JobDetailPage() {
                 color: '#6b7280',
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em',
-                marginBottom: '0.75rem',
+                marginBottom: '1rem',
               }}
             >
-              Schedule
+              Status & Schedule
             </h3>
             <div
               style={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '0.75rem',
-                fontSize: '0.875rem',
+                gap: '1rem',
               }}
             >
               <div
-                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                  padding: '0.75rem',
+                  backgroundColor: statusConfig.bg,
+                  borderRadius: '8px',
+                }}
               >
-                <span>⏰</span>
-                <div>
-                  <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>
+                <StatusIcon size={20} color={statusConfig.color} />
+                <div style={{ flex: 1 }}>
+                  <div
+                    style={{
+                      fontSize: '0.75rem',
+                      color: '#6b7280',
+                      marginBottom: '0.25rem',
+                    }}
+                  >
+                    Status
+                  </div>
+                  <div
+                    style={{
+                      fontSize: '0.9375rem',
+                      fontWeight: '600',
+                      color: statusConfig.color,
+                      textTransform: 'capitalize',
+                    }}
+                  >
+                    {statusConfig.label}
+                  </div>
+                </div>
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                }}
+              >
+                <Calendar size={20} color="#6b7280" />
+                <div style={{ flex: 1 }}>
+                  <div
+                    style={{
+                      fontSize: '0.75rem',
+                      color: '#6b7280',
+                      marginBottom: '0.25rem',
+                    }}
+                  >
                     Scheduled
                   </div>
-                  <div style={{ fontWeight: '600', color: '#1f2937' }}>
+                  <div
+                    style={{
+                      fontSize: '0.9375rem',
+                      fontWeight: '600',
+                      color: '#1f2937',
+                    }}
+                  >
                     {formatDate(job.scheduled_at)}
                   </div>
                 </div>
               </div>
+              {job.due_date && (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                  }}
+                >
+                  <Clock size={20} color="#6b7280" />
+                  <div style={{ flex: 1 }}>
+                    <div
+                      style={{
+                        fontSize: '0.75rem',
+                        color: '#6b7280',
+                        marginBottom: '0.25rem',
+                      }}
+                    >
+                      Due Date
+                    </div>
+                    <div
+                      style={{
+                        fontSize: '0.9375rem',
+                        fontWeight: '600',
+                        color: '#1f2937',
+                      }}
+                    >
+                      {formatDateShort(job.due_date)}
+                    </div>
+                  </div>
+                </div>
+              )}
               {job.completed_at && (
                 <div
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.5rem',
+                    gap: '0.75rem',
                   }}
                 >
-                  <span>✅</span>
-                  <div>
-                    <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>
+                  <CheckCircle2 size={20} color="#10b981" />
+                  <div style={{ flex: 1 }}>
+                    <div
+                      style={{
+                        fontSize: '0.75rem',
+                        color: '#6b7280',
+                        marginBottom: '0.25rem',
+                      }}
+                    >
                       Completed
                     </div>
-                    <div style={{ fontWeight: '600', color: '#1f2937' }}>
+                    <div
+                      style={{
+                        fontSize: '0.9375rem',
+                        fontWeight: '600',
+                        color: '#10b981',
+                      }}
+                    >
                       {formatDate(job.completed_at)}
                     </div>
                   </div>
@@ -881,12 +1092,360 @@ export default function JobDetailPage() {
             </div>
           </div>
 
+          {/* Client Info */}
+          {job.client && (
+            <div
+              style={{
+                backgroundColor: 'white',
+                padding: '1.5rem',
+                marginBottom: '0.5rem',
+                borderRadius: '12px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                border: '1px solid rgba(239,119,34,0.1)',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: '1rem',
+                }}
+              >
+                <h3
+                  style={{
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#6b7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    margin: 0,
+                  }}
+                >
+                  Client
+                </h3>
+                <button
+                  onClick={() => router.push(`/clients/${job.client!.id}`)}
+                  style={{
+                    padding: '0.375rem 0.75rem',
+                    backgroundColor: 'transparent',
+                    color: '#EF7722',
+                    border: '1px solid #EF7722',
+                    borderRadius: '6px',
+                    fontSize: '0.75rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                  }}
+                >
+                  View
+                </button>
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem',
+                }}
+              >
+                <div>
+                  <div
+                    style={{
+                      fontSize: '1.125rem',
+                      fontWeight: '700',
+                      color: '#1f2937',
+                      marginBottom: '0.25rem',
+                    }}
+                  >
+                    {job.client.name}
+                  </div>
+                  {job.client.address && (
+                    <div
+                      style={{
+                        fontSize: '0.875rem',
+                        color: '#6b7280',
+                        display: 'flex',
+                        alignItems: 'start',
+                        gap: '0.5rem',
+                      }}
+                    >
+                      <MapPin size={16} color="#6b7280" style={{ marginTop: '2px', flexShrink: 0 }} />
+                      <span>{job.client.address}</span>
+                    </div>
+                  )}
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.5rem',
+                  }}
+                >
+                  {job.client.contact_email && (
+                    <a
+                      href={`mailto:${job.client.contact_email}`}
+                      style={{
+                        fontSize: '0.875rem',
+                        color: '#2563eb',
+                        textDecoration: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                      }}
+                    >
+                      <Mail size={16} color="#2563eb" />
+                      {job.client.contact_email}
+                    </a>
+                  )}
+                  {job.client.contact_phone && (
+                    <a
+                      href={`tel:${job.client.contact_phone}`}
+                      style={{
+                        fontSize: '0.875rem',
+                        color: '#2563eb',
+                        textDecoration: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                      }}
+                    >
+                      <Phone size={16} color="#2563eb" />
+                      {job.client.contact_phone}
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Site Info */}
+          {job.site && (
+            <div
+              style={{
+                backgroundColor: 'white',
+                padding: '1.5rem',
+                marginBottom: '0.5rem',
+                borderRadius: '12px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                border: '1px solid rgba(239,119,34,0.1)',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: '1rem',
+                }}
+              >
+                <h3
+                  style={{
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#6b7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    margin: 0,
+                  }}
+                >
+                  Site Location
+                </h3>
+                <button
+                  onClick={() => router.push(`/sites/${job.site!.id}`)}
+                  style={{
+                    padding: '0.375rem 0.75rem',
+                    backgroundColor: 'transparent',
+                    color: '#EF7722',
+                    border: '1px solid #EF7722',
+                    borderRadius: '6px',
+                    fontSize: '0.75rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                  }}
+                >
+                  View
+                </button>
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem',
+                }}
+              >
+                <div>
+                  <div
+                    style={{
+                      fontSize: '1.125rem',
+                      fontWeight: '700',
+                      color: '#1f2937',
+                      marginBottom: '0.5rem',
+                    }}
+                  >
+                    {job.site.name}
+                  </div>
+                  {job.site.address && (
+                    <div
+                      style={{
+                        fontSize: '0.875rem',
+                        color: '#6b7280',
+                        display: 'flex',
+                        alignItems: 'start',
+                        gap: '0.5rem',
+                      }}
+                    >
+                      <MapPin size={16} color="#6b7280" style={{ marginTop: '2px', flexShrink: 0 }} />
+                      <span>{job.site.address}</span>
+                    </div>
+                  )}
+                  {job.site.gps_lat && job.site.gps_lng && (
+                    <div
+                      style={{
+                        fontSize: '0.75rem',
+                        color: '#EF7722',
+                        marginTop: '0.5rem',
+                        fontWeight: '500',
+                      }}
+                    >
+                      📍 GPS: {job.site.gps_lat.toFixed(6)}, {job.site.gps_lng.toFixed(6)}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Asset Info */}
+          {job.asset && (
+            <div
+              style={{
+                backgroundColor: 'white',
+                padding: '1.5rem',
+                marginBottom: '0.5rem',
+                borderRadius: '12px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                border: '1px solid rgba(239,119,34,0.1)',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: '1rem',
+                }}
+              >
+                <h3
+                  style={{
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#6b7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    margin: 0,
+                  }}
+                >
+                  Asset
+                </h3>
+                <button
+                  onClick={() => router.push(`/assets/${job.asset!.id}`)}
+                  style={{
+                    padding: '0.375rem 0.75rem',
+                    backgroundColor: 'transparent',
+                    color: '#EF7722',
+                    border: '1px solid #EF7722',
+                    borderRadius: '6px',
+                    fontSize: '0.75rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                  }}
+                >
+                  View
+                </button>
+              </div>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '1rem',
+                  fontSize: '0.875rem',
+                }}
+              >
+                <div>
+                  <div
+                    style={{
+                      color: '#6b7280',
+                      marginBottom: '0.5rem',
+                      fontSize: '0.75rem',
+                    }}
+                  >
+                    Type
+                  </div>
+                  <div
+                    style={{
+                      fontWeight: '700',
+                      color: '#1f2937',
+                      textTransform: 'capitalize',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                    }}
+                  >
+                    <Wrench size={16} color="#EF7722" />
+                    {job.asset.asset_type.replace('_', ' ')}
+                  </div>
+                </div>
+                {job.asset.model && (
+                  <div>
+                    <div
+                      style={{
+                        color: '#6b7280',
+                        marginBottom: '0.5rem',
+                        fontSize: '0.75rem',
+                      }}
+                    >
+                      Model
+                    </div>
+                    <div style={{ fontWeight: '700', color: '#1f2937' }}>
+                      {job.asset.model}
+                    </div>
+                  </div>
+                )}
+                {job.asset.serial_number && (
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <div
+                      style={{
+                        color: '#6b7280',
+                        marginBottom: '0.5rem',
+                        fontSize: '0.75rem',
+                      }}
+                    >
+                      Serial Number
+                    </div>
+                    <div
+                      style={{
+                        fontWeight: '700',
+                        color: '#1f2937',
+                        fontFamily: 'monospace',
+                        fontSize: '0.875rem',
+                      }}
+                    >
+                      {job.asset.serial_number}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Assigned Technicians */}
           <div
             style={{
               backgroundColor: 'white',
-              padding: '1rem',
-              marginBottom: '8px',
+              padding: '1.5rem',
+              marginBottom: '0.5rem',
+              borderRadius: '12px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+              border: '1px solid rgba(239,119,34,0.1)',
             }}
           >
             <div
@@ -894,7 +1453,7 @@ export default function JobDetailPage() {
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                marginBottom: '0.75rem',
+                marginBottom: '1rem',
               }}
             >
               <h3
@@ -907,24 +1466,31 @@ export default function JobDetailPage() {
                   margin: 0,
                 }}
               >
-                Assigned Technicians
+                Assigned Technicians ({job.assignments?.length || 0})
               </h3>
-              <button
-                onClick={openAssignModal}
-                style={{
-                  padding: '0.5rem 0.75rem',
-                  backgroundColor: '#2563eb',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontSize: '0.75rem',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  minHeight: '32px',
-                }}
-              >
-                + Assign
-              </button>
+              {activeRole !== 'technician' && (
+                <button
+                  onClick={openAssignModal}
+                  style={{
+                    padding: '0.5rem 0.75rem',
+                    background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '0.75rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.375rem',
+                    minHeight: '32px',
+                    boxShadow: '0 2px 8px rgba(239,119,34,0.25)',
+                  }}
+                >
+                  <Plus size={14} />
+                  Assign
+                </button>
+              )}
             </div>
             {job.assignments && job.assignments.length > 0 ? (
               <div
@@ -938,9 +1504,9 @@ export default function JobDetailPage() {
                   <div
                     key={assignment.id}
                     style={{
-                      padding: '0.75rem',
+                      padding: '1rem',
                       backgroundColor: '#f9fafb',
-                      borderRadius: '8px',
+                      borderRadius: '10px',
                       border: '1px solid #e5e7eb',
                     }}
                   >
@@ -949,19 +1515,23 @@ export default function JobDetailPage() {
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'start',
-                        marginBottom: '0.5rem',
+                        marginBottom: '0.75rem',
                       }}
                     >
-                      <div>
+                      <div style={{ flex: 1 }}>
                         <div
                           style={{
-                            fontSize: '0.875rem',
-                            fontWeight: '600',
+                            fontSize: '0.9375rem',
+                            fontWeight: '700',
                             color: '#1f2937',
                             marginBottom: '0.25rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
                           }}
                         >
-                          {assignment.user.email}
+                          <User size={16} color="#EF7722" />
+                          {assignment.user.full_name || assignment.user.email}
                         </div>
                         <div
                           style={{
@@ -973,36 +1543,68 @@ export default function JobDetailPage() {
                           {assignment.user.role}
                         </div>
                       </div>
-                      <button
-                        onClick={() => handleUnassignTechnician(assignment.id)}
-                        style={{
-                          backgroundColor: 'transparent',
-                          color: '#ef4444',
-                          border: 'none',
-                          fontSize: '1rem',
-                          cursor: 'pointer',
-                          padding: '0.25rem',
-                        }}
-                      >
-                        ✕
-                      </button>
+                      {activeRole !== 'technician' && (
+                        <button
+                          onClick={() => handleUnassignTechnician(assignment.id)}
+                          style={{
+                            backgroundColor: 'transparent',
+                            color: '#ef4444',
+                            border: 'none',
+                            fontSize: '1.25rem',
+                            cursor: 'pointer',
+                            padding: '0.25rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            minWidth: '32px',
+                            minHeight: '32px',
+                            borderRadius: '6px',
+                            transition: 'all 0.2s',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = '#fef2f2';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'transparent';
+                          }}
+                        >
+                          <X size={18} />
+                        </button>
+                      )}
                     </div>
 
                     {assignment.started_at ? (
-                      <>
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '0.5rem',
+                        }}
+                      >
                         <div
                           style={{
                             fontSize: '0.75rem',
                             color: '#10b981',
-                            marginBottom: '0.5rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.375rem',
+                            fontWeight: '600',
                           }}
                         >
-                          ✓ Checked in: {formatDate(assignment.started_at)}
+                          <CheckCircle size={14} />
+                          Checked in: {formatDate(assignment.started_at)}
                         </div>
                         {assignment.completed_at ? (
                           <div
-                            style={{ fontSize: '0.75rem', color: '#6b7280' }}
+                            style={{
+                              fontSize: '0.75rem',
+                              color: '#6b7280',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.375rem',
+                            }}
                           >
+                            <CheckCircle2 size={14} />
                             Completed: {formatDate(assignment.completed_at)}
                           </div>
                         ) : (
@@ -1010,37 +1612,49 @@ export default function JobDetailPage() {
                             onClick={() => handleCheckOut(assignment.id)}
                             style={{
                               width: '100%',
-                              padding: '0.5rem',
-                              backgroundColor: '#10b981',
+                              padding: '0.625rem',
+                              background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
                               color: 'white',
                               border: 'none',
-                              borderRadius: '6px',
+                              borderRadius: '8px',
                               fontSize: '0.875rem',
-                              fontWeight: '500',
+                              fontWeight: '600',
                               cursor: 'pointer',
-                              minHeight: '36px',
+                              minHeight: '40px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '0.5rem',
+                              boxShadow: '0 2px 8px rgba(16,185,129,0.25)',
                             }}
                           >
+                            <CheckCircle2 size={16} />
                             Check Out
                           </button>
                         )}
-                      </>
+                      </div>
                     ) : (
                       <button
                         onClick={() => handleCheckIn(assignment.id)}
                         style={{
                           width: '100%',
-                          padding: '0.5rem',
-                          backgroundColor: '#2563eb',
+                          padding: '0.625rem',
+                          background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
                           color: 'white',
                           border: 'none',
-                          borderRadius: '6px',
+                          borderRadius: '8px',
                           fontSize: '0.875rem',
-                          fontWeight: '500',
+                          fontWeight: '600',
                           cursor: 'pointer',
-                          minHeight: '36px',
+                          minHeight: '40px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '0.5rem',
+                          boxShadow: '0 2px 8px rgba(37,99,235,0.25)',
                         }}
                       >
+                        <Play size={16} />
                         Check In
                       </button>
                     )}
@@ -1050,69 +1664,116 @@ export default function JobDetailPage() {
                         style={{
                           fontSize: '0.875rem',
                           color: '#374151',
-                          marginTop: '0.5rem',
-                          fontStyle: 'italic',
-                          padding: '0.5rem',
+                          marginTop: '0.75rem',
+                          padding: '0.75rem',
                           backgroundColor: 'white',
-                          borderRadius: '4px',
+                          borderRadius: '6px',
+                          border: '1px solid #e5e7eb',
+                          display: 'flex',
+                          alignItems: 'start',
+                          gap: '0.5rem',
                         }}
                       >
-                        "{assignment.notes}"
+                        <FileText size={16} color="#6b7280" style={{ marginTop: '2px', flexShrink: 0 }} />
+                        <span style={{ fontStyle: 'italic' }}>"{assignment.notes}"</span>
                       </div>
                     )}
                   </div>
                 ))}
               </div>
             ) : (
-              <p style={{ fontSize: '0.875rem', color: '#9ca3af', margin: 0 }}>
-                No technicians assigned yet
-              </p>
+              <div
+                style={{
+                  padding: '2rem',
+                  textAlign: 'center',
+                  color: '#9ca3af',
+                }}
+              >
+                <User size={32} color="#d1d5db" style={{ margin: '0 auto 0.5rem' }} />
+                <p style={{ fontSize: '0.875rem', margin: 0 }}>
+                  No technicians assigned yet
+                </p>
+              </div>
             )}
           </div>
 
           {/* Actions */}
-          <div style={{ backgroundColor: 'white', padding: '1rem' }}>
+          {activeRole !== 'technician' && (
             <div
               style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '0.75rem',
+                backgroundColor: 'white',
+                padding: '1.5rem',
+                borderRadius: '12px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                border: '1px solid rgba(239,119,34,0.1)',
               }}
             >
-              <button
-                onClick={() => router.push(`/jobs/${id}/edit`)}
+              <div
                 style={{
-                  padding: '0.75rem',
-                  backgroundColor: 'white',
-                  color: '#2563eb',
-                  border: '1px solid #2563eb',
-                  borderRadius: '8px',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  minHeight: '44px',
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '0.75rem',
                 }}
               >
-                ✏️ Edit
-              </button>
-              <button
-                onClick={deleteJob}
-                style={{
-                  padding: '0.75rem',
-                  backgroundColor: 'white',
-                  color: '#ef4444',
-                  border: '1px solid #ef4444',
-                  borderRadius: '8px',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  minHeight: '44px',
-                }}
-              >
-                🗑️ Delete
-              </button>
+                <button
+                  onClick={() => router.push(`/jobs/${id}/edit`)}
+                  style={{
+                    padding: '0.75rem',
+                    backgroundColor: 'white',
+                    color: '#EF7722',
+                    border: '2px solid #EF7722',
+                    borderRadius: '8px',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    minHeight: '44px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#fff5ed';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'white';
+                  }}
+                >
+                  <Edit size={18} />
+                  Edit
+                </button>
+                <button
+                  onClick={deleteJob}
+                  style={{
+                    padding: '0.75rem',
+                    backgroundColor: 'white',
+                    color: '#ef4444',
+                    border: '2px solid #ef4444',
+                    borderRadius: '8px',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    minHeight: '44px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#fef2f2';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'white';
+                  }}
+                >
+                  <Trash2 size={18} />
+                  Delete
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </main>
 
         {/* Assign Technician Modal */}
@@ -1136,18 +1797,20 @@ export default function JobDetailPage() {
             <div
               style={{
                 backgroundColor: 'white',
-                borderRadius: '12px',
+                borderRadius: '16px',
                 padding: '1.5rem',
                 maxWidth: '400px',
                 width: '100%',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
               }}
               onClick={(e) => e.stopPropagation()}
             >
               <h2
                 style={{
                   fontSize: '1.25rem',
-                  fontWeight: '600',
+                  fontWeight: '700',
                   marginBottom: '1rem',
+                  color: '#1f2937',
                 }}
               >
                 Assign Technician
@@ -1157,37 +1820,53 @@ export default function JobDetailPage() {
                 onChange={(e) => setSelectedUserId(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '0.75rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '6px',
+                  padding: '0.875rem',
+                  border: '2px solid #e5e7eb',
+                  borderRadius: '8px',
                   fontSize: '1rem',
                   minHeight: '48px',
                   marginBottom: '1rem',
                   boxSizing: 'border-box',
+                  backgroundColor: 'white',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#EF7722';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#e5e7eb';
+                  e.target.style.boxShadow = 'none';
                 }}
               >
                 <option value="">Select a technician...</option>
                 {users.map((user) => (
                   <option key={user.id} value={user.id}>
-                    {user.email} ({user.role})
+                    {user.full_name || user.email} ({user.role})
                   </option>
                 ))}
               </select>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
                 <button
                   onClick={handleAssignTechnician}
                   disabled={!selectedUserId}
                   style={{
                     flex: 1,
-                    padding: '0.75rem',
-                    backgroundColor: selectedUserId ? '#2563eb' : '#9ca3af',
+                    padding: '0.875rem',
+                    background: selectedUserId
+                      ? 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)'
+                      : '#d1d5db',
                     color: 'white',
                     border: 'none',
-                    borderRadius: '6px',
+                    borderRadius: '8px',
                     fontSize: '1rem',
-                    fontWeight: '500',
+                    fontWeight: '600',
                     cursor: selectedUserId ? 'pointer' : 'not-allowed',
                     minHeight: '48px',
+                    boxShadow: selectedUserId
+                      ? '0 2px 8px rgba(239,119,34,0.25)'
+                      : 'none',
                   }}
                 >
                   Assign
@@ -1199,13 +1878,13 @@ export default function JobDetailPage() {
                   }}
                   style={{
                     flex: 1,
-                    padding: '0.75rem',
+                    padding: '0.875rem',
                     backgroundColor: 'white',
                     color: '#6b7280',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '6px',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '8px',
                     fontSize: '1rem',
-                    fontWeight: '500',
+                    fontWeight: '600',
                     cursor: 'pointer',
                     minHeight: '48px',
                   }}

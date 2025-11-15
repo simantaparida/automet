@@ -20,11 +20,8 @@ export default async function handler(
   const authResult = await withOnboardedAuth(req, res);
   if (!authResult.authenticated) return;
 
-  const { user } = authResult;
-  const supabase = createServerSupabaseClient<Database>({
-    req,
-    res,
-  }) as unknown as SupabaseClient<Database>;
+  const { user, supabase } = authResult;
+  const typedClient = supabase as unknown as SupabaseClient<Database>;
 
   if (req.method === 'GET') {
     try {
@@ -37,7 +34,9 @@ export default async function handler(
           : undefined;
 
       // RLS policies automatically filter by user's org_id
-      let query = supabase
+      // Use the authenticated Supabase client from withOnboardedAuth
+      // Try simpler join syntax - PostgREST nested joins can be tricky with RLS
+      let query = typedClient
         .from('assets')
         .select(
           `
@@ -45,9 +44,9 @@ export default async function handler(
           asset_type,
           model,
           serial_number,
-          purchase_date,
-          warranty_expiry,
-          notes,
+          install_date,
+          metadata,
+          site_id,
           site:sites(id, name, client:clients(id, name))
         `
         )
@@ -60,8 +59,68 @@ export default async function handler(
       const { data, error } = await query;
 
       if (error) {
-        console.error('Error fetching assets:', error);
-        return res.status(500).json({ error: error.message });
+        console.error('Error fetching assets with joins:', error);
+        // Log the full error for debugging
+        console.error('Full error details:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint,
+        });
+        
+        // If nested join fails, try without the join
+        console.log('Retrying without nested join...');
+        let simpleQuery = typedClient
+          .from('assets')
+          .select('id, asset_type, model, serial_number, install_date, metadata, site_id')
+          .order('asset_type', { ascending: true });
+        
+        if (siteFilter) {
+          simpleQuery = simpleQuery.eq('site_id', siteFilter);
+        }
+        
+        const { data: simpleData, error: simpleError } = await simpleQuery;
+        
+        if (simpleError) {
+          return res.status(500).json({ 
+            error: simpleError.message,
+            code: simpleError.code,
+            details: simpleError.details,
+            hint: simpleError.hint,
+            originalError: error.message,
+          });
+        }
+        
+        // Return assets without nested data - frontend can fetch sites separately
+        return res.status(200).json(simpleData || []);
+      }
+
+      // Check if we got data but it's empty (might be RLS blocking the join)
+      if (!data || data.length === 0) {
+        console.log('No data returned with joins, trying without joins...');
+        // Try fetching without joins to see if assets exist
+        let simpleQuery = typedClient
+          .from('assets')
+          .select('id, asset_type, model, serial_number, install_date, metadata, site_id')
+          .order('asset_type', { ascending: true });
+        
+        if (siteFilter) {
+          simpleQuery = simpleQuery.eq('site_id', siteFilter);
+        }
+        
+        const { data: simpleData, error: simpleError } = await simpleQuery;
+        
+        if (simpleError) {
+          return res.status(500).json({ 
+            error: simpleError.message,
+            code: simpleError.code,
+            details: simpleError.details,
+            hint: simpleError.hint,
+          });
+        }
+        
+        // Return assets without nested data
+        return res.status(200).json(simpleData || []);
       }
 
       // Filter by client_id if provided (since we join through site)
@@ -75,7 +134,7 @@ export default async function handler(
         );
       }
 
-      return res.status(200).json(filteredData);
+      return res.status(200).json(filteredData || []);
     } catch (error) {
       console.error('Assets API error:', error);
       return res.status(500).json({
@@ -94,19 +153,17 @@ export default async function handler(
         asset_type,
         model,
         serial_number,
-        purchase_date,
-        warranty_expiry,
-        notes,
+        install_date,
+        metadata,
       } = req.body;
 
       if (
         typeof site_id !== 'string' ||
-        typeof asset_type !== 'string' ||
-        typeof model !== 'string'
+        typeof asset_type !== 'string'
       ) {
         return res
           .status(400)
-          .json({ error: 'site_id, asset_type, and model are required' });
+          .json({ error: 'site_id and asset_type are required' });
       }
 
       // RLS policies automatically enforce org_id from authenticated user
@@ -114,14 +171,13 @@ export default async function handler(
         org_id: user.org_id,
         site_id,
         asset_type,
-        model,
+        model: model || null,
         serial_number: serial_number || null,
-        purchase_date: purchase_date || null,
-        warranty_expiry: warranty_expiry || null,
-        notes: notes || null,
+        install_date: install_date || null,
+        metadata: metadata || null,
       };
 
-      const { data, error } = await supabase
+      const { data, error } = await typedClient
         .from('assets')
         .insert(payload)
         .select(
@@ -130,9 +186,8 @@ export default async function handler(
           asset_type,
           model,
           serial_number,
-          purchase_date,
-          warranty_expiry,
-          notes,
+          install_date,
+          metadata,
           site_id
         `
         )

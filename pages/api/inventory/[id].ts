@@ -1,21 +1,21 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { Database } from '@/types/database';
-import { getSupabaseAdmin } from '@/lib/supabase-server';
-import { logError, logWarn } from '@/lib/logger';
+import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { withOnboardedAuth } from '@/lib/auth-middleware';
+import { logError } from '@/lib/logger';
 
 type InventoryItemRow = Database['public']['Tables']['inventory_items']['Row'];
-type InventoryUpdate = Database['public']['Tables']['inventory']['Update'];
+type InventoryItemUpdate = Database['public']['Tables']['inventory_items']['Update'];
 
 type ParsedUpdatePayload = Pick<
   InventoryItemRow,
-  | 'item_name'
-  | 'category'
-  | 'unit_of_measure'
+  | 'name'
   | 'sku'
-  | 'quantity_available'
+  | 'unit'
+  | 'quantity'
   | 'reorder_level'
-  | 'unit_cost'
-  | 'notes'
+  | 'is_serialized'
 >;
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -29,31 +29,32 @@ const isInventoryItemRow = (value: unknown): value is InventoryItemRow => {
   const {
     id,
     org_id,
-    item_name,
-    category,
-    unit_of_measure,
+    name,
     sku,
-    quantity_available,
+    unit,
+    quantity,
     reorder_level,
-    unit_cost,
-    notes,
+    is_serialized,
     updated_at,
     created_at,
   } = value;
 
+  // More lenient validation - allow numeric types to be strings (from database)
+  // PostgreSQL numeric types can be returned as strings
+  const quantityNum = typeof quantity === 'number' ? quantity : (typeof quantity === 'string' ? Number(quantity) : null);
+  const reorderLevelNum = typeof reorder_level === 'number' ? reorder_level : (typeof reorder_level === 'string' ? Number(reorder_level) : null);
+
   return (
     typeof id === 'string' &&
     typeof org_id === 'string' &&
-    typeof item_name === 'string' &&
-    typeof category === 'string' &&
-    typeof unit_of_measure === 'string' &&
+    typeof name === 'string' &&
     (typeof sku === 'string' || sku === null) &&
-    (typeof quantity_available === 'number' || quantity_available === null) &&
-    (typeof reorder_level === 'number' || reorder_level === null) &&
-    (typeof unit_cost === 'number' || unit_cost === null) &&
-    (typeof notes === 'string' || notes === null) &&
-    (typeof updated_at === 'string' || updated_at === null) &&
-    typeof created_at === 'string'
+    (typeof unit === 'string' || unit === null) &&
+    (quantityNum !== null && !isNaN(quantityNum) || quantity === null) &&
+    (reorderLevelNum !== null && !isNaN(reorderLevelNum) || reorder_level === null) &&
+    typeof is_serialized === 'boolean' &&
+    (typeof updated_at === 'string' || updated_at === null || updated_at instanceof Date) &&
+    (typeof created_at === 'string' || created_at instanceof Date)
   );
 };
 
@@ -78,18 +79,12 @@ const parseUpdatePayload = (
   }
 
   const itemName =
-    typeof payload.item_name === 'string' ? payload.item_name.trim() : '';
-  const category =
-    typeof payload.category === 'string' ? payload.category.trim() : '';
-  const unitOfMeasure =
-    typeof payload.unit_of_measure === 'string'
-      ? payload.unit_of_measure.trim()
-      : '';
+    typeof payload.name === 'string' ? payload.name.trim() : '';
 
-  if (!itemName || !category || !unitOfMeasure) {
+  if (!itemName) {
     return {
       ok: false,
-      message: 'item_name, category, and unit_of_measure are required.',
+      message: 'name is required.',
     };
   }
 
@@ -98,26 +93,24 @@ const parseUpdatePayload = (
       ? payload.sku.trim()
       : null;
 
-  const quantityAvailable = toNullableNumber(payload.quantity_available);
-  const reorderLevel = toNullableNumber(payload.reorder_level);
-  const unitCost = toNullableNumber(payload.unit_cost);
-
-  const notes =
-    typeof payload.notes === 'string' && payload.notes.trim() !== ''
-      ? payload.notes
+  const unit =
+    typeof payload.unit === 'string' && payload.unit.trim() !== ''
+      ? payload.unit.trim()
       : null;
+
+  const quantity = toNullableNumber(payload.quantity);
+  const reorderLevel = toNullableNumber(payload.reorder_level);
+  const isSerialized = typeof payload.is_serialized === 'boolean' ? payload.is_serialized : false;
 
   return {
     ok: true,
     data: {
-      item_name: itemName,
-      category,
-      unit_of_measure: unitOfMeasure,
+      name: itemName,
       sku,
-      quantity_available: quantityAvailable,
+      unit,
+      quantity,
       reorder_level: reorderLevel,
-      unit_cost: unitCost,
-      notes,
+      is_serialized: isSerialized,
     },
   };
 };
@@ -129,11 +122,13 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const supabase = getSupabaseAdmin();
-  if (!supabase) {
-    logWarn('Supabase admin client not available for inventory handler');
-    return res.status(500).json({ error: 'Server configuration error' });
+  const authResult = await withOnboardedAuth(req, res);
+  if (!authResult.authenticated) {
+    return;
   }
+
+  const { supabase } = authResult;
+  const typedClient = supabase as unknown as SupabaseClient<Database>;
 
   const { id } = req.query;
 
@@ -145,20 +140,27 @@ export default async function handler(
 
   if (req.method === 'GET') {
     try {
-      const { data: item, error: itemError } = await supabase
+      const { data: item, error: itemError } = await typedClient
         .from('inventory_items')
         .select('*')
         .eq('id', itemId)
         .maybeSingle();
 
       if (itemError) {
-        throw itemError;
+        logError('Error fetching inventory item:', itemError);
+        return res.status(500).json({ 
+          error: 'Failed to fetch inventory item',
+          message: itemError.message,
+          code: itemError.code,
+        });
       }
 
-      if (!isInventoryItemRow(item)) {
+      if (!item) {
         return res.status(404).json({ error: 'Inventory item not found' });
       }
 
+      // Return the item - validation is lenient enough to handle database types
+      // The frontend will handle any type conversions needed
       return res.status(200).json({ item });
     } catch (error) {
       logError('Error fetching inventory item:', error);
@@ -173,13 +175,13 @@ export default async function handler(
         return res.status(400).json({ error: parsed.message });
       }
 
-      const updatePayload: InventoryUpdate = {
+      const updatePayload: InventoryItemUpdate = {
         ...parsed.data,
         updated_at: new Date().toISOString(),
       };
 
-      const { data, error } = await supabase
-        .from('inventory')
+      const { data, error } = await typedClient
+        .from('inventory_items')
         .update(updatePayload)
         .eq('id', itemId)
         .select('*')
@@ -202,8 +204,8 @@ export default async function handler(
 
   if (req.method === 'DELETE') {
     try {
-      const { data, error } = await supabase
-        .from('inventory')
+      const { data, error } = await typedClient
+        .from('inventory_items')
         .delete()
         .eq('id', itemId);
 

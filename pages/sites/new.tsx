@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import BottomNav from '@/components/BottomNav';
 import Sidebar from '@/components/Sidebar';
+import TopHeader from '@/components/TopHeader';
 import {
   ArrowLeft,
   MapPin,
@@ -115,10 +116,14 @@ export default function NewSitePage() {
         .mobile-header {
           display: block;
         }
+        .desktop-header {
+          display: none;
+        }
         @media (min-width: 768px) {
           .site-form-container {
             margin-left: 260px;
             padding-bottom: 0;
+            padding-top: 64px;
           }
           .main-content {
             padding: 2rem;
@@ -127,6 +132,9 @@ export default function NewSitePage() {
           }
           .mobile-header {
             display: none;
+          }
+          .desktop-header {
+            display: block;
           }
         }
       `}</style>
@@ -141,6 +149,11 @@ export default function NewSitePage() {
       >
         {/* Desktop Sidebar */}
         <Sidebar activeTab="sites" />
+
+        {/* Desktop Top Header */}
+        <div className="desktop-header">
+          <TopHeader />
+        </div>
 
         {/* Mobile Header */}
         <header

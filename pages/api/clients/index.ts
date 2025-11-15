@@ -106,14 +106,13 @@ export default async function handler(
     return;
   }
 
-  const { user } = authResult;
+  const { user, supabase } = authResult;
 
   if (req.method === 'GET') {
     try {
-      const typedClient = createServerSupabaseClient<Database>({
-        req,
-        res,
-      }) as unknown as SupabaseClient<Database>;
+      // Use the authenticated Supabase client from withOnboardedAuth
+      // This client has the session properly configured, so RLS policies will work
+      const typedClient = supabase as unknown as SupabaseClient<Database>;
       const { data, error } = await typedClient
         .from('clients')
         .select(
@@ -122,7 +121,28 @@ export default async function handler(
         .order('name', { ascending: true });
 
       if (error) {
-        throw error;
+        logError('Clients API fetch error:', error);
+        // Log full error details for debugging
+        console.error('Full RLS error:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint,
+          user: {
+            id: user.id,
+            org_id: user.org_id,
+            role: user.role,
+          },
+        });
+        
+        // Return the error details for debugging
+        return res.status(500).json({
+          error: 'Failed to fetch clients',
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint,
+        });
       }
 
       return res.status(200).json(normalizeClientList(data));
@@ -130,6 +150,7 @@ export default async function handler(
       logError('Clients API fetch error:', error);
       return res.status(500).json({
         error: 'Failed to fetch clients',
+        message: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   }
@@ -146,10 +167,8 @@ export default async function handler(
         return res.status(400).json({ error: parsed.message });
       }
 
-      const typedClient = createServerSupabaseClient<Database>({
-        req,
-        res,
-      }) as unknown as SupabaseClient<Database>;
+      // Use the authenticated Supabase client from withOnboardedAuth
+      const typedClient = supabase as unknown as SupabaseClient<Database>;
       const payload: ClientInsert = {
         ...parsed.data,
         org_id: user.org_id,

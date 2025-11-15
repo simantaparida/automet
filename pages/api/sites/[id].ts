@@ -1,15 +1,20 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { Database } from '@/types/database';
-import { getSupabaseAdmin } from '@/lib/supabase-server';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { withOnboardedAuth, requireRole } from '@/lib/auth-middleware';
+import { logError } from '@/lib/logger';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const supabaseAdmin = getSupabaseAdmin();
-  if (!supabaseAdmin) {
-    return res.status(500).json({ error: 'Server configuration error' });
+  const authResult = await withOnboardedAuth(req, res);
+  if (!authResult.authenticated) {
+    return;
   }
+
+  const { user, supabase } = authResult;
+  const typedClient = supabase as unknown as SupabaseClient<Database>;
 
   const { id } = req.query;
 
@@ -22,8 +27,8 @@ export default async function handler(
 
   if (req.method === 'GET') {
     try {
-      // Fetch site with related data
-      const { data: site, error: siteError } = await supabaseAdmin
+      // Fetch site with related data - try with joins first
+      let { data: site, error: siteError } = await typedClient
         .from('sites')
         .select(
           `
@@ -32,13 +37,30 @@ export default async function handler(
           address,
           gps_lat,
           gps_lng,
-          notes,
+          metadata,
           created_at,
-          client:clients(id, name, contact_email, contact_phone)
+          client:clients!sites_client_id_fkey(id, name, contact_email, contact_phone)
         `
         )
         .eq('id', siteId)
         .single();
+
+      // If join fails, try without join
+      if (siteError) {
+        console.error('Error fetching site with joins:', siteError);
+        const simpleResult = await typedClient
+          .from('sites')
+          .select('id, name, address, gps_lat, gps_lng, metadata, created_at, client_id')
+          .eq('id', siteId)
+          .single();
+        
+        if (simpleResult.error) {
+          throw simpleResult.error;
+        }
+        
+        site = simpleResult.data;
+        siteError = null;
+      }
 
       if (siteError) throw siteError;
 
@@ -47,17 +69,17 @@ export default async function handler(
       }
 
       // Fetch related assets
-      const { data: assets } = await supabaseAdmin
+      const { data: assets } = await typedClient
         .from('assets')
         .select('id, asset_type, model, serial_number')
-        .eq('site_id', id)
+        .eq('site_id', siteId)
         .order('asset_type');
 
       // Fetch related jobs
-      const { data: jobs } = await supabaseAdmin
+      const { data: jobs } = await typedClient
         .from('jobs')
         .select('id, title, status, priority, scheduled_at')
-        .eq('site_id', id)
+        .eq('site_id', siteId)
         .order('scheduled_at', { ascending: false })
         .limit(10);
 
@@ -69,14 +91,17 @@ export default async function handler(
         },
       });
     } catch (error: any) {
-      console.error('Error fetching site:', error);
-      return res.status(500).json({ error: error.message });
+      logError('Error fetching site:', error);
+      return res.status(500).json({ error: error.message || 'Failed to fetch site' });
     }
   }
 
   if (req.method === 'PATCH') {
+    // Only owners and coordinators can update sites
+    if (!requireRole(user, ['owner', 'coordinator'], res)) return;
+
     try {
-      const { name, address, gps_lat, gps_lng, notes } = req.body;
+      const { name, address, gps_lat, gps_lng, metadata } = req.body;
 
       if (!name) {
         return res.status(400).json({ error: 'Name is required' });
@@ -87,33 +112,36 @@ export default async function handler(
         address: address || null,
         gps_lat: gps_lat || null,
         gps_lng: gps_lng || null,
-        notes: notes || null,
+        metadata: metadata || null,
         updated_at: new Date().toISOString(),
       };
 
-      const { data, error } = await supabaseAdmin
+      const { data, error } = await typedClient
         .from('sites')
         .update(updatePayload)
         .eq('id', siteId)
-        .select('id, name, address, gps_lat, gps_lng, notes')
+        .select('id, name, address, gps_lat, gps_lng, metadata')
         .single();
 
       if (error) throw error;
 
       return res.status(200).json(data);
     } catch (error: any) {
-      console.error('Error updating site:', error);
-      return res.status(500).json({ error: error.message });
+      logError('Error updating site:', error);
+      return res.status(500).json({ error: error.message || 'Failed to update site' });
     }
   }
 
   if (req.method === 'DELETE') {
+    // Only owners and coordinators can delete sites
+    if (!requireRole(user, ['owner', 'coordinator'], res)) return;
+
     try {
       // Check if site has associated assets
-      const { data: assets } = await supabaseAdmin
+      const { data: assets } = await typedClient
         .from('assets')
         .select('id')
-        .eq('site_id', id)
+        .eq('site_id', siteId)
         .limit(1);
 
       if (assets && assets.length > 0) {
@@ -124,10 +152,10 @@ export default async function handler(
       }
 
       // Check if site has associated jobs
-      const { data: jobs } = await supabaseAdmin
+      const { data: jobs } = await typedClient
         .from('jobs')
         .select('id')
-        .eq('site_id', id)
+        .eq('site_id', siteId)
         .limit(1);
 
       if (jobs && jobs.length > 0) {
@@ -137,7 +165,7 @@ export default async function handler(
         });
       }
 
-      const { error } = await supabaseAdmin
+      const { error } = await typedClient
         .from('sites')
         .delete()
         .eq('id', siteId);
@@ -146,8 +174,8 @@ export default async function handler(
 
       return res.status(200).json({ message: 'Site deleted successfully' });
     } catch (error: any) {
-      console.error('Error deleting site:', error);
-      return res.status(500).json({ error: error.message });
+      logError('Error deleting site:', error);
+      return res.status(500).json({ error: error.message || 'Failed to delete site' });
     }
   }
 

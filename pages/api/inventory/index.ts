@@ -87,9 +87,9 @@ const isLowStockQuery = (value: unknown): boolean =>
 
 const isInventoryItem = (value: unknown): value is InventoryItemRow =>
   isRecord(value) &&
-  typeof value.item_name === 'string' &&
-  typeof value.category === 'string' &&
-  typeof value.unit_of_measure === 'string';
+  typeof value.name === 'string' &&
+  typeof value.org_id === 'string' &&
+  typeof value.id === 'string';
 
 /**
  * Inventory API Route (Protected)
@@ -108,46 +108,42 @@ export default async function handler(
     return;
   }
 
-  const { user } = authResult;
-  const supabase = createServerSupabaseClient<Database>({
-    req,
-    res,
-  }) as unknown as SupabaseClient<Database>;
+  const { user, supabase } = authResult;
+  const typedClient = supabase as unknown as SupabaseClient<Database>;
 
   if (req.method === 'GET') {
     try {
       const { low_stock } = req.query;
 
-      const { data, error } = await supabase
+      const { data, error } = await typedClient
         .from('inventory_items')
         .select('*')
-        .order('item_name', { ascending: true });
+        .order('name', { ascending: true });
 
       if (error) {
-        throw error;
+        logError('Inventory API fetch error:', error);
+        return res.status(500).json({
+          error: 'Failed to fetch inventory',
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint,
+        });
       }
 
-      const items: InventoryItemRow[] = [];
-      if (Array.isArray(data)) {
-        for (const entry of data) {
-          if (isInventoryItem(entry)) {
-            items.push(entry);
-          }
-        }
-      }
+      // Return data directly - the database schema is already correct
+      const items: InventoryItemRow[] = (data || []) as InventoryItemRow[];
 
       if (!isLowStockQuery(low_stock)) {
         return res.status(200).json(items);
       }
 
-      const lowStockItems: InventoryItemRow[] = [];
-      for (const item of items) {
-        const quantity = item.quantity_available ?? 0;
-        const reorderLevel = item.reorder_level ?? 0;
-        if (quantity <= reorderLevel) {
-          lowStockItems.push(item);
-        }
-      }
+      // Filter for low stock items
+      const lowStockItems: InventoryItemRow[] = items.filter((item) => {
+        const quantity = Number(item.quantity) || 0;
+        const reorderLevel = Number(item.reorder_level) || 0;
+        return quantity <= reorderLevel;
+      });
 
       return res.status(200).json(lowStockItems);
     } catch (error) {
@@ -174,7 +170,7 @@ export default async function handler(
         org_id: user.org_id,
       };
 
-      const createResponse = await supabase
+      const createResponse = await typedClient
         .from('inventory_items')
         .insert(payload)
         .select('*')

@@ -4,83 +4,246 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import BottomNav from '@/components/BottomNav';
 import Sidebar from '@/components/Sidebar';
+import TopHeader from '@/components/TopHeader';
+import Breadcrumb from '@/components/Breadcrumb';
+import RoleBadge from '@/components/RoleBadge';
+import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
 import {
-  User,
   Building2,
-  Smartphone,
+  Mail,
+  Shield,
   Settings,
   HelpCircle,
   LogOut,
-  Mail,
-  Shield,
+  Calendar,
+  Briefcase,
+  CheckCircle2,
+  Clock,
+  TrendingUp,
 } from 'lucide-react';
+
+interface UserProfile {
+  id: string;
+  email: string;
+  org_id: string;
+  role: 'owner' | 'coordinator' | 'technician';
+  full_name: string | null;
+  profile_photo_url: string | null;
+  created_at: string | null;
+}
+
+interface Organization {
+  id: string;
+  name: string;
+  created_at: string | null;
+}
+
+interface UserStats {
+  jobsAssigned: number;
+  jobsCompleted: number;
+  jobsInProgress: number;
+  jobsCreated?: number;
+}
 
 export default function ProfilePage() {
   const { user, signOut } = useAuth();
+  const { apiFetch, actualRole, activeRole } = useRoleSwitch();
   const router = useRouter();
-  const [orgName, setOrgName] = useState<string>('');
-  const [loading, setLoading] = useState(false);
-  const [fetchingOrg, setFetchingOrg] = useState(true);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [organization, setOrganization] = useState<Organization | null>(null);
+  const [stats, setStats] = useState<UserStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [signingOut, setSigningOut] = useState(false);
 
   useEffect(() => {
-    fetchOrganizationName();
+    fetchProfileData();
   }, []);
 
-  const fetchOrganizationName = async () => {
+  const fetchProfileData = async () => {
+    setLoading(true);
     try {
-      // Try to fetch organization name from API
-      const response = await fetch('/api/organizations');
-      if (response.ok) {
-        const data = await response.json();
-        setOrgName(data.name || 'My Organization');
-      } else {
-        setOrgName('My Organization');
+      // Fetch user profile
+      const profileResponse = await apiFetch('/api/user/profile');
+      if (profileResponse.ok) {
+        const profileData = await profileResponse.json();
+        setProfile(profileData);
+
+        // Fetch organization data
+        if (profileData.org_id) {
+          try {
+            const orgResponse = await apiFetch('/api/organizations');
+            if (orgResponse.ok) {
+              const orgData = await orgResponse.json();
+              setOrganization(orgData);
+            }
+          } catch (error) {
+            console.error('Error fetching organization:', error);
+          }
+        }
+
+        // Fetch user stats based on role
+        await fetchUserStats(profileData.id, profileData.role);
       }
     } catch (error) {
-      console.error('Error fetching organization:', error);
-      setOrgName('My Organization');
+      console.error('Error fetching profile:', error);
     } finally {
-      setFetchingOrg(false);
+      setLoading(false);
+    }
+  };
+
+  const fetchUserStats = async (userId: string, role: string) => {
+    try {
+      if (role === 'technician') {
+        // For technicians, get assigned jobs
+        const jobsResponse = await apiFetch('/api/jobs');
+        if (jobsResponse.ok) {
+          const jobsData = await jobsResponse.json();
+          const jobs = jobsData.jobs || jobsData || [];
+          
+          // Filter jobs assigned to this user
+          const assignedJobs = jobs.filter((job: any) => {
+            if (job.assignments && Array.isArray(job.assignments)) {
+              return job.assignments.some((assignment: any) => assignment.user_id === userId);
+            }
+            return job.assigned_to === userId;
+          });
+
+          setStats({
+            jobsAssigned: assignedJobs.length,
+            jobsCompleted: assignedJobs.filter((j: any) => j.status === 'completed').length,
+            jobsInProgress: assignedJobs.filter((j: any) => j.status === 'in_progress').length,
+          });
+        }
+      } else {
+        // For owners/coordinators, get all org jobs
+        const jobsResponse = await apiFetch('/api/jobs');
+        if (jobsResponse.ok) {
+          const jobsData = await jobsResponse.json();
+          const jobs = jobsData.jobs || jobsData || [];
+          
+          setStats({
+            jobsAssigned: jobs.length,
+            jobsCompleted: jobs.filter((j: any) => j.status === 'completed').length,
+            jobsInProgress: jobs.filter((j: any) => j.status === 'in_progress').length,
+            jobsCreated: jobs.filter((j: any) => j.created_by === userId || !j.created_by).length,
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching stats:', error);
     }
   };
 
   const handleSignOut = async () => {
-    setLoading(true);
+    setSigningOut(true);
     try {
       await signOut();
       router.push('/onboarding/welcome');
     } catch (error) {
       console.error('Sign out error:', error);
-      setLoading(false);
+      setSigningOut(false);
     }
   };
 
-  const getUserRole = () => {
-    if (!user) return 'User';
-    // You can extend this based on user metadata
-    return user.email?.includes('owner')
-      ? 'Owner'
-      : user.email?.includes('coordinator')
-        ? 'Coordinator'
-        : user.email?.includes('tech')
-          ? 'Technician'
-          : 'User';
-  };
-
-  const getRoleColor = (role: string) => {
-    switch (role.toLowerCase()) {
+  const getRoleConfig = (role: string) => {
+    switch (role?.toLowerCase()) {
       case 'owner':
-        return { bg: '#fef3c7', color: '#d97706', border: '#fbbf24' };
+        return { 
+          bg: '#fef3c7', 
+          color: '#d97706', 
+          border: '#fbbf24',
+          label: 'Owner',
+          icon: Shield,
+        };
       case 'coordinator':
-        return { bg: '#dbeafe', color: '#1e40af', border: '#3b82f6' };
+        return { 
+          bg: '#dbeafe', 
+          color: '#1e40af', 
+          border: '#3b82f6',
+          label: 'Coordinator',
+          icon: Shield,
+        };
       case 'technician':
-        return { bg: '#d1fae5', color: '#065f46', border: '#10b981' };
+        return { 
+          bg: '#d1fae5', 
+          color: '#065f46', 
+          border: '#10b981',
+          label: 'Technician',
+          icon: Shield,
+        };
       default:
-        return { bg: '#f3f4f6', color: '#374151', border: '#9ca3af' };
+        return { 
+          bg: '#f3f4f6', 
+          color: '#374151', 
+          border: '#9ca3af',
+          label: 'User',
+          icon: Shield,
+        };
     }
   };
 
-  const roleStyle = getRoleColor(getUserRole());
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+  };
+
+  const getDisplayName = () => {
+    if (profile?.full_name) return profile.full_name;
+    if (user?.email) return user.email.split('@')[0];
+    return 'User';
+  };
+
+  const getInitials = () => {
+    const name = getDisplayName();
+    const parts = name.split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+  };
+
+  if (loading) {
+    return (
+      <ProtectedRoute>
+        <div
+          style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+          }}
+        >
+          <div
+            style={{
+              width: '48px',
+              height: '48px',
+              border: '4px solid #ffe8d6',
+              borderTopColor: '#EF7722',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+            }}
+          ></div>
+          <style jsx>{`
+            @keyframes spin {
+              to {
+                transform: rotate(360deg);
+              }
+            }
+          `}</style>
+        </div>
+      </ProtectedRoute>
+    );
+  }
+
+  const roleConfig = getRoleConfig(profile?.role || 'user');
+  const RoleIcon = roleConfig.icon;
+  const isRoleSwitched = activeRole && actualRole && activeRole !== actualRole;
 
   return (
     <ProtectedRoute>
@@ -94,18 +257,25 @@ export default function ProfilePage() {
         .mobile-header {
           display: block;
         }
+        .desktop-header {
+          display: none;
+        }
         @media (min-width: 768px) {
           .profile-container {
             margin-left: 260px;
             padding-bottom: 0;
+            padding-top: 64px;
           }
           .main-content {
             padding: 2rem;
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
           }
           .mobile-header {
             display: none;
+          }
+          .desktop-header {
+            display: block;
           }
         }
       `}</style>
@@ -120,6 +290,29 @@ export default function ProfilePage() {
       >
         {/* Desktop Sidebar */}
         <Sidebar activeTab="profile" />
+
+        {/* Desktop Top Header */}
+        <div className="desktop-header">
+          <TopHeader />
+        </div>
+
+        {/* Desktop Role Badge */}
+        <div className="desktop-header">
+          <RoleBadge />
+        </div>
+
+        {/* Desktop Breadcrumb */}
+        <div
+          className="desktop-header"
+          style={{
+            position: 'sticky',
+            top: '64px',
+            zIndex: 19,
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+          }}
+        >
+          <Breadcrumb items={[{ label: 'Profile' }]} />
+        </div>
 
         {/* Mobile Header */}
         <header
@@ -153,9 +346,9 @@ export default function ProfilePage() {
               backgroundColor: 'white',
               padding: '2rem',
               borderRadius: '12px',
-              boxShadow: '0 10px 40px rgba(0,0,0,0.08)',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
               border: '1px solid rgba(239,119,34,0.1)',
-              marginBottom: '1.5rem',
+              marginBottom: '1rem',
             }}
           >
             {/* Avatar */}
@@ -166,26 +359,39 @@ export default function ProfilePage() {
                 marginBottom: '1.5rem',
               }}
             >
-              <div
-                style={{
-                  width: '100px',
-                  height: '100px',
-                  borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '2.5rem',
-                  fontWeight: '700',
-                  color: 'white',
-                  boxShadow: '0 4px 12px rgba(239,119,34,0.3)',
-                  border: '4px solid white',
-                }}
-              >
-                {user?.email?.charAt(0).toUpperCase() || (
-                  <User size={48} color="white" />
-                )}
-              </div>
+              {profile?.profile_photo_url ? (
+                <img
+                  src={profile.profile_photo_url}
+                  alt={getDisplayName()}
+                  style={{
+                    width: '100px',
+                    height: '100px',
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    border: '4px solid white',
+                    boxShadow: '0 4px 12px rgba(239,119,34,0.3)',
+                  }}
+                />
+              ) : (
+                <div
+                  style={{
+                    width: '100px',
+                    height: '100px',
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '2.5rem',
+                    fontWeight: '700',
+                    color: 'white',
+                    boxShadow: '0 4px 12px rgba(239,119,34,0.3)',
+                    border: '4px solid white',
+                  }}
+                >
+                  {getInitials()}
+                </div>
+              )}
             </div>
 
             {/* User Details */}
@@ -198,7 +404,7 @@ export default function ProfilePage() {
                   color: '#111827',
                 }}
               >
-                {user?.email?.split('@')[0] || 'User'}
+                {getDisplayName()}
               </h2>
               <div
                 style={{
@@ -217,7 +423,7 @@ export default function ProfilePage() {
                     margin: 0,
                   }}
                 >
-                  {user?.email}
+                  {profile?.email || user?.email}
                 </p>
               </div>
               <div
@@ -225,21 +431,37 @@ export default function ProfilePage() {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.5rem',
-                  backgroundColor: roleStyle.bg,
-                  color: roleStyle.color,
+                  backgroundColor: roleConfig.bg,
+                  color: roleConfig.color,
                   padding: '0.5rem 1rem',
                   borderRadius: '999px',
                   fontSize: '0.875rem',
                   fontWeight: '600',
-                  border: `2px solid ${roleStyle.border}40`,
+                  border: `2px solid ${roleConfig.border}40`,
                 }}
               >
-                <Shield size={14} />
-                <span>{getUserRole()}</span>
+                <RoleIcon size={14} />
+                <span>{roleConfig.label}</span>
               </div>
+              {isRoleSwitched && (
+                <div
+                  style={{
+                    marginTop: '0.75rem',
+                    padding: '0.5rem 1rem',
+                    backgroundColor: '#eff6ff',
+                    border: '1px solid #93c5fd',
+                    borderRadius: '8px',
+                    fontSize: '0.75rem',
+                    color: '#1e40af',
+                    display: 'inline-block',
+                  }}
+                >
+                  Viewing as: {getRoleConfig(activeRole).label}
+                </div>
+              )}
             </div>
 
-            {/* Organization Info */}
+            {/* Account Info */}
             <div
               style={{
                 borderTop: '1px solid #f3f4f6',
@@ -249,51 +471,343 @@ export default function ProfilePage() {
                 gap: '1rem',
               }}
             >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                }}
-              >
+              {profile?.created_at && (
                 <div
                   style={{
-                    width: '40px',
-                    height: '40px',
-                    background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
-                    borderRadius: '8px',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    border: '2px solid rgba(239,119,34,0.2)',
+                    gap: '0.75rem',
                   }}
                 >
-                  <Building2 size={20} color="#EF7722" />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <p
+                  <div
                     style={{
-                      fontSize: '0.75rem',
-                      color: '#9ca3af',
-                      margin: 0,
-                      fontWeight: '500',
+                      width: '40px',
+                      height: '40px',
+                      background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
+                      borderRadius: '8px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: '2px solid rgba(239,119,34,0.2)',
                     }}
                   >
-                    Organization
-                  </p>
-                  <p
-                    style={{
-                      fontSize: '1rem',
-                      fontWeight: '600',
-                      color: '#111827',
-                      margin: '0.25rem 0 0 0',
-                    }}
-                  >
-                    {fetchingOrg ? 'Loading...' : orgName}
-                  </p>
+                    <Calendar size={20} color="#EF7722" />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <p
+                      style={{
+                        fontSize: '0.75rem',
+                        color: '#9ca3af',
+                        margin: 0,
+                        fontWeight: '500',
+                      }}
+                    >
+                      Member Since
+                    </p>
+                    <p
+                      style={{
+                        fontSize: '1rem',
+                        fontWeight: '600',
+                        color: '#111827',
+                        margin: '0.25rem 0 0 0',
+                      }}
+                    >
+                      {formatDate(profile.created_at)}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              )}
+            </div>
+          </div>
 
+          {/* Activity Stats */}
+          {stats && (
+            <div
+              style={{
+                backgroundColor: 'white',
+                borderRadius: '12px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                border: '1px solid rgba(239,119,34,0.1)',
+                marginBottom: '1rem',
+                padding: '1.5rem',
+              }}
+            >
+              <h3
+                style={{
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom: '1rem',
+                }}
+              >
+                Activity Summary
+              </h3>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+                  gap: '1rem',
+                }}
+              >
+                {actualRole === 'technician' ? (
+                  <>
+                    <div
+                      style={{
+                        padding: '1rem',
+                        backgroundColor: '#eff6ff',
+                        borderRadius: '10px',
+                        border: '1px solid #93c5fd',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                          marginBottom: '0.5rem',
+                        }}
+                      >
+                        <Briefcase size={18} color="#2563eb" />
+                        <span
+                          style={{
+                            fontSize: '0.75rem',
+                            color: '#6b7280',
+                            fontWeight: '500',
+                          }}
+                        >
+                          Assigned
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '1.5rem',
+                          fontWeight: '700',
+                          color: '#1e40af',
+                        }}
+                      >
+                        {stats.jobsAssigned}
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        padding: '1rem',
+                        backgroundColor: '#fffbeb',
+                        borderRadius: '10px',
+                        border: '1px solid #fbbf24',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                          marginBottom: '0.5rem',
+                        }}
+                      >
+                        <Clock size={18} color="#f59e0b" />
+                        <span
+                          style={{
+                            fontSize: '0.75rem',
+                            color: '#6b7280',
+                            fontWeight: '500',
+                          }}
+                        >
+                          In Progress
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '1.5rem',
+                          fontWeight: '700',
+                          color: '#d97706',
+                        }}
+                      >
+                        {stats.jobsInProgress}
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        padding: '1rem',
+                        backgroundColor: '#f0fdf4',
+                        borderRadius: '10px',
+                        border: '1px solid #86efac',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                          marginBottom: '0.5rem',
+                        }}
+                      >
+                        <CheckCircle2 size={18} color="#10b981" />
+                        <span
+                          style={{
+                            fontSize: '0.75rem',
+                            color: '#6b7280',
+                            fontWeight: '500',
+                          }}
+                        >
+                          Completed
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '1.5rem',
+                          fontWeight: '700',
+                          color: '#065f46',
+                        }}
+                      >
+                        {stats.jobsCompleted}
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div
+                      style={{
+                        padding: '1rem',
+                        backgroundColor: '#eff6ff',
+                        borderRadius: '10px',
+                        border: '1px solid #93c5fd',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                          marginBottom: '0.5rem',
+                        }}
+                      >
+                        <TrendingUp size={18} color="#2563eb" />
+                        <span
+                          style={{
+                            fontSize: '0.75rem',
+                            color: '#6b7280',
+                            fontWeight: '500',
+                          }}
+                        >
+                          Total Jobs
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '1.5rem',
+                          fontWeight: '700',
+                          color: '#1e40af',
+                        }}
+                      >
+                        {stats.jobsAssigned}
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        padding: '1rem',
+                        backgroundColor: '#fffbeb',
+                        borderRadius: '10px',
+                        border: '1px solid #fbbf24',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                          marginBottom: '0.5rem',
+                        }}
+                      >
+                        <Clock size={18} color="#f59e0b" />
+                        <span
+                          style={{
+                            fontSize: '0.75rem',
+                            color: '#6b7280',
+                            fontWeight: '500',
+                          }}
+                        >
+                          In Progress
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '1.5rem',
+                          fontWeight: '700',
+                          color: '#d97706',
+                        }}
+                      >
+                        {stats.jobsInProgress}
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        padding: '1rem',
+                        backgroundColor: '#f0fdf4',
+                        borderRadius: '10px',
+                        border: '1px solid #86efac',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                          marginBottom: '0.5rem',
+                        }}
+                      >
+                        <CheckCircle2 size={18} color="#10b981" />
+                        <span
+                          style={{
+                            fontSize: '0.75rem',
+                            color: '#6b7280',
+                            fontWeight: '500',
+                          }}
+                        >
+                          Completed
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '1.5rem',
+                          fontWeight: '700',
+                          color: '#065f46',
+                        }}
+                      >
+                        {stats.jobsCompleted}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Organization Info */}
+          {organization && (
+            <div
+              style={{
+                backgroundColor: 'white',
+                padding: '1.5rem',
+                borderRadius: '12px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                border: '1px solid rgba(239,119,34,0.1)',
+                marginBottom: '1rem',
+              }}
+            >
+              <h3
+                style={{
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom: '1rem',
+                }}
+              >
+                Organization
+              </h3>
               <div
                 style={{
                   display: 'flex',
@@ -303,17 +817,17 @@ export default function ProfilePage() {
               >
                 <div
                   style={{
-                    width: '40px',
-                    height: '40px',
+                    width: '48px',
+                    height: '48px',
                     background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
-                    borderRadius: '8px',
+                    borderRadius: '10px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     border: '2px solid rgba(239,119,34,0.2)',
                   }}
                 >
-                  <Smartphone size={20} color="#EF7722" />
+                  <Building2 size={24} color="#EF7722" />
                 </div>
                 <div style={{ flex: 1 }}>
                   <p
@@ -324,31 +838,42 @@ export default function ProfilePage() {
                       fontWeight: '500',
                     }}
                   >
-                    App Version
+                    Organization Name
                   </p>
                   <p
                     style={{
-                      fontSize: '1rem',
-                      fontWeight: '600',
+                      fontSize: '1.125rem',
+                      fontWeight: '700',
                       color: '#111827',
                       margin: '0.25rem 0 0 0',
                     }}
                   >
-                    2.0.0 (MVP)
+                    {organization.name}
                   </p>
+                  {organization.created_at && (
+                    <p
+                      style={{
+                        fontSize: '0.75rem',
+                        color: '#6b7280',
+                        margin: '0.25rem 0 0 0',
+                      }}
+                    >
+                      Created {formatDate(organization.created_at)}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Quick Links */}
           <div
             style={{
               backgroundColor: 'white',
               borderRadius: '12px',
-              boxShadow: '0 10px 40px rgba(0,0,0,0.08)',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
               border: '1px solid rgba(239,119,34,0.1)',
-              marginBottom: '1.5rem',
+              marginBottom: '1rem',
               overflow: 'hidden',
             }}
           >
@@ -379,8 +904,8 @@ export default function ProfilePage() {
               >
                 <div
                   style={{
-                    width: '36px',
-                    height: '36px',
+                    width: '40px',
+                    height: '40px',
                     background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
                     borderRadius: '8px',
                     display: 'flex',
@@ -389,11 +914,11 @@ export default function ProfilePage() {
                     border: '2px solid rgba(239,119,34,0.2)',
                   }}
                 >
-                  <Settings size={18} color="#EF7722" />
+                  <Settings size={20} color="#EF7722" />
                 </div>
                 <span
                   style={{
-                    fontSize: '0.875rem',
+                    fontSize: '0.9375rem',
                     fontWeight: '600',
                     color: '#374151',
                   }}
@@ -438,8 +963,8 @@ export default function ProfilePage() {
               >
                 <div
                   style={{
-                    width: '36px',
-                    height: '36px',
+                    width: '40px',
+                    height: '40px',
                     background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
                     borderRadius: '8px',
                     display: 'flex',
@@ -448,11 +973,11 @@ export default function ProfilePage() {
                     border: '2px solid rgba(239,119,34,0.2)',
                   }}
                 >
-                  <HelpCircle size={18} color="#EF7722" />
+                  <HelpCircle size={20} color="#EF7722" />
                 </div>
                 <span
                   style={{
-                    fontSize: '0.875rem',
+                    fontSize: '0.9375rem',
                     fontWeight: '600',
                     color: '#374151',
                   }}
@@ -475,11 +1000,11 @@ export default function ProfilePage() {
           {/* Sign Out Button */}
           <button
             onClick={handleSignOut}
-            disabled={loading}
+            disabled={signingOut}
             style={{
               width: '100%',
               padding: '1rem 1.5rem',
-              background: loading
+              background: signingOut
                 ? '#9ca3af'
                 : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
               color: 'white',
@@ -487,9 +1012,9 @@ export default function ProfilePage() {
               borderRadius: '12px',
               fontSize: '1rem',
               fontWeight: '600',
-              cursor: loading ? 'not-allowed' : 'pointer',
+              cursor: signingOut ? 'not-allowed' : 'pointer',
               minHeight: '56px',
-              boxShadow: loading
+              boxShadow: signingOut
                 ? 'none'
                 : '0 2px 8px rgba(239,68,68,0.25)',
               transition: 'all 0.2s',
@@ -497,23 +1022,23 @@ export default function ProfilePage() {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '0.5rem',
-              marginBottom: '1.5rem',
+              marginBottom: '1rem',
             }}
             onMouseEnter={(e) => {
-              if (!loading) {
+              if (!signingOut) {
                 e.currentTarget.style.transform = 'translateY(-1px)';
                 e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,68,68,0.3)';
               }
             }}
             onMouseLeave={(e) => {
-              if (!loading) {
+              if (!signingOut) {
                 e.currentTarget.style.transform = 'translateY(0)';
                 e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,68,68,0.25)';
               }
             }}
           >
             <LogOut size={20} />
-            <span>{loading ? 'Signing Out...' : 'Sign Out'}</span>
+            <span>{signingOut ? 'Signing Out...' : 'Sign Out'}</span>
           </button>
 
           {/* Info */}
@@ -536,6 +1061,16 @@ export default function ProfilePage() {
               }}
             >
               Automet Field Service Management
+            </p>
+            <p
+              style={{
+                fontSize: '0.75rem',
+                color: '#9ca3af',
+                margin: '0.5rem 0 0 0',
+                textAlign: 'center',
+              }}
+            >
+              Version 2.0.0 (MVP)
             </p>
           </div>
         </main>

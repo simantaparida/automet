@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import BottomNav from '@/components/BottomNav';
 import Sidebar from '@/components/Sidebar';
+import TopHeader from '@/components/TopHeader';
 import { ArrowLeft, Building2, Mail, Phone, MapPin, FileText, Save } from 'lucide-react';
 
 export default function NewClientPage() {
@@ -70,10 +71,14 @@ export default function NewClientPage() {
         .mobile-header {
           display: block;
         }
+        .desktop-header {
+          display: none;
+        }
         @media (min-width: 768px) {
           .client-form-container {
             margin-left: 260px;
             padding-bottom: 0;
+            padding-top: 64px;
           }
           .main-content {
             padding: 2rem;
@@ -82,6 +87,9 @@ export default function NewClientPage() {
           }
           .mobile-header {
             display: none;
+          }
+          .desktop-header {
+            display: block;
           }
         }
       `}</style>
@@ -96,6 +104,11 @@ export default function NewClientPage() {
       >
         {/* Desktop Sidebar */}
         <Sidebar activeTab="clients" />
+
+        {/* Desktop Top Header */}
+        <div className="desktop-header">
+          <TopHeader />
+        </div>
 
         {/* Mobile Header */}
         <header

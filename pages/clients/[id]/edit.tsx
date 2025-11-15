@@ -2,12 +2,16 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import BottomNav from '@/components/BottomNav';
+import Sidebar from '@/components/Sidebar';
+import TopHeader from '@/components/TopHeader';
+import Breadcrumb from '@/components/Breadcrumb';
 
 export default function EditClientPage() {
   const router = useRouter();
   const { id } = router.query;
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [clientName, setClientName] = useState<string>('');
   const [formData, setFormData] = useState({
     name: '',
     contact_email: '',
@@ -32,6 +36,7 @@ export default function EditClientPage() {
             address: client.address || '',
             notes: client.notes || '',
           });
+          setClientName(client.name || '');
         }
       } catch (error) {
         console.error('Error fetching client:', error);
@@ -88,24 +93,83 @@ export default function EditClientPage() {
 
   return (
     <ProtectedRoute>
+      <style jsx>{`
+        .edit-container {
+          padding-bottom: 80px;
+        }
+        .main-content-area {
+          padding: 1rem;
+        }
+        .mobile-header {
+          display: block;
+        }
+        .desktop-header {
+          display: none;
+        }
+        @media (min-width: 768px) {
+          .edit-container {
+            margin-left: 260px;
+            padding-bottom: 0;
+            padding-top: 64px;
+          }
+          .main-content-area {
+            padding: 2rem;
+          }
+          .mobile-header {
+            display: none;
+          }
+          .desktop-header {
+            display: block;
+          }
+        }
+      `}</style>
+
       <div
+        className="edit-container"
         style={{
           minHeight: '100vh',
-          backgroundColor: '#f5f5f5',
+          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
-          paddingBottom: '80px',
         }}
       >
-        {/* Sticky Header */}
-        <header
+        {/* Desktop Sidebar */}
+        <Sidebar activeTab="clients" />
+
+        {/* Desktop Top Header */}
+        <div className="desktop-header">
+          <TopHeader />
+        </div>
+
+        {/* Desktop Breadcrumb */}
+        <div
+          className="desktop-header"
           style={{
-            backgroundColor: '#2563eb',
+            position: 'sticky',
+            top: '64px',
+            zIndex: 19,
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+          }}
+        >
+          <Breadcrumb
+            items={[
+              { label: 'Clients', href: '/clients' },
+              { label: clientName || 'Client', href: `/clients/${id}` },
+              { label: 'Edit' },
+            ]}
+          />
+        </div>
+
+        {/* Mobile Header */}
+        <header
+          className="mobile-header"
+          style={{
+            background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
             color: 'white',
             padding: '1rem',
             position: 'sticky',
             top: 0,
-            zIndex: 10,
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            zIndex: 20,
+            boxShadow: '0 2px 10px rgba(239,119,34,0.2)',
           }}
         >
           <div
@@ -133,7 +197,7 @@ export default function EditClientPage() {
         </header>
 
         {/* Form */}
-        <main style={{ padding: '1rem' }}>
+        <main className="main-content-area">
           <form onSubmit={handleSubmit}>
             {/* Name */}
             <div style={{ marginBottom: '1rem' }}>

@@ -3,6 +3,9 @@ import { useRouter } from 'next/router';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import BottomNav from '@/components/BottomNav';
 import Sidebar from '@/components/Sidebar';
+import TopHeader from '@/components/TopHeader';
+import RoleBadge from '@/components/RoleBadge';
+import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
 import {
   Plus,
   Package,
@@ -17,14 +20,15 @@ import {
 interface Asset {
   id: string;
   asset_type: string;
-  model: string;
+  model: string | null;
   serial_number: string | null;
-  purchase_date: string | null;
-  warranty_expiry: string | null;
-  site: {
+  install_date: string | null;
+  metadata: Record<string, any> | null;
+  site_id?: string;
+  site?: {
     id: string;
     name: string;
-    client: {
+    client?: {
       id: string;
       name: string;
     };
@@ -44,6 +48,7 @@ interface Site {
 
 export default function AssetsPage() {
   const router = useRouter();
+  const { apiFetch, activeRole } = useRoleSwitch();
   const [assets, setAssets] = useState<Asset[]>([]);
   const [filteredAssets, setFilteredAssets] = useState<Asset[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
@@ -55,7 +60,7 @@ export default function AssetsPage() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [activeRole]); // Refetch when role changes
 
   useEffect(() => {
     let filtered = assets;
@@ -63,13 +68,13 @@ export default function AssetsPage() {
     // Filter by client if selected
     if (selectedClientId) {
       filtered = filtered.filter(
-        (asset) => asset.site.client.id === selectedClientId
+        (asset) => asset.site?.client?.id === selectedClientId
       );
     }
 
     // Filter by site if selected
     if (selectedSiteId) {
-      filtered = filtered.filter((asset) => asset.site.id === selectedSiteId);
+      filtered = filtered.filter((asset) => asset.site?.id === selectedSiteId || asset.site_id === selectedSiteId);
     }
 
     // Filter by search term
@@ -82,10 +87,8 @@ export default function AssetsPage() {
             asset.serial_number
               .toLowerCase()
               .includes(searchTerm.toLowerCase())) ||
-          asset.site.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          asset.site.client.name
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase())
+          asset.site?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          asset.site?.client?.name?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -106,14 +109,73 @@ export default function AssetsPage() {
     setLoading(true);
     try {
       const [assetsResponse, clientsResponse] = await Promise.all([
-        fetch('/api/assets'),
-        fetch('/api/clients'),
+        apiFetch('/api/assets'),
+        apiFetch('/api/clients'),
       ]);
 
       if (assetsResponse.ok) {
         const assetsData = await assetsResponse.json();
-        setAssets(assetsData);
-        setFilteredAssets(assetsData);
+        console.log('Assets data received:', assetsData);
+        
+        // If assets don't have nested site/client data, fetch sites separately and merge
+        let assetsWithSiteData = assetsData;
+        
+        // Check if any assets are missing site data
+        const assetsNeedingSiteData = assetsData.filter(
+          (asset: Asset) => !asset.site?.name || !asset.site?.client?.name
+        );
+        
+        if (assetsNeedingSiteData.length > 0) {
+          // Fetch all sites
+          try {
+            const sitesResponse = await apiFetch('/api/sites');
+            if (sitesResponse.ok) {
+              const sitesData = await sitesResponse.json();
+              
+              // Create a map of site_id -> site data
+              const sitesMap = new Map(
+                sitesData.map((site: any) => [site.id, site])
+              );
+              
+              // Merge site data into assets
+              assetsWithSiteData = assetsData.map((asset: Asset) => {
+                // If asset already has complete site data, return as is
+                if (asset.site?.name && asset.site?.client?.name) {
+                  return asset;
+                }
+                
+                // Otherwise, look up site data from the map
+                const siteId = asset.site_id || asset.site?.id;
+                if (siteId && sitesMap.has(siteId)) {
+                  const site = sitesMap.get(siteId);
+                  return {
+                    ...asset,
+                    site: {
+                      id: site.id,
+                      name: site.name,
+                      client: site.client ? {
+                        id: site.client.id,
+                        name: site.client.name,
+                      } : undefined,
+                    },
+                  };
+                }
+                
+                // Return asset as is if we can't find site data
+                return asset;
+              });
+            }
+          } catch (error) {
+            console.error('Error fetching sites for assets:', error);
+          }
+        }
+        
+        setAssets(assetsWithSiteData);
+        setFilteredAssets(assetsWithSiteData);
+      } else {
+        const errorData = await assetsResponse.json().catch(() => ({}));
+        console.error('Assets API error:', errorData);
+        alert(`Failed to load assets: ${errorData.error || 'Unknown error'}`);
       }
 
       if (clientsResponse.ok) {
@@ -129,7 +191,7 @@ export default function AssetsPage() {
 
   const fetchSites = async (clientId: string) => {
     try {
-      const response = await fetch(`/api/sites?client_id=${clientId}`);
+      const response = await apiFetch(`/api/sites?client_id=${clientId}`);
       if (response.ok) {
         const data = await response.json();
         setSites(data);
@@ -137,6 +199,14 @@ export default function AssetsPage() {
     } catch (error) {
       console.error('Error fetching sites:', error);
     }
+  };
+
+  // Helper function to extract warranty_expiry from metadata if it exists
+  const getWarrantyExpiry = (asset: Asset): string | null => {
+    if (asset.metadata && typeof asset.metadata === 'object' && 'warranty_expiry' in asset.metadata) {
+      return asset.metadata.warranty_expiry as string | null;
+    }
+    return null;
   };
 
   const isWarrantyExpired = (warrantyDate: string | null) => {
@@ -161,6 +231,9 @@ export default function AssetsPage() {
         .mobile-header {
           display: block;
         }
+        .desktop-header {
+          display: none;
+        }
         .fab-button {
           bottom: 5rem;
         }
@@ -168,12 +241,16 @@ export default function AssetsPage() {
           .assets-container {
             margin-left: 260px;
             padding-bottom: 0;
+            padding-top: 64px;
           }
           .main-content {
             padding: 2rem;
           }
           .mobile-header {
             display: none;
+          }
+          .desktop-header {
+            display: block;
           }
           .fab-button {
             bottom: 2rem;
@@ -191,6 +268,16 @@ export default function AssetsPage() {
       >
         {/* Desktop Sidebar */}
         <Sidebar activeTab="assets" />
+
+        {/* Desktop Top Header */}
+        <div className="desktop-header">
+          <TopHeader />
+        </div>
+
+        {/* Desktop Role Badge - Shows when role is switched */}
+        <div className="desktop-header">
+          <RoleBadge />
+        </div>
 
         {/* Mobile Header */}
         <header
@@ -589,7 +676,7 @@ export default function AssetsPage() {
                               whiteSpace: 'nowrap',
                             }}
                           >
-                            {asset.site.client.name}
+                            {asset.site?.client?.name || 'Unknown Client'}
                           </span>
                           <span style={{ margin: '0 0.25rem' }}>→</span>
                           <MapPin size={14} color="#6b7280" />
@@ -600,7 +687,7 @@ export default function AssetsPage() {
                               whiteSpace: 'nowrap',
                             }}
                           >
-                            {asset.site.name}
+                            {asset.site?.name || 'Unknown Site'}
                           </span>
                         </div>
                       </div>
@@ -629,52 +716,55 @@ export default function AssetsPage() {
                         <span>{asset.serial_number}</span>
                       </div>
                     )}
-                    {asset.warranty_expiry && (
-                      <div
-                        style={{
-                          fontSize: '0.8125rem',
-                          color: isWarrantyExpired(asset.warranty_expiry)
-                            ? '#ef4444'
-                            : '#10b981',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.5rem',
-                          fontWeight: '500',
-                        }}
-                      >
-                        {isWarrantyExpired(asset.warranty_expiry) ? (
-                          <>
-                            <AlertTriangle size={16} color="#ef4444" />
-                            <span>
-                              Warranty expired:{' '}
-                              {new Date(asset.warranty_expiry).toLocaleDateString(
-                                'en-IN',
-                                {
-                                  day: 'numeric',
-                                  month: 'short',
-                                  year: 'numeric',
-                                }
-                              )}
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            <CheckCircle2 size={16} color="#10b981" />
-                            <span>
-                              Warranty until:{' '}
-                              {new Date(asset.warranty_expiry).toLocaleDateString(
-                                'en-IN',
-                                {
-                                  day: 'numeric',
-                                  month: 'short',
-                                  year: 'numeric',
-                                }
-                              )}
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    )}
+                    {(() => {
+                      const warrantyExpiry = getWarrantyExpiry(asset);
+                      return warrantyExpiry && (
+                        <div
+                          style={{
+                            fontSize: '0.8125rem',
+                            color: isWarrantyExpired(warrantyExpiry)
+                              ? '#ef4444'
+                              : '#10b981',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            fontWeight: '500',
+                          }}
+                        >
+                          {isWarrantyExpired(warrantyExpiry) ? (
+                            <>
+                              <AlertTriangle size={16} color="#ef4444" />
+                              <span>
+                                Warranty expired:{' '}
+                                {new Date(warrantyExpiry).toLocaleDateString(
+                                  'en-IN',
+                                  {
+                                    day: 'numeric',
+                                    month: 'short',
+                                    year: 'numeric',
+                                  }
+                                )}
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle2 size={16} color="#10b981" />
+                              <span>
+                                Warranty until:{' '}
+                                {new Date(warrantyExpiry).toLocaleDateString(
+                                  'en-IN',
+                                  {
+                                    day: 'numeric',
+                                    month: 'short',
+                                    year: 'numeric',
+                                  }
+                                )}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
                 </button>
               ))}
@@ -682,10 +772,11 @@ export default function AssetsPage() {
           )}
         </main>
 
-        {/* FAB Button */}
-        <button
-          onClick={() => router.push('/assets/new')}
-          className="fab-button"
+        {/* FAB Button - Hide for technicians */}
+        {activeRole !== 'technician' && (
+          <button
+            onClick={() => router.push('/assets/new')}
+            className="fab-button"
           style={{
             position: 'fixed',
             right: '1rem',
@@ -713,9 +804,10 @@ export default function AssetsPage() {
             e.currentTarget.style.transform = 'scale(1)';
             e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
           }}
-        >
-          <Plus size={28} />
-        </button>
+          >
+            <Plus size={28} />
+          </button>
+        )}
 
         <BottomNav activeTab="more" />
       </div>

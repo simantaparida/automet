@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { withOnboardedAuth, requireRole } from '@/lib/auth-middleware';
+import { withOnboardedAuth, requireRole, getEffectiveRole } from '@/lib/auth-middleware';
 import { logError, logWarn } from '@/lib/logger';
 import type { Database } from '@/types/database';
 
@@ -271,18 +271,18 @@ export default async function handler(
     return;
   }
 
-  const { user } = authResult;
+  const { user, supabase } = authResult;
 
   try {
     if (req.method === 'GET') {
-      return await handleGetJobs(req, res);
+      return await handleGetJobs(req, res, user, supabase);
     }
 
     if (req.method === 'POST') {
       if (!requireRole(user, ['owner', 'coordinator'], res)) {
         return;
       }
-      return await handleCreateJob(req, res, user.org_id);
+      return await handleCreateJob(req, res, user.org_id, supabase);
     }
 
     return res.status(405).json({ error: 'Method not allowed' });
@@ -294,16 +294,20 @@ export default async function handler(
   }
 }
 
-async function handleGetJobs(req: NextApiRequest, res: NextApiResponse) {
+async function handleGetJobs(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: { id: string; org_id: string; role: 'owner' | 'coordinator' | 'technician'; activeRole?: 'owner' | 'coordinator' | 'technician' },
+  supabase: ReturnType<typeof createServerSupabaseClient<Database>>
+) {
   try {
-    const supabase = createServerSupabaseClient<Database>({
-      req,
-      res,
-    }) as unknown as SupabaseClient<Database>;
+    const effectiveRole = getEffectiveRole(user);
+
+    const typedClient = supabase as unknown as SupabaseClient<Database>;
     const filters = parseFilters(req.query);
     const rangeEnd = filters.offset + filters.limit - 1;
 
-    let query = supabase
+    let query = typedClient
       .from('jobs')
       .select(
         `
@@ -349,7 +353,15 @@ async function handleGetJobs(req: NextApiRequest, res: NextApiResponse) {
       throw error;
     }
 
-    const jobs = normalizeJobResults(data);
+    // Post-process filtering based on effective role
+    let jobs = normalizeJobResults(data);
+    
+    // Technicians only see jobs where they are assigned
+    if (effectiveRole === 'technician') {
+      jobs = jobs.filter((job) =>
+        job.assignments?.some((assignment) => assignment.user?.id === user.id)
+      );
+    }
 
     return res.status(200).json({
       jobs,
@@ -366,13 +378,11 @@ async function handleGetJobs(req: NextApiRequest, res: NextApiResponse) {
 async function handleCreateJob(
   req: NextApiRequest,
   res: NextApiResponse,
-  orgId: string
+  orgId: string,
+  supabase: ReturnType<typeof createServerSupabaseClient<Database>>
 ) {
   try {
-    const supabase = createServerSupabaseClient<Database>({
-      req,
-      res,
-    }) as unknown as SupabaseClient<Database>;
+    const typedClient = supabase as unknown as SupabaseClient<Database>;
     const parsed = parseJobPayload(req.body);
     if (!parsed.ok) {
       return res.status(400).json({ error: parsed.message });
@@ -384,7 +394,7 @@ async function handleCreateJob(
       status: 'scheduled' as JobStatus,
     };
 
-    const response = await supabase
+    const response = await typedClient
       .from('jobs')
       .insert(jobPayload)
       .select(

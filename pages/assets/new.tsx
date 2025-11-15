@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import BottomNav from '@/components/BottomNav';
 import Sidebar from '@/components/Sidebar';
+import TopHeader from '@/components/TopHeader';
 import {
   ArrowLeft,
   Package,
@@ -171,10 +172,14 @@ export default function NewAssetPage() {
         .mobile-header {
           display: block;
         }
+        .desktop-header {
+          display: none;
+        }
         @media (min-width: 768px) {
           .asset-form-container {
             margin-left: 260px;
             padding-bottom: 0;
+            padding-top: 64px;
           }
           .main-content {
             padding: 2rem;
@@ -183,6 +188,9 @@ export default function NewAssetPage() {
           }
           .mobile-header {
             display: none;
+          }
+          .desktop-header {
+            display: block;
           }
         }
       `}</style>
@@ -197,6 +205,11 @@ export default function NewAssetPage() {
       >
         {/* Desktop Sidebar */}
         <Sidebar activeTab="assets" />
+
+        {/* Desktop Top Header */}
+        <div className="desktop-header">
+          <TopHeader />
+        </div>
 
         {/* Mobile Header */}
         <header

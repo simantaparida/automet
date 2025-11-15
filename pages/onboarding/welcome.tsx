@@ -18,12 +18,21 @@ export default function Welcome() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [keepMeLoggedIn, setKeepMeLoggedIn] = useState(true);
   const [authLoading, setAuthLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     trackPageView('/onboarding/welcome');
     setIsMounted(true);
+    
+    // Restore "keep me logged in" preference from localStorage
+    if (typeof window !== 'undefined') {
+      const savedPreference = localStorage.getItem('automet_keep_me_logged_in');
+      if (savedPreference !== null) {
+        setKeepMeLoggedIn(savedPreference === 'true');
+      }
+    }
   }, []);
 
   // Redirect logged-in users immediately to dashboard
@@ -38,7 +47,7 @@ export default function Welcome() {
     setAuthLoading(true);
     setError(null);
 
-    const { error } = await signIn(email, password);
+    const { error } = await signIn(email, password, keepMeLoggedIn);
 
     if (error) {
       setError(error.message);
@@ -52,7 +61,7 @@ export default function Welcome() {
     setAuthLoading(true);
     setError(null);
 
-    const { error } = await signInWithGoogle();
+    const { error } = await signInWithGoogle(keepMeLoggedIn);
 
     if (error) {
       setError(error.message);
@@ -89,6 +98,47 @@ export default function Welcome() {
         }
         .slide-right {
           animation: slideInRight 0.8s ease-out forwards;
+        }
+        
+        /* Custom checkbox styling with white checkmark */
+        #keepMeLoggedIn {
+          appearance: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          width: 16px;
+          height: 16px;
+          border: 2px solid #d1d5db;
+          border-radius: 4px;
+          background-color: white;
+          cursor: pointer;
+          position: relative;
+          transition: all 0.2s;
+        }
+        
+        #keepMeLoggedIn:checked {
+          background-color: #EF7722;
+          border-color: #EF7722;
+        }
+        
+        #keepMeLoggedIn:checked::after {
+          content: '';
+          position: absolute;
+          left: 4px;
+          top: 1px;
+          width: 5px;
+          height: 9px;
+          border: solid white;
+          border-width: 0 2px 2px 0;
+          transform: rotate(45deg);
+        }
+        
+        #keepMeLoggedIn:hover {
+          border-color: #EF7722;
+        }
+        
+        #keepMeLoggedIn:focus {
+          outline: 2px solid rgba(239, 119, 34, 0.3);
+          outline-offset: 2px;
         }
 
         /* Responsive styles */
@@ -394,6 +444,36 @@ export default function Welcome() {
                       )}
                     </button>
                   </div>
+                </div>
+
+                {/* Keep me logged in checkbox */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    id="keepMeLoggedIn"
+                    checked={keepMeLoggedIn}
+                    onChange={(e) => setKeepMeLoggedIn(e.target.checked)}
+                    style={{
+                      marginRight: '0.5rem',
+                    }}
+                  />
+                  <label
+                    htmlFor="keepMeLoggedIn"
+                    style={{
+                      fontSize: '0.8125rem',
+                      color: '#374151',
+                      cursor: 'pointer',
+                      userSelect: 'none',
+                    }}
+                  >
+                    Keep me logged in
+                  </label>
                 </div>
 
                 <button

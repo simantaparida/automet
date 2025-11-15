@@ -9,7 +9,8 @@ interface AuthContextType {
   loading: boolean;
   signIn: (
     email: string,
-    password: string
+    password: string,
+    keepMeLoggedIn?: boolean
   ) => Promise<{ error: AuthError | null }>;
   signUp: (
     email: string,
@@ -17,7 +18,7 @@ interface AuthContextType {
     fullName?: string,
     phone?: string
   ) => Promise<{ data: any; error: AuthError | null }>;
-  signInWithGoogle: () => Promise<{ error: AuthError | null }>;
+  signInWithGoogle: (keepMeLoggedIn?: boolean) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -66,7 +67,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, [isLandingOnly, hasSupabaseConfig]);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string, keepMeLoggedIn: boolean = true) => {
+    // Store preference in localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('automet_keep_me_logged_in', String(keepMeLoggedIn));
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -88,7 +94,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { data, error };
   };
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (keepMeLoggedIn: boolean = true) => {
+    // Store preference in localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('automet_keep_me_logged_in', String(keepMeLoggedIn));
+    }
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {

@@ -196,7 +196,7 @@ export default function NewAssetPage() {
         }}
       >
         {/* Desktop Sidebar */}
-        <Sidebar activeTab="more" />
+        <Sidebar activeTab="assets" />
 
         {/* Mobile Header */}
         <header

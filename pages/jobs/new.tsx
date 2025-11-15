@@ -2,6 +2,22 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import BottomNav from '@/components/BottomNav';
+import Sidebar from '@/components/Sidebar';
+import {
+  ArrowLeft,
+  ClipboardList,
+  Building2,
+  MapPin,
+  Package,
+  AlertCircle,
+  Calendar,
+  Clock,
+  FileText,
+  Save,
+  Circle,
+  AlertTriangle,
+  CheckCircle2,
+} from 'lucide-react';
 
 interface Client {
   id: string;
@@ -67,7 +83,7 @@ export default function NewJobPage() {
     try {
       const response = await fetch('/api/clients');
       const data = await response.json();
-      setClients(data.clients || []);
+      setClients(data.clients || data || []);
     } catch (error) {
       console.error('Error fetching clients:', error);
     }
@@ -77,7 +93,7 @@ export default function NewJobPage() {
     try {
       const response = await fetch(`/api/sites?client_id=${clientId}`);
       const data = await response.json();
-      setSites(data.sites || []);
+      setSites(data.sites || data || []);
     } catch (error) {
       console.error('Error fetching sites:', error);
     }
@@ -87,7 +103,7 @@ export default function NewJobPage() {
     try {
       const response = await fetch(`/api/assets?site_id=${siteId}`);
       const data = await response.json();
-      setAssets(data.assets || []);
+      setAssets(data.assets || data || []);
     } catch (error) {
       console.error('Error fetching assets:', error);
     }
@@ -127,7 +143,7 @@ export default function NewJobPage() {
       }
     } catch (error) {
       console.error('Error creating job:', error);
-      setError('Failed to create job. Please try again.');
+      setError('Error creating job. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -149,420 +165,753 @@ export default function NewJobPage() {
   tomorrow.setDate(tomorrow.getDate() + 1);
   const minDate = tomorrow.toISOString().split('T')[0];
 
+  const getPriorityConfig = (priority: string) => {
+    switch (priority) {
+      case 'low':
+        return { icon: Circle, color: '#10b981', bg: '#d1fae5', label: 'Low' };
+      case 'medium':
+        return {
+          icon: AlertCircle,
+          color: '#f59e0b',
+          bg: '#fef3c7',
+          label: 'Medium',
+        };
+      case 'high':
+        return {
+          icon: AlertTriangle,
+          color: '#ef4444',
+          bg: '#fee2e2',
+          label: 'High',
+        };
+      case 'urgent':
+        return {
+          icon: CheckCircle2,
+          color: '#dc2626',
+          bg: '#fecaca',
+          label: 'Urgent',
+        };
+      default:
+        return {
+          icon: Circle,
+          color: '#6b7280',
+          bg: '#f3f4f6',
+          label: 'Low',
+        };
+    }
+  };
+
   return (
     <ProtectedRoute>
+      <style jsx>{`
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+        .job-form-container {
+          padding-bottom: 80px;
+        }
+        .main-content {
+          padding: 1rem;
+        }
+        .mobile-header {
+          display: block;
+        }
+        @media (min-width: 768px) {
+          .job-form-container {
+            margin-left: 260px;
+            padding-bottom: 0;
+          }
+          .main-content {
+            padding: 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+          }
+          .mobile-header {
+            display: none;
+          }
+        }
+      `}</style>
+
       <div
+        className="job-form-container"
         style={{
           minHeight: '100vh',
-          backgroundColor: '#f5f5f5',
-          paddingBottom: '80px',
+          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
         }}
       >
+        {/* Desktop Sidebar */}
+        <Sidebar activeTab="jobs" />
+
         {/* Mobile Header */}
         <header
+          className="mobile-header"
           style={{
-            backgroundColor: '#2563eb',
+            background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
             color: 'white',
             padding: '1rem',
             position: 'sticky',
             top: 0,
-            zIndex: 10,
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            zIndex: 20,
+            boxShadow: '0 2px 10px rgba(239,119,34,0.2)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <button
               onClick={() => router.push('/jobs')}
               style={{
                 backgroundColor: 'transparent',
-                border: 'none',
                 color: 'white',
-                fontSize: '1.5rem',
+                border: 'none',
                 cursor: 'pointer',
                 padding: '0.25rem',
-                minWidth: '44px',
                 minHeight: '44px',
+                minWidth: '44px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '8px',
+                transition: 'background-color 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.2)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
               }}
             >
-              ←
+              <ArrowLeft size={24} />
             </button>
-            <h1 style={{ fontSize: '1.25rem', fontWeight: '600', margin: 0 }}>
+            <h1 style={{ fontSize: '1.25rem', fontWeight: '700', margin: 0 }}>
               Create New Job
             </h1>
           </div>
         </header>
 
         {/* Form */}
-        <main style={{ padding: '1rem' }}>
-          <form onSubmit={handleSubmit}>
+        <main className="main-content">
+          <div
+            style={{
+              backgroundColor: 'white',
+              padding: '1.5rem',
+              borderRadius: '12px',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.08)',
+              border: '1px solid rgba(239,119,34,0.1)',
+            }}
+          >
+            {/* Header Icon */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                marginBottom: '1.5rem',
+              }}
+            >
+              <div
+                style={{
+                  width: '48px',
+                  height: '48px',
+                  background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
+                  borderRadius: '10px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '2px solid rgba(239,119,34,0.2)',
+                }}
+              >
+                <ClipboardList size={24} color="#EF7722" />
+              </div>
+              <div>
+                <h1
+                  style={{
+                    fontSize: '1.5rem',
+                    fontWeight: '700',
+                    color: '#111827',
+                    margin: 0,
+                  }}
+                >
+                  Create New Job
+                </h1>
+                <p
+                  style={{
+                    fontSize: '0.875rem',
+                    color: '#6b7280',
+                    margin: '0.25rem 0 0 0',
+                  }}
+                >
+                  Schedule a new field service job
+                </p>
+              </div>
+            </div>
+
+            {/* Error Message */}
             {error && (
               <div
                 style={{
-                  padding: '1rem',
-                  marginBottom: '1rem',
+                  padding: '0.75rem',
+                  marginBottom: '1.5rem',
                   backgroundColor: '#fee2e2',
                   color: '#991b1b',
                   borderRadius: '8px',
                   fontSize: '0.875rem',
-                }}
-              >
-                {error}
-              </div>
-            )}
-
-            {/* Job Title */}
-            <div style={{ marginBottom: '1rem' }}>
-              <label
-                style={{
-                  display: 'block',
-                  marginBottom: '0.5rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  color: '#374151',
-                }}
-              >
-                Job Title *
-              </label>
-              <input
-                type="text"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                required
-                placeholder="e.g., HVAC Maintenance"
-                style={{
-                  width: '100%',
-                  padding: '0.875rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  minHeight: '48px',
-                }}
-              />
-            </div>
-
-            {/* Description */}
-            <div style={{ marginBottom: '1rem' }}>
-              <label
-                style={{
-                  display: 'block',
-                  marginBottom: '0.5rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  color: '#374151',
-                }}
-              >
-                Description
-              </label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                rows={3}
-                placeholder="Job details..."
-                style={{
-                  width: '100%',
-                  padding: '0.875rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  resize: 'vertical',
-                  fontFamily: 'inherit',
-                }}
-              />
-            </div>
-
-            {/* Client */}
-            <div style={{ marginBottom: '1rem' }}>
-              <label
-                style={{
-                  display: 'block',
-                  marginBottom: '0.5rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  color: '#374151',
-                }}
-              >
-                Client *
-              </label>
-              <select
-                name="client_id"
-                value={formData.client_id}
-                onChange={handleChange}
-                required
-                style={{
-                  width: '100%',
-                  padding: '0.875rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  backgroundColor: 'white',
-                  minHeight: '48px',
-                }}
-              >
-                <option value="">Select a client</option>
-                {clients.map((client) => (
-                  <option key={client.id} value={client.id}>
-                    {client.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Site */}
-            <div style={{ marginBottom: '1rem' }}>
-              <label
-                style={{
-                  display: 'block',
-                  marginBottom: '0.5rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  color: '#374151',
-                }}
-              >
-                Site *
-              </label>
-              <select
-                name="site_id"
-                value={formData.site_id}
-                onChange={handleChange}
-                required
-                disabled={!formData.client_id}
-                style={{
-                  width: '100%',
-                  padding: '0.875rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  backgroundColor: formData.client_id ? 'white' : '#f3f4f6',
-                  minHeight: '48px',
-                  opacity: formData.client_id ? 1 : 0.6,
-                }}
-              >
-                <option value="">
-                  {formData.client_id
-                    ? 'Select a site'
-                    : 'Select a client first'}
-                </option>
-                {sites.map((site) => (
-                  <option key={site.id} value={site.id}>
-                    {site.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Asset (Optional) */}
-            <div style={{ marginBottom: '1rem' }}>
-              <label
-                style={{
-                  display: 'block',
-                  marginBottom: '0.5rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  color: '#374151',
-                }}
-              >
-                Asset (Optional)
-              </label>
-              <select
-                name="asset_id"
-                value={formData.asset_id}
-                onChange={handleChange}
-                disabled={!formData.site_id}
-                style={{
-                  width: '100%',
-                  padding: '0.875rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  backgroundColor: formData.site_id ? 'white' : '#f3f4f6',
-                  minHeight: '48px',
-                  opacity: formData.site_id ? 1 : 0.6,
-                }}
-              >
-                <option value="">
-                  {formData.site_id
-                    ? 'No specific asset'
-                    : 'Select a site first'}
-                </option>
-                {assets.map((asset) => (
-                  <option key={asset.id} value={asset.id}>
-                    {asset.asset_type.replace('_', ' ')} - {asset.model} (
-                    {asset.serial_number})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Priority */}
-            <div style={{ marginBottom: '1rem' }}>
-              <label
-                style={{
-                  display: 'block',
-                  marginBottom: '0.5rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  color: '#374151',
-                }}
-              >
-                Priority *
-              </label>
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(2, 1fr)',
+                  border: '1px solid #fecaca',
+                  display: 'flex',
+                  alignItems: 'center',
                   gap: '0.5rem',
                 }}
               >
-                {[
-                  { value: 'low', label: '🟢 Low', color: '#6b7280' },
-                  { value: 'medium', label: '🟡 Medium', color: '#3b82f6' },
-                  { value: 'high', label: '🟠 High', color: '#f59e0b' },
-                  { value: 'urgent', label: '🔴 Urgent', color: '#ef4444' },
-                ].map((priority) => (
-                  <button
-                    key={priority.value}
-                    type="button"
-                    onClick={() =>
-                      setFormData({ ...formData, priority: priority.value })
+                <AlertCircle size={18} />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit}>
+              {/* Job Title */}
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    marginBottom: '0.5rem',
+                    color: '#374151',
+                  }}
+                >
+                  <ClipboardList size={16} color="#6b7280" />
+                  Job Title <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  required
+                  placeholder="e.g., HVAC Maintenance"
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    minHeight: '48px',
+                    boxSizing: 'border-box',
+                    transition: 'border-color 0.2s, box-shadow 0.2s',
+                    outline: 'none',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#EF7722';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#d1d5db';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                />
+              </div>
+
+              {/* Description */}
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    marginBottom: '0.5rem',
+                    color: '#374151',
+                  }}
+                >
+                  <FileText size={16} color="#6b7280" />
+                  Description
+                </label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  rows={3}
+                  placeholder="Job details..."
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    resize: 'vertical',
+                    fontFamily: 'inherit',
+                    boxSizing: 'border-box',
+                    transition: 'border-color 0.2s, box-shadow 0.2s',
+                    outline: 'none',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#EF7722';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#d1d5db';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                />
+              </div>
+
+              {/* Client */}
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    marginBottom: '0.5rem',
+                    color: '#374151',
+                  }}
+                >
+                  <Building2 size={16} color="#6b7280" />
+                  Client <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <select
+                  name="client_id"
+                  value={formData.client_id}
+                  onChange={handleChange}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    backgroundColor: 'white',
+                    minHeight: '48px',
+                    boxSizing: 'border-box',
+                    cursor: 'pointer',
+                    transition: 'border-color 0.2s, box-shadow 0.2s',
+                    outline: 'none',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#EF7722';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#d1d5db';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                >
+                  <option value="">Select a client</option>
+                  {clients.map((client) => (
+                    <option key={client.id} value={client.id}>
+                      {client.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Site */}
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    marginBottom: '0.5rem',
+                    color: '#374151',
+                  }}
+                >
+                  <MapPin size={16} color="#6b7280" />
+                  Site <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <select
+                  name="site_id"
+                  value={formData.site_id}
+                  onChange={handleChange}
+                  required
+                  disabled={!formData.client_id}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    backgroundColor: formData.client_id ? 'white' : '#f9fafb',
+                    minHeight: '48px',
+                    boxSizing: 'border-box',
+                    cursor: formData.client_id ? 'pointer' : 'not-allowed',
+                    opacity: formData.client_id ? 1 : 0.6,
+                    transition: 'border-color 0.2s, box-shadow 0.2s',
+                    outline: 'none',
+                  }}
+                  onFocus={(e) => {
+                    if (formData.client_id) {
+                      e.target.style.borderColor = '#EF7722';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
                     }
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#d1d5db';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                >
+                  <option value="">
+                    {formData.client_id
+                      ? 'Select a site'
+                      : 'Select a client first'}
+                  </option>
+                  {sites.map((site) => (
+                    <option key={site.id} value={site.id}>
+                      {site.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Asset (Optional) */}
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    marginBottom: '0.5rem',
+                    color: '#374151',
+                  }}
+                >
+                  <Package size={16} color="#6b7280" />
+                  Asset (Optional)
+                </label>
+                <select
+                  name="asset_id"
+                  value={formData.asset_id}
+                  onChange={handleChange}
+                  disabled={!formData.site_id}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    backgroundColor: formData.site_id ? 'white' : '#f9fafb',
+                    minHeight: '48px',
+                    boxSizing: 'border-box',
+                    cursor: formData.site_id ? 'pointer' : 'not-allowed',
+                    opacity: formData.site_id ? 1 : 0.6,
+                    transition: 'border-color 0.2s, box-shadow 0.2s',
+                    outline: 'none',
+                  }}
+                  onFocus={(e) => {
+                    if (formData.site_id) {
+                      e.target.style.borderColor = '#EF7722';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
+                    }
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#d1d5db';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                >
+                  <option value="">
+                    {formData.site_id
+                      ? 'No specific asset'
+                      : 'Select a site first'}
+                  </option>
+                  {assets.map((asset) => (
+                    <option key={asset.id} value={asset.id}>
+                      {asset.asset_type.replace('_', ' ')} - {asset.model} (
+                      {asset.serial_number})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Priority */}
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    marginBottom: '0.5rem',
+                    color: '#374151',
+                  }}
+                >
+                  <AlertCircle size={16} color="#6b7280" />
+                  Priority <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2, 1fr)',
+                    gap: '0.75rem',
+                  }}
+                >
+                  {[
+                    { value: 'low', label: 'Low' },
+                    { value: 'medium', label: 'Medium' },
+                    { value: 'high', label: 'High' },
+                    { value: 'urgent', label: 'Urgent' },
+                  ].map((priority) => {
+                    const config = getPriorityConfig(priority.value);
+                    const PriorityIcon = config.icon;
+                    const isSelected = formData.priority === priority.value;
+
+                    return (
+                      <button
+                        key={priority.value}
+                        type="button"
+                        onClick={() =>
+                          setFormData({ ...formData, priority: priority.value })
+                        }
+                        style={{
+                          padding: '0.75rem',
+                          backgroundColor: isSelected ? config.bg : 'white',
+                          color: isSelected ? config.color : '#6b7280',
+                          border: isSelected
+                            ? `2px solid ${config.color}`
+                            : '1px solid #d1d5db',
+                          borderRadius: '8px',
+                          fontSize: '0.875rem',
+                          fontWeight: isSelected ? '600' : '500',
+                          cursor: 'pointer',
+                          minHeight: '48px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '0.5rem',
+                          transition: 'all 0.2s',
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isSelected) {
+                            e.currentTarget.style.borderColor = config.color;
+                            e.currentTarget.style.backgroundColor = `${config.bg}80`;
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isSelected) {
+                            e.currentTarget.style.borderColor = '#d1d5db';
+                            e.currentTarget.style.backgroundColor = 'white';
+                          }
+                        }}
+                      >
+                        <PriorityIcon size={16} />
+                        {priority.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Schedule Date & Time */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '0.75rem',
+                  marginBottom: '1.5rem',
+                }}
+              >
+                {/* Schedule Date */}
+                <div>
+                  <label
                     style={{
-                      padding: '0.875rem',
-                      backgroundColor:
-                        formData.priority === priority.value
-                          ? `${priority.color}15`
-                          : 'white',
-                      color:
-                        formData.priority === priority.value
-                          ? priority.color
-                          : '#6b7280',
-                      border:
-                        formData.priority === priority.value
-                          ? `2px solid ${priority.color}`
-                          : '1px solid #d1d5db',
-                      borderRadius: '8px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
                       fontSize: '0.875rem',
-                      fontWeight:
-                        formData.priority === priority.value ? '600' : '500',
-                      cursor: 'pointer',
-                      minHeight: '48px',
+                      fontWeight: '600',
+                      marginBottom: '0.5rem',
+                      color: '#374151',
                     }}
                   >
-                    {priority.label}
-                  </button>
-                ))}
+                    <Calendar size={16} color="#6b7280" />
+                    Date <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <input
+                    type="date"
+                    name="scheduled_date"
+                    value={formData.scheduled_date}
+                    onChange={handleChange}
+                    min={minDate}
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '8px',
+                      fontSize: '1rem',
+                      minHeight: '48px',
+                      boxSizing: 'border-box',
+                      transition: 'border-color 0.2s, box-shadow 0.2s',
+                      outline: 'none',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#EF7722';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#d1d5db';
+                      e.target.style.boxShadow = 'none';
+                    }}
+                  />
+                </div>
+
+                {/* Schedule Time */}
+                <div>
+                  <label
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      marginBottom: '0.5rem',
+                      color: '#374151',
+                    }}
+                  >
+                    <Clock size={16} color="#6b7280" />
+                    Time <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <input
+                    type="time"
+                    name="scheduled_time"
+                    value={formData.scheduled_time}
+                    onChange={handleChange}
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '8px',
+                      fontSize: '1rem',
+                      minHeight: '48px',
+                      boxSizing: 'border-box',
+                      transition: 'border-color 0.2s, box-shadow 0.2s',
+                      outline: 'none',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#EF7722';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#d1d5db';
+                      e.target.style.boxShadow = 'none';
+                    }}
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Schedule Date */}
-            <div style={{ marginBottom: '1rem' }}>
-              <label
+              {/* Action Buttons */}
+              <div
                 style={{
-                  display: 'block',
-                  marginBottom: '0.5rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  color: '#374151',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem',
                 }}
               >
-                Schedule Date *
-              </label>
-              <input
-                type="date"
-                name="scheduled_date"
-                value={formData.scheduled_date}
-                onChange={handleChange}
-                min={minDate}
-                required
-                style={{
-                  width: '100%',
-                  padding: '0.875rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  minHeight: '48px',
-                }}
-              />
-            </div>
-
-            {/* Schedule Time */}
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label
-                style={{
-                  display: 'block',
-                  marginBottom: '0.5rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  color: '#374151',
-                }}
-              >
-                Schedule Time *
-              </label>
-              <input
-                type="time"
-                name="scheduled_time"
-                value={formData.scheduled_time}
-                onChange={handleChange}
-                required
-                style={{
-                  width: '100%',
-                  padding: '0.875rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  minHeight: '48px',
-                }}
-              />
-            </div>
-
-            {/* Submit Buttons */}
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.75rem',
-              }}
-            >
-              <button
-                type="submit"
-                disabled={loading}
-                style={{
-                  padding: '1rem',
-                  backgroundColor: loading ? '#9ca3af' : '#2563eb',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  fontWeight: '600',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  minHeight: '52px',
-                  opacity: loading ? 0.6 : 1,
-                }}
-              >
-                {loading ? 'Creating Job...' : '✅ Create Job'}
-              </button>
-              <button
-                type="button"
-                onClick={() => router.push('/jobs')}
-                disabled={loading}
-                style={{
-                  padding: '1rem',
-                  backgroundColor: 'white',
-                  color: '#6b7280',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  fontWeight: '500',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  minHeight: '52px',
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 1.5rem',
+                    background: loading
+                      ? '#9ca3af'
+                      : 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    fontWeight: '600',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    minHeight: '48px',
+                    transition: 'all 0.2s',
+                    boxShadow: loading
+                      ? 'none'
+                      : '0 2px 8px rgba(239,119,34,0.25)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!loading) {
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!loading) {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
+                    }
+                  }}
+                >
+                  {loading ? (
+                    <>
+                      <div
+                        style={{
+                          width: '16px',
+                          height: '16px',
+                          border: '2px solid rgba(255,255,255,0.3)',
+                          borderTopColor: 'white',
+                          borderRadius: '50%',
+                          animation: 'spin 0.8s linear infinite',
+                        }}
+                      />
+                      <span>Creating...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save size={18} />
+                      <span>Create Job</span>
+                    </>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => router.push('/jobs')}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 1.5rem',
+                    backgroundColor: 'white',
+                    color: '#6b7280',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    minHeight: '48px',
+                    transition: 'all 0.2s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = '#EF7722';
+                    e.currentTarget.style.color = '#EF7722';
+                    e.currentTarget.style.boxShadow = '0 0 0 1px rgba(239,119,34,0.2)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = '#e5e7eb';
+                    e.currentTarget.style.color = '#6b7280';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  <ArrowLeft size={18} />
+                  <span>Cancel</span>
+                </button>
+              </div>
+            </form>
+          </div>
         </main>
 
         <BottomNav activeTab="jobs" />

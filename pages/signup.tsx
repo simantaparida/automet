@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { OnboardingEvents, trackPageView } from '@/lib/analytics';
@@ -17,6 +16,8 @@ export default function SignupPage() {
     countryCode: '+91',
     phoneNumber: '',
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -89,10 +90,10 @@ export default function SignupPage() {
         error.message.toLowerCase().includes('already exists') ||
         error.message.toLowerCase().includes('user already exists')
       ) {
-        // User already exists - redirect to welcome page
-        setError('An account with this email already exists. Redirecting to sign in...');
+        // User already exists - redirect to login
+        setError('An account with this email already exists. Redirecting to login...');
         setTimeout(() => {
-          router.push('/onboarding/welcome?message=Account already exists. Please sign in.');
+          router.push('/login?message=Account already exists. Please login.');
         }, 2000);
       } else {
         setError(error.message);
@@ -202,30 +203,20 @@ export default function SignupPage() {
             We've sent a confirmation link to <strong>{formData.email}</strong>.
             Please check your inbox and click the link to verify your account.
           </p>
-          <Link
-            href="/onboarding/welcome"
+          <a
+            href="/login"
             style={{
               display: 'inline-block',
               padding: '0.75rem 1.5rem',
-              background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
+              backgroundColor: '#2563eb',
               color: 'white',
               textDecoration: 'none',
-              borderRadius: '8px',
-              fontWeight: '600',
-              transition: 'all 0.2s',
-              boxShadow: '0 2px 8px rgba(239,119,34,0.25)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-1px)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
+              borderRadius: '4px',
+              fontWeight: '500',
             }}
           >
-            Back to Welcome
-          </Link>
+            Go to Login
+          </a>
         </div>
       </div>
       </>
@@ -238,35 +229,131 @@ export default function SignupPage() {
         <title>Create Your Account - Automet</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
       </Head>
+
+      <style jsx>{`
+        .signup-container {
+          padding: 1.5rem 1rem;
+        }
+        .signup-form {
+          max-width: 440px;
+          padding: 1.5rem;
+        }
+        .signup-title {
+          font-size: 1.25rem;
+          margin-bottom: 0.25rem;
+        }
+        .signup-subtitle {
+          font-size: 0.8125rem;
+          margin-bottom: 1.25rem;
+        }
+        .field-label {
+          font-size: 0.8125rem;
+          margin-bottom: 0.375rem;
+        }
+        .field-wrapper {
+          margin-bottom: 0.875rem;
+        }
+        @media (min-width: 768px) {
+          .signup-container {
+            padding: 2rem 2rem;
+          }
+          .signup-form {
+            max-width: 480px;
+            padding: 2rem;
+          }
+          .signup-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+          }
+          .signup-subtitle {
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+          }
+          .field-label {
+            font-size: 0.875rem;
+            margin-bottom: 0.4rem;
+          }
+          .field-wrapper {
+            margin-bottom: 1rem;
+          }
+        }
+      `}</style>
+
       <div
       style={{
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#f5f5f5',
+        background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
         fontFamily: 'system-ui, -apple-system, sans-serif',
+        position: 'relative',
+        overflow: 'hidden',
       }}
+      className="signup-container"
     >
+      {/* Decorative background element */}
       <div
         style={{
+          position: 'absolute',
+          top: '-100px',
+          right: '-100px',
+          width: '300px',
+          height: '300px',
+          background: 'radial-gradient(circle, rgba(239,119,34,0.1) 0%, transparent 70%)',
+          borderRadius: '50%',
+          pointerEvents: 'none',
+        }}
+      />
+
+      <div
+        className="signup-form"
+        style={{
           backgroundColor: 'white',
-          padding: '2rem',
-          borderRadius: '8px',
-          boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+          borderRadius: '12px',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.08)',
           width: '100%',
-          maxWidth: '400px',
+          margin: '0 auto',
+          border: '1px solid rgba(239,119,34,0.1)',
         }}
       >
+        {/* Logo */}
+        <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+          <h2
+            style={{
+              fontSize: '1.5rem',
+              fontWeight: '800',
+              background: 'linear-gradient(135deg, #EF7722 0%, #ff9a56 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              margin: 0,
+            }}
+          >
+            Automet
+          </h2>
+        </div>
+
         <h1
+          className="signup-title"
           style={{
-            marginBottom: '1.5rem',
             textAlign: 'center',
-            fontSize: '1.75rem',
+            fontWeight: '700',
+            color: '#111827',
           }}
         >
           Create your account
         </h1>
+
+        <p
+          className="signup-subtitle"
+          style={{
+            textAlign: 'center',
+            color: '#6b7280',
+          }}
+        >
+          Start managing your field operations today
+        </p>
 
         {error && (
           <div
@@ -284,13 +371,13 @@ export default function SignupPage() {
         )}
 
         <form onSubmit={handleEmailSignup}>
-          <div style={{ marginBottom: '1rem' }}>
+          <div className="field-wrapper">
             <label
+              className="field-label"
               style={{
                 display: 'block',
-                marginBottom: '0.5rem',
-                fontSize: '0.875rem',
                 fontWeight: '500',
+                color: '#374151',
               }}
             >
               Full Name *
@@ -303,22 +390,26 @@ export default function SignupPage() {
               required
               style={{
                 width: '100%',
-                padding: '0.5rem',
+                padding: '0.625rem 0.75rem',
                 border: '1px solid #d1d5db',
-                borderRadius: '4px',
-                fontSize: '1rem',
+                borderRadius: '6px',
+                fontSize: '0.9375rem',
+                outline: 'none',
+                transition: 'border-color 0.2s',
               }}
               placeholder="e.g., Rajesh Kumar"
+              onFocus={(e) => (e.target.style.borderColor = '#EF7722')}
+              onBlur={(e) => (e.target.style.borderColor = '#d1d5db')}
             />
           </div>
 
-          <div style={{ marginBottom: '1rem' }}>
+          <div className="field-wrapper">
             <label
+              className="field-label"
               style={{
                 display: 'block',
-                marginBottom: '0.5rem',
-                fontSize: '0.875rem',
                 fontWeight: '500',
+                color: '#374151',
               }}
             >
               Email *
@@ -331,78 +422,156 @@ export default function SignupPage() {
               required
               style={{
                 width: '100%',
-                padding: '0.5rem',
+                padding: '0.625rem 0.75rem',
                 border: '1px solid #d1d5db',
-                borderRadius: '4px',
-                fontSize: '1rem',
+                borderRadius: '6px',
+                fontSize: '0.9375rem',
+                outline: 'none',
+                transition: 'border-color 0.2s',
               }}
               placeholder="you@example.com"
+              onFocus={(e) => (e.target.style.borderColor = '#EF7722')}
+              onBlur={(e) => (e.target.style.borderColor = '#d1d5db')}
             />
           </div>
 
-          <div style={{ marginBottom: '1rem' }}>
+          <div className="field-wrapper">
             <label
+              className="field-label"
               style={{
                 display: 'block',
-                marginBottom: '0.5rem',
-                fontSize: '0.875rem',
                 fontWeight: '500',
+                color: '#374151',
               }}
             >
               Password
             </label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              style={{
-                width: '100%',
-                padding: '0.5rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '4px',
-                fontSize: '1rem',
-              }}
-              placeholder="••••••••"
-            />
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                style={{
+                  width: '100%',
+                  padding: '0.625rem 2.5rem 0.625rem 0.75rem',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  fontSize: '0.9375rem',
+                  outline: 'none',
+                  transition: 'border-color 0.2s',
+                }}
+                placeholder="••••••••"
+                onFocus={(e) => (e.target.style.borderColor = '#2563eb')}
+                onBlur={(e) => (e.target.style.borderColor = '#d1d5db')}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '0.75rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '0.25rem',
+                  color: '#6b7280',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
 
-          <div style={{ marginBottom: '1rem' }}>
+          <div className="field-wrapper">
             <label
+              className="field-label"
               style={{
                 display: 'block',
-                marginBottom: '0.5rem',
-                fontSize: '0.875rem',
                 fontWeight: '500',
+                color: '#374151',
               }}
             >
               Confirm Password
             </label>
-            <input
-              type="password"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required
-              style={{
-                width: '100%',
-                padding: '0.5rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '4px',
-                fontSize: '1rem',
-              }}
-              placeholder="••••••••"
-            />
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+                style={{
+                  width: '100%',
+                  padding: '0.625rem 2.5rem 0.625rem 0.75rem',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  fontSize: '0.9375rem',
+                  outline: 'none',
+                  transition: 'border-color 0.2s',
+                }}
+                placeholder="••••••••"
+                onFocus={(e) => (e.target.style.borderColor = '#2563eb')}
+                onBlur={(e) => (e.target.style.borderColor = '#d1d5db')}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '0.75rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '0.25rem',
+                  color: '#6b7280',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+              >
+                {showConfirmPassword ? (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
 
-          <div style={{ marginBottom: '1rem' }}>
+          <div className="field-wrapper">
             <label
+              className="field-label"
               style={{
                 display: 'block',
-                marginBottom: '0.5rem',
-                fontSize: '0.875rem',
                 fontWeight: '500',
+                color: '#374151',
               }}
             >
               Phone (Optional)
@@ -413,11 +582,11 @@ export default function SignupPage() {
                 value={formData.countryCode}
                 onChange={handleChange}
                 style={{
-                  width: '110px',
-                  padding: '0.5rem',
+                  width: '115px',
+                  padding: '0.625rem 0.5rem',
                   border: '1px solid #d1d5db',
-                  borderRadius: '4px',
-                  fontSize: '1rem',
+                  borderRadius: '6px',
+                  fontSize: '0.9375rem',
                   backgroundColor: 'white',
                 }}
               >
@@ -444,20 +613,24 @@ export default function SignupPage() {
                 maxLength={10}
                 style={{
                   flex: 1,
-                  padding: '0.5rem',
+                  padding: '0.625rem 0.75rem',
                   border: '1px solid #d1d5db',
-                  borderRadius: '4px',
-                  fontSize: '1rem',
+                  borderRadius: '6px',
+                  fontSize: '0.9375rem',
+                  outline: 'none',
+                  transition: 'border-color 0.2s',
                 }}
                 placeholder="9876543210"
+                onFocus={(e) => (e.target.style.borderColor = '#2563eb')}
+                onBlur={(e) => (e.target.style.borderColor = '#d1d5db')}
               />
             </div>
-            <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem', marginBottom: 0 }}>
+            <p style={{ fontSize: '0.7rem', color: '#6b7280', marginTop: '0.25rem', marginBottom: 0 }}>
               Enter 10-digit mobile number
             </p>
           </div>
 
-          <p style={{ fontSize: '0.75rem', color: '#9ca3af', textAlign: 'center', marginBottom: '1rem' }}>
+          <p style={{ fontSize: '0.7rem', color: '#9ca3af', textAlign: 'center', marginBottom: '1rem' }}>
             By creating an account, you agree to our Terms of Service and Privacy Policy
           </p>
 
@@ -466,15 +639,15 @@ export default function SignupPage() {
             disabled={loading}
             style={{
               width: '100%',
-              padding: '0.75rem',
+              padding: '0.625rem',
               background: loading ? '#9ca3af' : 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
               color: 'white',
               border: 'none',
-              borderRadius: '8px',
-              fontSize: '1rem',
+              borderRadius: '6px',
+              fontSize: '0.9375rem',
               fontWeight: '600',
               cursor: loading ? 'not-allowed' : 'pointer',
-              marginBottom: '1rem',
+              marginBottom: '0.875rem',
               transition: 'all 0.2s',
               boxShadow: loading ? 'none' : '0 2px 8px rgba(239,119,34,0.25)',
             }}
@@ -486,7 +659,7 @@ export default function SignupPage() {
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = loading ? 'none' : '0 2px 8px rgba(239,119,34,0.25)';
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
             }}
           >
             {loading ? 'Creating account...' : 'Sign up with Email'}
@@ -572,8 +745,6 @@ export default function SignupPage() {
               textDecoration: 'none',
               fontWeight: '600',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
-            onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}
           >
             Sign in
           </a>

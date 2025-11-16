@@ -5,6 +5,7 @@ import BottomNav from '@/components/BottomNav';
 import Sidebar from '@/components/Sidebar';
 import TopHeader from '@/components/TopHeader';
 import RoleBadge from '@/components/RoleBadge';
+import EmptyState from '@/components/EmptyState';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
 import {
   Plus,
@@ -501,85 +502,41 @@ export default function AssetsPage() {
               ></div>
             </div>
           ) : filteredAssets.length === 0 ? (
-            <div
-              style={{
-                backgroundColor: 'white',
-                padding: '3rem 2rem',
-                borderRadius: '12px',
-                textAlign: 'center',
-                boxShadow: '0 10px 40px rgba(0,0,0,0.08)',
-                border: '1px solid rgba(239,119,34,0.1)',
-                maxWidth: '500px',
-                margin: '2rem auto',
-              }}
-            >
-              <div
-                style={{
-                  width: '80px',
-                  height: '80px',
-                  margin: '0 auto 1.5rem',
-                  background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '3px solid rgba(239,119,34,0.2)',
-                }}
-              >
-                <Package size={40} color="#EF7722" />
-              </div>
-              <h2
-                style={{
-                  fontSize: '1.5rem',
-                  fontWeight: '700',
-                  color: '#111827',
-                  margin: '0 0 0.5rem 0',
-                }}
-              >
-                {searchTerm || selectedClientId || selectedSiteId
-                  ? 'No assets found'
-                  : 'No assets yet'}
-              </h2>
-              <p
-                style={{
-                  fontSize: '0.875rem',
-                  color: '#6b7280',
-                  margin: '0 0 1.5rem 0',
-                }}
-              >
-                {searchTerm || selectedClientId || selectedSiteId
-                  ? 'Try adjusting your search or filter terms'
-                  : 'Get started by adding your first asset'}
-              </p>
-              {!searchTerm && !selectedClientId && !selectedSiteId && (
-                <button
-                  onClick={() => router.push('/assets/new')}
+            <EmptyState
+              icon={
+                <div
                   style={{
-                    padding: '0.75rem 1.5rem',
-                    background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    minHeight: '48px',
-                    transition: 'all 0.2s',
-                    boxShadow: '0 2px 8px rgba(239,119,34,0.25)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
+                    width: '80px',
+                    height: '80px',
+                    background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '3px solid rgba(239,119,34,0.2)',
                   }}
                 >
-                  Create First Asset
-                </button>
-              )}
-            </div>
+                  <Package size={40} color="#EF7722" />
+                </div>
+              }
+              title={
+                searchTerm || selectedClientId || selectedSiteId
+                  ? 'No assets found'
+                  : 'No assets yet'
+              }
+              description={
+                searchTerm || selectedClientId || selectedSiteId
+                  ? 'No assets match your search or filter criteria. Try adjusting your filters or browse all assets.'
+                  : 'Get started by adding your first asset to track equipment and maintenance.'
+              }
+              actionLabel={
+                searchTerm || selectedClientId || selectedSiteId ? undefined : 'Add First Asset'
+              }
+              actionHref={
+                searchTerm || selectedClientId || selectedSiteId ? undefined : '/assets/new'
+              }
+              showAction={!searchTerm && !selectedClientId && !selectedSiteId}
+            />
           ) : (
             <div
               style={{

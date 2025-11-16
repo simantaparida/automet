@@ -249,25 +249,21 @@ export default function DashboardPage() {
           max-width: 1400px;
           margin: 0 auto;
         }
-        .kpi-scroll-container {
-          overflow-x: auto;
-          -webkit-overflow-scrolling: touch;
-          scrollbar-width: thin;
-          padding-bottom: 0.5rem;
+        .kpi-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+          gap: 1rem;
+          margin-bottom: 1.5rem;
         }
-        .kpi-scroll-container::-webkit-scrollbar {
-          height: 6px;
+        @media (max-width: 768px) {
+          .kpi-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
         }
-        .kpi-scroll-container::-webkit-scrollbar-track {
-          background: #f3f4f6;
-          border-radius: 3px;
-        }
-        .kpi-scroll-container::-webkit-scrollbar-thumb {
-          background: #d1d5db;
-          border-radius: 3px;
-        }
-        .kpi-scroll-container::-webkit-scrollbar-thumb:hover {
-          background: #9ca3af;
+        @media (max-width: 480px) {
+          .kpi-grid {
+            grid-template-columns: 1fr;
+          }
         }
       `}</style>
 
@@ -340,11 +336,10 @@ export default function DashboardPage() {
             </div>
           ) : (
             <>
-              {/* Row 1: Primary KPI Cards - Horizontal Scroll */}
-              <div className="kpi-scroll-container" style={{ marginBottom: '1.5rem', paddingTop: '0.5rem' }}>
-                <div style={{ display: 'flex', gap: '1rem', minWidth: 'fit-content' }}>
-                  {/* Scheduled */}
-                  <button
+              {/* Row 1: Primary KPI Cards - Responsive Grid */}
+              <div className="kpi-grid" style={{ paddingTop: '0.5rem' }}>
+                {/* Scheduled */}
+                <button
                     className="kpi-card"
                     onClick={() => router.push('/jobs?status=scheduled')}
                     style={{
@@ -354,10 +349,8 @@ export default function DashboardPage() {
                       boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                       border: '1px solid rgba(239,119,34,0.1)',
                       cursor: 'pointer',
-                      minWidth: '130px',
                       textAlign: 'left',
                       transition: 'all 0.2s',
-                      flexShrink: 0,
                       minHeight: '90px',
                     }}
                     onMouseEnter={(e) => {
@@ -389,10 +382,8 @@ export default function DashboardPage() {
                       boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                       border: '1px solid rgba(239,119,34,0.1)',
                       cursor: 'pointer',
-                      minWidth: '130px',
                       textAlign: 'left',
                       transition: 'all 0.2s',
-                      flexShrink: 0,
                       minHeight: '90px',
                     }}
                     onMouseEnter={(e) => {
@@ -429,10 +420,8 @@ export default function DashboardPage() {
                       boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                       border: '1px solid rgba(239,119,34,0.1)',
                       cursor: 'pointer',
-                      minWidth: '130px',
                       textAlign: 'left',
                       transition: 'all 0.2s',
-                      flexShrink: 0,
                       minHeight: '90px',
                     }}
                     onMouseEnter={(e) => {
@@ -480,10 +469,8 @@ export default function DashboardPage() {
                       boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                       border: (kpis?.overdue.count || 0) > 0 ? '2px solid #ef4444' : '1px solid rgba(239,119,34,0.1)',
                       cursor: 'pointer',
-                      minWidth: '130px',
                       textAlign: 'left',
                       transition: 'all 0.2s',
-                      flexShrink: 0,
                       minHeight: '90px',
                     }}
                     onMouseEnter={(e) => {
@@ -523,10 +510,8 @@ export default function DashboardPage() {
                       boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                       border: '1px solid rgba(239,119,34,0.1)',
                       cursor: 'pointer',
-                      minWidth: '130px',
                       textAlign: 'left',
                       transition: 'all 0.2s',
-                      flexShrink: 0,
                       position: 'relative',
                       minHeight: '90px',
                     }}
@@ -576,10 +561,8 @@ export default function DashboardPage() {
                       boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                       border: '1px solid rgba(239,119,34,0.1)',
                       cursor: 'pointer',
-                      minWidth: '130px',
                       textAlign: 'left',
                       transition: 'all 0.2s',
-                      flexShrink: 0,
                       minHeight: '90px',
                     }}
                     onMouseEnter={(e) => {
@@ -600,7 +583,6 @@ export default function DashboardPage() {
                       {kpis?.unassigned.count || 0}
                     </p>
                   </button>
-                </div>
               </div>
 
               {/* Row 2: Alerts & Quick Actions */}

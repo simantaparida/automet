@@ -5,6 +5,7 @@ import BottomNav from '@/components/BottomNav';
 import Sidebar from '@/components/Sidebar';
 import TopHeader from '@/components/TopHeader';
 import RoleBadge from '@/components/RoleBadge';
+import EmptyState from '@/components/EmptyState';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
 import { Plus, MapPin, Building2, Search, Filter } from 'lucide-react';
 
@@ -364,85 +365,33 @@ export default function SitesPage() {
               ></div>
             </div>
           ) : filteredSites.length === 0 ? (
-            <div
-              style={{
-                backgroundColor: 'white',
-                padding: '3rem 2rem',
-                borderRadius: '12px',
-                textAlign: 'center',
-                boxShadow: '0 10px 40px rgba(0,0,0,0.08)',
-                border: '1px solid rgba(239,119,34,0.1)',
-                maxWidth: '500px',
-                margin: '2rem auto',
-              }}
-            >
-              <div
-                style={{
-                  width: '80px',
-                  height: '80px',
-                  margin: '0 auto 1.5rem',
-                  background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '3px solid rgba(239,119,34,0.2)',
-                }}
-              >
-                <MapPin size={40} color="#EF7722" />
-              </div>
-              <h2
-                style={{
-                  fontSize: '1.5rem',
-                  fontWeight: '700',
-                  color: '#111827',
-                  margin: '0 0 0.5rem 0',
-                }}
-              >
-                {searchTerm || selectedClientId
-                  ? 'No sites found'
-                  : 'No sites yet'}
-              </h2>
-              <p
-                style={{
-                  fontSize: '0.875rem',
-                  color: '#6b7280',
-                  margin: '0 0 1.5rem 0',
-                }}
-              >
-                {searchTerm || selectedClientId
-                  ? 'Try adjusting your search or filter terms'
-                  : 'Get started by adding your first site'}
-              </p>
-              {!searchTerm && !selectedClientId && (
-                <button
-                  onClick={() => router.push('/sites/new')}
+            <EmptyState
+              icon={
+                <div
                   style={{
-                    padding: '0.75rem 1.5rem',
-                    background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    minHeight: '48px',
-                    transition: 'all 0.2s',
-                    boxShadow: '0 2px 8px rgba(239,119,34,0.25)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
+                    width: '80px',
+                    height: '80px',
+                    background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '3px solid rgba(239,119,34,0.2)',
                   }}
                 >
-                  Create First Site
-                </button>
-              )}
-            </div>
+                  <MapPin size={40} color="#EF7722" />
+                </div>
+              }
+              title={searchTerm || selectedClientId ? 'No sites found' : 'No sites yet'}
+              description={
+                searchTerm || selectedClientId
+                  ? 'No sites match your search or filter criteria. Try adjusting your filters or browse all sites.'
+                  : 'Get started by adding your first site location to manage assets and jobs.'
+              }
+              actionLabel={searchTerm || selectedClientId ? undefined : 'Add First Site'}
+              actionHref={searchTerm || selectedClientId ? undefined : '/sites/new'}
+              showAction={!searchTerm && !selectedClientId}
+            />
           ) : (
             <div
               style={{

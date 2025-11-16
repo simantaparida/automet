@@ -5,6 +5,7 @@ import BottomNav from '@/components/BottomNav';
 import Sidebar from '@/components/Sidebar';
 import TopHeader from '@/components/TopHeader';
 import RoleBadge from '@/components/RoleBadge';
+import EmptyState from '@/components/EmptyState';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
 import {
   Plus,
@@ -633,13 +634,14 @@ export default function JobsPage() {
             {activeRole !== 'technician' && (
               <button
                 onClick={toggleSelectMode}
+                title={isSelectMode ? 'Exit selection mode' : 'Select multiple jobs for bulk actions'}
                 style={{
                   padding: '0.75rem 1rem',
                   background: isSelectMode
                     ? 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)'
-                    : 'white',
+                    : '#fff5ed',
                   color: isSelectMode ? 'white' : '#EF7722',
-                  border: '1px solid #EF7722',
+                  border: '2px solid #EF7722',
                   borderRadius: '8px',
                   fontSize: '0.875rem',
                   fontWeight: '600',
@@ -650,20 +652,42 @@ export default function JobsPage() {
                   gap: '0.5rem',
                   transition: 'all 0.2s',
                   whiteSpace: 'nowrap',
+                  position: 'relative',
+                  boxShadow: isSelectMode ? '0 2px 8px rgba(239,119,34,0.25)' : '0 1px 4px rgba(239,119,34,0.15)',
                 }}
                 onMouseEnter={(e) => {
                   if (!isSelectMode) {
-                    e.currentTarget.style.backgroundColor = '#fff5ed';
+                    e.currentTarget.style.backgroundColor = '#ffe8d6';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!isSelectMode) {
-                    e.currentTarget.style.backgroundColor = 'white';
+                    e.currentTarget.style.backgroundColor = '#fff5ed';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 1px 4px rgba(239,119,34,0.15)';
                   }
                 }}
               >
-                {isSelectMode ? <CheckSquare size={18} /> : <Square size={18} />}
-                {isSelectMode ? 'Done' : 'Select'}
+                {isSelectMode ? <CheckSquare size={18} /> : <CheckSquare size={18} />}
+                {isSelectMode ? 'Done' : 'Select Multiple'}
+                {!isSelectMode && (
+                  <span
+                    style={{
+                      fontSize: '0.625rem',
+                      backgroundColor: '#EF7722',
+                      color: 'white',
+                      padding: '0.125rem 0.375rem',
+                      borderRadius: '4px',
+                      fontWeight: '700',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.025em',
+                    }}
+                  >
+                    New
+                  </span>
+                )}
               </button>
             )}
           </div>
@@ -855,85 +879,49 @@ export default function JobsPage() {
               Loading jobs...
             </div>
           ) : jobs.length === 0 ? (
-            <div
-              style={{
-                backgroundColor: 'white',
-                padding: '3rem 1.5rem',
-                borderRadius: '12px',
-                textAlign: 'center',
-                border: '1px solid rgba(239,119,34,0.1)',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
-              }}
-            >
-              <div
-                style={{
-                  width: '80px',
-                  height: '80px',
-                  margin: '0 auto 1.5rem',
-                  background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#EF7722',
-                }}
-              >
-                <svg
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
-                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-                </svg>
-              </div>
-              <p
-                style={{
-                  fontSize: '1.25rem',
-                  color: '#111827',
-                  marginBottom: '0.5rem',
-                  fontWeight: '700',
-                }}
-              >
-                No jobs found
-              </p>
-              <p
-                style={{
-                  fontSize: '0.9375rem',
-                  color: '#6b7280',
-                  marginBottom: 0,
-                }}
-              >
-                {searchQuery
-                  ? 'No jobs match your search'
-                  : activeTab === 'all'
-                  ? 'Create your first job to get started'
-                  : `No ${activeTab.replace('_', ' ')} jobs`}
-              </p>
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
+            <EmptyState
+              icon={
+                <div
                   style={{
-                    marginTop: '1rem',
-                    padding: '0.625rem 1.25rem',
-                    background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    cursor: 'pointer',
+                    width: '80px',
+                    height: '80px',
+                    background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '3px solid rgba(239,119,34,0.2)',
+                    color: '#EF7722',
                   }}
                 >
-                  Clear Search
-                </button>
-              )}
-            </div>
+                  <svg
+                    width="40"
+                    height="40"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                  </svg>
+                </div>
+              }
+              title="No jobs found"
+              description={
+                searchQuery
+                  ? `No jobs match "${searchQuery}". Try adjusting your search or browse all jobs.`
+                  : activeTab === 'all'
+                  ? 'Create your first job to get started with managing work orders and tasks.'
+                  : `No ${activeTab.replace('_', ' ')} jobs found. Check other status tabs or create a new job.`
+              }
+              actionLabel={searchQuery ? 'Clear Search' : activeTab === 'all' ? 'Create First Job' : undefined}
+              actionHref={searchQuery || activeTab !== 'all' ? undefined : '/jobs/new'}
+              onAction={searchQuery ? () => setSearchQuery('') : undefined}
+              showAction={searchQuery || activeTab === 'all'}
+            />
           ) : (
             <div
               style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}

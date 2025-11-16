@@ -5,6 +5,7 @@ import BottomNav from '@/components/BottomNav';
 import Sidebar from '@/components/Sidebar';
 import TopHeader from '@/components/TopHeader';
 import RoleBadge from '@/components/RoleBadge';
+import EmptyState from '@/components/EmptyState';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
 import {
   Plus,
@@ -343,87 +344,33 @@ export default function InventoryPage() {
               />
             </div>
           ) : filteredInventory.length === 0 ? (
-            <div
-              style={{
-                backgroundColor: 'white',
-                padding: '3rem 2rem',
-                borderRadius: '12px',
-                textAlign: 'center',
-                boxShadow: '0 10px 40px rgba(0,0,0,0.08)',
-                border: '1px solid rgba(239,119,34,0.1)',
-              }}
-            >
-              <div
-                style={{
-                  width: '80px',
-                  height: '80px',
-                  margin: '0 auto 1.5rem',
-                  background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '2px solid rgba(239,119,34,0.2)',
-                }}
-              >
-                <Package size={40} color="#EF7722" />
-              </div>
-              <p
-                style={{
-                  fontSize: '1.125rem',
-                  fontWeight: '600',
-                  color: '#111827',
-                  margin: '0 0 0.5rem 0',
-                }}
-              >
-                {searchTerm || showLowStockOnly
-                  ? 'No items found'
-                  : 'No inventory items yet'}
-              </p>
-              <p
-                style={{
-                  fontSize: '0.875rem',
-                  color: '#6b7280',
-                  margin: '0 0 1.5rem 0',
-                }}
-              >
-                {searchTerm || showLowStockOnly
-                  ? 'Try adjusting your filters'
-                  : 'Start tracking your inventory by adding your first item'}
-              </p>
-              {!searchTerm && !showLowStockOnly && (
-                <button
-                  onClick={() => router.push('/inventory/new')}
+            <EmptyState
+              icon={
+                <div
                   style={{
-                    padding: '0.75rem 1.5rem',
-                    background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    minHeight: '48px',
-                    boxShadow: '0 2px 8px rgba(239,119,34,0.25)',
-                    transition: 'all 0.2s',
-                    display: 'inline-flex',
+                    width: '80px',
+                    height: '80px',
+                    background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
+                    borderRadius: '50%',
+                    display: 'flex',
                     alignItems: 'center',
-                    gap: '0.5rem',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
+                    justifyContent: 'center',
+                    border: '3px solid rgba(239,119,34,0.2)',
                   }}
                 >
-                  <Plus size={20} />
-                  Add First Item
-                </button>
-              )}
-            </div>
+                  <Package size={40} color="#EF7722" />
+                </div>
+              }
+              title={searchTerm || showLowStockOnly ? 'No items found' : 'No inventory items yet'}
+              description={
+                searchTerm || showLowStockOnly
+                  ? 'No inventory items match your search or filter criteria. Try adjusting your filters or browse all inventory.'
+                  : 'Start tracking your inventory by adding spare parts, tools, and materials.'
+              }
+              actionLabel={searchTerm || showLowStockOnly ? undefined : 'Add First Item'}
+              actionHref={searchTerm || showLowStockOnly ? undefined : '/inventory/new'}
+              showAction={!searchTerm && !showLowStockOnly}
+            />
           ) : (
             <div
               style={{

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import BottomNav from '@/components/BottomNav';
@@ -6,6 +6,7 @@ import Sidebar from '@/components/Sidebar';
 import TopHeader from '@/components/TopHeader';
 import RoleBadge from '@/components/RoleBadge';
 import EmptyState from '@/components/EmptyState';
+import SortButtons from '@/components/SortButtons';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
 import {
   Plus,
@@ -58,6 +59,7 @@ export default function AssetsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedClientId, setSelectedClientId] = useState('');
   const [selectedSiteId, setSelectedSiteId] = useState('');
+  const [sortValue, setSortValue] = useState('asset_type:asc');
 
   useEffect(() => {
     fetchData();
@@ -95,6 +97,42 @@ export default function AssetsPage() {
 
     setFilteredAssets(filtered);
   }, [searchTerm, selectedClientId, selectedSiteId, assets]);
+
+  // Sort assets based on sortValue
+  const sortedAssets = useMemo(() => {
+    const [field, order] = sortValue.split(':');
+    return [...filteredAssets].sort((a, b) => {
+      let aVal: any;
+      let bVal: any;
+
+      // Handle nested fields for sorting
+      if (field === 'site') {
+        aVal = a.site?.name || '';
+        bVal = b.site?.name || '';
+      } else if (field === 'client') {
+        aVal = a.site?.client?.name || '';
+        bVal = b.site?.client?.name || '';
+      } else {
+        aVal = a[field as keyof Asset];
+        bVal = b[field as keyof Asset];
+      }
+
+      // Handle null values
+      if (aVal === null) aVal = '';
+      if (bVal === null) bVal = '';
+
+      // String comparison (case-insensitive)
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        const comparison = aVal.toLowerCase().localeCompare(bVal.toLowerCase());
+        return order === 'asc' ? comparison : -comparison;
+      }
+
+      // Numeric or date comparison
+      if (aVal < bVal) return order === 'asc' ? -1 : 1;
+      if (aVal > bVal) return order === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [filteredAssets, sortValue]);
 
   // Update sites list when client changes
   useEffect(() => {
@@ -481,6 +519,18 @@ export default function AssetsPage() {
 
         {/* Assets List */}
         <main className="main-content">
+          {!loading && filteredAssets.length > 0 && (
+            <SortButtons
+              options={[
+                { field: 'asset_type', label: 'Type' },
+                { field: 'model', label: 'Model' },
+                { field: 'site', label: 'Site' },
+                { field: 'client', label: 'Client' },
+              ]}
+              value={sortValue}
+              onChange={setSortValue}
+            />
+          )}
           {loading ? (
             <div
               style={{
@@ -545,7 +595,7 @@ export default function AssetsPage() {
                 gap: '1rem',
               }}
             >
-              {filteredAssets.map((asset) => (
+              {sortedAssets.map((asset) => (
                 <button
                   key={asset.id}
                   onClick={() => router.push(`/assets/${asset.id}`)}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import BottomNav from '@/components/BottomNav';
@@ -6,6 +6,7 @@ import Sidebar from '@/components/Sidebar';
 import TopHeader from '@/components/TopHeader';
 import RoleBadge from '@/components/RoleBadge';
 import EmptyState from '@/components/EmptyState';
+import SortButtons from '@/components/SortButtons';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
 import { Plus, MapPin, Building2, Search, Filter } from 'lucide-react';
 
@@ -30,13 +31,14 @@ interface Client {
 
 export default function SitesPage() {
   const router = useRouter();
-  const { apiFetch, activeRole } = useRoleSwitch();
+  const { apiFetch, activeRole} = useRoleSwitch();
   const [sites, setSites] = useState<Site[]>([]);
   const [filteredSites, setFilteredSites] = useState<Site[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedClientId, setSelectedClientId] = useState('');
+  const [sortValue, setSortValue] = useState('name:asc');
 
   useEffect(() => {
     fetchData();
@@ -62,6 +64,39 @@ export default function SitesPage() {
 
     setFilteredSites(filtered);
   }, [searchTerm, selectedClientId, sites]);
+
+  // Sort sites based on sortValue
+  const sortedSites = useMemo(() => {
+    const [field, order] = sortValue.split(':');
+    return [...filteredSites].sort((a, b) => {
+      let aVal: any;
+      let bVal: any;
+
+      // Handle nested client name for sorting
+      if (field === 'client') {
+        aVal = a.client?.name || '';
+        bVal = b.client?.name || '';
+      } else {
+        aVal = a[field as keyof Site];
+        bVal = b[field as keyof Site];
+      }
+
+      // Handle null values
+      if (aVal === null) aVal = '';
+      if (bVal === null) bVal = '';
+
+      // String comparison (case-insensitive)
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        const comparison = aVal.toLowerCase().localeCompare(bVal.toLowerCase());
+        return order === 'asc' ? comparison : -comparison;
+      }
+
+      // Numeric comparison
+      if (aVal < bVal) return order === 'asc' ? -1 : 1;
+      if (aVal > bVal) return order === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [filteredSites, sortValue]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -344,6 +379,17 @@ export default function SitesPage() {
 
         {/* Sites List */}
         <main className="main-content">
+          {!loading && filteredSites.length > 0 && (
+            <SortButtons
+              options={[
+                { field: 'name', label: 'Name' },
+                { field: 'address', label: 'Address' },
+                { field: 'client', label: 'Client' },
+              ]}
+              value={sortValue}
+              onChange={setSortValue}
+            />
+          )}
           {loading ? (
             <div
               style={{
@@ -400,7 +446,7 @@ export default function SitesPage() {
                 gap: '1rem',
               }}
             >
-              {filteredSites.map((site) => (
+              {sortedSites.map((site) => (
                 <button
                   key={site.id}
                   onClick={() => router.push(`/sites/${site.id}`)}

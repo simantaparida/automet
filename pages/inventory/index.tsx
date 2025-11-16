@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import BottomNav from '@/components/BottomNav';
@@ -6,6 +6,7 @@ import Sidebar from '@/components/Sidebar';
 import TopHeader from '@/components/TopHeader';
 import RoleBadge from '@/components/RoleBadge';
 import EmptyState from '@/components/EmptyState';
+import SortButtons from '@/components/SortButtons';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
 import {
   Plus,
@@ -41,6 +42,7 @@ export default function InventoryPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showLowStockOnly, setShowLowStockOnly] = useState(false);
+  const [sortValue, setSortValue] = useState('name:asc');
 
   useEffect(() => {
     fetchInventory();
@@ -70,6 +72,30 @@ export default function InventoryPage() {
 
     setFilteredInventory(filtered);
   }, [searchTerm, showLowStockOnly, inventory]);
+
+  // Sort inventory based on sortValue
+  const sortedInventory = useMemo(() => {
+    const [field, order] = sortValue.split(':');
+    return [...filteredInventory].sort((a, b) => {
+      let aVal: any = a[field as keyof InventoryItem];
+      let bVal: any = b[field as keyof InventoryItem];
+
+      // Handle null values
+      if (aVal === null) aVal = field === 'quantity' || field === 'reorder_level' ? 0 : '';
+      if (bVal === null) bVal = field === 'quantity' || field === 'reorder_level' ? 0 : '';
+
+      // String comparison (case-insensitive)
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        const comparison = aVal.toLowerCase().localeCompare(bVal.toLowerCase());
+        return order === 'asc' ? comparison : -comparison;
+      }
+
+      // Numeric comparison
+      if (aVal < bVal) return order === 'asc' ? -1 : 1;
+      if (aVal > bVal) return order === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [filteredInventory, sortValue]);
 
   const fetchInventory = async () => {
     setLoading(true);
@@ -323,6 +349,17 @@ export default function InventoryPage() {
 
         {/* Inventory List */}
         <main className="main-content">
+          {!loading && filteredInventory.length > 0 && (
+            <SortButtons
+              options={[
+                { field: 'name', label: 'Name' },
+                { field: 'sku', label: 'SKU' },
+                { field: 'quantity', label: 'Stock' },
+              ]}
+              value={sortValue}
+              onChange={setSortValue}
+            />
+          )}
           {loading ? (
             <div
               style={{
@@ -379,7 +416,7 @@ export default function InventoryPage() {
                 gap: '1rem',
               }}
             >
-              {filteredInventory.map((item) => {
+              {sortedInventory.map((item) => {
                 const stockStatus = getStockStatus(item);
                 const StatusIcon = stockStatus.icon;
                 return (

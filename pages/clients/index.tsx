@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import BottomNav from '@/components/BottomNav';
@@ -6,6 +6,7 @@ import Sidebar from '@/components/Sidebar';
 import TopHeader from '@/components/TopHeader';
 import RoleBadge from '@/components/RoleBadge';
 import EmptyState from '@/components/EmptyState';
+import SortButtons from '@/components/SortButtons';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
 import { Plus, Building2, Phone, Mail, MapPin, Search } from 'lucide-react';
 
@@ -25,6 +26,7 @@ export default function ClientsPage() {
   const [filteredClients, setFilteredClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortValue, setSortValue] = useState('name:asc');
 
   useEffect(() => {
     fetchClients();
@@ -45,6 +47,30 @@ export default function ClientsPage() {
       setFilteredClients(filtered);
     }
   }, [searchTerm, clients]);
+
+  // Sort clients based on sortValue
+  const sortedClients = useMemo(() => {
+    const [field, order] = sortValue.split(':');
+    return [...filteredClients].sort((a, b) => {
+      let aVal: any = a[field as keyof Client];
+      let bVal: any = b[field as keyof Client];
+
+      // Handle null values
+      if (aVal === null) aVal = '';
+      if (bVal === null) bVal = '';
+
+      // String comparison (case-insensitive)
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        const comparison = aVal.toLowerCase().localeCompare(bVal.toLowerCase());
+        return order === 'asc' ? comparison : -comparison;
+      }
+
+      // Numeric or date comparison
+      if (aVal < bVal) return order === 'asc' ? -1 : 1;
+      if (aVal > bVal) return order === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [filteredClients, sortValue]);
 
   const fetchClients = async () => {
     setLoading(true);
@@ -209,6 +235,17 @@ export default function ClientsPage() {
 
         {/* Clients List */}
         <main className="main-content">
+          {!loading && filteredClients.length > 0 && (
+            <SortButtons
+              options={[
+                { field: 'name', label: 'Name' },
+                { field: 'contact_email', label: 'Email' },
+                { field: 'address', label: 'Location' },
+              ]}
+              value={sortValue}
+              onChange={setSortValue}
+            />
+          )}
           {loading ? (
             <div
               style={{
@@ -265,7 +302,7 @@ export default function ClientsPage() {
                 gap: '1rem',
               }}
             >
-              {filteredClients.map((client) => (
+              {sortedClients.map((client) => (
                 <button
                   key={client.id}
                   onClick={() => router.push(`/clients/${client.id}`)}

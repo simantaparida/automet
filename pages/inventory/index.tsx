@@ -8,6 +8,7 @@ import RoleBadge from '@/components/RoleBadge';
 import EmptyState from '@/components/EmptyState';
 import SortButtons from '@/components/SortButtons';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
+import { useURLFilters } from '@/hooks/useURLFilters';
 import {
   Plus,
   Package,
@@ -40,9 +41,13 @@ export default function InventoryPage() {
     []
   );
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showLowStockOnly, setShowLowStockOnly] = useState(false);
-  const [sortValue, setSortValue] = useState('name:asc');
+
+  // URL-synced filters
+  const [filters, setFilters] = useURLFilters({
+    search: '',
+    lowStock: '',
+    sort: 'name:asc',
+  });
 
   useEffect(() => {
     fetchInventory();
@@ -52,7 +57,7 @@ export default function InventoryPage() {
     let filtered = inventory;
 
     // Filter by low stock
-    if (showLowStockOnly) {
+    if (filters.lowStock === 'true') {
       filtered = filtered.filter((item) => {
         const quantity = Number(item.quantity) || 0;
         const reorderLevel = Number(item.reorder_level) || 0;
@@ -61,21 +66,21 @@ export default function InventoryPage() {
     }
 
     // Filter by search term
-    if (searchTerm.trim() !== '') {
+    if (filters.search.trim() !== '') {
       filtered = filtered.filter(
         (item) =>
-          item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.name.toLowerCase().includes(filters.search.toLowerCase()) ||
           (item.sku &&
-            item.sku.toLowerCase().includes(searchTerm.toLowerCase()))
+            item.sku.toLowerCase().includes(filters.search.toLowerCase()))
       );
     }
 
     setFilteredInventory(filtered);
-  }, [searchTerm, showLowStockOnly, inventory]);
+  }, [filters.search, filters.lowStock, inventory]);
 
-  // Sort inventory based on sortValue
+  // Sort inventory based on filters.sort
   const sortedInventory = useMemo(() => {
-    const [field, order] = sortValue.split(':');
+    const [field, order] = filters.sort.split(':');
     return [...filteredInventory].sort((a, b) => {
       let aVal: any = a[field as keyof InventoryItem];
       let bVal: any = b[field as keyof InventoryItem];
@@ -95,7 +100,7 @@ export default function InventoryPage() {
       if (aVal > bVal) return order === 'asc' ? 1 : -1;
       return 0;
     });
-  }, [filteredInventory, sortValue]);
+  }, [filteredInventory, filters.sort]);
 
   const fetchInventory = async () => {
     setLoading(true);
@@ -276,8 +281,8 @@ export default function InventoryPage() {
               <input
                 type="text"
                 placeholder="Search inventory by name or SKU..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={filters.search}
+                onChange={(e) => setFilters({ search: e.target.value })}
                 style={{
                   width: '100%',
                   padding: '0.75rem 0.75rem 0.75rem 2.75rem',
@@ -310,12 +315,12 @@ export default function InventoryPage() {
               }}
             >
               <button
-                onClick={() => setShowLowStockOnly(!showLowStockOnly)}
+                onClick={() => setFilters({ lowStock: filters.lowStock === 'true' ? '' : 'true' })}
                 style={{
                   padding: '0.75rem 1rem',
-                  backgroundColor: showLowStockOnly ? '#f59e0b' : 'white',
-                  color: showLowStockOnly ? 'white' : '#6b7280',
-                  border: `2px solid ${showLowStockOnly ? '#f59e0b' : '#d1d5db'}`,
+                  backgroundColor: filters.lowStock === 'true' ? '#f59e0b' : 'white',
+                  color: filters.lowStock === 'true' ? 'white' : '#6b7280',
+                  border: `2px solid ${filters.lowStock === 'true' ? '#f59e0b' : '#d1d5db'}`,
                   borderRadius: '8px',
                   fontSize: '0.875rem',
                   fontWeight: '600',
@@ -328,20 +333,20 @@ export default function InventoryPage() {
                   whiteSpace: 'nowrap',
                 }}
                 onMouseEnter={(e) => {
-                  if (!showLowStockOnly) {
+                  if (filters.lowStock !== 'true') {
                     e.currentTarget.style.borderColor = '#EF7722';
                     e.currentTarget.style.color = '#EF7722';
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (!showLowStockOnly) {
+                  if (filters.lowStock !== 'true') {
                     e.currentTarget.style.borderColor = '#d1d5db';
                     e.currentTarget.style.color = '#6b7280';
                   }
                 }}
               >
                 <AlertTriangle size={16} />
-                {showLowStockOnly ? 'Low Stock' : 'All Stock'}
+                {filters.lowStock === 'true' ? 'Low Stock' : 'All Stock'}
               </button>
             </div>
           </div>
@@ -356,8 +361,8 @@ export default function InventoryPage() {
                 { field: 'sku', label: 'SKU' },
                 { field: 'quantity', label: 'Stock' },
               ]}
-              value={sortValue}
-              onChange={setSortValue}
+              value={filters.sort}
+              onChange={(value) => setFilters({ sort: value })}
             />
           )}
           {loading ? (
@@ -398,15 +403,15 @@ export default function InventoryPage() {
                   <Package size={40} color="#EF7722" />
                 </div>
               }
-              title={searchTerm || showLowStockOnly ? 'No items found' : 'No inventory items yet'}
+              title={filters.search || filters.lowStock === 'true' ? 'No items found' : 'No inventory items yet'}
               description={
-                searchTerm || showLowStockOnly
+                filters.search || filters.lowStock === 'true'
                   ? 'No inventory items match your search or filter criteria. Try adjusting your filters or browse all inventory.'
                   : 'Start tracking your inventory by adding spare parts, tools, and materials.'
               }
-              actionLabel={searchTerm || showLowStockOnly ? undefined : 'Add First Item'}
-              actionHref={searchTerm || showLowStockOnly ? undefined : '/inventory/new'}
-              showAction={!searchTerm && !showLowStockOnly}
+              actionLabel={filters.search || filters.lowStock === 'true' ? undefined : 'Add First Item'}
+              actionHref={filters.search || filters.lowStock === 'true' ? undefined : '/inventory/new'}
+              showAction={!filters.search && filters.lowStock !== 'true'}
             />
           ) : (
             <div

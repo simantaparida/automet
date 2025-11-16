@@ -8,6 +8,7 @@ import RoleBadge from '@/components/RoleBadge';
 import EmptyState from '@/components/EmptyState';
 import SortButtons from '@/components/SortButtons';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
+import { useURLFilters } from '@/hooks/useURLFilters';
 import { Plus, Building2, Phone, Mail, MapPin, Search } from 'lucide-react';
 
 interface Client {
@@ -25,32 +26,36 @@ export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [filteredClients, setFilteredClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortValue, setSortValue] = useState('name:asc');
+
+  // URL-synced filters
+  const [filters, setFilters] = useURLFilters({
+    search: '',
+    sort: 'name:asc',
+  });
 
   useEffect(() => {
     fetchClients();
   }, [activeRole]); // Refetch when role changes
 
   useEffect(() => {
-    if (searchTerm.trim() === '') {
+    if (filters.search.trim() === '') {
       setFilteredClients(clients);
     } else {
       const filtered = clients.filter(
         (client) =>
-          client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          client.name.toLowerCase().includes(filters.search.toLowerCase()) ||
           client.contact_email
             .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          client.contact_phone.includes(searchTerm)
+            .includes(filters.search.toLowerCase()) ||
+          client.contact_phone.includes(filters.search)
       );
       setFilteredClients(filtered);
     }
-  }, [searchTerm, clients]);
+  }, [filters.search, clients]);
 
-  // Sort clients based on sortValue
+  // Sort clients based on filters.sort
   const sortedClients = useMemo(() => {
-    const [field, order] = sortValue.split(':');
+    const [field, order] = filters.sort.split(':');
     return [...filteredClients].sort((a, b) => {
       let aVal: any = a[field as keyof Client];
       let bVal: any = b[field as keyof Client];
@@ -70,7 +75,7 @@ export default function ClientsPage() {
       if (aVal > bVal) return order === 'asc' ? 1 : -1;
       return 0;
     });
-  }, [filteredClients, sortValue]);
+  }, [filteredClients, filters.sort]);
 
   const fetchClients = async () => {
     setLoading(true);
@@ -208,8 +213,8 @@ export default function ClientsPage() {
             <input
               type="text"
               placeholder="Search clients by name, email, or phone..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              value={filters.search}
+              onChange={(e) => setFilters({ search: e.target.value })}
               style={{
                 width: '100%',
                 padding: '0.75rem 0.75rem 0.75rem 2.75rem',
@@ -242,8 +247,8 @@ export default function ClientsPage() {
                 { field: 'contact_email', label: 'Email' },
                 { field: 'address', label: 'Location' },
               ]}
-              value={sortValue}
-              onChange={setSortValue}
+              value={filters.sort}
+              onChange={(value) => setFilters({ sort: value })}
             />
           )}
           {loading ? (
@@ -284,15 +289,15 @@ export default function ClientsPage() {
                   <Building2 size={40} color="#EF7722" />
                 </div>
               }
-              title={searchTerm ? 'No clients found' : 'No clients yet'}
+              title={filters.search ? 'No clients found' : 'No clients yet'}
               description={
-                searchTerm
-                  ? `No clients match "${searchTerm}". Try adjusting your search terms or browse all clients.`
+                filters.search
+                  ? `No clients match "${filters.search}". Try adjusting your search terms or browse all clients.`
                   : 'Get started by adding your first client to manage jobs and track work.'
               }
-              actionLabel={searchTerm ? undefined : 'Add First Client'}
-              actionHref={searchTerm ? undefined : '/clients/new'}
-              showAction={!searchTerm}
+              actionLabel={filters.search ? undefined : 'Add First Client'}
+              actionHref={filters.search ? undefined : '/clients/new'}
+              showAction={!filters.search}
             />
           ) : (
             <div

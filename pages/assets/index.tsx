@@ -8,6 +8,7 @@ import RoleBadge from '@/components/RoleBadge';
 import EmptyState from '@/components/EmptyState';
 import SortButtons from '@/components/SortButtons';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
+import { useURLFilters } from '@/hooks/useURLFilters';
 import {
   Plus,
   Package,
@@ -56,10 +57,14 @@ export default function AssetsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [sites, setSites] = useState<Site[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedClientId, setSelectedClientId] = useState('');
-  const [selectedSiteId, setSelectedSiteId] = useState('');
-  const [sortValue, setSortValue] = useState('asset_type:asc');
+
+  // URL-synced filters
+  const [filters, setFilters] = useURLFilters({
+    search: '',
+    client: '',
+    site: '',
+    sort: 'asset_type:asc',
+  });
 
   useEffect(() => {
     fetchData();
@@ -69,38 +74,38 @@ export default function AssetsPage() {
     let filtered = assets;
 
     // Filter by client if selected
-    if (selectedClientId) {
+    if (filters.client) {
       filtered = filtered.filter(
-        (asset) => asset.site?.client?.id === selectedClientId
+        (asset) => asset.site?.client?.id === filters.client
       );
     }
 
     // Filter by site if selected
-    if (selectedSiteId) {
-      filtered = filtered.filter((asset) => asset.site?.id === selectedSiteId || asset.site_id === selectedSiteId);
+    if (filters.site) {
+      filtered = filtered.filter((asset) => asset.site?.id === filters.site || asset.site_id === filters.site);
     }
 
     // Filter by search term
-    if (searchTerm.trim() !== '') {
+    if (filters.search.trim() !== '') {
       filtered = filtered.filter(
         (asset) =>
-          asset.asset_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          asset.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          asset.asset_type.toLowerCase().includes(filters.search.toLowerCase()) ||
+          asset.model.toLowerCase().includes(filters.search.toLowerCase()) ||
           (asset.serial_number &&
             asset.serial_number
               .toLowerCase()
-              .includes(searchTerm.toLowerCase())) ||
-          asset.site?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          asset.site?.client?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+              .includes(filters.search.toLowerCase())) ||
+          asset.site?.name?.toLowerCase().includes(filters.search.toLowerCase()) ||
+          asset.site?.client?.name?.toLowerCase().includes(filters.search.toLowerCase())
       );
     }
 
     setFilteredAssets(filtered);
-  }, [searchTerm, selectedClientId, selectedSiteId, assets]);
+  }, [filters.search, filters.client, filters.site, assets]);
 
-  // Sort assets based on sortValue
+  // Sort assets based on filters.sort
   const sortedAssets = useMemo(() => {
-    const [field, order] = sortValue.split(':');
+    const [field, order] = filters.sort.split(':');
     return [...filteredAssets].sort((a, b) => {
       let aVal: any;
       let bVal: any;
@@ -132,17 +137,20 @@ export default function AssetsPage() {
       if (aVal > bVal) return order === 'asc' ? 1 : -1;
       return 0;
     });
-  }, [filteredAssets, sortValue]);
+  }, [filteredAssets, filters.sort]);
 
   // Update sites list when client changes
   useEffect(() => {
-    if (selectedClientId) {
-      fetchSites(selectedClientId);
+    if (filters.client) {
+      fetchSites(filters.client);
     } else {
       setSites([]);
-      setSelectedSiteId('');
+      // Clear site filter when client is cleared
+      if (filters.site) {
+        setFilters({ site: '' });
+      }
     }
-  }, [selectedClientId]);
+  }, [filters.client]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -375,8 +383,8 @@ export default function AssetsPage() {
               <input
                 type="text"
                 placeholder="Search assets by type, model, serial number, site..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={filters.search}
+                onChange={(e) => setFilters({ search: e.target.value })}
                 style={{
                   width: '100%',
                   padding: '0.75rem 0.75rem 0.75rem 2.75rem',
@@ -422,10 +430,9 @@ export default function AssetsPage() {
                   }}
                 />
                 <select
-                  value={selectedClientId}
+                  value={filters.client}
                   onChange={(e) => {
-                    setSelectedClientId(e.target.value);
-                    setSelectedSiteId('');
+                    setFilters({ client: e.target.value, site: '' });
                   }}
                   style={{
                     width: '100%',
@@ -474,9 +481,9 @@ export default function AssetsPage() {
                   }}
                 />
                 <select
-                  value={selectedSiteId}
-                  onChange={(e) => setSelectedSiteId(e.target.value)}
-                  disabled={!selectedClientId}
+                  value={filters.site}
+                  onChange={(e) => setFilters({ site: e.target.value })}
+                  disabled={!filters.client}
                   style={{
                     width: '100%',
                     padding: '0.75rem 0.75rem 0.75rem 2.75rem',
@@ -485,15 +492,15 @@ export default function AssetsPage() {
                     fontSize: '0.875rem',
                     minHeight: '48px',
                     boxSizing: 'border-box',
-                    backgroundColor: !selectedClientId ? '#f9fafb' : 'white',
-                    cursor: selectedClientId ? 'pointer' : 'not-allowed',
+                    backgroundColor: !filters.client ? '#f9fafb' : 'white',
+                    cursor: filters.client ? 'pointer' : 'not-allowed',
                     appearance: 'none',
                     transition: 'border-color 0.2s, box-shadow 0.2s',
                     outline: 'none',
-                    opacity: selectedClientId ? 1 : 0.6,
+                    opacity: filters.client ? 1 : 0.6,
                   }}
                   onFocus={(e) => {
-                    if (selectedClientId) {
+                    if (filters.client) {
                       e.target.style.borderColor = '#EF7722';
                       e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
                     }
@@ -527,8 +534,8 @@ export default function AssetsPage() {
                 { field: 'site', label: 'Site' },
                 { field: 'client', label: 'Client' },
               ]}
-              value={sortValue}
-              onChange={setSortValue}
+              value={filters.sort}
+              onChange={(value) => setFilters({ sort: value })}
             />
           )}
           {loading ? (
@@ -570,22 +577,22 @@ export default function AssetsPage() {
                 </div>
               }
               title={
-                searchTerm || selectedClientId || selectedSiteId
+                filters.search || filters.client || filters.site
                   ? 'No assets found'
                   : 'No assets yet'
               }
               description={
-                searchTerm || selectedClientId || selectedSiteId
+                filters.search || filters.client || filters.site
                   ? 'No assets match your search or filter criteria. Try adjusting your filters or browse all assets.'
                   : 'Get started by adding your first asset to track equipment and maintenance.'
               }
               actionLabel={
-                searchTerm || selectedClientId || selectedSiteId ? undefined : 'Add First Asset'
+                filters.search || filters.client || filters.site ? undefined : 'Add First Asset'
               }
               actionHref={
-                searchTerm || selectedClientId || selectedSiteId ? undefined : '/assets/new'
+                filters.search || filters.client || filters.site ? undefined : '/assets/new'
               }
-              showAction={!searchTerm && !selectedClientId && !selectedSiteId}
+              showAction={!filters.search && !filters.client && !filters.site}
             />
           ) : (
             <div

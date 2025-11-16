@@ -8,6 +8,7 @@ import RoleBadge from '@/components/RoleBadge';
 import EmptyState from '@/components/EmptyState';
 import SortButtons from '@/components/SortButtons';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
+import { useURLFilters } from '@/hooks/useURLFilters';
 import { Plus, MapPin, Building2, Search, Filter } from 'lucide-react';
 
 interface Site {
@@ -36,9 +37,13 @@ export default function SitesPage() {
   const [filteredSites, setFilteredSites] = useState<Site[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedClientId, setSelectedClientId] = useState('');
-  const [sortValue, setSortValue] = useState('name:asc');
+
+  // URL-synced filters
+  const [filters, setFilters] = useURLFilters({
+    search: '',
+    client: '',
+    sort: 'name:asc',
+  });
 
   useEffect(() => {
     fetchData();
@@ -48,26 +53,26 @@ export default function SitesPage() {
     let filtered = sites;
 
     // Filter by client if selected
-    if (selectedClientId) {
-      filtered = filtered.filter((site) => site.client?.id === selectedClientId);
+    if (filters.client) {
+      filtered = filtered.filter((site) => site.client?.id === filters.client);
     }
 
     // Filter by search term
-    if (searchTerm.trim() !== '') {
+    if (filters.search.trim() !== '') {
       filtered = filtered.filter(
         (site) =>
-          site.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          site.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          site.client?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+          site.name.toLowerCase().includes(filters.search.toLowerCase()) ||
+          site.address.toLowerCase().includes(filters.search.toLowerCase()) ||
+          site.client?.name?.toLowerCase().includes(filters.search.toLowerCase())
       );
     }
 
     setFilteredSites(filtered);
-  }, [searchTerm, selectedClientId, sites]);
+  }, [filters.search, filters.client, sites]);
 
-  // Sort sites based on sortValue
+  // Sort sites based on filters.sort
   const sortedSites = useMemo(() => {
-    const [field, order] = sortValue.split(':');
+    const [field, order] = filters.sort.split(':');
     return [...filteredSites].sort((a, b) => {
       let aVal: any;
       let bVal: any;
@@ -96,7 +101,7 @@ export default function SitesPage() {
       if (aVal > bVal) return order === 'asc' ? 1 : -1;
       return 0;
     });
-  }, [filteredSites, sortValue]);
+  }, [filteredSites, filters.sort]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -302,8 +307,8 @@ export default function SitesPage() {
               <input
                 type="text"
                 placeholder="Search sites by name, address, or client..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={filters.search}
+                onChange={(e) => setFilters({ search: e.target.value })}
                 style={{
                   width: '100%',
                   padding: '0.75rem 0.75rem 0.75rem 2.75rem',
@@ -341,8 +346,8 @@ export default function SitesPage() {
                 }}
               />
               <select
-                value={selectedClientId}
-                onChange={(e) => setSelectedClientId(e.target.value)}
+                value={filters.client}
+                onChange={(e) => setFilters({ client: e.target.value })}
                 style={{
                   width: '100%',
                   padding: '0.75rem 0.75rem 0.75rem 2.75rem',
@@ -386,8 +391,8 @@ export default function SitesPage() {
                 { field: 'address', label: 'Address' },
                 { field: 'client', label: 'Client' },
               ]}
-              value={sortValue}
-              onChange={setSortValue}
+              value={filters.sort}
+              onChange={(value) => setFilters({ sort: value })}
             />
           )}
           {loading ? (
@@ -428,15 +433,15 @@ export default function SitesPage() {
                   <MapPin size={40} color="#EF7722" />
                 </div>
               }
-              title={searchTerm || selectedClientId ? 'No sites found' : 'No sites yet'}
+              title={filters.search || filters.client ? 'No sites found' : 'No sites yet'}
               description={
-                searchTerm || selectedClientId
+                filters.search || filters.client
                   ? 'No sites match your search or filter criteria. Try adjusting your filters or browse all sites.'
                   : 'Get started by adding your first site location to manage assets and jobs.'
               }
-              actionLabel={searchTerm || selectedClientId ? undefined : 'Add First Site'}
-              actionHref={searchTerm || selectedClientId ? undefined : '/sites/new'}
-              showAction={!searchTerm && !selectedClientId}
+              actionLabel={filters.search || filters.client ? undefined : 'Add First Site'}
+              actionHref={filters.search || filters.client ? undefined : '/sites/new'}
+              showAction={!filters.search && !filters.client}
             />
           ) : (
             <div

@@ -7,6 +7,7 @@ import BottomNav from '@/components/BottomNav';
 import Sidebar from '@/components/Sidebar';
 import TopHeader from '@/components/TopHeader';
 import RoleBadge from '@/components/RoleBadge';
+import CollapsibleSection from '@/components/CollapsibleSection';
 import { supabase } from '@/lib/supabase';
 import {
   Calendar,
@@ -586,12 +587,18 @@ export default function DashboardPage() {
               </div>
 
               {/* Row 2: Alerts & Quick Actions */}
+              <CollapsibleSection
+                title="Alerts & Quick Actions"
+                icon={<AlertTriangle size={20} />}
+                badge={alerts.length > 0 ? alerts.length : undefined}
+                badgeColor="#ef4444"
+                defaultOpen={true}
+              >
               <div
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '1fr 1fr',
                   gap: '1.5rem',
-                  marginBottom: '1.5rem',
                 }}
               >
                 {/* Alerts & Exceptions */}
@@ -835,18 +842,15 @@ export default function DashboardPage() {
                   </div>
                 </div>
               </div>
+              </CollapsibleSection>
 
               {/* Row 3: Technician Overview */}
               {technicians.length > 0 && (
-                <div
-                  style={{
-                    backgroundColor: 'white',
-                    padding: '1.5rem',
-                    borderRadius: '12px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                    border: '1px solid rgba(239,119,34,0.1)',
-                    marginBottom: '1.5rem',
-                  }}
+                <CollapsibleSection
+                  title="Team Overview"
+                  icon={<Users size={20} />}
+                  badge={technicians.length}
+                  defaultOpen={true}
                 >
                   <div
                     style={{
@@ -856,16 +860,6 @@ export default function DashboardPage() {
                       marginBottom: '1rem',
                     }}
                   >
-                    <h3
-                      style={{
-                        fontSize: '1rem',
-                        fontWeight: '700',
-                        color: '#111827',
-                        margin: 0,
-                      }}
-                    >
-                      Technician Overview
-                    </h3>
                     <button
                       onClick={() => router.push('/profile')}
                       style={{
@@ -990,15 +984,20 @@ export default function DashboardPage() {
                     See who's active and who can take more jobs.
                   </p>
                 </div>
+                </CollapsibleSection>
               )}
 
               {/* Row 4: Jobs Timeline & At-risk Jobs */}
+              <CollapsibleSection
+                title="Timeline & At-risk Jobs"
+                icon={<Clock size={20} />}
+                defaultOpen={true}
+              >
               <div
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '1fr 1fr',
                   gap: '1.5rem',
-                  marginBottom: '1.5rem',
                 }}
               >
                 {/* Mini Timeline */}
@@ -1307,29 +1306,16 @@ export default function DashboardPage() {
                   )}
                 </div>
               </div>
+              </CollapsibleSection>
 
               {/* Row 5: Recent Activity Feed */}
               {activities.length > 0 && (
-                <div
-                  style={{
-                    backgroundColor: 'white',
-                    padding: '1.5rem',
-                    borderRadius: '12px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                    border: '1px solid rgba(239,119,34,0.1)',
-                    marginBottom: '1.5rem',
-                  }}
+                <CollapsibleSection
+                  title="Recent Activity"
+                  icon={<BarChart3 size={20} />}
+                  badge={activities.length}
+                  defaultOpen={false}
                 >
-                  <h3
-                    style={{
-                      fontSize: '1rem',
-                      fontWeight: '700',
-                      color: '#111827',
-                      margin: '0 0 1rem 0',
-                    }}
-                  >
-                    Recent Activity
-                  </h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                     {activities.slice(0, 10).map((activity) => (
                       <button
@@ -1439,6 +1425,7 @@ export default function DashboardPage() {
                     </button>
                   </div>
                 </div>
+                </CollapsibleSection>
               )}
 
               {/* Footer Links */}

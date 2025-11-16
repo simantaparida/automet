@@ -8,6 +8,7 @@ import Sidebar from '@/components/Sidebar';
 import TopHeader from '@/components/TopHeader';
 import RoleBadge from '@/components/RoleBadge';
 import CollapsibleSection from '@/components/CollapsibleSection';
+import Tooltip from '@/components/Tooltip';
 import { supabase } from '@/lib/supabase';
 import {
   Calendar,
@@ -305,7 +306,8 @@ export default function DashboardPage() {
             color: '#6b7280',
           }}
         >
-          {getGreeting()}, <strong style={{ color: '#111827' }}>{getOwnerName()}</strong>. Here's today's snapshot.
+          {getGreeting()}, <strong style={{ color: '#111827' }}>{getOwnerName()}</strong>. Here's today's snapshot.{' '}
+          <Tooltip content="This dashboard shows real-time job metrics, team status, and critical alerts. Click any section to expand or collapse." position="bottom" />
         </div>
 
         {/* Main Content */}

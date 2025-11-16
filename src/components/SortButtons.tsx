@@ -1,4 +1,5 @@
 import { ArrowUp, ArrowDown } from 'lucide-react';
+import Tooltip from './Tooltip';
 
 export interface SortOption {
   field: string;
@@ -41,9 +42,13 @@ export default function SortButtons({ options, value, onChange }: SortButtonsPro
           color: '#6b7280',
           fontWeight: '500',
           paddingRight: '0.25rem',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '0.375rem',
         }}
       >
-        Sort by:
+        Sort by:{' '}
+        <Tooltip content="Click to change sort field. Click again to toggle ascending/descending order." position="top" />
       </span>
       {options.map((option) => {
         const isActive = sortBy === option.field;

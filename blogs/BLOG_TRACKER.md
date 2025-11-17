@@ -26,6 +26,7 @@ Track all blog posts across different stages.
 | 8 | How to Choose the Right Field Service Software: Complete Buying Guide (2026) | ✅ Ready | industry-insights | 4,800+ | 2025-11-17 | - |
 | 9 | Complete Guide to Technician Tracking: GPS, Check-Ins & Real-Time Visibility (2026) | ✅ Ready | best-practices | 4,200+ | 2025-11-17 | - |
 | 10 | 10 Ways AMC Vendors Lose Money (And How to Stop It) — 2026 Guide | ✅ Ready | industry-insights | 4,500+ | 2025-11-17 | - |
+| 11 | What Is Proof of Work? Why Photos, GPS & Logs Matter in Field Operations (2026 Guide) | ✅ Ready | best-practices | 5,376 | 2025-11-17 | - |
 
 ### Series: [Add Your Series Name]
 
@@ -50,10 +51,11 @@ Blogs ready to upload (in `ready-to-upload/` folder):
 8. ✅ `how-to-choose-field-service-software-buying-guide-2026.sql` - Field Service Software Buying Guide
 9. ✅ `complete-guide-technician-tracking-gps-real-time-2026.sql` - Complete Guide to Technician Tracking
 10. ✅ `10-ways-amc-vendors-lose-money-how-to-stop-2026.sql` - AMC Vendors Profit Guide
+11. ✅ `proof-of-work-field-service-documentation-guide-2026.sql` - Proof of Work Documentation Guide
 
 **To upload:** Run `./scripts/upload-blogs.sh` or manually via Supabase SQL Editor
 
-**Total:** 10 comprehensive blog posts (42,000+ total words) ready for database upload
+**Total:** 11 comprehensive blog posts (47,376+ total words) ready for database upload
 
 ---
 

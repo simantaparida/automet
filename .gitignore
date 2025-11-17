@@ -80,3 +80,6 @@ CREATE_AUTH_TRIGGER.sql
 .claude/cache/
 .claude/logs/
 .env.staging
+
+# Cursor IDE
+.cursor/

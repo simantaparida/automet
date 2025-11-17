@@ -19,7 +19,8 @@ Track all blog posts across different stages.
 | 1 | What Is Field Service Management? A Complete Beginner's Guide (2025) | ✅ Ready | industry-insights | 3,500+ | 2025-11-17 | - |
 | 2 | What Is Preventive Maintenance? Types, Examples, and Benefits (2026 Guide) | ✅ Ready | best-practices | 5,000+ | 2025-11-17 | - |
 | 3 | How to Streamline Field Technician Workflows: A Practical Guide (2026) | ✅ Ready | best-practices | 3,863 | 2025-11-17 | - |
-| 4 | | 📝 Draft | | | | |
+| 4 | AI in Field Service: How Artificial Intelligence Is Transforming On-Site Operations (2026) | ✅ Ready | industry-insights | 3,758 | 2025-11-17 | - |
+| 5 | | 📝 Draft | | | | |
 
 ### Series: [Add Your Series Name]
 
@@ -37,6 +38,7 @@ Blogs ready to upload (in `ready-to-upload/` folder):
 1. ✅ `what-is-field-service-management-guide-2025.sql` - Field Service Management Guide
 2. ✅ `what-is-preventive-maintenance-guide-2026.sql` - Preventive Maintenance Guide
 3. ✅ `streamline-field-technician-workflows-guide-2026.sql` - Technician Workflows Guide
+4. ✅ `ai-in-field-service-guide-2026.sql` - AI in Field Service Guide
 
 **To upload:** Run `./scripts/upload-blogs.sh` or manually via Supabase SQL Editor
 

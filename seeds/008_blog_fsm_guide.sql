@@ -19,7 +19,7 @@ INSERT INTO blog_posts (
   'what-is-field-service-management-guide-2025',
   'What Is Field Service Management? A Complete Beginner''s Guide (2025)',
   'Everything you need to know about Field Service Management (FSM) — from basic definitions to modern software tools that help Indian service businesses manage technicians, jobs, and assets efficiently.',
-  '# What Is Field Service Management? A Complete Beginner''s Guide (2025)
+  $$# What Is Field Service Management? A Complete Beginner's Guide (2025)
 
 If you run a service business — HVAC repairs, facility management, electrical work, or equipment maintenance — you know the struggle. Technicians scattered across different sites. Job updates coming through WhatsApp messages. Service reports lost in paperwork. Customers calling to ask "When will the technician arrive?"
 
@@ -382,7 +382,7 @@ If you want to stop the WhatsApp chaos, track jobs in real-time, and give your t
 
 ---
 
-*Last updated: January 2025*',
+*Last updated: January 2025*$$,
   'Automet Team',
   'industry-insights',
   ARRAY['field service management', 'FSM', 'field service software', 'technician management', 'job scheduling', 'maintenance management', 'service business', 'HVAC', 'facility management', 'AMC vendors', 'India'],

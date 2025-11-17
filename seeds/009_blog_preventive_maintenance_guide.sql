@@ -19,7 +19,7 @@ INSERT INTO blog_posts (
   'what-is-preventive-maintenance-guide-2026',
   'What Is Preventive Maintenance? Types, Examples, and Benefits (2026 Guide)',
   'Complete guide to preventive maintenance (PM) — learn what it is, types, real-world examples, checklists, and how modern tools help maintenance teams reduce downtime and extend asset life.',
-  '# What Is Preventive Maintenance? Types, Examples, and Benefits (2026 Guide)
+  $$# What Is Preventive Maintenance? Types, Examples, and Benefits (2026 Guide)
 
 Every organization with equipment faces a choice: fix things when they break, or prevent them from breaking in the first place.
 
@@ -695,7 +695,7 @@ If you want to automate PM scheduling, standardize checklists, track asset histo
 
 ---
 
-*Last updated: January 2026*',
+*Last updated: January 2026*$$,
   'Automet Team',
   'best-practices',
   ARRAY['preventive maintenance', 'PM', 'maintenance management', 'CMMS', 'asset management', 'preventive maintenance checklist', 'types of preventive maintenance', 'maintenance strategy', 'equipment maintenance', 'facility management', 'field service'],

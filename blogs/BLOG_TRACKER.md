@@ -21,7 +21,8 @@ Track all blog posts across different stages.
 | 3 | How to Streamline Field Technician Workflows: A Practical Guide (2026) | ✅ Ready | best-practices | 3,863 | 2025-11-17 | - |
 | 4 | AI in Field Service: How Artificial Intelligence Is Transforming On-Site Operations (2026) | ✅ Ready | industry-insights | 3,758 | 2025-11-17 | - |
 | 5 | What Is Job Scheduling Software? How It Works + Top Tools (2026 Guide) | ✅ Ready | industry-insights | 3,710 | 2025-11-17 | - |
-| 6 | | 📝 Draft | | | | |
+| 6 | Asset Tracking 101: How to Track Equipment Across Multiple Sites (2026 Guide) | ✅ Ready | best-practices | 4,250 | 2025-11-17 | - |
+| 7 | | 📝 Draft | | | | |
 
 ### Series: [Add Your Series Name]
 
@@ -41,6 +42,7 @@ Blogs ready to upload (in `ready-to-upload/` folder):
 3. ✅ `streamline-field-technician-workflows-guide-2026.sql` - Technician Workflows Guide
 4. ✅ `ai-in-field-service-guide-2026.sql` - AI in Field Service Guide
 5. ✅ `job-scheduling-software-guide-2026.sql` - Job Scheduling Software Guide
+6. ✅ `asset-tracking-guide-multi-site-2026.sql` - Asset Tracking Multi-Site Guide
 
 **To upload:** Run `./scripts/upload-blogs.sh` or manually via Supabase SQL Editor
 

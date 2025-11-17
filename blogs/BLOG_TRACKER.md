@@ -18,7 +18,7 @@ Track all blog posts across different stages.
 |---|-------|--------|----------|------------|--------------|---------------|
 | 1 | What Is Field Service Management? A Complete Beginner's Guide (2025) | ✅ Ready | industry-insights | 3,500+ | 2025-11-17 | - |
 | 2 | What Is Preventive Maintenance? Types, Examples, and Benefits (2026 Guide) | ✅ Ready | best-practices | 5,000+ | 2025-11-17 | - |
-| 3 | | 📝 Draft | | | | |
+| 3 | How to Streamline Field Technician Workflows: A Practical Guide (2026) | ✅ Ready | best-practices | 3,863 | 2025-11-17 | - |
 | 4 | | 📝 Draft | | | | |
 
 ### Series: [Add Your Series Name]
@@ -34,8 +34,9 @@ Track all blog posts across different stages.
 
 Blogs ready to upload (in `ready-to-upload/` folder):
 
-1. ✅ `008_blog_fsm_guide.sql` - Field Service Management Guide
-2. ✅ `009_blog_preventive_maintenance_guide.sql` - Preventive Maintenance Guide
+1. ✅ `what-is-field-service-management-guide-2025.sql` - Field Service Management Guide
+2. ✅ `what-is-preventive-maintenance-guide-2026.sql` - Preventive Maintenance Guide
+3. ✅ `streamline-field-technician-workflows-guide-2026.sql` - Technician Workflows Guide
 
 **To upload:** Run `./scripts/upload-blogs.sh` or manually via Supabase SQL Editor
 

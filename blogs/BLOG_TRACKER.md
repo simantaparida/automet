@@ -22,7 +22,10 @@ Track all blog posts across different stages.
 | 4 | AI in Field Service: How Artificial Intelligence Is Transforming On-Site Operations (2026) | ✅ Ready | industry-insights | 3,758 | 2025-11-17 | - |
 | 5 | What Is Job Scheduling Software? How It Works + Top Tools (2026 Guide) | ✅ Ready | industry-insights | 3,710 | 2025-11-17 | - |
 | 6 | Asset Tracking 101: How to Track Equipment Across Multiple Sites (2026 Guide) | ✅ Ready | best-practices | 4,250 | 2025-11-17 | - |
-| 7 | | 📝 Draft | | | | |
+| 7 | The Ultimate Field Technician Checklist (Free PDF Template) — 2026 Guide | ✅ Ready | best-practices | 4,021 | 2025-11-17 | - |
+| 8 | How to Choose the Right Field Service Software: Complete Buying Guide (2026) | ✅ Ready | industry-insights | 4,800+ | 2025-11-17 | - |
+| 9 | Complete Guide to Technician Tracking: GPS, Check-Ins & Real-Time Visibility (2026) | ✅ Ready | best-practices | 4,200+ | 2025-11-17 | - |
+| 10 | 10 Ways AMC Vendors Lose Money (And How to Stop It) — 2026 Guide | ✅ Ready | industry-insights | 4,500+ | 2025-11-17 | - |
 
 ### Series: [Add Your Series Name]
 
@@ -43,8 +46,14 @@ Blogs ready to upload (in `ready-to-upload/` folder):
 4. ✅ `ai-in-field-service-guide-2026.sql` - AI in Field Service Guide
 5. ✅ `job-scheduling-software-guide-2026.sql` - Job Scheduling Software Guide
 6. ✅ `asset-tracking-guide-multi-site-2026.sql` - Asset Tracking Multi-Site Guide
+7. ✅ `field-technician-checklist-guide-2026.sql` - Field Technician Checklist Guide
+8. ✅ `how-to-choose-field-service-software-buying-guide-2026.sql` - Field Service Software Buying Guide
+9. ✅ `complete-guide-technician-tracking-gps-real-time-2026.sql` - Complete Guide to Technician Tracking
+10. ✅ `10-ways-amc-vendors-lose-money-how-to-stop-2026.sql` - AMC Vendors Profit Guide
 
 **To upload:** Run `./scripts/upload-blogs.sh` or manually via Supabase SQL Editor
+
+**Total:** 10 comprehensive blog posts (42,000+ total words) ready for database upload
 
 ---
 

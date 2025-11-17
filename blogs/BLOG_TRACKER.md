@@ -27,6 +27,7 @@ Track all blog posts across different stages.
 | 9 | Complete Guide to Technician Tracking: GPS, Check-Ins & Real-Time Visibility (2026) | ✅ Ready | best-practices | 4,200+ | 2025-11-17 | - |
 | 10 | 10 Ways AMC Vendors Lose Money (And How to Stop It) — 2026 Guide | ✅ Ready | industry-insights | 4,500+ | 2025-11-17 | - |
 | 11 | What Is Proof of Work? Why Photos, GPS & Logs Matter in Field Operations (2026 Guide) | ✅ Ready | best-practices | 5,376 | 2025-11-17 | - |
+| 12 | Top 20 KPIs for Field Service and Maintenance Teams (2026 Guide) | ✅ Ready | industry-insights | 6,700+ | 2025-11-17 | - |
 
 ### Series: [Add Your Series Name]
 
@@ -52,10 +53,11 @@ Blogs ready to upload (in `ready-to-upload/` folder):
 9. ✅ `complete-guide-technician-tracking-gps-real-time-2026.sql` - Complete Guide to Technician Tracking
 10. ✅ `10-ways-amc-vendors-lose-money-how-to-stop-2026.sql` - AMC Vendors Profit Guide
 11. ✅ `proof-of-work-field-service-documentation-guide-2026.sql` - Proof of Work Documentation Guide
+12. ✅ `top-20-field-service-kpis-maintenance-metrics-guide-2026.sql` - Top 20 Field Service KPIs Guide
 
 **To upload:** Run `./scripts/upload-blogs.sh` or manually via Supabase SQL Editor
 
-**Total:** 11 comprehensive blog posts (47,376+ total words) ready for database upload
+**Total:** 12 comprehensive blog posts (54,000+ total words) ready for database upload
 
 ---
 

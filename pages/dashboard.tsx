@@ -106,6 +106,8 @@ export default function DashboardPage() {
   const [unassignedJobs, setUnassignedJobs] = useState<AtRiskJob[]>([]);
   const [atRiskJobs, setAtRiskJobs] = useState<AtRiskJob[]>([]);
   const [activities, setActivities] = useState<ActivityItem[]>([]);
+  const [overdueJobs, setOverdueJobs] = useState<TimelineJob[]>([]);
+  const [inProgressJobs, setInProgressJobs] = useState<TimelineJob[]>([]);
 
   // Get greeting based on time
   const getGreeting = () => {
@@ -113,6 +115,23 @@ export default function DashboardPage() {
     if (hour < 12) return 'Good morning';
     if (hour < 17) return 'Good afternoon';
     return 'Good evening';
+  };
+
+  // Get current month and year
+  const getCurrentMonthYear = () => {
+    const now = new Date();
+    const month = now.toLocaleString('en-US', { month: 'long', timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+    const year = now.getFullYear();
+    return `${month} ${year}`;
+  };
+
+  // Calculate days overdue
+  const getDaysOverdue = (scheduledAt: string): number => {
+    const scheduled = new Date(scheduledAt);
+    const now = new Date();
+    const diffTime = now.getTime() - scheduled.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? diffDays : 0;
   };
 
   // Check if user has organization
@@ -190,7 +209,18 @@ export default function DashboardPage() {
 
         if (timelineRes.ok) {
           const timelineData = await timelineRes.json();
-          setTimelineJobs(timelineData.upcoming || []);
+          const allJobs = timelineData.upcoming || [];
+
+          // Separate jobs into categories
+          const overdue = allJobs.filter((job: TimelineJob) => job.eta_status === 'late');
+          const inProgress = allJobs.filter((job: TimelineJob) => {
+            // We'll need to check job status - for now, use a simple heuristic
+            return job.eta_status === 'on-time' || job.eta_status === 'at-risk';
+          });
+
+          setTimelineJobs(allJobs);
+          setOverdueJobs(overdue);
+          setInProgressJobs(inProgress);
           setUnassignedJobs(timelineData.unassigned || []);
           setAtRiskJobs(timelineData.at_risk || []);
         }
@@ -275,7 +305,7 @@ export default function DashboardPage() {
         className="dashboard-container"
         style={{
           minHeight: '100vh',
-          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+          background: '#ffffff',
           fontFamily: 'system-ui, -apple-system, sans-serif',
         }}
       >
@@ -292,30 +322,11 @@ export default function DashboardPage() {
           <RoleBadge />
         </div>
 
-        {/* Welcome Microcopy - Desktop only */}
-        <div
-          className="welcome-microcopy"
-          style={{
-            position: 'fixed',
-            top: '64px',
-            left: '260px',
-            right: 0,
-            backgroundColor: '#f9fafb',
-            borderBottom: '1px solid rgba(239,119,34,0.1)',
-            padding: '0.5rem 2rem',
-            zIndex: 20,
-            fontSize: '0.875rem',
-            color: '#6b7280',
-          }}
-        >
-          {getGreeting()}, <strong style={{ color: '#111827' }}>{getOwnerName()}</strong>. Here's today's snapshot.
-        </div>
-
         {/* Main Content */}
         <main
           className="main-content"
           style={{
-            paddingTop: loading ? '1.5rem' : '0.5rem',
+            paddingTop: '1.5rem',
           }}
         >
           {loading ? (
@@ -340,8 +351,162 @@ export default function DashboardPage() {
             </div>
           ) : (
             <>
+              {/* Welcome Header with Quick Actions */}
+              <div
+                style={{
+                  backgroundColor: 'white',
+                  padding: '1rem 1.5rem',
+                  borderRadius: '10px',
+                  marginBottom: '1.25rem',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '0.75rem',
+                }}
+              >
+                <div>
+                  <h1
+                    style={{
+                      fontSize: '1.5rem',
+                      fontWeight: '700',
+                      color: '#111827',
+                      margin: '0 0 0.25rem 0',
+                    }}
+                  >
+                    {getGreeting()}, {getOwnerName()}!
+                  </h1>
+                  <p
+                    style={{
+                      fontSize: '0.9375rem',
+                      color: '#6b7280',
+                      margin: 0,
+                    }}
+                  >
+                    Here's your snapshot for {getCurrentMonthYear()}
+                  </p>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '0.75rem',
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <button
+                    onClick={() => router.push('/jobs/new')}
+                    style={{
+                      background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      padding: '0.5rem 1rem',
+                      fontSize: '0.8125rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      boxShadow: '0 1px 3px rgba(239,119,34,0.2)',
+                      transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.35)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
+                    }}
+                  >
+                    <Plus size={18} /> Create Job
+                  </button>
+                  <button
+                    onClick={() => router.push('/clients/new')}
+                    style={{
+                      backgroundColor: 'white',
+                      color: '#111827',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      padding: '0.5rem 0.875rem',
+                      fontSize: '0.8125rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#f9fafb';
+                      e.currentTarget.style.borderColor = '#EF7722';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'white';
+                      e.currentTarget.style.borderColor = '#d1d5db';
+                    }}
+                  >
+                    <Building2 size={16} /> Add Client
+                  </button>
+                  <button
+                    onClick={() => router.push('/sites/new')}
+                    style={{
+                      backgroundColor: 'white',
+                      color: '#111827',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      padding: '0.5rem 0.875rem',
+                      fontSize: '0.8125rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#f9fafb';
+                      e.currentTarget.style.borderColor = '#EF7722';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'white';
+                      e.currentTarget.style.borderColor = '#d1d5db';
+                    }}
+                  >
+                    <MapPin size={16} /> Add Site
+                  </button>
+                  <button
+                    onClick={() => router.push('/assets/new')}
+                    style={{
+                      backgroundColor: 'white',
+                      color: '#111827',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      padding: '0.5rem 0.875rem',
+                      fontSize: '0.8125rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#f9fafb';
+                      e.currentTarget.style.borderColor = '#EF7722';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'white';
+                      e.currentTarget.style.borderColor = '#d1d5db';
+                    }}
+                  >
+                    <Package size={16} /> Add Asset
+                  </button>
+                </div>
+              </div>
+
               {/* Row 1: Primary KPI Cards - Horizontal Scroll */}
-              <div className="kpi-scroll-container" style={{ marginBottom: '1.5rem', paddingTop: '0.5rem' }}>
+              <div className="kpi-scroll-container" style={{ marginBottom: '1.5rem' }}>
                 <div style={{ display: 'flex', gap: '1rem', minWidth: 'fit-content' }}>
                   {/* Scheduled */}
                   <button
@@ -351,8 +516,7 @@ export default function DashboardPage() {
                       backgroundColor: 'white',
                       padding: '0.875rem',
                       borderRadius: '10px',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                      border: '1px solid rgba(239,119,34,0.1)',
+                      border: '1px solid #e5e7eb',
                       cursor: 'pointer',
                       minWidth: '130px',
                       textAlign: 'left',
@@ -362,11 +526,11 @@ export default function DashboardPage() {
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 4px 15px rgba(239,119,34,0.15)';
+                      e.currentTarget.style.borderColor = '#EF7722';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.06)';
+                      e.currentTarget.style.borderColor = '#e5e7eb';
                     }}
                     title="Jobs scheduled for today. Click to view."
                   >
@@ -386,8 +550,7 @@ export default function DashboardPage() {
                       backgroundColor: 'white',
                       padding: '0.875rem',
                       borderRadius: '10px',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                      border: '1px solid rgba(239,119,34,0.1)',
+                      border: '1px solid #e5e7eb',
                       cursor: 'pointer',
                       minWidth: '130px',
                       textAlign: 'left',
@@ -397,11 +560,11 @@ export default function DashboardPage() {
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 4px 15px rgba(239,119,34,0.15)';
+                      e.currentTarget.style.borderColor = '#EF7722';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.06)';
+                      e.currentTarget.style.borderColor = '#e5e7eb';
                     }}
                     title="Jobs currently being worked on. Click to view."
                   >
@@ -426,8 +589,7 @@ export default function DashboardPage() {
                       backgroundColor: 'white',
                       padding: '0.875rem',
                       borderRadius: '10px',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                      border: '1px solid rgba(239,119,34,0.1)',
+                      border: '1px solid #e5e7eb',
                       cursor: 'pointer',
                       minWidth: '130px',
                       textAlign: 'left',
@@ -437,11 +599,11 @@ export default function DashboardPage() {
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 4px 15px rgba(239,119,34,0.15)';
+                      e.currentTarget.style.borderColor = '#EF7722';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.06)';
+                      e.currentTarget.style.borderColor = '#e5e7eb';
                     }}
                     title="Jobs completed today. Click to view."
                   >
@@ -477,8 +639,7 @@ export default function DashboardPage() {
                       backgroundColor: 'white',
                       padding: '0.875rem',
                       borderRadius: '10px',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                      border: (kpis?.overdue.count || 0) > 0 ? '2px solid #ef4444' : '1px solid rgba(239,119,34,0.1)',
+                      border: (kpis?.overdue.count || 0) > 0 ? '2px solid #ef4444' : '1px solid #e5e7eb',
                       cursor: 'pointer',
                       minWidth: '130px',
                       textAlign: 'left',
@@ -488,11 +649,11 @@ export default function DashboardPage() {
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 4px 15px rgba(239,119,34,0.15)';
+                      e.currentTarget.style.borderColor = '#EF7722';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.06)';
+                      e.currentTarget.style.borderColor = (kpis?.overdue.count || 0) > 0 ? '#ef4444' : '#e5e7eb';
                     }}
                     title="Jobs past due — action required. Click to view."
                   >
@@ -520,8 +681,7 @@ export default function DashboardPage() {
                       backgroundColor: 'white',
                       padding: '0.875rem',
                       borderRadius: '10px',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                      border: '1px solid rgba(239,119,34,0.1)',
+                      border: '1px solid #e5e7eb',
                       cursor: 'pointer',
                       minWidth: '130px',
                       textAlign: 'left',
@@ -532,11 +692,11 @@ export default function DashboardPage() {
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 4px 15px rgba(239,119,34,0.15)';
+                      e.currentTarget.style.borderColor = '#EF7722';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.06)';
+                      e.currentTarget.style.borderColor = '#e5e7eb';
                     }}
                     title="Completed jobs missing proof of completion. Click to review."
                   >
@@ -573,8 +733,7 @@ export default function DashboardPage() {
                       backgroundColor: 'white',
                       padding: '0.875rem',
                       borderRadius: '10px',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                      border: '1px solid rgba(239,119,34,0.1)',
+                      border: '1px solid #e5e7eb',
                       cursor: 'pointer',
                       minWidth: '130px',
                       textAlign: 'left',
@@ -584,11 +743,11 @@ export default function DashboardPage() {
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 4px 15px rgba(239,119,34,0.15)';
+                      e.currentTarget.style.borderColor = '#EF7722';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.06)';
+                      e.currentTarget.style.borderColor = '#e5e7eb';
                     }}
                     title="Jobs that need assignment. Click to assign."
                   >
@@ -603,7 +762,7 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* Row 2: Alerts & Quick Actions */}
+              {/* Row 2: Overdue Jobs & Jobs in Progress */}
               <div
                 style={{
                   display: 'grid',
@@ -612,31 +771,56 @@ export default function DashboardPage() {
                   marginBottom: '1.5rem',
                 }}
               >
-                {/* Alerts & Exceptions */}
+                {/* Overdue Jobs */}
                 <div
                   style={{
                     backgroundColor: 'white',
-                    padding: '1.5rem',
-                    borderRadius: '12px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                    border: '1px solid rgba(239,119,34,0.1)',
+                    padding: '1rem',
+                    borderRadius: '10px',
+                    border: '1px solid #e5e7eb',
                   }}
                 >
-                  <h3
+                  <div
                     style={{
-                      fontSize: '1rem',
-                      fontWeight: '700',
-                      color: '#111827',
-                      margin: '0 0 1rem 0',
                       display: 'flex',
+                      justifyContent: 'space-between',
                       alignItems: 'center',
-                      gap: '0.5rem',
+                      marginBottom: '0.75rem',
                     }}
                   >
-                    <AlertTriangle size={18} color="#ef4444" />
-                    Alerts & Exceptions
-                  </h3>
-                  {alerts.length === 0 ? (
+                    <h3
+                      style={{
+                        fontSize: '0.9375rem',
+                        fontWeight: '700',
+                        color: '#111827',
+                        margin: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                      }}
+                    >
+                      <AlertCircle size={16} color="#ef4444" />
+                      Overdue Jobs
+                    </h3>
+                    <button
+                      onClick={() => router.push('/jobs?status=overdue')}
+                      style={{
+                        fontSize: '0.8125rem',
+                        color: '#EF7722',
+                        fontWeight: '600',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        padding: '0.5rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                      }}
+                    >
+                      View all <ChevronRight size={14} />
+                    </button>
+                  </div>
+                  {overdueJobs.length === 0 ? (
                     <p
                       style={{
                         fontSize: '0.875rem',
@@ -645,225 +829,90 @@ export default function DashboardPage() {
                         fontStyle: 'italic',
                       }}
                     >
-                      No critical alerts. All clear.
+                      No overdue jobs
                     </p>
                   ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                      {alerts.map((alert) => (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      {overdueJobs.slice(0, 5).map((job) => (
                         <button
-                          key={alert.id}
-                          onClick={() => {
-                            if (alert.link) {
-                              router.push(alert.link);
-                            }
-                          }}
+                          key={job.id}
+                          onClick={() => router.push(`/jobs/${job.id}`)}
                           style={{
                             display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            padding: '0.75rem',
-                            backgroundColor: alert.priority === 'high' ? '#fef2f2' : '#fffbeb',
-                            border: `1px solid ${alert.priority === 'high' ? '#fee2e2' : '#fef3c7'}`,
-                            borderRadius: '8px',
+                            flexDirection: 'column',
+                            gap: '0.4rem',
+                            padding: '0.625rem',
+                            backgroundColor: '#fef2f2',
+                            borderRadius: '6px',
+                            border: '1px solid #fee2e2',
                             cursor: 'pointer',
                             textAlign: 'left',
                             transition: 'all 0.2s',
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor =
-                              alert.priority === 'high' ? '#fee2e2' : '#fef3c7';
+                            e.currentTarget.style.backgroundColor = '#fee2e2';
                           }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor =
-                              alert.priority === 'high' ? '#fef2f2' : '#fffbeb';
+                            e.currentTarget.style.backgroundColor = '#fef2f2';
                           }}
                         >
-                          <div style={{ flex: 1 }}>
-                            <div
-                              style={{
-                                fontSize: '0.875rem',
-                                fontWeight: '600',
-                                color: '#111827',
-                                marginBottom: '0.25rem',
-                              }}
-                            >
-                              {alert.title} ({alert.count})
-                            </div>
-                            {alert.job_ids && alert.job_ids.length > 0 && (
+                          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                            <div style={{ flex: 1, minWidth: 0 }}>
                               <div
                                 style={{
-                                  fontSize: '0.75rem',
-                                  color: '#6b7280',
+                                  fontSize: '0.8125rem',
+                                  fontWeight: '600',
+                                  color: '#111827',
+                                  marginBottom: '0.25rem',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
                                 }}
                               >
-                                Job IDs: {alert.job_ids.slice(0, 3).map((id) => `#${id.slice(0, 8)}`).join(', ')}
-                                {alert.job_ids.length > 3 && '...'}
+                                {job.title}
                               </div>
-                            )}
+                              <div
+                                style={{
+                                  fontSize: '0.6875rem',
+                                  color: '#6b7280',
+                                  lineHeight: '1.3',
+                                }}
+                              >
+                                {job.site?.name || 'No site'} • {new Date(job.scheduled_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} at {formatTime(job.scheduled_at)}
+                                {job.assignee && ` • ${job.assignee.name}`}
+                              </div>
+                            </div>
+                            <span
+                              style={{
+                                backgroundColor: '#fecaca',
+                                color: '#991b1b',
+                                fontSize: '0.625rem',
+                                fontWeight: '600',
+                                padding: '0.125rem 0.375rem',
+                                borderRadius: '3px',
+                                whiteSpace: 'nowrap',
+                                flexShrink: 0,
+                              }}
+                            >
+                              {(() => {
+                                const days = getDaysOverdue(job.scheduled_at);
+                                return days === 0 ? 'OVERDUE' : `${days} ${days === 1 ? 'DAY' : 'DAYS'} OVERDUE`;
+                              })()}
+                            </span>
                           </div>
-                          <ChevronRight size={16} color="#6b7280" />
                         </button>
                       ))}
                     </div>
                   )}
                 </div>
 
-                {/* Quick Actions */}
+                {/* Jobs in Progress */}
                 <div
                   style={{
                     backgroundColor: 'white',
-                    padding: '1.5rem',
-                    borderRadius: '12px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                    border: '1px solid rgba(239,119,34,0.1)',
-                  }}
-                >
-                  <h3
-                    style={{
-                      fontSize: '1rem',
-                      fontWeight: '700',
-                      color: '#111827',
-                      margin: '0 0 1rem 0',
-                    }}
-                  >
-                    Quick Actions
-                  </h3>
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(2, 1fr)',
-                      gap: '0.75rem',
-                    }}
-                  >
-                    <button
-                      onClick={() => router.push('/jobs/new')}
-                      style={{
-                        background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '8px',
-                        padding: '0.875rem',
-                        fontSize: '0.875rem',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '0.5rem',
-                        boxShadow: '0 2px 8px rgba(239,119,34,0.25)',
-                        transition: 'all 0.2s',
-                        gridColumn: '1 / -1',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = 'translateY(-1px)';
-                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.35)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
-                      }}
-                      title="Create a job quickly with site, client, and asset info"
-                    >
-                      <Plus size={18} /> Create New Job
-                    </button>
-                    <button
-                      onClick={() => router.push('/clients/new')}
-                      style={{
-                        backgroundColor: 'white',
-                        color: '#111827',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '8px',
-                        padding: '0.75rem',
-                        fontSize: '0.8125rem',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '0.5rem',
-                        transition: 'all 0.2s',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#f9fafb';
-                        e.currentTarget.style.borderColor = '#EF7722';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'white';
-                        e.currentTarget.style.borderColor = '#e5e7eb';
-                      }}
-                    >
-                      <Building2 size={16} /> Add Client
-                    </button>
-                    <button
-                      onClick={() => router.push('/sites/new')}
-                      style={{
-                        backgroundColor: 'white',
-                        color: '#111827',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '8px',
-                        padding: '0.75rem',
-                        fontSize: '0.8125rem',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '0.5rem',
-                        transition: 'all 0.2s',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#f9fafb';
-                        e.currentTarget.style.borderColor = '#EF7722';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'white';
-                        e.currentTarget.style.borderColor = '#e5e7eb';
-                      }}
-                    >
-                      <MapPin size={16} /> Add Site
-                    </button>
-                    <button
-                      onClick={() => router.push('/assets/new')}
-                      style={{
-                        backgroundColor: 'white',
-                        color: '#111827',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '8px',
-                        padding: '0.75rem',
-                        fontSize: '0.8125rem',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '0.5rem',
-                        transition: 'all 0.2s',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#f9fafb';
-                        e.currentTarget.style.borderColor = '#EF7722';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'white';
-                        e.currentTarget.style.borderColor = '#e5e7eb';
-                      }}
-                    >
-                      <Package size={16} /> Add Asset
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Row 3: Technician Overview */}
-              {technicians.length > 0 && (
-                <div
-                  style={{
-                    backgroundColor: 'white',
-                    padding: '1.5rem',
-                    borderRadius: '12px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                    border: '1px solid rgba(239,119,34,0.1)',
-                    marginBottom: '1.5rem',
+                    padding: '1rem',
+                    borderRadius: '10px',
+                    border: '1px solid #e5e7eb',
                   }}
                 >
                   <div
@@ -871,21 +920,25 @@ export default function DashboardPage() {
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      marginBottom: '1rem',
+                      marginBottom: '0.75rem',
                     }}
                   >
                     <h3
                       style={{
-                        fontSize: '1rem',
+                        fontSize: '0.9375rem',
                         fontWeight: '700',
                         color: '#111827',
                         margin: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
                       }}
                     >
-                      Technician Overview
+                      <Wrench size={16} color="#f59e0b" />
+                      Jobs in Progress
                     </h3>
                     <button
-                      onClick={() => router.push('/profile')}
+                      onClick={() => router.push('/jobs?status=in_progress')}
                       style={{
                         fontSize: '0.8125rem',
                         color: '#EF7722',
@@ -899,118 +952,94 @@ export default function DashboardPage() {
                         gap: '0.25rem',
                       }}
                     >
-                      View full team <ChevronRight size={14} />
+                      View all <ChevronRight size={14} />
                     </button>
                   </div>
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
-                      gap: '1rem',
-                    }}
-                  >
-                    {technicians.slice(0, 5).map((tech) => (
-                      <div
-                        key={tech.id}
-                        onClick={() => router.push(`/profile/${tech.id}`)}
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          padding: '0.75rem',
-                          borderRadius: '8px',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s',
-                          border: '1px solid transparent',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#f9fafb';
-                          e.currentTarget.style.borderColor = '#EF7722';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'transparent';
-                          e.currentTarget.style.borderColor = 'transparent';
-                        }}
-                      >
-                        <div
+                  {inProgressJobs.length === 0 ? (
+                    <p
+                      style={{
+                        fontSize: '0.875rem',
+                        color: '#6b7280',
+                        margin: 0,
+                        fontStyle: 'italic',
+                      }}
+                    >
+                      No jobs in progress
+                    </p>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      {inProgressJobs.slice(0, 5).map((job) => (
+                        <button
+                          key={job.id}
+                          onClick={() => router.push(`/jobs/${job.id}`)}
                           style={{
-                            width: '48px',
-                            height: '48px',
-                            borderRadius: '50%',
-                            background: tech.avatar_url
-                              ? `url(${tech.avatar_url})`
-                              : 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-                            backgroundSize: 'cover',
                             display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: 'white',
-                            fontSize: '0.8125rem',
-                            fontWeight: '600',
-                            marginBottom: '0.5rem',
-                            border: `2px solid ${
-                              tech.status === 'active'
-                                ? '#10b981'
-                                : tech.status === 'idle'
-                                ? '#f59e0b'
-                                : '#9ca3af'
-                            }`,
+                            flexDirection: 'column',
+                            gap: '0.4rem',
+                            padding: '0.625rem',
+                            backgroundColor: '#fffbeb',
+                            borderRadius: '6px',
+                            border: '1px solid #fef3c7',
+                            cursor: 'pointer',
+                            textAlign: 'left',
+                            transition: 'all 0.2s',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = '#fef3c7';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = '#fffbeb';
                           }}
                         >
-                          {!tech.avatar_url && tech.name.charAt(0).toUpperCase()}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: '0.8125rem',
-                            fontWeight: '600',
-                            color: '#111827',
-                            marginBottom: '0.25rem',
-                            textAlign: 'center',
-                          }}
-                        >
-                          {tech.name}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: '0.75rem',
-                            color: '#6b7280',
-                            marginBottom: '0.25rem',
-                          }}
-                        >
-                          {tech.jobs_count_today} job{tech.jobs_count_today !== 1 ? 's' : ''} today
-                        </div>
-                        <div
-                          style={{
-                            fontSize: '0.6875rem',
-                            color:
-                              tech.status === 'active'
-                                ? '#10b981'
-                                : tech.status === 'idle'
-                                ? '#f59e0b'
-                                : '#9ca3af',
-                            fontWeight: '600',
-                            textTransform: 'capitalize',
-                          }}
-                        >
-                          {tech.status}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <p
-                    style={{
-                      fontSize: '0.75rem',
-                      color: '#6b7280',
-                      margin: '1rem 0 0 0',
-                      fontStyle: 'italic',
-                    }}
-                  >
-                    See who's active and who can take more jobs.
-                  </p>
+                          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div
+                                style={{
+                                  fontSize: '0.8125rem',
+                                  fontWeight: '600',
+                                  color: '#111827',
+                                  marginBottom: '0.25rem',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                {job.title}
+                              </div>
+                              <div
+                                style={{
+                                  fontSize: '0.6875rem',
+                                  color: '#6b7280',
+                                  lineHeight: '1.3',
+                                }}
+                              >
+                                {job.site?.name || 'No site'} • {new Date(job.scheduled_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} at {formatTime(job.scheduled_at)}
+                                {job.assignee && ` • ${job.assignee.name}`}
+                              </div>
+                            </div>
+                            <span
+                              style={{
+                                backgroundColor: '#fde68a',
+                                color: '#92400e',
+                                fontSize: '0.625rem',
+                                fontWeight: '600',
+                                padding: '0.125rem 0.375rem',
+                                borderRadius: '3px',
+                                whiteSpace: 'nowrap',
+                                flexShrink: 0,
+                              }}
+                            >
+                              IN PROGRESS
+                            </span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
 
-              {/* Row 4: Jobs Timeline & At-risk Jobs */}
+              {/* Row 3: Upcoming Jobs & Unassigned/At-risk Jobs */}
               <div
                 style={{
                   display: 'grid',
@@ -1019,14 +1048,13 @@ export default function DashboardPage() {
                   marginBottom: '1.5rem',
                 }}
               >
-                {/* Mini Timeline */}
+                {/* Upcoming Jobs */}
                 <div
                   style={{
                     backgroundColor: 'white',
-                    padding: '1.5rem',
-                    borderRadius: '12px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                    border: '1px solid rgba(239,119,34,0.1)',
+                    padding: '1rem',
+                    borderRadius: '10px',
+                    border: '1px solid #e5e7eb',
                   }}
                 >
                   <div
@@ -1034,21 +1062,25 @@ export default function DashboardPage() {
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      marginBottom: '1rem',
+                      marginBottom: '0.75rem',
                     }}
                   >
                     <h3
                       style={{
-                        fontSize: '1rem',
+                        fontSize: '0.9375rem',
                         fontWeight: '700',
                         color: '#111827',
                         margin: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
                       }}
                     >
+                      <Clock size={16} color="#6b7280" />
                       Upcoming Jobs
                     </h3>
                     <button
-                      onClick={() => router.push('/jobs')}
+                      onClick={() => router.push('/jobs?status=scheduled')}
                       style={{
                         fontSize: '0.8125rem',
                         color: '#EF7722',
@@ -1062,7 +1094,7 @@ export default function DashboardPage() {
                         gap: '0.25rem',
                       }}
                     >
-                      View full schedule <ChevronRight size={14} />
+                      View all <ChevronRight size={14} />
                     </button>
                   </div>
                   {timelineJobs.length === 0 ? (
@@ -1077,18 +1109,18 @@ export default function DashboardPage() {
                       No upcoming jobs
                     </p>
                   ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                      {timelineJobs.slice(0, 6).map((job) => (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      {timelineJobs.slice(0, 5).map((job) => (
                         <button
                           key={job.id}
                           onClick={() => router.push(`/jobs/${job.id}`)}
                           style={{
                             display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.75rem',
-                            padding: '0.75rem',
+                            flexDirection: 'column',
+                            gap: '0.4rem',
+                            padding: '0.625rem',
                             backgroundColor: '#f9fafb',
-                            borderRadius: '8px',
+                            borderRadius: '6px',
                             border: '1px solid #e5e7eb',
                             cursor: 'pointer',
                             textAlign: 'left',
@@ -1103,59 +1135,49 @@ export default function DashboardPage() {
                             e.currentTarget.style.borderColor = '#e5e7eb';
                           }}
                         >
-                          <Clock size={16} color="#6b7280" />
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div
-                              style={{
-                                fontSize: '0.875rem',
-                                fontWeight: '600',
-                                color: '#111827',
-                                marginBottom: '0.25rem',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                              }}
-                            >
-                              {job.title}
+                          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div
+                                style={{
+                                  fontSize: '0.8125rem',
+                                  fontWeight: '600',
+                                  color: '#111827',
+                                  marginBottom: '0.25rem',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                {job.title}
+                              </div>
+                              <div
+                                style={{
+                                  fontSize: '0.6875rem',
+                                  color: '#6b7280',
+                                  lineHeight: '1.3',
+                                }}
+                              >
+                                {job.site?.name || 'No site'} • {new Date(job.scheduled_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} at {formatTime(job.scheduled_at)}
+                                {job.assignee && ` • ${job.assignee.name}`}
+                              </div>
                             </div>
-                            <div
-                              style={{
-                                fontSize: '0.75rem',
-                                color: '#6b7280',
-                              }}
-                            >
-                              {job.site?.name || 'No site'} • {formatTime(job.scheduled_at)}
-                              {job.assignee && ` • ${job.assignee.name}`}
-                            </div>
+                            {job.eta_status === 'at-risk' && (
+                              <span
+                                style={{
+                                  backgroundColor: '#fde68a',
+                                  color: '#92400e',
+                                  fontSize: '0.625rem',
+                                  fontWeight: '600',
+                                  padding: '0.125rem 0.375rem',
+                                  borderRadius: '3px',
+                                  whiteSpace: 'nowrap',
+                                  flexShrink: 0,
+                                }}
+                              >
+                                AT RISK
+                              </span>
+                            )}
                           </div>
-                          {job.eta_status === 'at-risk' && (
-                            <span
-                              style={{
-                                fontSize: '0.6875rem',
-                                color: '#f59e0b',
-                                fontWeight: '600',
-                                backgroundColor: '#fef3c7',
-                                padding: '0.25rem 0.5rem',
-                                borderRadius: '4px',
-                              }}
-                            >
-                              At-risk
-                            </span>
-                          )}
-                          {job.eta_status === 'late' && (
-                            <span
-                              style={{
-                                fontSize: '0.6875rem',
-                                color: '#ef4444',
-                                fontWeight: '600',
-                                backgroundColor: '#fee2e2',
-                                padding: '0.25rem 0.5rem',
-                                borderRadius: '4px',
-                              }}
-                            >
-                              Late
-                            </span>
-                          )}
                         </button>
                       ))}
                     </div>
@@ -1166,280 +1188,35 @@ export default function DashboardPage() {
                 <div
                   style={{
                     backgroundColor: 'white',
-                    padding: '1.5rem',
-                    borderRadius: '12px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                    border: '1px solid rgba(239,119,34,0.1)',
+                    padding: '1rem',
+                    borderRadius: '10px',
+                    border: '1px solid #e5e7eb',
                   }}
                 >
-                  <h3
-                    style={{
-                      fontSize: '1rem',
-                      fontWeight: '700',
-                      color: '#111827',
-                      margin: '0 0 1rem 0',
-                    }}
-                  >
-                    Unassigned & At-risk Jobs
-                  </h3>
-                  {unassignedJobs.length === 0 && atRiskJobs.length === 0 ? (
-                    <p
-                      style={{
-                        fontSize: '0.875rem',
-                        color: '#6b7280',
-                        margin: 0,
-                        fontStyle: 'italic',
-                      }}
-                    >
-                      No unassigned or at-risk jobs
-                    </p>
-                  ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                      {unassignedJobs.slice(0, 5).map((job) => (
-                        <button
-                          key={job.id}
-                          onClick={() => router.push(`/jobs/${job.id}`)}
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            padding: '0.75rem',
-                            backgroundColor: '#fffbeb',
-                            borderRadius: '8px',
-                            border: '1px solid #fef3c7',
-                            cursor: 'pointer',
-                            textAlign: 'left',
-                            transition: 'all 0.2s',
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = '#fef3c7';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = '#fffbeb';
-                          }}
-                        >
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div
-                              style={{
-                                fontSize: '0.875rem',
-                                fontWeight: '600',
-                                color: '#111827',
-                                marginBottom: '0.25rem',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                              }}
-                            >
-                              {job.title}
-                            </div>
-                            <div
-                              style={{
-                                fontSize: '0.75rem',
-                                color: '#6b7280',
-                              }}
-                            >
-                              {job.site?.name || 'No site'} • {formatTime(job.scheduled_at)}
-                            </div>
-                          </div>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              router.push(`/jobs/${job.id}?action=assign`);
-                            }}
-                            style={{
-                              fontSize: '0.75rem',
-                              color: '#EF7722',
-                              fontWeight: '600',
-                              background: 'white',
-                              border: '1px solid #EF7722',
-                              borderRadius: '6px',
-                              padding: '0.5rem 0.75rem',
-                              cursor: 'pointer',
-                            }}
-                          >
-                            Assign
-                          </button>
-                        </button>
-                      ))}
-                      {atRiskJobs.slice(0, 5).map((job) => (
-                        <button
-                          key={job.id}
-                          onClick={() => router.push(`/jobs/${job.id}`)}
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            padding: '0.75rem',
-                            backgroundColor: '#fef2f2',
-                            borderRadius: '8px',
-                            border: '1px solid #fee2e2',
-                            cursor: 'pointer',
-                            textAlign: 'left',
-                            transition: 'all 0.2s',
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = '#fee2e2';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = '#fef2f2';
-                          }}
-                        >
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div
-                              style={{
-                                fontSize: '0.875rem',
-                                fontWeight: '600',
-                                color: '#111827',
-                                marginBottom: '0.25rem',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                              }}
-                            >
-                              {job.title}
-                            </div>
-                            <div
-                              style={{
-                                fontSize: '0.75rem',
-                                color: '#6b7280',
-                              }}
-                            >
-                              {job.site?.name || 'No site'} • {formatTime(job.scheduled_at)}
-                            </div>
-                          </div>
-                          <span
-                            style={{
-                              fontSize: '0.6875rem',
-                              color: '#ef4444',
-                              fontWeight: '600',
-                              backgroundColor: '#fee2e2',
-                              padding: '0.25rem 0.5rem',
-                              borderRadius: '4px',
-                            }}
-                          >
-                            At-risk
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Row 5: Recent Activity Feed */}
-              {activities.length > 0 && (
-                <div
-                  style={{
-                    backgroundColor: 'white',
-                    padding: '1.5rem',
-                    borderRadius: '12px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                    border: '1px solid rgba(239,119,34,0.1)',
-                    marginBottom: '1.5rem',
-                  }}
-                >
-                  <h3
-                    style={{
-                      fontSize: '1rem',
-                      fontWeight: '700',
-                      color: '#111827',
-                      margin: '0 0 1rem 0',
-                    }}
-                  >
-                    Recent Activity
-                  </h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                    {activities.slice(0, 10).map((activity) => (
-                      <button
-                        key={activity.id}
-                        onClick={() => activity.link && router.push(activity.link)}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'flex-start',
-                          gap: '0.75rem',
-                          padding: '0.75rem',
-                          backgroundColor: '#f9fafb',
-                          borderRadius: '8px',
-                          border: '1px solid #e5e7eb',
-                          cursor: activity.link ? 'pointer' : 'default',
-                          textAlign: 'left',
-                          transition: 'all 0.2s',
-                        }}
-                        onMouseEnter={(e) => {
-                          if (activity.link) {
-                            e.currentTarget.style.backgroundColor = '#fff5ed';
-                            e.currentTarget.style.borderColor = '#EF7722';
-                          }
-                        }}
-                        onMouseLeave={(e) => {
-                          if (activity.link) {
-                            e.currentTarget.style.backgroundColor = '#f9fafb';
-                            e.currentTarget.style.borderColor = '#e5e7eb';
-                          }
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: '32px',
-                            height: '32px',
-                            borderRadius: '50%',
-                            backgroundColor: '#EF7722',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            flexShrink: 0,
-                          }}
-                        >
-                          {activity.type === 'job_completed' && <CheckCircle2 size={16} color="white" />}
-                          {activity.type === 'job_created' && <Plus size={16} color="white" />}
-                          {activity.type === 'client_added' && <Building2 size={16} color="white" />}
-                          {activity.type === 'technician_added' && <Users size={16} color="white" />}
-                          {activity.type === 'proof_uploaded' && <FileCheck size={16} color="white" />}
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div
-                            style={{
-                              fontSize: '0.875rem',
-                              fontWeight: '600',
-                              color: '#111827',
-                              marginBottom: '0.25rem',
-                            }}
-                          >
-                            {activity.title}
-                          </div>
-                          <div
-                            style={{
-                              fontSize: '0.75rem',
-                              color: '#6b7280',
-                            }}
-                          >
-                            {activity.description}
-                          </div>
-                          <div
-                            style={{
-                              fontSize: '0.6875rem',
-                              color: '#9ca3af',
-                              marginTop: '0.25rem',
-                            }}
-                          >
-                            {formatRelativeTime(activity.timestamp)}
-                            {activity.user && ` • ${activity.user.name}`}
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
                   <div
                     style={{
                       display: 'flex',
-                      justifyContent: 'flex-end',
-                      marginTop: '1rem',
-                      paddingTop: '1rem',
-                      borderTop: '1px solid #e5e7eb',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '0.75rem',
                     }}
                   >
+                    <h3
+                      style={{
+                        fontSize: '0.9375rem',
+                        fontWeight: '700',
+                        color: '#111827',
+                        margin: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                      }}
+                    >
+                      <AlertTriangle size={16} color="#f59e0b" />
+                      Unassigned & At-risk Jobs
+                    </h3>
                     <button
-                      onClick={() => router.push('/jobs')}
+                      onClick={() => router.push('/jobs?filter=unassigned_or_atrisk')}
                       style={{
                         fontSize: '0.8125rem',
                         color: '#EF7722',
@@ -1453,8 +1230,308 @@ export default function DashboardPage() {
                         gap: '0.25rem',
                       }}
                     >
-                      <Sparkles size={14} /> Last sync: Just now
+                      View all <ChevronRight size={14} />
                     </button>
+                  </div>
+                  {unassignedJobs.length === 0 && atRiskJobs.length === 0 ? (
+                    <p
+                      style={{
+                        fontSize: '0.875rem',
+                        color: '#6b7280',
+                        margin: 0,
+                        fontStyle: 'italic',
+                      }}
+                    >
+                      No unassigned or at-risk jobs
+                    </p>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      {[...unassignedJobs.slice(0, 3), ...atRiskJobs.slice(0, 2)].slice(0, 5).map((job) => {
+                        const isUnassigned = unassignedJobs.includes(job as AtRiskJob);
+                        return (
+                          <button
+                            key={job.id}
+                            onClick={() => router.push(`/jobs/${job.id}`)}
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '0.4rem',
+                              padding: '0.625rem',
+                              backgroundColor: isUnassigned ? '#fffbeb' : '#fef2f2',
+                              borderRadius: '6px',
+                              border: `1px solid ${isUnassigned ? '#fef3c7' : '#fee2e2'}`,
+                              cursor: 'pointer',
+                              textAlign: 'left',
+                              transition: 'all 0.2s',
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = isUnassigned ? '#fef3c7' : '#fee2e2';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = isUnassigned ? '#fffbeb' : '#fef2f2';
+                            }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div
+                                  style={{
+                                    fontSize: '0.8125rem',
+                                    fontWeight: '600',
+                                    color: '#111827',
+                                    marginBottom: '0.25rem',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                  }}
+                                >
+                                  {job.title}
+                                </div>
+                                <div
+                                  style={{
+                                    fontSize: '0.6875rem',
+                                    color: '#6b7280',
+                                    lineHeight: '1.3',
+                                  }}
+                                >
+                                  {job.site?.name || 'No site'} • {new Date(job.scheduled_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} at {formatTime(job.scheduled_at)}
+                                </div>
+                              </div>
+                              <span
+                                style={{
+                                  fontSize: '0.625rem',
+                                  color: isUnassigned ? '#92400e' : '#991b1b',
+                                  fontWeight: '600',
+                                  backgroundColor: isUnassigned ? '#fde68a' : '#fecaca',
+                                  padding: '0.125rem 0.375rem',
+                                  borderRadius: '3px',
+                                  whiteSpace: 'nowrap',
+                                  flexShrink: 0,
+                                }}
+                              >
+                                {isUnassigned ? 'UNASSIGNED' : 'AT RISK'}
+                              </span>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Row 4: Recent Activity Table */}
+              {activities.length > 0 && (
+                <div
+                  style={{
+                    backgroundColor: 'white',
+                    padding: '1rem',
+                    borderRadius: '10px',
+                    border: '1px solid #e5e7eb',
+                    marginBottom: '1.5rem',
+                  }}
+                >
+                  <h3
+                    style={{
+                      fontSize: '0.9375rem',
+                      fontWeight: '700',
+                      color: '#111827',
+                      margin: '0 0 0.75rem 0',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                    }}
+                  >
+                    <Sparkles size={16} color="#EF7722" />
+                    Recent Activity
+                  </h3>
+                  <div style={{ overflowX: 'auto' }}>
+                    <table
+                      style={{
+                        width: '100%',
+                        borderCollapse: 'collapse',
+                        fontSize: '0.8125rem',
+                      }}
+                    >
+                      <thead>
+                        <tr
+                          style={{
+                            borderBottom: '2px solid #e5e7eb',
+                          }}
+                        >
+                          <th
+                            style={{
+                              textAlign: 'left',
+                              padding: '0.5rem 0.375rem',
+                              fontWeight: '600',
+                              color: '#6b7280',
+                              fontSize: '0.6875rem',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.05em',
+                            }}
+                          >
+                            Type
+                          </th>
+                          <th
+                            style={{
+                              textAlign: 'left',
+                              padding: '0.5rem 0.375rem',
+                              fontWeight: '600',
+                              color: '#6b7280',
+                              fontSize: '0.6875rem',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.05em',
+                            }}
+                          >
+                            Action
+                          </th>
+                          <th
+                            style={{
+                              textAlign: 'left',
+                              padding: '0.5rem 0.375rem',
+                              fontWeight: '600',
+                              color: '#6b7280',
+                              fontSize: '0.6875rem',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.05em',
+                            }}
+                          >
+                            Details
+                          </th>
+                          <th
+                            style={{
+                              textAlign: 'left',
+                              padding: '0.5rem 0.375rem',
+                              fontWeight: '600',
+                              color: '#6b7280',
+                              fontSize: '0.6875rem',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.05em',
+                              width: '100px',
+                            }}
+                          >
+                            Time
+                          </th>
+                          <th
+                            style={{
+                              textAlign: 'left',
+                              padding: '0.5rem 0.375rem',
+                              fontWeight: '600',
+                              color: '#6b7280',
+                              fontSize: '0.6875rem',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.05em',
+                            }}
+                          >
+                            User
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {activities.slice(0, 10).map((activity, index) => (
+                          <tr
+                            key={activity.id}
+                            onClick={() => activity.link && router.push(activity.link)}
+                            style={{
+                              borderBottom: index < 9 ? '1px solid #f3f4f6' : 'none',
+                              cursor: activity.link ? 'pointer' : 'default',
+                              transition: 'background-color 0.2s',
+                            }}
+                            onMouseEnter={(e) => {
+                              if (activity.link) {
+                                e.currentTarget.style.backgroundColor = '#fff5ed';
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              if (activity.link) {
+                                e.currentTarget.style.backgroundColor = 'transparent';
+                              }
+                            }}
+                          >
+                            <td
+                              style={{
+                                padding: '0.625rem 0.375rem',
+                                verticalAlign: 'middle',
+                              }}
+                            >
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '0.375rem',
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    width: '28px',
+                                    height: '28px',
+                                    borderRadius: '5px',
+                                    backgroundColor: '#fff5ed',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    flexShrink: 0,
+                                  }}
+                                >
+                                  {activity.type === 'job_completed' && <CheckCircle2 size={14} color="#10b981" />}
+                                  {activity.type === 'job_created' && <Plus size={14} color="#EF7722" />}
+                                  {activity.type === 'client_added' && <Building2 size={14} color="#6366f1" />}
+                                  {activity.type === 'technician_added' && <Users size={14} color="#f59e0b" />}
+                                  {activity.type === 'proof_uploaded' && <FileCheck size={14} color="#8b5cf6" />}
+                                </div>
+                              </div>
+                            </td>
+                            <td
+                              style={{
+                                padding: '0.625rem 0.375rem',
+                                fontWeight: '600',
+                                color: '#111827',
+                                verticalAlign: 'middle',
+                              }}
+                            >
+                              {activity.title}
+                            </td>
+                            <td
+                              style={{
+                                padding: '0.625rem 0.375rem',
+                                color: '#6b7280',
+                                verticalAlign: 'middle',
+                                maxWidth: '300px',
+                              }}
+                            >
+                              <div
+                                style={{
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                {activity.description}
+                              </div>
+                            </td>
+                            <td
+                              style={{
+                                padding: '0.625rem 0.375rem',
+                                color: '#9ca3af',
+                                fontSize: '0.75rem',
+                                verticalAlign: 'middle',
+                              }}
+                            >
+                              {formatRelativeTime(activity.timestamp)}
+                            </td>
+                            <td
+                              style={{
+                                padding: '0.625rem 0.375rem',
+                                color: '#6b7280',
+                                fontSize: '0.75rem',
+                                verticalAlign: 'middle',
+                              }}
+                            >
+                              {activity.user?.name || '-'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               )}

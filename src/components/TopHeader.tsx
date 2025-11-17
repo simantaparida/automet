@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { Search, User, LogOut } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommandPalette } from '@/hooks/useCommandPalette';
-import RoleSwitch from '@/components/RoleSwitch';
 
 interface TopHeaderProps {
   onSearchFocus?: () => void;
@@ -11,7 +10,7 @@ interface TopHeaderProps {
 
 export default function TopHeader({ onSearchFocus }: TopHeaderProps) {
   const router = useRouter();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const { open: openCommandPalette } = useCommandPalette();
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -24,11 +23,6 @@ export default function TopHeader({ onSearchFocus }: TopHeaderProps) {
     } else {
       openCommandPalette();
     }
-  };
-
-  const handleSignOut = async () => {
-    await signOut();
-    router.push('/onboarding/welcome');
   };
 
   return (
@@ -183,9 +177,6 @@ export default function TopHeader({ onSearchFocus }: TopHeaderProps) {
           justifyContent: 'flex-end',
         }}
       >
-        {/* Role Switch */}
-        <RoleSwitch />
-
         {/* User Profile with Username */}
         <div
           style={{
@@ -244,37 +235,6 @@ export default function TopHeader({ onSearchFocus }: TopHeaderProps) {
             </span>
           </div>
         </div>
-
-        {/* Sign Out Button */}
-        <button
-          onClick={handleSignOut}
-          style={{
-            width: '40px',
-            height: '40px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            border: '1px solid #e5e7eb',
-            background: 'white',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            color: '#6b7280',
-            transition: 'all 0.2s',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = '#EF7722';
-            e.currentTarget.style.color = '#EF7722';
-            e.currentTarget.style.backgroundColor = '#fff5ed';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = '#e5e7eb';
-            e.currentTarget.style.color = '#6b7280';
-            e.currentTarget.style.backgroundColor = 'white';
-          }}
-          aria-label="Sign out"
-        >
-          <LogOut size={18} />
-        </button>
       </div>
     </header>
   );

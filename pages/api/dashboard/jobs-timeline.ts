@@ -49,7 +49,7 @@ export default async function handler(
 
     const nowIso = new Date().toISOString();
 
-    // Upcoming jobs: scheduled or in_progress starting from now
+    // Upcoming jobs: scheduled or in_progress
     const { data: upcomingJobs, error: upcomingError } = await typed
       .from('jobs')
       .select(
@@ -59,20 +59,16 @@ export default async function handler(
         scheduled_at,
         priority,
         status,
-        site:sites ( id, name ),
-        job_assignments:job_assignments (
+        site_id,
+        job_assignments (
           user:users ( id, full_name, email )
         )
       `
       )
       .eq('org_id', user.org_id!)
-      .in(
-        'status',
-        ['scheduled', 'in_progress'] as Database['public']['Enums']['JobStatus'][]
-      )
-      .gte('scheduled_at', nowIso)
-      .order('scheduled_at', { ascending: true })
-      .limit(25);
+      .in('status', ['scheduled', 'in_progress'])
+      .order('scheduled_at', { ascending: true, nullsFirst: false })
+      .limit(50);
 
     if (upcomingError) {
       throw upcomingError;
@@ -83,6 +79,24 @@ export default async function handler(
     const atRisk: AtRiskJob[] = [];
 
     const now = new Date();
+
+    // Fetch all sites for the org to avoid null issues with joins
+    const { data: allSites, error: sitesError } = await typed
+      .from('sites')
+      .select('id, name')
+      .eq('org_id', user.org_id!);
+
+    if (sitesError) {
+      logError('Error fetching sites', sitesError);
+    }
+
+    // Create a map of site_id -> site for quick lookup
+    const sitesMap = new Map<string, { id: string; name: string }>();
+    if (allSites) {
+      for (const site of allSites) {
+        sitesMap.set(site.id, { id: site.id, name: site.name });
+      }
+    }
 
     if (upcomingJobs) {
       for (const job of upcomingJobs as any[]) {
@@ -108,11 +122,16 @@ export default async function handler(
         const primaryAssignment =
           assignments && assignments.length > 0 ? assignments[0] : null;
 
+        // Get site data from the map
+        const siteData = job.site_id && sitesMap.has(job.site_id)
+          ? sitesMap.get(job.site_id)!
+          : null;
+
         upcoming.push({
           id: job.id,
           title: job.title,
           scheduled_at: job.scheduled_at,
-          site: job.site ? { id: job.site.id, name: job.site.name } : null,
+          site: siteData,
           assignee: primaryAssignment
             ? {
                 id: primaryAssignment.user.id,
@@ -129,7 +148,7 @@ export default async function handler(
             id: job.id,
             title: job.title,
             scheduled_at: job.scheduled_at,
-            site: job.site ? { id: job.site.id, name: job.site.name } : null,
+            site: siteData,
             priority: job.priority,
           });
         }
@@ -139,7 +158,7 @@ export default async function handler(
             id: job.id,
             title: job.title,
             scheduled_at: job.scheduled_at,
-            site: job.site ? { id: job.site.id, name: job.site.name } : null,
+            site: siteData,
             priority: job.priority,
           });
         }

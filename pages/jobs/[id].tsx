@@ -442,6 +442,11 @@ export default function JobDetailPage() {
         .desktop-header {
           display: none;
         }
+        .info-cards-grid {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
         @media (min-width: 768px) {
           .detail-container {
             margin-left: 260px;
@@ -456,6 +461,11 @@ export default function JobDetailPage() {
           }
           .desktop-header {
             display: block;
+          }
+          .info-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
           }
         }
       `}</style>
@@ -604,56 +614,158 @@ export default function JobDetailPage() {
           </div>
         </header>
 
-        {/* Status Actions Banner */}
-        {job.status !== 'completed' && job.status !== 'cancelled' && (
-          <div
-            style={{
-              padding: '1rem',
-              backgroundColor: 'white',
-              borderBottom: '8px solid #f5f5f5',
-            }}
-          >
+        {/* Main Content */}
+        <main className="main-content-area" style={{ padding: '1rem 1rem 0 1rem' }}>
+          {/* Desktop: Page Header with Title, Subtitle, and Action Buttons */}
+          <div className="desktop-header" style={{ padding: '1.5rem 2rem 0.75rem 2rem' }}>
+            {/* Title and Subtitle - Reduced spacing */}
+            <div style={{ marginBottom: '0.5rem' }}>
+              <h1
+                style={{
+                  fontSize: '1.75rem',
+                  fontWeight: '700',
+                  margin: 0,
+                  color: '#1f2937',
+                  marginBottom: '0.25rem',
+                }}
+              >
+                {job.title}
+              </h1>
+              {job.description && (
+                <p
+                  style={{
+                    fontSize: '0.9375rem',
+                    color: '#6b7280',
+                    lineHeight: '1.4',
+                    margin: 0,
+                  }}
+                >
+                  {job.description}
+                </p>
+              )}
+            </div>
+
+            {/* Action Buttons in One Line */}
             <div
               style={{
                 display: 'flex',
-                flexDirection: 'column',
+                alignItems: 'center',
                 gap: '0.75rem',
+                flexWrap: 'wrap',
+                marginTop: '1rem',
+                paddingBottom: '0.75rem',
+                borderBottom: '1px solid #e5e7eb',
               }}
             >
+              {/* Edit and Delete on the left */}
+              {activeRole !== 'technician' && (
+                <>
+                  <button
+                    onClick={() => router.push(`/jobs/${id}/edit`)}
+                    style={{
+                      padding: '0.625rem 1rem',
+                      backgroundColor: 'white',
+                      color: '#EF7722',
+                      border: '2px solid #EF7722',
+                      borderRadius: '8px',
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      minHeight: '40px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem',
+                      transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#fff5ed';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'white';
+                    }}
+                  >
+                    <Edit size={16} />
+                    Edit
+                  </button>
+                  <button
+                    onClick={deleteJob}
+                    style={{
+                      padding: '0.625rem 1rem',
+                      backgroundColor: 'white',
+                      color: '#ef4444',
+                      border: '2px solid #ef4444',
+                      borderRadius: '8px',
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      minHeight: '40px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem',
+                      transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#fef2f2';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'white';
+                    }}
+                  >
+                    <Trash2 size={16} />
+                    Delete
+                  </button>
+                </>
+              )}
+
+              {/* Divider */}
+              {activeRole !== 'technician' && (
+                <div
+                  style={{
+                    width: '1px',
+                    height: '32px',
+                    backgroundColor: '#e5e7eb',
+                    margin: '0 0.25rem',
+                  }}
+                />
+              )}
+
+              {/* Status action buttons */}
               {job.status === 'scheduled' && (
                 <button
                   onClick={() => updateJobStatus('in_progress')}
                   disabled={updating}
                   style={{
-                    padding: '1rem',
-                    background: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
+                    padding: '0.625rem 1.25rem',
+                    background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
                     color: 'white',
                     border: 'none',
-                    borderRadius: '12px',
-                    fontSize: '1rem',
-                    fontWeight: '700',
+                    borderRadius: '8px',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
                     cursor: updating ? 'not-allowed' : 'pointer',
-                    minHeight: '52px',
+                    minHeight: '40px',
                     opacity: updating ? 0.6 : 1,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '0.5rem',
-                    boxShadow: '0 4px 12px rgba(245,158,11,0.3)',
+                    boxShadow: '0 2px 8px rgba(239,119,34,0.25)',
                     transition: 'all 0.2s',
                   }}
                   onMouseEnter={(e) => {
                     if (!updating) {
                       e.currentTarget.style.transform = 'translateY(-1px)';
-                      e.currentTarget.style.boxShadow = '0 6px 16px rgba(245,158,11,0.4)';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
                     }
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(245,158,11,0.3)';
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
                   }}
                 >
-                  <Play size={20} />
+                  <Play size={16} />
                   {updating ? 'Starting...' : 'Start Job'}
                 </button>
               )}
@@ -662,302 +774,457 @@ export default function JobDetailPage() {
                   onClick={() => updateJobStatus('completed')}
                   disabled={updating}
                   style={{
-                    padding: '1rem',
+                    padding: '0.625rem 1.25rem',
                     background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
                     color: 'white',
                     border: 'none',
-                    borderRadius: '12px',
-                    fontSize: '1rem',
-                    fontWeight: '700',
+                    borderRadius: '8px',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
                     cursor: updating ? 'not-allowed' : 'pointer',
-                    minHeight: '52px',
+                    minHeight: '40px',
                     opacity: updating ? 0.6 : 1,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '0.5rem',
-                    boxShadow: '0 4px 12px rgba(16,185,129,0.3)',
+                    boxShadow: '0 2px 8px rgba(16,185,129,0.25)',
                     transition: 'all 0.2s',
                   }}
                   onMouseEnter={(e) => {
                     if (!updating) {
                       e.currentTarget.style.transform = 'translateY(-1px)';
-                      e.currentTarget.style.boxShadow = '0 6px 16px rgba(16,185,129,0.4)';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(16,185,129,0.3)';
                     }
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(16,185,129,0.3)';
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(16,185,129,0.25)';
                   }}
                 >
-                  <CheckCircle2 size={20} />
-                  {updating ? 'Completing...' : 'Mark Completed'}
+                  <CheckCircle2 size={16} />
+                  {updating ? 'Completing...' : 'Mark as Complete'}
                 </button>
               )}
-              <button
-                onClick={() => updateJobStatus('cancelled')}
-                disabled={updating}
-                style={{
-                  padding: '0.75rem',
-                  backgroundColor: 'white',
-                  color: '#ef4444',
-                  border: '1px solid #ef4444',
-                  borderRadius: '8px',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  cursor: updating ? 'not-allowed' : 'pointer',
-                  minHeight: '44px',
-                  opacity: updating ? 0.6 : 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.5rem',
-                }}
-              >
-                <XCircle size={18} />
-                Cancel Job
-              </button>
+              {job.status !== 'completed' && job.status !== 'cancelled' && (
+                <button
+                  onClick={() => updateJobStatus('cancelled')}
+                  disabled={updating}
+                  style={{
+                    padding: '0.625rem 1rem',
+                    backgroundColor: 'white',
+                    color: '#ef4444',
+                    border: '1px solid #ef4444',
+                    borderRadius: '8px',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    cursor: updating ? 'not-allowed' : 'pointer',
+                    minHeight: '40px',
+                    opacity: updating ? 0.6 : 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  <XCircle size={16} />
+                  Cancel Job
+                </button>
+              )}
+
+              {/* Contact and Navigation Actions */}
+              {job.client?.contact_phone && (
+                <button
+                  onClick={handleCall}
+                  style={{
+                    padding: '0.625rem 1rem',
+                    backgroundColor: 'white',
+                    color: '#10b981',
+                    border: '1px solid #10b981',
+                    borderRadius: '8px',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    minHeight: '40px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#f0fdf4';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'white';
+                  }}
+                >
+                  <Phone size={16} />
+                  Call
+                </button>
+              )}
+              {job.client?.contact_email && (
+                <button
+                  onClick={handleEmail}
+                  style={{
+                    padding: '0.625rem 1rem',
+                    backgroundColor: 'white',
+                    color: '#2563eb',
+                    border: '1px solid #2563eb',
+                    borderRadius: '8px',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    minHeight: '40px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#eff6ff';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'white';
+                  }}
+                >
+                  <Mail size={16} />
+                  Email
+                </button>
+              )}
+              {(job.site?.gps_lat || job.site?.address) && (
+                <button
+                  onClick={handleNavigate}
+                  style={{
+                    padding: '0.625rem 1rem',
+                    backgroundColor: 'white',
+                    color: '#2563eb',
+                    border: '1px solid #2563eb',
+                    borderRadius: '8px',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    minHeight: '40px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem',
+                    transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#eff6ff';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'white';
+                  }}
+                >
+                  <Navigation size={16} />
+                  Navigate
+                </button>
+              )}
             </div>
           </div>
-        )}
 
-        {/* Quick Actions */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-            gap: '0.75rem',
-            padding: '1rem',
-            backgroundColor: 'white',
-            borderBottom: '1px solid rgba(239,119,34,0.1)',
-          }}
-        >
-          {activeRole !== 'technician' && (
-            <button
-              onClick={() => router.push(`/jobs/${id}/edit`)}
-              style={{
-                padding: '0.75rem',
-                backgroundColor: '#f9fafb',
-                color: '#1f2937',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.375rem',
-                minHeight: '72px',
-                transition: 'all 0.2s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#f3f4f6';
-                e.currentTarget.style.borderColor = '#d1d5db';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#f9fafb';
-                e.currentTarget.style.borderColor = '#e5e7eb';
-              }}
-            >
-              <Edit size={20} color="#1f2937" />
-              <span>Edit</span>
-            </button>
-          )}
-          {job.client?.contact_phone && (
-            <button
-              onClick={handleCall}
-              style={{
-                padding: '0.75rem',
-                backgroundColor: '#f0fdf4',
-                color: '#10b981',
-                border: '1px solid #86efac',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.375rem',
-                minHeight: '72px',
-                transition: 'all 0.2s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#dcfce7';
-                e.currentTarget.style.borderColor = '#4ade80';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#f0fdf4';
-                e.currentTarget.style.borderColor = '#86efac';
-              }}
-            >
-              <Phone size={20} color="#10b981" />
-              <span>Call</span>
-            </button>
-          )}
-          {job.client?.contact_email && (
-            <button
-              onClick={handleEmail}
-              style={{
-                padding: '0.75rem',
-                backgroundColor: '#eff6ff',
-                color: '#2563eb',
-                border: '1px solid #93c5fd',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.375rem',
-                minHeight: '72px',
-                transition: 'all 0.2s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#dbeafe';
-                e.currentTarget.style.borderColor = '#60a5fa';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#eff6ff';
-                e.currentTarget.style.borderColor = '#93c5fd';
-              }}
-            >
-              <Mail size={20} color="#2563eb" />
-              <span>Email</span>
-            </button>
-          )}
-          {(job.site?.gps_lat || job.site?.address) && (
-            <button
-              onClick={handleNavigate}
-              style={{
-                padding: '0.75rem',
-                backgroundColor: '#eff6ff',
-                color: '#2563eb',
-                border: '1px solid #93c5fd',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.375rem',
-                minHeight: '72px',
-                transition: 'all 0.2s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#dbeafe';
-                e.currentTarget.style.borderColor = '#60a5fa';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#eff6ff';
-                e.currentTarget.style.borderColor = '#93c5fd';
-              }}
-            >
-              <Navigation size={20} color="#2563eb" />
-              <span>Navigate</span>
-            </button>
-          )}
-        </div>
-
-        {/* Main Content */}
-        <main className="main-content-area" style={{ padding: '1rem' }}>
-          {/* Job Info Card */}
-          <div
-            style={{
-              backgroundColor: 'white',
-              padding: '1.5rem',
-              marginBottom: '0.5rem',
-              borderRadius: '12px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-              border: '1px solid rgba(239,119,34,0.1)',
-            }}
-          >
+          {/* Mobile: Keep original mobile layout */}
+          <div className="mobile-header">
+            {/* Job Info Card */}
             <div
               style={{
-                display: 'flex',
-                alignItems: 'start',
-                justifyContent: 'space-between',
-                marginBottom: '1rem',
+                backgroundColor: 'white',
+                padding: '1.5rem',
+                marginBottom: '0.5rem',
+                borderRadius: '12px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                border: '1px solid rgba(239,119,34,0.1)',
               }}
             >
-              <h2
-                style={{
-                  fontSize: '1.5rem',
-                  fontWeight: '700',
-                  margin: 0,
-                  color: '#1f2937',
-                  flex: 1,
-                }}
-              >
-                {job.title}
-              </h2>
               <div
                 style={{
                   display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.5rem 0.75rem',
-                  backgroundColor: priorityConfig.color + '15',
-                  borderRadius: '8px',
+                  alignItems: 'start',
+                  justifyContent: 'space-between',
+                  marginBottom: '1rem',
                 }}
               >
-                <PriorityIcon size={16} color={priorityConfig.color} />
-                <span
+                <h2
                   style={{
-                    fontSize: '0.75rem',
-                    fontWeight: '600',
-                    color: priorityConfig.color,
-                    textTransform: 'uppercase',
+                    fontSize: '1.5rem',
+                    fontWeight: '700',
+                    margin: 0,
+                    color: '#1f2937',
+                    flex: 1,
                   }}
                 >
-                  {priorityConfig.label}
-                </span>
+                  {job.title}
+                </h2>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    padding: '0.5rem 0.75rem',
+                    backgroundColor: priorityConfig.color + '15',
+                    borderRadius: '8px',
+                  }}
+                >
+                  <PriorityIcon size={16} color={priorityConfig.color} />
+                  <span
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: '600',
+                      color: priorityConfig.color,
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {priorityConfig.label}
+                  </span>
+                </div>
               </div>
+              {job.description && (
+                <p
+                  style={{
+                    fontSize: '0.9375rem',
+                    color: '#6b7280',
+                    lineHeight: '1.6',
+                    margin: 0,
+                  }}
+                >
+                  {job.description}
+                </p>
+              )}
             </div>
-            {job.description && (
-              <p
+
+            {/* Mobile Status Actions */}
+            {job.status !== 'completed' && job.status !== 'cancelled' && (
+              <div
                 style={{
-                  fontSize: '0.9375rem',
-                  color: '#6b7280',
-                  lineHeight: '1.6',
-                  margin: 0,
+                  padding: '1rem',
+                  backgroundColor: 'white',
+                  borderBottom: '8px solid #f5f5f5',
                 }}
               >
-                {job.description}
-              </p>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.75rem',
+                  }}
+                >
+                  {job.status === 'scheduled' && (
+                    <button
+                      onClick={() => updateJobStatus('in_progress')}
+                      disabled={updating}
+                      style={{
+                        padding: '1rem',
+                        background: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '12px',
+                        fontSize: '1rem',
+                        fontWeight: '700',
+                        cursor: updating ? 'not-allowed' : 'pointer',
+                        minHeight: '52px',
+                        opacity: updating ? 0.6 : 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.5rem',
+                        boxShadow: '0 4px 12px rgba(245,158,11,0.3)',
+                      }}
+                    >
+                      <Play size={20} />
+                      {updating ? 'Starting...' : 'Start Job'}
+                    </button>
+                  )}
+                  {job.status === 'in_progress' && (
+                    <button
+                      onClick={() => updateJobStatus('completed')}
+                      disabled={updating}
+                      style={{
+                        padding: '1rem',
+                        background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '12px',
+                        fontSize: '1rem',
+                        fontWeight: '700',
+                        cursor: updating ? 'not-allowed' : 'pointer',
+                        minHeight: '52px',
+                        opacity: updating ? 0.6 : 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.5rem',
+                        boxShadow: '0 4px 12px rgba(16,185,129,0.3)',
+                      }}
+                    >
+                      <CheckCircle2 size={20} />
+                      {updating ? 'Completing...' : 'Mark Completed'}
+                    </button>
+                  )}
+                  <button
+                    onClick={() => updateJobStatus('cancelled')}
+                    disabled={updating}
+                    style={{
+                      padding: '0.75rem',
+                      backgroundColor: 'white',
+                      color: '#ef4444',
+                      border: '1px solid #ef4444',
+                      borderRadius: '8px',
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      cursor: updating ? 'not-allowed' : 'pointer',
+                      minHeight: '44px',
+                      opacity: updating ? 0.6 : 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem',
+                    }}
+                  >
+                    <XCircle size={18} />
+                    Cancel Job
+                  </button>
+                </div>
+              </div>
             )}
-          </div>
 
-          {/* Status & Schedule Card */}
-          <div
-            style={{
-              backgroundColor: 'white',
-              padding: '1.5rem',
-              marginBottom: '0.5rem',
-              borderRadius: '12px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-              border: '1px solid rgba(239,119,34,0.1)',
-            }}
-          >
-            <h3
+            {/* Mobile Quick Actions */}
+            <div
               style={{
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                color: '#6b7280',
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                marginBottom: '1rem',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+                gap: '0.75rem',
+                padding: '1rem',
+                backgroundColor: 'white',
+                borderBottom: '1px solid rgba(239,119,34,0.1)',
               }}
             >
-              Status & Schedule
-            </h3>
+              {activeRole !== 'technician' && (
+                <button
+                  onClick={() => router.push(`/jobs/${id}/edit`)}
+                  style={{
+                    padding: '0.75rem',
+                    backgroundColor: '#f9fafb',
+                    color: '#1f2937',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.375rem',
+                    minHeight: '72px',
+                  }}
+                >
+                  <Edit size={20} color="#1f2937" />
+                  <span>Edit</span>
+                </button>
+              )}
+              {job.client?.contact_phone && (
+                <button
+                  onClick={handleCall}
+                  style={{
+                    padding: '0.75rem',
+                    backgroundColor: '#f0fdf4',
+                    color: '#10b981',
+                    border: '1px solid #86efac',
+                    borderRadius: '8px',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.375rem',
+                    minHeight: '72px',
+                  }}
+                >
+                  <Phone size={20} color="#10b981" />
+                  <span>Call</span>
+                </button>
+              )}
+              {job.client?.contact_email && (
+                <button
+                  onClick={handleEmail}
+                  style={{
+                    padding: '0.75rem',
+                    backgroundColor: '#eff6ff',
+                    color: '#2563eb',
+                    border: '1px solid #93c5fd',
+                    borderRadius: '8px',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.375rem',
+                    minHeight: '72px',
+                  }}
+                >
+                  <Mail size={20} color="#2563eb" />
+                  <span>Email</span>
+                </button>
+              )}
+              {(job.site?.gps_lat || job.site?.address) && (
+                <button
+                  onClick={handleNavigate}
+                  style={{
+                    padding: '0.75rem',
+                    backgroundColor: '#eff6ff',
+                    color: '#2563eb',
+                    border: '1px solid #93c5fd',
+                    borderRadius: '8px',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.375rem',
+                    minHeight: '72px',
+                  }}
+                >
+                  <Navigation size={20} color="#2563eb" />
+                  <span>Navigate</span>
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Desktop: 3-Column Info Cards Grid */}
+          <div className="desktop-header" style={{ padding: '0 2rem' }}>
+            <div className="info-cards-grid">
+              {/* Status & Schedule Card */}
+              <div
+                style={{
+                  backgroundColor: '#fafafa',
+                  padding: '1.5rem',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(239,119,34,0.1)',
+                }}
+              >
+                <h3
+                  style={{
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#6b7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  Status & Schedule
+                </h3>
             <div
               style={{
                 display: 'flex',
@@ -1090,20 +1357,18 @@ export default function JobDetailPage() {
                 </div>
               )}
             </div>
-          </div>
+              </div>
 
-          {/* Client Info */}
-          {job.client && (
-            <div
-              style={{
-                backgroundColor: 'white',
-                padding: '1.5rem',
-                marginBottom: '0.5rem',
-                borderRadius: '12px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                border: '1px solid rgba(239,119,34,0.1)',
-              }}
-            >
+              {/* Client Info */}
+              {job.client && (
+                <div
+                  style={{
+                    backgroundColor: '#fafafa',
+                    padding: '1.5rem',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(239,119,34,0.1)',
+                  }}
+                >
               <div
                 style={{
                   display: 'flex',
@@ -1214,21 +1479,19 @@ export default function JobDetailPage() {
                   )}
                 </div>
               </div>
-            </div>
-          )}
+                </div>
+              )}
 
-          {/* Site Info */}
-          {job.site && (
-            <div
-              style={{
-                backgroundColor: 'white',
-                padding: '1.5rem',
-                marginBottom: '0.5rem',
-                borderRadius: '12px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                border: '1px solid rgba(239,119,34,0.1)',
-              }}
-            >
+              {/* Site Info */}
+              {job.site && (
+                <div
+                  style={{
+                    backgroundColor: '#fafafa',
+                    padding: '1.5rem',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(239,119,34,0.1)',
+                  }}
+                >
               <div
                 style={{
                   display: 'flex',
@@ -1311,16 +1574,401 @@ export default function JobDetailPage() {
                   )}
                 </div>
               </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
 
-          {/* Asset Info */}
+          {/* Mobile: Info Cards - Keep original layout */}
+          <div className="mobile-header">
+            {/* Status & Schedule Card */}
+            <div
+              style={{
+                backgroundColor: 'white',
+                padding: '1.5rem',
+                marginBottom: '0.5rem',
+                borderRadius: '12px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                border: '1px solid rgba(239,119,34,0.1)',
+              }}
+            >
+              <h3
+                style={{
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom: '1rem',
+                }}
+              >
+                Status & Schedule
+              </h3>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '1rem',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                    padding: '0.75rem',
+                    backgroundColor: statusConfig.bg,
+                    borderRadius: '8px',
+                  }}
+                >
+                  <StatusIcon size={20} color={statusConfig.color} />
+                  <div style={{ flex: 1 }}>
+                    <div
+                      style={{
+                        fontSize: '0.75rem',
+                        color: '#6b7280',
+                        marginBottom: '0.25rem',
+                      }}
+                    >
+                      Status
+                    </div>
+                    <div
+                      style={{
+                        fontSize: '0.9375rem',
+                        fontWeight: '600',
+                        color: statusConfig.color,
+                        textTransform: 'capitalize',
+                      }}
+                    >
+                      {statusConfig.label}
+                    </div>
+                  </div>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                  }}
+                >
+                  <Calendar size={20} color="#6b7280" />
+                  <div style={{ flex: 1 }}>
+                    <div
+                      style={{
+                        fontSize: '0.75rem',
+                        color: '#6b7280',
+                        marginBottom: '0.25rem',
+                      }}
+                    >
+                      Scheduled
+                    </div>
+                    <div
+                      style={{
+                        fontSize: '0.9375rem',
+                        fontWeight: '600',
+                        color: '#1f2937',
+                      }}
+                    >
+                      {formatDate(job.scheduled_at)}
+                    </div>
+                  </div>
+                </div>
+                {job.due_date && (
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.75rem',
+                    }}
+                  >
+                    <Clock size={20} color="#6b7280" />
+                    <div style={{ flex: 1 }}>
+                      <div
+                        style={{
+                          fontSize: '0.75rem',
+                          color: '#6b7280',
+                          marginBottom: '0.25rem',
+                        }}
+                      >
+                        Due Date
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '0.9375rem',
+                          fontWeight: '600',
+                          color: '#1f2937',
+                        }}
+                      >
+                        {formatDateShort(job.due_date)}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {job.completed_at && (
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.75rem',
+                    }}
+                  >
+                    <CheckCircle2 size={20} color="#10b981" />
+                    <div style={{ flex: 1 }}>
+                      <div
+                        style={{
+                          fontSize: '0.75rem',
+                          color: '#6b7280',
+                          marginBottom: '0.25rem',
+                        }}
+                      >
+                        Completed
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '0.9375rem',
+                          fontWeight: '600',
+                          color: '#10b981',
+                        }}
+                      >
+                        {formatDate(job.completed_at)}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Client Info */}
+            {job.client && (
+              <div
+                style={{
+                  backgroundColor: 'white',
+                  padding: '1.5rem',
+                  marginBottom: '0.5rem',
+                  borderRadius: '12px',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                  border: '1px solid rgba(239,119,34,0.1)',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  <h3
+                    style={{
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      color: '#6b7280',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      margin: 0,
+                    }}
+                  >
+                    Client
+                  </h3>
+                  <button
+                    onClick={() => router.push(`/clients/${job.client!.id}`)}
+                    style={{
+                      padding: '0.375rem 0.75rem',
+                      backgroundColor: 'transparent',
+                      color: '#EF7722',
+                      border: '1px solid #EF7722',
+                      borderRadius: '6px',
+                      fontSize: '0.75rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    View
+                  </button>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.75rem',
+                  }}
+                >
+                  <div>
+                    <div
+                      style={{
+                        fontSize: '1.125rem',
+                        fontWeight: '700',
+                        color: '#1f2937',
+                        marginBottom: '0.25rem',
+                      }}
+                    >
+                      {job.client.name}
+                    </div>
+                    {job.client.address && (
+                      <div
+                        style={{
+                          fontSize: '0.875rem',
+                          color: '#6b7280',
+                          display: 'flex',
+                          alignItems: 'start',
+                          gap: '0.5rem',
+                        }}
+                      >
+                        <MapPin size={16} color="#6b7280" style={{ marginTop: '2px', flexShrink: 0 }} />
+                        <span>{job.client.address}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.5rem',
+                    }}
+                  >
+                    {job.client.contact_email && (
+                      <a
+                        href={`mailto:${job.client.contact_email}`}
+                        style={{
+                          fontSize: '0.875rem',
+                          color: '#2563eb',
+                          textDecoration: 'none',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                        }}
+                      >
+                        <Mail size={16} color="#2563eb" />
+                        {job.client.contact_email}
+                      </a>
+                    )}
+                    {job.client.contact_phone && (
+                      <a
+                        href={`tel:${job.client.contact_phone}`}
+                        style={{
+                          fontSize: '0.875rem',
+                          color: '#2563eb',
+                          textDecoration: 'none',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                        }}
+                      >
+                        <Phone size={16} color="#2563eb" />
+                        {job.client.contact_phone}
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Site Info */}
+            {job.site && (
+              <div
+                style={{
+                  backgroundColor: 'white',
+                  padding: '1.5rem',
+                  marginBottom: '0.5rem',
+                  borderRadius: '12px',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                  border: '1px solid rgba(239,119,34,0.1)',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  <h3
+                    style={{
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      color: '#6b7280',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      margin: 0,
+                    }}
+                  >
+                    Site Location
+                  </h3>
+                  <button
+                    onClick={() => router.push(`/sites/${job.site!.id}`)}
+                    style={{
+                      padding: '0.375rem 0.75rem',
+                      backgroundColor: 'transparent',
+                      color: '#EF7722',
+                      border: '1px solid #EF7722',
+                      borderRadius: '6px',
+                      fontSize: '0.75rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    View
+                  </button>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.75rem',
+                  }}
+                >
+                  <div>
+                    <div
+                      style={{
+                        fontSize: '1.125rem',
+                        fontWeight: '700',
+                        color: '#1f2937',
+                        marginBottom: '0.5rem',
+                      }}
+                    >
+                      {job.site.name}
+                    </div>
+                    {job.site.address && (
+                      <div
+                        style={{
+                          fontSize: '0.875rem',
+                          color: '#6b7280',
+                          display: 'flex',
+                          alignItems: 'start',
+                          gap: '0.5rem',
+                        }}
+                      >
+                        <MapPin size={16} color="#6b7280" style={{ marginTop: '2px', flexShrink: 0 }} />
+                        <span>{job.site.address}</span>
+                      </div>
+                    )}
+                    {job.site.gps_lat && job.site.gps_lng && (
+                      <div
+                        style={{
+                          fontSize: '0.75rem',
+                          color: '#EF7722',
+                          marginTop: '0.5rem',
+                          fontWeight: '500',
+                        }}
+                      >
+                        📍 GPS: {job.site.gps_lat.toFixed(6)}, {job.site.gps_lng.toFixed(6)}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Asset Info - Full width for both mobile and desktop */}
           {job.asset && (
             <div
               style={{
                 backgroundColor: 'white',
                 padding: '1.5rem',
                 marginBottom: '0.5rem',
+                margin: '0 1rem',
                 borderRadius: '12px',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
                 border: '1px solid rgba(239,119,34,0.1)',
@@ -1696,84 +2344,6 @@ export default function JobDetailPage() {
               </div>
             )}
           </div>
-
-          {/* Actions */}
-          {activeRole !== 'technician' && (
-            <div
-              style={{
-                backgroundColor: 'white',
-                padding: '1.5rem',
-                borderRadius: '12px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                border: '1px solid rgba(239,119,34,0.1)',
-              }}
-            >
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '0.75rem',
-                }}
-              >
-                <button
-                  onClick={() => router.push(`/jobs/${id}/edit`)}
-                  style={{
-                    padding: '0.75rem',
-                    backgroundColor: 'white',
-                    color: '#EF7722',
-                    border: '2px solid #EF7722',
-                    borderRadius: '8px',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    minHeight: '44px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.5rem',
-                    transition: 'all 0.2s',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#fff5ed';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'white';
-                  }}
-                >
-                  <Edit size={18} />
-                  Edit
-                </button>
-                <button
-                  onClick={deleteJob}
-                  style={{
-                    padding: '0.75rem',
-                    backgroundColor: 'white',
-                    color: '#ef4444',
-                    border: '2px solid #ef4444',
-                    borderRadius: '8px',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    minHeight: '44px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.5rem',
-                    transition: 'all 0.2s',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#fef2f2';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'white';
-                  }}
-                >
-                  <Trash2 size={18} />
-                  Delete
-                </button>
-              </div>
-            </div>
-          )}
         </main>
 
         {/* Assign Technician Modal */}

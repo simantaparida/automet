@@ -16,15 +16,10 @@ import {
   Circle,
   CheckCircle,
   Loader2,
-  Search,
-  X,
-  Filter,
   CheckSquare,
   Square,
-  MoreVertical,
   Trash2,
   Download,
-  FileText,
 } from 'lucide-react';
 
 interface Job {
@@ -42,16 +37,13 @@ interface Job {
 
 export default function JobsPage() {
   const router = useRouter();
-  const { status, priority, search: searchParam } = router.query;
+  const { status, priority } = router.query;
   const { apiFetch, activeRole } = useRoleSwitch();
-  
+
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [allJobs, setAllJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<string>(() => (status as string) || 'all');
   const [filterPriority, setFilterPriority] = useState<string>(() => (priority as string) || '');
-  const [searchQuery, setSearchQuery] = useState<string>(() => (searchParam as string) || '');
-  const [showFilters, setShowFilters] = useState(false);
   const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set());
   const [isSelectMode, setIsSelectMode] = useState(false);
   const [showBulkMenu, setShowBulkMenu] = useState(false);
@@ -62,48 +54,28 @@ export default function JobsPage() {
     const params = new URLSearchParams();
     if (activeTab !== 'all') params.set('status', activeTab);
     if (filterPriority) params.set('priority', filterPriority);
-    if (searchQuery) params.set('search', searchQuery);
-    
+
     const queryString = params.toString();
     const newUrl = queryString ? `/jobs?${queryString}` : '/jobs';
-    
+
     // Update URL without triggering a page reload
     const currentPath = router.asPath.split('?')[0];
     const currentQuery = new URLSearchParams(router.asPath.split('?')[1] || '');
     const newQuery = new URLSearchParams(queryString);
-    
+
     // Only update if query params changed
     if (
       currentPath !== '/jobs' ||
       currentQuery.get('status') !== newQuery.get('status') ||
-      currentQuery.get('priority') !== newQuery.get('priority') ||
-      currentQuery.get('search') !== newQuery.get('search')
+      currentQuery.get('priority') !== newQuery.get('priority')
     ) {
       router.replace(newUrl, undefined, { shallow: true });
     }
-  }, [activeTab, filterPriority, searchQuery, router]);
+  }, [activeTab, filterPriority, router]);
 
   useEffect(() => {
     fetchJobs();
   }, [activeTab, filterPriority]);
-
-  // Client-side search filtering
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setJobs(allJobs);
-      return;
-    }
-
-    const query = searchQuery.toLowerCase();
-    const filtered = allJobs.filter(
-      (job) =>
-        job.title.toLowerCase().includes(query) ||
-        job.description?.toLowerCase().includes(query) ||
-        job.client?.name.toLowerCase().includes(query) ||
-        job.site?.name.toLowerCase().includes(query)
-    );
-    setJobs(filtered);
-  }, [searchQuery, allJobs]);
 
   const fetchJobs = async () => {
     setLoading(true);
@@ -114,22 +86,7 @@ export default function JobsPage() {
 
       const response = await apiFetch(`/api/jobs?${params.toString()}`);
       const data = await response.json();
-      const fetchedJobs = data.jobs || [];
-      setAllJobs(fetchedJobs);
-      // Apply client-side search if exists
-      if (searchQuery.trim()) {
-        const query = searchQuery.toLowerCase();
-        const filtered = fetchedJobs.filter(
-          (job: Job) =>
-            job.title.toLowerCase().includes(query) ||
-            job.description?.toLowerCase().includes(query) ||
-            job.client?.name.toLowerCase().includes(query) ||
-            job.site?.name.toLowerCase().includes(query)
-        );
-        setJobs(filtered);
-      } else {
-        setJobs(fetchedJobs);
-      }
+      setJobs(data.jobs || []);
     } catch (error) {
       console.error('Error fetching jobs:', error);
     } finally {
@@ -140,10 +97,9 @@ export default function JobsPage() {
   const clearFilters = () => {
     setActiveTab('all');
     setFilterPriority('');
-    setSearchQuery('');
   };
 
-  const hasActiveFilters = activeTab !== 'all' || filterPriority || searchQuery;
+  const hasActiveFilters = activeTab !== 'all' || filterPriority;
 
   // Selection handlers
   const toggleSelectMode = () => {
@@ -299,12 +255,12 @@ export default function JobsPage() {
     }
   };
 
-  // Get counts from allJobs (not filtered by search)
+  // Get counts
   const tabCounts = {
-    all: allJobs.length,
-    scheduled: allJobs.filter((j) => j.status === 'scheduled').length,
-    in_progress: allJobs.filter((j) => j.status === 'in_progress').length,
-    completed: allJobs.filter((j) => j.status === 'completed').length,
+    all: jobs.length,
+    scheduled: jobs.filter((j) => j.status === 'scheduled').length,
+    in_progress: jobs.filter((j) => j.status === 'in_progress').length,
+    completed: jobs.filter((j) => j.status === 'completed').length,
   };
 
   return (
@@ -324,11 +280,16 @@ export default function JobsPage() {
         .mobile-header {
           display: block;
         }
-        .fab-button {
-          bottom: 5rem;
-        }
         .desktop-header {
           display: none;
+        }
+        .job-info {
+          flex-direction: column;
+        }
+        .job-info-item {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
         }
         @media (min-width: 768px) {
           .jobs-container {
@@ -345,14 +306,17 @@ export default function JobsPage() {
           .desktop-header {
             display: block;
           }
-          .desktop-search-bar {
+          .mobile-header.status-tabs {
             top: 64px !important;
           }
-          .status-tabs {
-            top: 156px !important;
+          .job-info {
+            flex-direction: row;
+            flex-wrap: wrap;
           }
-          .fab-button {
-            bottom: 2rem;
+          .job-info-item:not(:last-child)::after {
+            content: '•';
+            margin-left: 0.5rem;
+            color: #d1d5db;
           }
         }
       `}</style>
@@ -361,7 +325,7 @@ export default function JobsPage() {
         className="jobs-container"
         style={{
           minHeight: '100vh',
-          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+          background: '#ffffff',
           fontFamily: 'system-ui, -apple-system, sans-serif',
         }}
       >
@@ -405,121 +369,195 @@ export default function JobsPage() {
           </p>
         </header>
 
-        {/* Search Bar */}
+        {/* Desktop Page Header */}
         <div
+          className="desktop-header"
           style={{
-            backgroundColor: 'white',
-            padding: '1rem',
-            borderBottom: '1px solid rgba(239,119,34,0.1)',
-            position: 'sticky',
-            top: '66px',
-            zIndex: 19,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+            padding: '2rem 2rem 0.75rem 2rem',
           }}
-          className="desktop-search-bar"
         >
-          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-            <div style={{ position: 'relative', flex: 1 }}>
-              <Search
-                size={20}
-                style={{
-                  position: 'absolute',
-                  left: '0.75rem',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: '#6b7280',
-                  pointerEvents: 'none',
-                }}
-              />
-              <input
-                type="text"
-                placeholder="Search jobs by title, description, client, or site..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 0.75rem 0.75rem 2.75rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  fontSize: '0.9375rem',
-                  minHeight: '44px',
-                  boxSizing: 'border-box',
-                  transition: 'border-color 0.2s, box-shadow 0.2s',
-                  outline: 'none',
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#EF7722';
-                  e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#d1d5db';
-                  e.target.style.boxShadow = 'none';
-                }}
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  style={{
-                    position: 'absolute',
-                    right: '0.75rem',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    padding: '0.25rem',
-                    color: '#6b7280',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color = '#EF7722';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.color = '#6b7280';
-                  }}
-                >
-                  <X size={18} />
-                </button>
-              )}
-            </div>
-            {hasActiveFilters && (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '0.75rem',
+            }}
+          >
+            <h1
+              style={{
+                fontSize: '1.5rem',
+                fontWeight: '700',
+                color: '#111827',
+                margin: 0,
+              }}
+            >
+              Jobs
+            </h1>
+            {activeRole !== 'technician' && (
               <button
-                onClick={clearFilters}
+                onClick={() => router.push('/jobs/new')}
                 style={{
-                  padding: '0.625rem 1rem',
-                  background: 'white',
-                  color: '#EF7722',
-                  border: '1px solid #EF7722',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.625rem 1.25rem',
+                  background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
+                  color: 'white',
+                  border: 'none',
                   borderRadius: '8px',
                   fontSize: '0.875rem',
                   fontWeight: '600',
                   cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  minHeight: '44px',
+                  boxShadow: '0 2px 8px rgba(239,119,34,0.25)',
                   transition: 'all 0.2s',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#fff5ed';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.35)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'white';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
                 }}
               >
-                <X size={16} />
-                Clear
+                <Plus size={18} />
+                Create New Job
               </button>
             )}
           </div>
         </div>
 
-        {/* Status Tabs */}
+        {/* Desktop: Tabs, Sort by, and Select in One Line */}
         <div
-          className="status-tabs"
+          className="desktop-header"
+          style={{
+            backgroundColor: 'transparent',
+            paddingLeft: '2rem',
+            paddingRight: '2rem',
+            borderBottom: '2px solid #e5e7eb',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          {/* Tabs */}
+          <div style={{ display: 'flex', gap: '0', alignItems: 'center' }}>
+            {[
+              { key: 'all', label: 'All', count: tabCounts.all },
+              {
+                key: 'scheduled',
+                label: 'Scheduled',
+                count: tabCounts.scheduled,
+              },
+              {
+                key: 'in_progress',
+                label: 'In Progress',
+                count: tabCounts.in_progress,
+              },
+              {
+                key: 'completed',
+                label: 'Completed',
+                count: tabCounts.completed,
+              },
+            ].map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                style={{
+                  padding: '0.75rem 1rem',
+                  background: 'transparent',
+                  color: activeTab === tab.key ? '#EF7722' : '#6b7280',
+                  border: 'none',
+                  borderBottom: activeTab === tab.key ? '3px solid #EF7722' : '3px solid transparent',
+                  fontSize: '0.8125rem',
+                  fontWeight: activeTab === tab.key ? '600' : '500',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.2s',
+                  marginBottom: '-2px',
+                }}
+                onMouseEnter={(e) => {
+                  if (activeTab !== tab.key) {
+                    e.currentTarget.style.color = '#EF7722';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeTab !== tab.key) {
+                    e.currentTarget.style.color = '#6b7280';
+                  }
+                }}
+              >
+                {tab.label} {tab.count > 0 && `(${tab.count})`}
+              </button>
+            ))}
+          </div>
+
+          {/* Sort by and Select */}
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', marginBottom: '-2px' }}>
+            {activeTab !== 'completed' && (
+              <select
+                value={filterPriority}
+                onChange={(e) => setFilterPriority(e.target.value)}
+                style={{
+                  padding: '0.5rem 0.75rem',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  fontSize: '0.8125rem',
+                  backgroundColor: 'white',
+                  outline: 'none',
+                  transition: 'border-color 0.2s',
+                  cursor: 'pointer',
+                }}
+                onFocus={(e) => (e.target.style.borderColor = '#EF7722')}
+                onBlur={(e) => (e.target.style.borderColor = '#d1d5db')}
+              >
+                <option value="">Sort by Priority</option>
+                <option value="urgent">🔴 Urgent</option>
+                <option value="high">🟠 High</option>
+                <option value="medium">🟡 Medium</option>
+                <option value="low">🟢 Low</option>
+              </select>
+            )}
+            {activeRole !== 'technician' && (
+              <button
+                onClick={toggleSelectMode}
+                style={{
+                  padding: '0.5rem 0.75rem',
+                  background: isSelectMode ? '#EF7722' : 'white',
+                  color: isSelectMode ? 'white' : '#EF7722',
+                  border: `1px solid ${isSelectMode ? '#EF7722' : '#d1d5db'}`,
+                  borderRadius: '6px',
+                  fontSize: '0.8125rem',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.375rem',
+                  transition: 'all 0.2s',
+                  whiteSpace: 'nowrap',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isSelectMode) {
+                    e.currentTarget.style.backgroundColor = '#fff5ed';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isSelectMode) {
+                    e.currentTarget.style.backgroundColor = 'white';
+                  }
+                }}
+              >
+                {isSelectMode ? <CheckSquare size={16} /> : <Square size={16} />}
+                {isSelectMode ? 'Done' : 'Select'}
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Mobile Status Tabs */}
+        <div
+          className="status-tabs mobile-header"
           style={{
             backgroundColor: 'white',
             overflowX: 'auto',
@@ -527,7 +565,7 @@ export default function JobsPage() {
             WebkitOverflowScrolling: 'touch',
             borderBottom: '1px solid rgba(239,119,34,0.1)',
             position: 'sticky',
-            top: '158px',
+            top: '66px',
             zIndex: 18,
             boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
           }}
@@ -593,81 +631,7 @@ export default function JobsPage() {
           </div>
         </div>
 
-        {/* Priority Filter */}
-        {activeTab !== 'completed' && (
-          <div
-            style={{
-              padding: '1rem',
-              backgroundColor: 'white',
-              borderBottom: '1px solid rgba(239,119,34,0.1)',
-              display: 'flex',
-              gap: '0.75rem',
-              alignItems: 'center',
-            }}
-          >
-            <select
-              value={filterPriority}
-              onChange={(e) => setFilterPriority(e.target.value)}
-              style={{
-                flex: 1,
-                padding: '0.75rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                fontSize: '0.9375rem',
-                backgroundColor: 'white',
-                minHeight: '44px',
-                outline: 'none',
-                transition: 'border-color 0.2s',
-                cursor: 'pointer',
-              }}
-              onFocus={(e) => (e.target.style.borderColor = '#EF7722')}
-              onBlur={(e) => (e.target.style.borderColor = '#d1d5db')}
-            >
-              <option value="">All Priorities</option>
-              <option value="urgent">🔴 Urgent</option>
-              <option value="high">🟠 High</option>
-              <option value="medium">🟡 Medium</option>
-              <option value="low">🟢 Low</option>
-            </select>
-            {/* Hide select mode button for technicians */}
-            {activeRole !== 'technician' && (
-              <button
-                onClick={toggleSelectMode}
-                style={{
-                  padding: '0.75rem 1rem',
-                  background: isSelectMode
-                    ? 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)'
-                    : 'white',
-                  color: isSelectMode ? 'white' : '#EF7722',
-                  border: '1px solid #EF7722',
-                  borderRadius: '8px',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  minHeight: '44px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  transition: 'all 0.2s',
-                  whiteSpace: 'nowrap',
-                }}
-                onMouseEnter={(e) => {
-                  if (!isSelectMode) {
-                    e.currentTarget.style.backgroundColor = '#fff5ed';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isSelectMode) {
-                    e.currentTarget.style.backgroundColor = 'white';
-                  }
-                }}
-              >
-                {isSelectMode ? <CheckSquare size={18} /> : <Square size={18} />}
-                {isSelectMode ? 'Done' : 'Select'}
-              </button>
-            )}
-          </div>
-        )}
+
 
         {/* Bulk Actions Toolbar */}
         {isSelectMode && selectedJobs.size > 0 && (
@@ -681,7 +645,7 @@ export default function JobsPage() {
               justifyContent: 'space-between',
               gap: '1rem',
               position: 'sticky',
-              top: searchQuery ? '214px' : '214px',
+              top: '214px',
               zIndex: 17,
               boxShadow: '0 2px 8px rgba(239,119,34,0.15)',
             }}
@@ -909,30 +873,10 @@ export default function JobsPage() {
                   marginBottom: 0,
                 }}
               >
-                {searchQuery
-                  ? 'No jobs match your search'
-                  : activeTab === 'all'
+                {activeTab === 'all'
                   ? 'Create your first job to get started'
                   : `No ${activeTab.replace('_', ' ')} jobs`}
               </p>
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  style={{
-                    marginTop: '1rem',
-                    padding: '0.625rem 1.25rem',
-                    background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Clear Search
-                </button>
-              )}
             </div>
           ) : (
             <div
@@ -954,15 +898,14 @@ export default function JobsPage() {
                       }
                     }}
                     style={{
-                      backgroundColor: selectedJobs.has(job.id) ? '#fff5ed' : 'white',
+                      backgroundColor: selectedJobs.has(job.id) ? '#fff5ed' : '#fafafa',
                       padding: '1.25rem',
                       borderRadius: '12px',
                       cursor: isSelectMode ? 'default' : 'pointer',
-                      boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
                       borderLeft: `4px solid ${getStatusColor(job.status)}`,
                       border: selectedJobs.has(job.id)
                         ? `2px solid #EF7722`
-                        : `1px solid rgba(239,119,34,0.1)`,
+                        : `1px solid #e5e7eb`,
                       borderLeftWidth: '4px',
                       borderLeftColor: getStatusColor(job.status),
                       minHeight: '44px',
@@ -971,14 +914,14 @@ export default function JobsPage() {
                     }}
                     onMouseEnter={(e) => {
                       if (!isSelectMode) {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 4px 15px rgba(239,119,34,0.15)';
+                        e.currentTarget.style.borderColor = '#EF7722';
+                        e.currentTarget.style.borderLeftColor = getStatusColor(job.status);
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (!isSelectMode) {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.06)';
+                        e.currentTarget.style.borderColor = '#e5e7eb';
+                        e.currentTarget.style.borderLeftColor = getStatusColor(job.status);
                       }
                     }}
                   >
@@ -1041,91 +984,68 @@ export default function JobsPage() {
                           {job.description}
                         </p>
                       </div>
-                      <div
-                        style={{
-                          width: '36px',
-                          height: '36px',
-                          borderRadius: '8px',
-                          backgroundColor: priorityConfig.bg,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          flexShrink: 0,
-                        }}
-                      >
-                        <PriorityIcon size={20} color={priorityConfig.color} />
-                      </div>
-                    </div>
-
-                    {/* Job Info */}
-                    <div
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '0.5rem',
-                        fontSize: '0.875rem',
-                        marginBottom: '0.75rem',
-                      }}
-                    >
-                      {job.client && (
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.5rem',
-                          }}
-                        >
-                          <Building2 size={16} color="#6b7280" />
-                          <span style={{ color: '#374151', fontWeight: '500' }}>
-                            {job.client.name}
-                          </span>
-                        </div>
-                      )}
-                      {job.site && (
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.5rem',
-                          }}
-                        >
-                          <MapPin size={16} color="#6b7280" />
-                          <span style={{ color: '#6b7280' }}>
-                            {job.site.name}
-                          </span>
-                        </div>
-                      )}
+                      {/* Status and Priority Icon on Right */}
                       <div
                         style={{
                           display: 'flex',
                           alignItems: 'center',
                           gap: '0.5rem',
+                          flexShrink: 0,
                         }}
                       >
-                        <Clock size={16} color="#6b7280" />
-                        <span style={{ color: '#6b7280' }}>
-                          {formatDate(job.scheduled_at)}
+                        <span
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            padding: '0.25rem 0.625rem',
+                            backgroundColor: `${getStatusColor(job.status)}15`,
+                            color: getStatusColor(job.status),
+                            borderRadius: '4px',
+                            fontSize: '0.6875rem',
+                            fontWeight: '600',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.025em',
+                          }}
+                        >
+                          {job.status.replace('_', ' ')}
                         </span>
+                        <div
+                          style={{
+                            width: '36px',
+                            height: '36px',
+                            borderRadius: '8px',
+                            backgroundColor: priorityConfig.bg,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                          }}
+                        >
+                          <PriorityIcon size={20} color={priorityConfig.color} />
+                        </div>
                       </div>
                     </div>
 
-                    {/* Status Badge */}
-                    <div>
-                      <span
-                        style={{
-                          display: 'inline-block',
-                          padding: '0.375rem 0.875rem',
-                          backgroundColor: `${getStatusColor(job.status)}15`,
-                          color: getStatusColor(job.status),
-                          borderRadius: '6px',
-                          fontSize: '0.75rem',
-                          fontWeight: '700',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.05em',
-                        }}
-                      >
-                        {job.status.replace('_', ' ')}
-                      </span>
+                    {/* Job Info */}
+                    <div
+                      className="job-info"
+                      style={{
+                        display: 'flex',
+                        gap: '0.5rem',
+                        fontSize: '0.8125rem',
+                        alignItems: 'center',
+                      }}
+                    >
+                      {job.site && (
+                        <div className="job-info-item" style={{ color: '#6b7280' }}>
+                          <MapPin size={14} color="#6b7280" />
+                          <span>{job.site.name}</span>
+                        </div>
+                      )}
+                      <div className="job-info-item" style={{ color: '#6b7280' }}>
+                        <Clock size={14} color="#6b7280" />
+                        <span>{formatDate(job.scheduled_at)}</span>
+                      </div>
                     </div>
                   </div>
                 );
@@ -1133,41 +1053,6 @@ export default function JobsPage() {
             </div>
           )}
         </main>
-
-        {/* Floating Action Button - Hide for technicians */}
-        {activeRole !== 'technician' && (
-        <button
-          onClick={() => router.push('/jobs/new')}
-          className="fab-button"
-          style={{
-            position: 'fixed',
-            right: '1.5rem',
-            width: '60px',
-            height: '60px',
-            background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-            color: 'white',
-            border: 'none',
-            borderRadius: '50%',
-            cursor: 'pointer',
-            boxShadow: '0 6px 20px rgba(239,119,34,0.4)',
-            zIndex: 50,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.2s',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.1)';
-            e.currentTarget.style.boxShadow = '0 8px 24px rgba(239,119,34,0.5)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.boxShadow = '0 6px 20px rgba(239,119,34,0.4)';
-          }}
-        >
-          <Plus size={28} strokeWidth={2.5} />
-        </button>
-        )}
 
         <BottomNav activeTab="jobs" />
       </div>

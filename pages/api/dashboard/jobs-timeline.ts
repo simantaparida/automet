@@ -11,7 +11,7 @@ interface TimelineJob {
   title: string;
   scheduled_at: string;
   site: { id: string; name: string } | null;
-  assignee: { id: string; name: string } | null;
+  assignee: { id: string; name: string; started_at?: string } | null;
   eta_status: 'on-time' | 'at-risk' | 'late';
 }
 
@@ -21,6 +21,7 @@ interface AtRiskJob {
   scheduled_at: string;
   site: { id: string; name: string } | null;
   priority: string;
+  risk_reason?: string;
 }
 
 interface JobsTimelineResponse {
@@ -61,6 +62,7 @@ export default async function handler(
         status,
         site_id,
         job_assignments (
+          started_at,
           user:users ( id, full_name, email )
         )
       `
@@ -116,7 +118,7 @@ export default async function handler(
         }
 
         const assignments = job.job_assignments as
-          | { user: { id: string; full_name: string | null; email: string } }[]
+          | { started_at: string | null; user: { id: string; full_name: string | null; email: string } }[]
           | null;
 
         const primaryAssignment =
@@ -132,18 +134,19 @@ export default async function handler(
           title: job.title,
           scheduled_at: job.scheduled_at,
           site: siteData,
-          assignee: primaryAssignment
+          assignee: primaryAssignment && primaryAssignment.user
             ? {
                 id: primaryAssignment.user.id,
                 name:
                   primaryAssignment.user.full_name ||
                   primaryAssignment.user.email.split('@')[0],
+                started_at: primaryAssignment.started_at || undefined,
               }
             : null,
           eta_status: eta,
         });
 
-        if (!primaryAssignment) {
+        if (!primaryAssignment || !primaryAssignment.user) {
           unassigned.push({
             id: job.id,
             title: job.title,
@@ -154,12 +157,25 @@ export default async function handler(
         }
 
         if (eta !== 'on-time' || job.priority === 'high' || job.priority === 'urgent') {
+          // Determine risk reason
+          let riskReason = '';
+          if (eta === 'late') {
+            riskReason = 'Overdue';
+          } else if (eta === 'at-risk') {
+            riskReason = 'Starting soon';
+          } else if (job.priority === 'urgent') {
+            riskReason = 'Urgent priority';
+          } else if (job.priority === 'high') {
+            riskReason = 'High priority';
+          }
+
           atRisk.push({
             id: job.id,
             title: job.title,
             scheduled_at: job.scheduled_at,
             site: siteData,
             priority: job.priority,
+            risk_reason: riskReason,
           });
         }
       }

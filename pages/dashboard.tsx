@@ -65,7 +65,7 @@ interface TimelineJob {
   title: string;
   scheduled_at: string;
   site: { id: string; name: string } | null;
-  assignee: { id: string; name: string } | null;
+  assignee: { id: string; name: string; started_at?: string } | null;
   eta_status: 'on-time' | 'at-risk' | 'late';
 }
 
@@ -75,6 +75,7 @@ interface AtRiskJob {
   scheduled_at: string;
   site: { id: string; name: string } | null;
   priority: string;
+  risk_reason?: string;
 }
 
 interface ActivityItem {
@@ -132,6 +133,22 @@ export default function DashboardPage() {
     const diffTime = now.getTime() - scheduled.getTime();
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
     return diffDays > 0 ? diffDays : 0;
+  };
+
+  // Get duration string for in-progress jobs
+  const getInProgressDuration = (startedAt?: string): string => {
+    if (!startedAt) return '0m';
+
+    const started = new Date(startedAt);
+    const now = new Date();
+    const diffMs = now.getTime() - started.getTime();
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffMins < 60) return `${diffMins}m`;
+    if (diffHours < 24) return `${diffHours}h`;
+    return `${diffDays}d`;
   };
 
   // Check if user has organization
@@ -354,9 +371,6 @@ export default function DashboardPage() {
               {/* Welcome Header with Quick Actions */}
               <div
                 style={{
-                  backgroundColor: 'white',
-                  padding: '1rem 1.5rem',
-                  borderRadius: '10px',
                   marginBottom: '1.25rem',
                   display: 'flex',
                   justifyContent: 'space-between',
@@ -527,10 +541,12 @@ export default function DashboardPage() {
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-2px)';
                       e.currentTarget.style.borderColor = '#EF7722';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(239, 119, 34, 0.15)';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = 'translateY(0)';
                       e.currentTarget.style.borderColor = '#e5e7eb';
+                      e.currentTarget.style.boxShadow = 'none';
                     }}
                     title="Jobs scheduled for today. Click to view."
                   >
@@ -561,10 +577,12 @@ export default function DashboardPage() {
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-2px)';
                       e.currentTarget.style.borderColor = '#EF7722';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(239, 119, 34, 0.15)';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = 'translateY(0)';
                       e.currentTarget.style.borderColor = '#e5e7eb';
+                      e.currentTarget.style.boxShadow = 'none';
                     }}
                     title="Jobs currently being worked on. Click to view."
                   >
@@ -600,10 +618,12 @@ export default function DashboardPage() {
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-2px)';
                       e.currentTarget.style.borderColor = '#EF7722';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(239, 119, 34, 0.15)';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = 'translateY(0)';
                       e.currentTarget.style.borderColor = '#e5e7eb';
+                      e.currentTarget.style.boxShadow = 'none';
                     }}
                     title="Jobs completed today. Click to view."
                   >
@@ -650,10 +670,12 @@ export default function DashboardPage() {
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-2px)';
                       e.currentTarget.style.borderColor = '#EF7722';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(239, 119, 34, 0.15)';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = 'translateY(0)';
                       e.currentTarget.style.borderColor = (kpis?.overdue.count || 0) > 0 ? '#ef4444' : '#e5e7eb';
+                      e.currentTarget.style.boxShadow = 'none';
                     }}
                     title="Jobs past due — action required. Click to view."
                   >
@@ -693,10 +715,12 @@ export default function DashboardPage() {
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-2px)';
                       e.currentTarget.style.borderColor = '#EF7722';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(239, 119, 34, 0.15)';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = 'translateY(0)';
                       e.currentTarget.style.borderColor = '#e5e7eb';
+                      e.currentTarget.style.boxShadow = 'none';
                     }}
                     title="Completed jobs missing proof of completion. Click to review."
                   >
@@ -744,10 +768,12 @@ export default function DashboardPage() {
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = 'translateY(-2px)';
                       e.currentTarget.style.borderColor = '#EF7722';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(239, 119, 34, 0.15)';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = 'translateY(0)';
                       e.currentTarget.style.borderColor = '#e5e7eb';
+                      e.currentTarget.style.boxShadow = 'none';
                     }}
                     title="Jobs that need assignment. Click to assign."
                   >
@@ -1029,7 +1055,7 @@ export default function DashboardPage() {
                                 flexShrink: 0,
                               }}
                             >
-                              IN PROGRESS
+                              {getInProgressDuration(job.assignee?.started_at)}
                             </span>
                           </div>
                         </button>
@@ -1157,26 +1183,24 @@ export default function DashboardPage() {
                                   lineHeight: '1.3',
                                 }}
                               >
-                                {job.site?.name || 'No site'} • {new Date(job.scheduled_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} at {formatTime(job.scheduled_at)}
+                                {job.site?.name || 'No site'}
                                 {job.assignee && ` • ${job.assignee.name}`}
                               </div>
                             </div>
-                            {job.eta_status === 'at-risk' && (
-                              <span
-                                style={{
-                                  backgroundColor: '#fde68a',
-                                  color: '#92400e',
-                                  fontSize: '0.625rem',
-                                  fontWeight: '600',
-                                  padding: '0.125rem 0.375rem',
-                                  borderRadius: '3px',
-                                  whiteSpace: 'nowrap',
-                                  flexShrink: 0,
-                                }}
-                              >
-                                AT RISK
-                              </span>
-                            )}
+                            <span
+                              style={{
+                                backgroundColor: job.eta_status === 'at-risk' ? '#fde68a' : '#dbeafe',
+                                color: job.eta_status === 'at-risk' ? '#92400e' : '#1e40af',
+                                fontSize: '0.625rem',
+                                fontWeight: '600',
+                                padding: '0.125rem 0.375rem',
+                                borderRadius: '3px',
+                                whiteSpace: 'nowrap',
+                                flexShrink: 0,
+                              }}
+                            >
+                              {new Date(job.scheduled_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            </span>
                           </div>
                         </button>
                       ))}
@@ -1294,6 +1318,7 @@ export default function DashboardPage() {
                                   }}
                                 >
                                   {job.site?.name || 'No site'} • {new Date(job.scheduled_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} at {formatTime(job.scheduled_at)}
+                                  {!isUnassigned && job.risk_reason && ` • ${job.risk_reason}`}
                                 </div>
                               </div>
                               <span

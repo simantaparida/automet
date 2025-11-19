@@ -44,13 +44,13 @@ export default async function handler(
 
     // Return user profile with all available data
     return res.status(200).json({
-      id: userProfile.id,
-      email: userProfile.email,
-      org_id: userProfile.org_id,
-      role: userProfile.role,
-      full_name: userProfile.full_name || null,
-      profile_photo_url: userProfile.profile_photo_url || null,
-      created_at: userProfile.created_at || null,
+      id: (userProfile as any).id,
+      email: (userProfile as any).email,
+      org_id: (userProfile as any).org_id,
+      role: (userProfile as any).role,
+      full_name: (userProfile as any).full_name || null,
+      profile_photo_url: (userProfile as any).profile_photo_url || null,
+      created_at: (userProfile as any).created_at || null,
     });
   } catch (error) {
     console.error('Error in user profile API:', error);

@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSupabaseAdmin } from '@/lib/supabase-server';
-import type { Database } from '@/types/database';
 
 /**
  * POST /api/test-users/create
@@ -166,7 +165,7 @@ export default async function handler(
         }
 
         // Step 2: Create/update user in public.users table
-        const { data: dbUser, error: dbError } = await supabaseAdmin
+        const { error: dbError } = await supabaseAdmin
           .from('users')
           .upsert(
             {

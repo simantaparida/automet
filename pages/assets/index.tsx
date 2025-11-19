@@ -82,7 +82,7 @@ export default function AssetsPage() {
       filtered = filtered.filter(
         (asset) =>
           asset.asset_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          asset.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (asset.model && asset.model.toLowerCase().includes(searchTerm.toLowerCase())) ||
           (asset.serial_number &&
             asset.serial_number
               .toLowerCase()
@@ -147,7 +147,7 @@ export default function AssetsPage() {
                 // Otherwise, look up site data from the map
                 const siteId = asset.site_id || asset.site?.id;
                 if (siteId && sitesMap.has(siteId)) {
-                  const site = sitesMap.get(siteId);
+                  const site = sitesMap.get(siteId) as any;
                   return {
                     ...asset,
                     site: {

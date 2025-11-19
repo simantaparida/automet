@@ -5,6 +5,7 @@ import BottomNav from '@/components/BottomNav';
 import Sidebar from '@/components/Sidebar';
 import TopHeader from '@/components/TopHeader';
 import RoleBadge from '@/components/RoleBadge';
+import EmptyState from '@/components/EmptyState';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
 import {
   Plus,
@@ -130,7 +131,7 @@ export default function JobsPage() {
   // Bulk actions
   const handleBulkStatusUpdate = async (newStatus: string) => {
     if (selectedJobs.size === 0) return;
-    
+
     setBulkActionLoading(true);
     try {
       const promises = Array.from(selectedJobs).map((jobId) =>
@@ -139,7 +140,7 @@ export default function JobsPage() {
           body: JSON.stringify({ status: newStatus }),
         })
       );
-      
+
       await Promise.all(promises);
       setSelectedJobs(new Set());
       setShowBulkMenu(false);
@@ -165,7 +166,7 @@ export default function JobsPage() {
           method: 'DELETE',
         })
       );
-      
+
       await Promise.all(promises);
       setSelectedJobs(new Set());
       setShowBulkMenu(false);
@@ -180,7 +181,7 @@ export default function JobsPage() {
 
   const handleBulkExport = () => {
     if (selectedJobs.size === 0) return;
-    
+
     const selectedJobsData = jobs.filter((job) => selectedJobs.has(job.id));
     const csv = [
       ['Title', 'Status', 'Priority', 'Client', 'Site', 'Scheduled At'].join(','),
@@ -321,19 +322,12 @@ export default function JobsPage() {
         }
       `}</style>
 
-      <div
-        className="jobs-container"
-        style={{
-          minHeight: '100vh',
-          background: '#ffffff',
-          fontFamily: 'system-ui, -apple-system, sans-serif',
-        }}
-      >
+      <div className="jobs-container min-h-screen bg-white">
         {/* Desktop Sidebar */}
         <Sidebar activeTab="jobs" />
 
-        {/* Desktop Top Header */}
-        <div className="desktop-header">
+        {/* Desktop Top Header with Glassmorphism */}
+        <div className="desktop-header fixed top-0 left-0 right-0 z-30 backdrop-blur-md bg-white/80 border-b border-primary/10">
           <TopHeader />
         </div>
 
@@ -343,83 +337,25 @@ export default function JobsPage() {
         </div>
 
         {/* Mobile Header */}
-        <header
-          className="mobile-header"
-          style={{
-            background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-            color: 'white',
-            padding: '1rem',
-            position: 'sticky',
-            top: 0,
-            zIndex: 20,
-            boxShadow: '0 2px 10px rgba(239,119,34,0.2)',
-          }}
-        >
-          <h1
-            style={{
-              fontSize: '1.25rem',
-              fontWeight: '700',
-              margin: '0 0 0.5rem 0',
-            }}
-          >
+        <header className="mobile-header bg-gradient-to-br from-primary to-orange-500 text-white p-4 sticky top-0 z-20 shadow-lg shadow-primary/20">
+          <h1 className="text-xl font-bold m-0 mb-2">
             Jobs
           </h1>
-          <p style={{ fontSize: '0.875rem', margin: 0, opacity: 0.9 }}>
+          <p className="text-sm m-0 opacity-90">
             {jobs.length} total
           </p>
         </header>
 
         {/* Desktop Page Header */}
-        <div
-          className="desktop-header"
-          style={{
-            padding: '2rem 2rem 0.75rem 2rem',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '0.75rem',
-            }}
-          >
-            <h1
-              style={{
-                fontSize: '1.5rem',
-                fontWeight: '700',
-                color: '#111827',
-                margin: 0,
-              }}
-            >
+        <div className="desktop-header px-8 pt-8 pb-3">
+          <div className="flex justify-between items-center mb-3">
+            <h1 className="text-2xl font-bold text-gray-900 m-0">
               Jobs
             </h1>
             {activeRole !== 'technician' && (
               <button
                 onClick={() => router.push('/jobs/new')}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '0.625rem 1.25rem',
-                  background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  boxShadow: '0 2px 8px rgba(239,119,34,0.25)',
-                  transition: 'all 0.2s',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-1px)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.35)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
-                }}
+                className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg text-[13px] font-semibold shadow-md shadow-primary/25 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/35"
               >
                 <Plus size={18} />
                 Create New Job
@@ -429,22 +365,11 @@ export default function JobsPage() {
         </div>
 
         {/* Desktop: Tabs, Sort by, and Select in One Line */}
-        <div
-          className="desktop-header"
-          style={{
-            backgroundColor: 'transparent',
-            paddingLeft: '2rem',
-            paddingRight: '2rem',
-            borderBottom: '2px solid #e5e7eb',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
+        <div className="desktop-header bg-transparent px-8 border-b-2 border-gray-200 flex justify-between items-center">
           {/* Tabs */}
-          <div style={{ display: 'flex', gap: '0', alignItems: 'center' }}>
+          <div className="flex gap-0 items-center">
             {[
-              { key: 'all', label: 'All', count: tabCounts.all },
+              { key: 'all', label: activeRole === 'technician' ? 'My Jobs' : 'All', count: tabCounts.all },
               {
                 key: 'scheduled',
                 label: 'Scheduled',
@@ -464,29 +389,10 @@ export default function JobsPage() {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                style={{
-                  padding: '0.75rem 1rem',
-                  background: 'transparent',
-                  color: activeTab === tab.key ? '#EF7722' : '#6b7280',
-                  border: 'none',
-                  borderBottom: activeTab === tab.key ? '3px solid #EF7722' : '3px solid transparent',
-                  fontSize: '0.8125rem',
-                  fontWeight: activeTab === tab.key ? '600' : '500',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  transition: 'all 0.2s',
-                  marginBottom: '-2px',
-                }}
-                onMouseEnter={(e) => {
-                  if (activeTab !== tab.key) {
-                    e.currentTarget.style.color = '#EF7722';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (activeTab !== tab.key) {
-                    e.currentTarget.style.color = '#6b7280';
-                  }
-                }}
+                className={`px-4 py-3 bg-transparent border-none text-[13px] whitespace-nowrap transition-all -mb-0.5 ${activeTab === tab.key
+                  ? 'text-primary font-semibold border-b-[3px] border-primary'
+                  : 'text-gray-500 font-medium border-b-[3px] border-transparent hover:text-primary'
+                  }`}
               >
                 {tab.label} {tab.count > 0 && `(${tab.count})`}
               </button>
@@ -494,23 +400,12 @@ export default function JobsPage() {
           </div>
 
           {/* Sort by and Select */}
-          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', marginBottom: '-2px' }}>
+          <div className="flex gap-3 items-center -mb-0.5">
             {activeTab !== 'completed' && (
               <select
                 value={filterPriority}
                 onChange={(e) => setFilterPriority(e.target.value)}
-                style={{
-                  padding: '0.5rem 0.75rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '6px',
-                  fontSize: '0.8125rem',
-                  backgroundColor: 'white',
-                  outline: 'none',
-                  transition: 'border-color 0.2s',
-                  cursor: 'pointer',
-                }}
-                onFocus={(e) => (e.target.style.borderColor = '#EF7722')}
-                onBlur={(e) => (e.target.style.borderColor = '#d1d5db')}
+                className="px-3 py-2 border border-gray-300 rounded-md text-[13px] bg-white outline-none transition-colors cursor-pointer focus:border-primary"
               >
                 <option value="">Sort by Priority</option>
                 <option value="urgent">🔴 Urgent</option>
@@ -522,31 +417,10 @@ export default function JobsPage() {
             {activeRole !== 'technician' && (
               <button
                 onClick={toggleSelectMode}
-                style={{
-                  padding: '0.5rem 0.75rem',
-                  background: isSelectMode ? '#EF7722' : 'white',
-                  color: isSelectMode ? 'white' : '#EF7722',
-                  border: `1px solid ${isSelectMode ? '#EF7722' : '#d1d5db'}`,
-                  borderRadius: '6px',
-                  fontSize: '0.8125rem',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.375rem',
-                  transition: 'all 0.2s',
-                  whiteSpace: 'nowrap',
-                }}
-                onMouseEnter={(e) => {
-                  if (!isSelectMode) {
-                    e.currentTarget.style.backgroundColor = '#fff5ed';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isSelectMode) {
-                    e.currentTarget.style.backgroundColor = 'white';
-                  }
-                }}
+                className={`px-3 py-2 rounded-md text-[13px] font-medium cursor-pointer flex items-center gap-1.5 transition-all whitespace-nowrap ${isSelectMode
+                  ? 'bg-primary text-white border border-primary'
+                  : 'bg-white text-primary border border-gray-300 hover:bg-orange-50'
+                  }`}
               >
                 {isSelectMode ? <CheckSquare size={16} /> : <Square size={16} />}
                 {isSelectMode ? 'Done' : 'Select'}
@@ -572,7 +446,7 @@ export default function JobsPage() {
         >
           <div style={{ display: 'inline-flex', padding: '0.75rem 1rem', gap: '0.5rem' }}>
             {[
-              { key: 'all', label: 'All', count: tabCounts.all },
+              { key: 'all', label: activeRole === 'technician' ? 'My Jobs' : 'All', count: tabCounts.all },
               {
                 key: 'scheduled',
                 label: 'Scheduled',
@@ -799,85 +673,15 @@ export default function JobsPage() {
         {/* Jobs List */}
         <main className="main-content">
           {loading ? (
-            <div
-              style={{
-                textAlign: 'center',
-                padding: '3rem 1rem',
-                color: '#6b7280',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: '1rem',
-                }}
-              >
-                <Loader2 size={40} color="#EF7722" style={{ animation: 'spin 1s linear infinite' }} />
-              </div>
-              Loading jobs...
+            <div className="flex flex-col items-center justify-center py-20">
+              <Loader2 size={40} className="text-primary animate-spin" />
+              <p className="text-sm text-gray-600 mt-4">Loading jobs...</p>
             </div>
           ) : jobs.length === 0 ? (
-            <div
-              style={{
-                backgroundColor: 'white',
-                padding: '3rem 1.5rem',
-                borderRadius: '12px',
-                textAlign: 'center',
-                border: '1px solid rgba(239,119,34,0.1)',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
-              }}
-            >
-              <div
-                style={{
-                  width: '80px',
-                  height: '80px',
-                  margin: '0 auto 1.5rem',
-                  background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#EF7722',
-                }}
-              >
-                <svg
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
-                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-                </svg>
-              </div>
-              <p
-                style={{
-                  fontSize: '1.25rem',
-                  color: '#111827',
-                  marginBottom: '0.5rem',
-                  fontWeight: '700',
-                }}
-              >
-                No jobs found
-              </p>
-              <p
-                style={{
-                  fontSize: '0.9375rem',
-                  color: '#6b7280',
-                  marginBottom: 0,
-                }}
-              >
-                {activeTab === 'all'
-                  ? 'Create your first job to get started'
-                  : `No ${activeTab.replace('_', ' ')} jobs`}
-              </p>
-            </div>
+            <EmptyState
+              title="No jobs found"
+              description={activeTab === 'all' ? 'Create your first job to get started' : `No ${activeTab.replace('_', ' ')} jobs`}
+            />
           ) : (
             <div
               style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
@@ -937,8 +741,8 @@ export default function JobsPage() {
                         onClick={(e) => {
                           e.stopPropagation();
                           toggleJobSelection(job.id);
-                    }}
-                  >
+                        }}
+                      >
                         {selectedJobs.has(job.id) ? (
                           <CheckSquare size={24} color="#EF7722" style={{ cursor: 'pointer' }} />
                         ) : (

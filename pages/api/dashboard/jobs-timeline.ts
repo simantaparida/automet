@@ -48,7 +48,8 @@ export default async function handler(
   try {
     const typed = supabase as unknown as TypedClient;
 
-    const nowIso = new Date().toISOString();
+    // Determine effective role
+    const effectiveRole = user.activeRole || user.role;
 
     // Upcoming jobs: scheduled or in_progress
     const { data: upcomingJobs, error: upcomingError } = await typed
@@ -62,6 +63,7 @@ export default async function handler(
         status,
         site_id,
         job_assignments (
+          user_id,
           started_at,
           user:users ( id, full_name, email )
         )
@@ -102,6 +104,12 @@ export default async function handler(
 
     if (upcomingJobs) {
       for (const job of upcomingJobs as any[]) {
+        // Filter for technician: only show if assigned
+        if (effectiveRole === 'technician') {
+          const isAssigned = job.job_assignments?.some((a: any) => a.user_id === user.id);
+          if (!isAssigned) continue;
+        }
+
         const scheduledAt = job.scheduled_at
           ? new Date(job.scheduled_at)
           : null;
@@ -118,7 +126,7 @@ export default async function handler(
         }
 
         const assignments = job.job_assignments as
-          | { started_at: string | null; user: { id: string; full_name: string | null; email: string } }[]
+          | { user_id: string; started_at: string | null; user: { id: string; full_name: string | null; email: string } }[]
           | null;
 
         const primaryAssignment =
@@ -136,24 +144,32 @@ export default async function handler(
           site: siteData,
           assignee: primaryAssignment && primaryAssignment.user
             ? {
-                id: primaryAssignment.user.id,
-                name:
-                  primaryAssignment.user.full_name ||
-                  primaryAssignment.user.email.split('@')[0],
-                started_at: primaryAssignment.started_at || undefined,
-              }
+              id: primaryAssignment.user.id,
+              name:
+                primaryAssignment.user.full_name ||
+                primaryAssignment.user.email?.split('@')[0] ||
+                'Unknown',
+              started_at: primaryAssignment.started_at || undefined,
+            }
             : null,
           eta_status: eta,
         });
 
-        if (!primaryAssignment || !primaryAssignment.user) {
-          unassigned.push({
-            id: job.id,
-            title: job.title,
-            scheduled_at: job.scheduled_at,
-            site: siteData,
-            priority: job.priority,
-          });
+        // Only add to unassigned/at-risk lists if NOT a technician (or if technician logic requires it differently)
+        // Typically technicians just want to see their schedule.
+        // But if we want to show "At Risk" jobs that are assigned to THEM, we can keep it.
+        // Unassigned jobs should definitely be hidden for technicians.
+
+        if (effectiveRole !== 'technician') {
+          if (!primaryAssignment || !primaryAssignment.user) {
+            unassigned.push({
+              id: job.id,
+              title: job.title,
+              scheduled_at: job.scheduled_at,
+              site: siteData,
+              priority: job.priority,
+            });
+          }
         }
 
         if (eta !== 'on-time' || job.priority === 'high' || job.priority === 'urgent') {

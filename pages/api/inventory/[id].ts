@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { Database } from '@/types/database';
-import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { withOnboardedAuth } from '@/lib/auth-middleware';
 import { logError } from '@/lib/logger';
@@ -8,15 +7,7 @@ import { logError } from '@/lib/logger';
 type InventoryItemRow = Database['public']['Tables']['inventory_items']['Row'];
 type InventoryItemUpdate = Database['public']['Tables']['inventory_items']['Update'];
 
-type ParsedUpdatePayload = Pick<
-  InventoryItemRow,
-  | 'name'
-  | 'sku'
-  | 'unit'
-  | 'quantity'
-  | 'reorder_level'
-  | 'is_serialized'
->;
+type ParsedUpdatePayload = any;
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;

@@ -33,11 +33,24 @@ export default async function handler(
   try {
     const typed = supabase as unknown as TypedClient;
 
-    // Fetch all jobs for the current org for basic KPI aggregation
-    const { data: jobs, error } = await typed
+    // Determine effective role
+    // We need to import getEffectiveRole or implement similar logic if not available in this scope
+    // Since we can't easily import without checking exports, let's check user.activeRole or user.role
+    const effectiveRole = user.activeRole || user.role;
+
+    let query = typed
       .from('jobs')
-      .select('id, status, priority, scheduled_at, completed_at')
+      .select(`
+        id, 
+        status, 
+        priority, 
+        scheduled_at, 
+        completed_at,
+        assignments:job_assignments(user_id)
+      `)
       .eq('org_id', user.org_id!);
+
+    const { data: jobs, error } = await query;
 
     if (error) {
       throw error;
@@ -60,6 +73,12 @@ export default async function handler(
 
     if (jobs) {
       for (const job of jobs) {
+        // Filter for technician: only count if assigned
+        if (effectiveRole === 'technician') {
+          const isAssigned = (job as any).assignments?.some((a: any) => a.user_id === user.id);
+          if (!isAssigned) continue;
+        }
+
         if (job.status === 'scheduled') {
           scheduled += 1;
 
@@ -87,15 +106,18 @@ export default async function handler(
     }
 
     // Compute unassigned count using job_assignments
-    const { data: unassignedJobs, error: unassignedError } = await typed
-      .from('jobs')
-      .select('id')
-      .eq('org_id', user.org_id!)
-      .in('status', ['scheduled', 'in_progress'])
-      .not('id', 'in', typed.from('job_assignments').select('job_id'));
+    // Technicians shouldn't see unassigned jobs count usually, or it should be 0
+    if (effectiveRole !== 'technician') {
+      const { data: unassignedJobs, error: unassignedError } = await typed
+        .from('jobs')
+        .select('id')
+        .eq('org_id', user.org_id!)
+        .in('status', ['scheduled', 'in_progress'])
+        .not('id', 'in', typed.from('job_assignments').select('job_id'));
 
-    if (!unassignedError && unassignedJobs) {
-      unassigned = unassignedJobs.length;
+      if (!unassignedError && unassignedJobs) {
+        unassigned = unassignedJobs.length;
+      }
     }
 
     const response: KpiResponse = {

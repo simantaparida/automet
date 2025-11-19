@@ -90,10 +90,7 @@ export default async function handler(
         .eq('org_id', user.org_id!)
         .gte('scheduled_at', startOfDay)
         .lte('scheduled_at', endOfDay)
-        .in(
-          'status',
-          ['scheduled', 'in_progress'] as Database['public']['Enums']['JobStatus'][]
-        );
+        .in('status', ['scheduled', 'in_progress']);
 
       if (jobsError) {
         throw jobsError;
@@ -123,7 +120,7 @@ export default async function handler(
 
         technicians.push({
           id: tech.id,
-          name: tech.full_name || tech.email.split('@')[0],
+          name: tech.full_name || tech.email?.split('@')[0] || 'Unknown',
           email: tech.email,
           status,
           jobs_count_today: jobsToday,

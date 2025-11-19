@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { withOnboardedAuth, requireRole } from '@/lib/auth-middleware';
 import { logError } from '@/lib/logger';
@@ -16,8 +15,8 @@ interface SiteRow {
   client_id: string;
   name: string;
   address: string;
-  gps_lat: number | null;
-  gps_lng: number | null;
+  gps_lat: string | null;
+  gps_lng: string | null;
   metadata: Record<string, any> | null;
   created_at: string;
   updated_at: string | null;
@@ -28,9 +27,6 @@ type SiteInsert = Omit<SiteRow, 'id' | 'created_at' | 'updated_at' | 'client'>;
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
-
-const toNullableString = (value: unknown): string | null =>
-  typeof value === 'string' && value.trim() !== '' ? value.trim() : null;
 
 const parseString = (value: unknown): string | undefined =>
   typeof value === 'string' && value.trim() !== '' ? value.trim() : undefined;
@@ -69,18 +65,18 @@ const parseSitePayload = (
     };
   }
 
-  // Parse GPS coordinates as numbers
+  // Parse GPS coordinates as strings (NUMERIC type in Postgres is returned as string)
   const gpsLat =
     typeof payload.gps_lat === 'number'
-      ? payload.gps_lat
+      ? payload.gps_lat.toString()
       : typeof payload.gps_lat === 'string' && payload.gps_lat.trim() !== ''
-      ? parseFloat(payload.gps_lat)
+      ? payload.gps_lat.trim()
       : null;
   const gpsLng =
     typeof payload.gps_lng === 'number'
-      ? payload.gps_lng
+      ? payload.gps_lng.toString()
       : typeof payload.gps_lng === 'string' && payload.gps_lng.trim() !== ''
-      ? parseFloat(payload.gps_lng)
+      ? payload.gps_lng.trim()
       : null;
 
   // Parse metadata if provided

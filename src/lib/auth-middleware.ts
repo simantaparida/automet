@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import type { Database } from '@/types/database';
-import type { SupabaseClient } from '@supabase/supabase-js';
+
 import { logError } from './logger';
 
 /**
@@ -26,6 +26,7 @@ export interface OnboardedApiRequest extends NextApiRequest {
     org_id: string;
     role: 'owner' | 'coordinator' | 'technician';
     activeRole?: 'owner' | 'coordinator' | 'technician'; // Role being viewed as (role switch)
+    full_name: string;
   };
 }
 
@@ -64,13 +65,13 @@ function getActiveRole(
   actualRole: 'owner' | 'coordinator' | 'technician'
 ): 'owner' | 'coordinator' | 'technician' {
   const activeRoleHeader = req.headers['x-active-role'];
-  
+
   if (!activeRoleHeader || typeof activeRoleHeader !== 'string') {
     return actualRole; // Default to actual role if no header
   }
 
   const validRoles: Array<'owner' | 'coordinator' | 'technician'> = ['owner', 'coordinator', 'technician'];
-  
+
   if (!validRoles.includes(activeRoleHeader as 'owner' | 'coordinator' | 'technician')) {
     return actualRole; // Invalid role, default to actual
   }
@@ -216,7 +217,7 @@ export async function withOnboardedAuth(
     // Get user profile with org_id and role from database
     type UserProfile = Pick<
       Database['public']['Tables']['users']['Row'],
-      'id' | 'email' | 'org_id' | 'role'
+      'id' | 'email' | 'org_id' | 'role' | 'full_name'
     >;
 
     const isUserProfile = (value: unknown): value is UserProfile => {
@@ -229,13 +230,14 @@ export async function withOnboardedAuth(
         (typeof (value as { org_id?: unknown }).org_id === 'string' ||
           (value as { org_id?: unknown }).org_id === null) &&
         (typeof (value as { role?: unknown }).role === 'string' ||
-          (value as { role?: unknown }).role === null)
+          (value as { role?: unknown }).role === null) &&
+        (typeof (value as { full_name?: unknown }).full_name === 'string')
       );
     };
 
     const { data: userProfile, error: profileError } = await supabase
       .from('users')
-      .select('id, email, org_id, role')
+      .select('id, email, org_id, role, full_name')
       .eq('id', session.user.id)
       .maybeSingle<UserProfile>();
 
@@ -259,7 +261,7 @@ export async function withOnboardedAuth(
 
     // TypeScript now knows org_id and role are non-null
     const actualRole = userProfile.role as 'owner' | 'coordinator' | 'technician';
-    
+
     // Get active role from header (role switch)
     const activeRole = getActiveRole(req, actualRole);
 
@@ -273,6 +275,7 @@ export async function withOnboardedAuth(
         org_id: userProfile.org_id,
         role: actualRole,
         activeRole: activeRole !== actualRole ? activeRole : undefined,
+        full_name: userProfile.full_name,
       },
       supabase, // Return the authenticated Supabase client with session
     };

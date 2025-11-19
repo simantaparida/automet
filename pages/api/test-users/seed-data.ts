@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSupabaseAdmin } from '@/lib/supabase-server';
 import { withOnboardedAuth } from '@/lib/auth-middleware';
-import type { Database } from '@/types/database';
 
 /**
  * POST /api/test-users/seed-data
@@ -65,14 +64,13 @@ export default async function handler(
       .eq('org_id', orgId);
 
     const technicianId = testUsers?.find((u) => u.role === 'technician')?.id || null;
-    const coordinatorId = testUsers?.find((u) => u.role === 'coordinator')?.id || null;
 
-    const results: Record<string, { created: number; errors: string[] }> = {
-      clients: { created: 0, errors: [] },
-      sites: { created: 0, errors: [] },
-      assets: { created: 0, errors: [] },
-      jobs: { created: 0, errors: [] },
-      inventory: { created: 0, errors: [] },
+    const results = {
+      clients: { created: 0, errors: [] as string[] },
+      sites: { created: 0, errors: [] as string[] },
+      assets: { created: 0, errors: [] as string[] },
+      jobs: { created: 0, errors: [] as string[] },
+      inventory: { created: 0, errors: [] as string[] },
     };
 
     // 1. Create Clients
@@ -158,9 +156,9 @@ export default async function handler(
           .from('sites')
           .insert({
             org_id: orgId,
-            client_id: clientIds[site.clientIndex],
+            client_id: clientIds[site.clientIndex]!,
             name: site.name,
-            address: site.address,
+            address: site.address!,
           })
           .select('id')
           .single();
@@ -203,11 +201,11 @@ export default async function handler(
           .from('assets')
           .insert({
             org_id: orgId,
-            site_id: siteIds[asset.siteIndex],
-            asset_type: asset.asset_type,
-            model: asset.model,
-            serial_number: asset.serial_number,
-          })
+            site_id: siteIds[asset.siteIndex]!,
+            asset_type: asset.asset_type!,
+            model: asset.model!,
+            serial_number: asset.serial_number!,
+          } as any)
           .select('id')
           .single();
 
@@ -368,16 +366,16 @@ export default async function handler(
           .from('jobs')
           .insert({
             org_id: orgId,
-            client_id: clientIds[job.clientIndex],
-            site_id: siteIds[job.siteIndex],
+            client_id: clientIds[job.clientIndex]!,
+            site_id: siteIds[job.siteIndex]!,
             asset_id: job.assetIndex !== null && assetIds[job.assetIndex] ? assetIds[job.assetIndex] : null,
-            title: job.title,
-            description: job.description,
-            priority: job.priority,
-            status: job.status,
-            scheduled_at: job.scheduled_at,
+            title: job.title!,
+            description: job.description!,
+            priority: job.priority as any,
+            status: job.status as any,
+            scheduled_at: job.scheduled_at!,
             completed_at: job.completed_at || null,
-          })
+          } as any)
           .select('id')
           .single();
 
@@ -393,10 +391,8 @@ export default async function handler(
               .from('job_assignments')
               .insert({
                 job_id: data.id,
-                user_id: technicianId,
-                is_primary: true, // Mark as primary assignee
-                assigned_at: new Date().toISOString(),
-              })
+                user_id: technicianId!,
+              } as any)
               .select();
           }
         }
@@ -505,7 +501,15 @@ export default async function handler(
       try {
         const { data, error } = await supabaseAdmin
           .from('inventory_items')
-          .insert(item)
+          .insert({
+            org_id: item.org_id,
+            item_name: item.name,
+            category: 'General',
+            sku: item.sku,
+            unit_of_measure: item.unit,
+            quantity_available: item.quantity,
+            reorder_level: item.reorder_level,
+          } as any)
           .select('id')
           .single();
 

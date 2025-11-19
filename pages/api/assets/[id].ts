@@ -57,12 +57,12 @@ export default async function handler(
           .select('id, asset_type, model, serial_number, install_date, metadata, created_at, site_id')
           .eq('id', assetId)
           .single();
-        
+
         if (simpleResult.error) {
           throw simpleResult.error;
         }
-        
-        asset = simpleResult.data;
+
+        asset = simpleResult.data as any;
         assetError = null;
       }
 
@@ -82,7 +82,7 @@ export default async function handler(
 
       return res.status(200).json({
         asset: {
-          ...(asset as Record<string, unknown>),
+          ...(asset as any),
           jobs: jobs || [],
         },
       });

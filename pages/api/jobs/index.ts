@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { withOnboardedAuth, requireRole, getEffectiveRole } from '@/lib/auth-middleware';
 import { logError, logWarn } from '@/lib/logger';
@@ -297,8 +296,8 @@ export default async function handler(
 async function handleGetJobs(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: { id: string; org_id: string; role: 'owner' | 'coordinator' | 'technician'; activeRole?: 'owner' | 'coordinator' | 'technician' },
-  supabase: ReturnType<typeof createServerSupabaseClient<Database>>
+  user: { id: string; email: string; org_id: string; role: 'owner' | 'coordinator' | 'technician'; activeRole?: 'owner' | 'coordinator' | 'technician' },
+  supabase: any
 ) {
   try {
     const effectiveRole = getEffectiveRole(user);
@@ -379,7 +378,7 @@ async function handleCreateJob(
   req: NextApiRequest,
   res: NextApiResponse,
   orgId: string,
-  supabase: ReturnType<typeof createServerSupabaseClient<Database>>
+  supabase: any
 ) {
   try {
     const typedClient = supabase as unknown as SupabaseClient<Database>;

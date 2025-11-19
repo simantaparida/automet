@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { Home, Briefcase, MoreHorizontal, Users, User, MapPin, Wrench, Package, X } from 'lucide-react';
 
 interface BottomNavProps {
-  activeTab?: 'home' | 'jobs' | 'more' | 'clients' | 'profile';
+  activeTab?: 'home' | 'jobs' | 'more' | 'clients' | 'profile' | 'team';
 }
 
 export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {

@@ -20,7 +20,6 @@ import {
   Hash,
   Layers,
   Calendar,
-  Tag,
   ShieldCheck,
   AlertCircle,
 } from 'lucide-react';

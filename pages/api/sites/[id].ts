@@ -57,8 +57,8 @@ export default async function handler(
         if (simpleResult.error) {
           throw simpleResult.error;
         }
-        
-        site = simpleResult.data;
+
+        site = simpleResult.data as any;
         siteError = null;
       }
 

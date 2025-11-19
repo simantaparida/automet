@@ -10,7 +10,6 @@ import {
   Calendar,
   Clock,
   MapPin,
-  Building2,
   Wrench,
   User,
   Phone,
@@ -419,10 +418,6 @@ export default function JobDetailPage() {
     }
   };
 
-  const handleMessageTechnician = (email: string) => {
-    window.location.href = `mailto:${email}`;
-  };
-
   if (loading) {
     return (
       <ProtectedRoute>
@@ -497,6 +492,7 @@ export default function JobDetailPage() {
     );
   }
 
+  // After all early returns, job is guaranteed to exist
   const statusConfig = getStatusConfig(job.status);
   const priorityConfig = getPriorityConfig(job.priority);
   const StatusIcon = statusConfig.icon;
@@ -1041,105 +1037,111 @@ export default function JobDetailPage() {
               }}
             >
               {/* Status action buttons first */}
-              {job.status === 'scheduled' && (
-                <button
-                  onClick={() => updateJobStatus('in_progress')}
-                  disabled={updating}
-                  style={{
-                    padding: '0.625rem 1.25rem',
-                    background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    cursor: updating ? 'not-allowed' : 'pointer',
-                    minHeight: '40px',
-                    opacity: updating ? 0.6 : 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.5rem',
-                    boxShadow: '0 2px 8px rgba(239,119,34,0.25)',
-                    transition: 'all 0.2s',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!updating) {
-                      e.currentTarget.style.transform = 'translateY(-1px)';
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
-                  }}
-                >
-                  <Play size={16} />
-                  {updating ? 'Starting...' : 'Start Job'}
-                </button>
-              )}
-              {job.status === 'in_progress' && (
-                <button
-                  onClick={() => updateJobStatus('completed')}
-                  disabled={updating}
-                  style={{
-                    padding: '0.625rem 1.25rem',
-                    background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    cursor: updating ? 'not-allowed' : 'pointer',
-                    minHeight: '40px',
-                    opacity: updating ? 0.6 : 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.5rem',
-                    boxShadow: '0 2px 8px rgba(16,185,129,0.25)',
-                    transition: 'all 0.2s',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!updating) {
-                      e.currentTarget.style.transform = 'translateY(-1px)';
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(16,185,129,0.3)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(16,185,129,0.25)';
-                  }}
-                >
-                  <CheckCircle2 size={16} />
-                  {updating ? 'Completing...' : 'Mark as Complete'}
-                </button>
-              )}
-              {job.status !== 'completed' && job.status !== 'cancelled' && (
-                <button
-                  onClick={() => updateJobStatus('cancelled')}
-                  disabled={updating}
-                  style={{
-                    padding: '0.625rem 1rem',
-                    backgroundColor: 'white',
-                    color: '#ef4444',
-                    border: '1px solid #ef4444',
-                    borderRadius: '8px',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    cursor: updating ? 'not-allowed' : 'pointer',
-                    minHeight: '40px',
-                    opacity: updating ? 0.6 : 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.5rem',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <XCircle size={16} />
-                  Cancel Job
-                </button>
+              {/* Status action buttons first - Hidden for technicians who use Check-in/out */}
+              {/* Status action buttons first - Hidden for technicians who use Check-in/out */}
+              {activeRole !== 'technician' && (
+                <>
+                  {job.status === 'scheduled' && (
+                    <button
+                      onClick={() => updateJobStatus('in_progress')}
+                      disabled={updating}
+                      style={{
+                        padding: '0.625rem 1.25rem',
+                        background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '8px',
+                        fontSize: '0.875rem',
+                        fontWeight: '600',
+                        cursor: updating ? 'not-allowed' : 'pointer',
+                        minHeight: '40px',
+                        opacity: updating ? 0.6 : 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.5rem',
+                        boxShadow: '0 2px 8px rgba(239,119,34,0.25)',
+                        transition: 'all 0.2s',
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!updating) {
+                          e.currentTarget.style.transform = 'translateY(-1px)';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
+                      }}
+                    >
+                      <Play size={16} />
+                      {updating ? 'Starting...' : 'Start Job'}
+                    </button>
+                  )}
+                  {job.status === 'in_progress' && (
+                    <button
+                      onClick={() => updateJobStatus('completed')}
+                      disabled={updating}
+                      style={{
+                        padding: '0.625rem 1.25rem',
+                        background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '8px',
+                        fontSize: '0.875rem',
+                        fontWeight: '600',
+                        cursor: updating ? 'not-allowed' : 'pointer',
+                        minHeight: '40px',
+                        opacity: updating ? 0.6 : 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.5rem',
+                        boxShadow: '0 2px 8px rgba(16,185,129,0.25)',
+                        transition: 'all 0.2s',
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!updating) {
+                          e.currentTarget.style.transform = 'translateY(-1px)';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(16,185,129,0.3)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 2px 8px rgba(16,185,129,0.25)';
+                      }}
+                    >
+                      <CheckCircle2 size={16} />
+                      {updating ? 'Completing...' : 'Mark as Complete'}
+                    </button>
+                  )}
+                  {job.status !== 'completed' && job.status !== 'cancelled' && (
+                    <button
+                      onClick={() => updateJobStatus('cancelled')}
+                      disabled={updating}
+                      style={{
+                        padding: '0.625rem 1rem',
+                        backgroundColor: 'white',
+                        color: '#ef4444',
+                        border: '1px solid #ef4444',
+                        borderRadius: '8px',
+                        fontSize: '0.875rem',
+                        fontWeight: '600',
+                        cursor: updating ? 'not-allowed' : 'pointer',
+                        minHeight: '40px',
+                        opacity: updating ? 0.6 : 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.5rem',
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      <XCircle size={16} />
+                      Cancel Job
+                    </button>
+                  )}
+                </>
               )}
 
               {/* Contact and Navigation Actions */}
@@ -1520,334 +1522,334 @@ export default function JobDetailPage() {
                 border: '1px solid rgba(239,119,34,0.1)',
               }}
             >
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '1rem',
+                }}
+              >
+                <h3
+                  style={{
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#6b7280',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    margin: 0,
+                  }}
+                >
+                  {activeRole === 'technician' ? 'Your Assignment' : `Assigned Technicians (${job.assignments?.length || 0})`}
+                </h3>
+                {activeRole !== 'technician' && (
+                  <button
+                    onClick={openAssignModal}
+                    style={{
+                      padding: '0.5rem 0.75rem',
+                      background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontSize: '0.75rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.375rem',
+                      minHeight: '32px',
+                      boxShadow: '0 2px 8px rgba(239,119,34,0.25)',
+                    }}
+                  >
+                    <Plus size={14} />
+                    Assign
+                  </button>
+                )}
+              </div>
+              {job.assignments && job.assignments.length > 0 ? (
                 <div
                   style={{
                     display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '1rem',
+                    flexDirection: 'column',
+                    gap: '0.5rem',
                   }}
                 >
-                  <h3
-                    style={{
-                      fontSize: '0.875rem',
-                      fontWeight: '600',
-                      color: '#6b7280',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
-                      margin: 0,
-                    }}
-                  >
-                    {activeRole === 'technician' ? 'Your Assignment' : `Assigned Technicians (${job.assignments?.length || 0})`}
-                  </h3>
-                  {activeRole !== 'technician' && (
-                    <button
-                      onClick={openAssignModal}
-                      style={{
-                        padding: '0.5rem 0.75rem',
-                        background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '8px',
-                        fontSize: '0.75rem',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.375rem',
-                        minHeight: '32px',
-                        boxShadow: '0 2px 8px rgba(239,119,34,0.25)',
-                      }}
-                    >
-                      <Plus size={14} />
-                      Assign
-                    </button>
-                  )}
-                </div>
-                {job.assignments && job.assignments.length > 0 ? (
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '0.5rem',
-                    }}
-                  >
-                    {job.assignments.map((assignment) => {
-                      const techStatus = getTechnicianStatus(assignment);
+                  {job.assignments.map((assignment) => {
+                    const techStatus = getTechnicianStatus(assignment);
 
-                      return (
-                        <div
-                          key={assignment.id}
-                          style={{
-                            padding: '0.75rem 1rem',
-                            backgroundColor: 'white',
-                            borderRadius: '8px',
-                            border: '1px solid #e5e7eb',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '1rem',
-                          }}
-                        >
-                          {/* Technician Name & Icon */}
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: '200px' }}>
-                            <User size={16} color="#EF7722" />
-                            <div>
-                              <div
-                                style={{
-                                  fontSize: '0.875rem',
-                                  fontWeight: '600',
-                                  color: '#1f2937',
-                                }}
-                              >
-                                {assignment.user.full_name || assignment.user.email}
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Status Badge */}
-                          <div
-                            style={{
-                              padding: '0.25rem 0.625rem',
-                              backgroundColor: techStatus.bg,
-                              borderRadius: '999px',
-                              fontSize: '0.6875rem',
-                              fontWeight: '600',
-                              color: techStatus.color,
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '0.25rem',
-                              whiteSpace: 'nowrap',
-                            }}
-                          >
-                            <span style={{ fontSize: '0.5rem' }}>{techStatus.icon}</span>
-                            {techStatus.label}
-                          </div>
-
-                          {/* Activity Info - Compact */}
-                          {activeRole !== 'technician' && (
-                            <div
-                              style={{
-                                flex: 1,
-                                fontSize: '0.75rem',
-                                color: '#6b7280',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.75rem',
-                              }}
-                            >
-                              {assignment.started_at ? (
-                                <>
-                                  <span style={{ color: '#10b981', fontWeight: '500' }}>
-                                    Checked in {getTimeSince(assignment.started_at)}
-                                  </span>
-                                  <span>•</span>
-                                  <span>
-                                    {getDuration(assignment.started_at, assignment.completed_at)}
-                                  </span>
-                                </>
-                              ) : (
-                                <span style={{ color: '#f59e0b', fontWeight: '500' }}>
-                                  Not started yet
-                                </span>
-                              )}
-                            </div>
-                          )}
-
-                          {/* Action Buttons - Compact */}
-                          {activeRole !== 'technician' && (
-                            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                              <button
-                                onClick={() => handleCallTechnician(assignment.user.contact_phone)}
-                                style={{
-                                  padding: '0.375rem 0.625rem',
-                                  backgroundColor: 'white',
-                                  color: '#10b981',
-                                  border: '1px solid #10b981',
-                                  borderRadius: '6px',
-                                  fontSize: '0.75rem',
-                                  fontWeight: '600',
-                                  cursor: 'pointer',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '0.25rem',
-                                  transition: 'all 0.2s',
-                                  whiteSpace: 'nowrap',
-                                }}
-                                onMouseEnter={(e) => {
-                                  e.currentTarget.style.backgroundColor = '#f0fdf4';
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.backgroundColor = 'white';
-                                }}
-                              >
-                                <Phone size={12} />
-                                Call
-                              </button>
-                              <button
-                                onClick={() => handleUnassignTechnician(assignment.id)}
-                                style={{
-                                  padding: '0.375rem 0.5rem',
-                                  backgroundColor: 'white',
-                                  color: '#ef4444',
-                                  border: '1px solid #ef4444',
-                                  borderRadius: '6px',
-                                  cursor: 'pointer',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  transition: 'all 0.2s',
-                                }}
-                                onMouseEnter={(e) => {
-                                  e.currentTarget.style.backgroundColor = '#fef2f2';
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.backgroundColor = 'white';
-                                }}
-                                title="Remove technician"
-                              >
-                                <Trash2 size={14} />
-                              </button>
-                            </div>
-                          )}
-
-                          {/* Technician View: Check In/Out Buttons */}
-                          {activeRole === 'technician' && (
-                            <>
-                              {assignment.started_at ? (
-                                <div
-                                  style={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: '0.5rem',
-                                  }}
-                                >
-                                  <div
-                                    style={{
-                                      fontSize: '0.75rem',
-                                      color: '#10b981',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      gap: '0.375rem',
-                                      fontWeight: '600',
-                                      padding: '0.5rem',
-                                      backgroundColor: '#f0fdf4',
-                                      borderRadius: '6px',
-                                    }}
-                                  >
-                                    <CheckCircle size={14} />
-                                    Checked in {getTimeSince(assignment.started_at)} • {getDuration(assignment.started_at)} on-site
-                                  </div>
-                                  {assignment.completed_at ? (
-                                    <div
-                                      style={{
-                                        fontSize: '0.75rem',
-                                        color: '#6b7280',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '0.375rem',
-                                        padding: '0.5rem',
-                                        backgroundColor: '#f9fafb',
-                                        borderRadius: '6px',
-                                      }}
-                                    >
-                                      <CheckCircle2 size={14} />
-                                      Completed: {formatDate(assignment.completed_at)}
-                                    </div>
-                                  ) : (
-                                    <button
-                                      onClick={() => handleCheckOut(assignment.id)}
-                                      style={{
-                                        width: '100%',
-                                        padding: '0.625rem',
-                                        background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '8px',
-                                        fontSize: '0.875rem',
-                                        fontWeight: '600',
-                                        cursor: 'pointer',
-                                        minHeight: '40px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        gap: '0.5rem',
-                                        boxShadow: '0 2px 8px rgba(16,185,129,0.25)',
-                                      }}
-                                    >
-                                      <CheckCircle2 size={16} />
-                                      Check Out
-                                    </button>
-                                  )}
-                                </div>
-                              ) : (
-                                <button
-                                  onClick={() => handleCheckIn(assignment.id)}
-                                  style={{
-                                    width: '100%',
-                                    padding: '0.625rem',
-                                    background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '8px',
-                                    fontSize: '0.875rem',
-                                    fontWeight: '600',
-                                    cursor: 'pointer',
-                                    minHeight: '40px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: '0.5rem',
-                                    boxShadow: '0 2px 8px rgba(37,99,235,0.25)',
-                                  }}
-                                >
-                                  <Play size={16} />
-                                  Check In
-                                </button>
-                              )}
-                            </>
-                          )}
-
-                          {/* Notes (shown to both roles) */}
-                          {assignment.notes && (
+                    return (
+                      <div
+                        key={assignment.id}
+                        style={{
+                          padding: '0.75rem 1rem',
+                          backgroundColor: 'white',
+                          borderRadius: '8px',
+                          border: '1px solid #e5e7eb',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '1rem',
+                        }}
+                      >
+                        {/* Technician Name & Icon */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: '200px' }}>
+                          <User size={16} color="#EF7722" />
+                          <div>
                             <div
                               style={{
                                 fontSize: '0.875rem',
-                                color: '#374151',
-                                marginTop: '0.75rem',
-                                padding: '0.75rem',
-                                backgroundColor: '#f9fafb',
-                                borderRadius: '6px',
-                                border: '1px solid #e5e7eb',
-                                display: 'flex',
-                                alignItems: 'start',
-                                gap: '0.5rem',
+                                fontWeight: '600',
+                                color: '#1f2937',
                               }}
                             >
-                              <FileText size={16} color="#6b7280" style={{ marginTop: '2px', flexShrink: 0 }} />
-                              <span style={{ fontStyle: 'italic' }}>"{assignment.notes}"</span>
+                              {assignment.user.full_name || assignment.user.email}
                             </div>
-                          )}
+                          </div>
                         </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div
-                    style={{
-                      padding: '2rem',
-                      textAlign: 'center',
-                      color: '#9ca3af',
-                    }}
-                  >
-                    <User size={32} color="#d1d5db" style={{ margin: '0 auto 0.5rem' }} />
-                    <p style={{ fontSize: '0.875rem', margin: 0 }}>
-                      No technicians assigned yet
-                    </p>
-                  </div>
-                )}
-              </div>
+
+                        {/* Status Badge */}
+                        <div
+                          style={{
+                            padding: '0.25rem 0.625rem',
+                            backgroundColor: techStatus.bg,
+                            borderRadius: '999px',
+                            fontSize: '0.6875rem',
+                            fontWeight: '600',
+                            color: techStatus.color,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.25rem',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          <span style={{ fontSize: '0.5rem' }}>{techStatus.icon}</span>
+                          {techStatus.label}
+                        </div>
+
+                        {/* Activity Info - Compact */}
+                        {activeRole !== 'technician' && (
+                          <div
+                            style={{
+                              flex: 1,
+                              fontSize: '0.75rem',
+                              color: '#6b7280',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.75rem',
+                            }}
+                          >
+                            {assignment.started_at ? (
+                              <>
+                                <span style={{ color: '#10b981', fontWeight: '500' }}>
+                                  Checked in {getTimeSince(assignment.started_at)}
+                                </span>
+                                <span>•</span>
+                                <span>
+                                  {getDuration(assignment.started_at || '', assignment.completed_at || '')}
+                                </span>
+                              </>
+                            ) : (
+                              <span style={{ color: '#f59e0b', fontWeight: '500' }}>
+                                Not started yet
+                              </span>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Action Buttons - Compact */}
+                        {activeRole !== 'technician' && (
+                          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                            <button
+                              onClick={() => handleCallTechnician(assignment.user.contact_phone)}
+                              style={{
+                                padding: '0.375rem 0.625rem',
+                                backgroundColor: 'white',
+                                color: '#10b981',
+                                border: '1px solid #10b981',
+                                borderRadius: '6px',
+                                fontSize: '0.75rem',
+                                fontWeight: '600',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.25rem',
+                                transition: 'all 0.2s',
+                                whiteSpace: 'nowrap',
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#f0fdf4';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = 'white';
+                              }}
+                            >
+                              <Phone size={12} />
+                              Call
+                            </button>
+                            <button
+                              onClick={() => handleUnassignTechnician(assignment.id)}
+                              style={{
+                                padding: '0.375rem 0.5rem',
+                                backgroundColor: 'white',
+                                color: '#ef4444',
+                                border: '1px solid #ef4444',
+                                borderRadius: '6px',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.2s',
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#fef2f2';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = 'white';
+                              }}
+                              title="Remove technician"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Technician View: Check In/Out Buttons */}
+                        {activeRole === 'technician' && (
+                          <>
+                            {assignment.started_at ? (
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  gap: '0.5rem',
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    fontSize: '0.75rem',
+                                    color: '#10b981',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.375rem',
+                                    fontWeight: '600',
+                                    padding: '0.5rem',
+                                    backgroundColor: '#f0fdf4',
+                                    borderRadius: '6px',
+                                  }}
+                                >
+                                  <CheckCircle size={14} />
+                                  Checked in {getTimeSince(assignment.started_at)} • {getDuration(assignment.started_at)} on-site
+                                </div>
+                                {assignment.completed_at ? (
+                                  <div
+                                    style={{
+                                      fontSize: '0.75rem',
+                                      color: '#6b7280',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '0.375rem',
+                                      padding: '0.5rem',
+                                      backgroundColor: '#f9fafb',
+                                      borderRadius: '6px',
+                                    }}
+                                  >
+                                    <CheckCircle2 size={14} />
+                                    Completed: {formatDate(assignment.completed_at)}
+                                  </div>
+                                ) : (
+                                  <button
+                                    onClick={() => handleCheckOut(assignment.id)}
+                                    style={{
+                                      width: '100%',
+                                      padding: '0.625rem',
+                                      background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
+                                      color: 'white',
+                                      border: 'none',
+                                      borderRadius: '8px',
+                                      fontSize: '0.875rem',
+                                      fontWeight: '600',
+                                      cursor: 'pointer',
+                                      minHeight: '40px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      gap: '0.5rem',
+                                      boxShadow: '0 2px 8px rgba(16,185,129,0.25)',
+                                    }}
+                                  >
+                                    <CheckCircle2 size={16} />
+                                    Check Out
+                                  </button>
+                                )}
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => handleCheckIn(assignment.id)}
+                                style={{
+                                  width: '100%',
+                                  padding: '0.625rem',
+                                  background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
+                                  color: 'white',
+                                  border: 'none',
+                                  borderRadius: '8px',
+                                  fontSize: '0.875rem',
+                                  fontWeight: '600',
+                                  cursor: 'pointer',
+                                  minHeight: '40px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  gap: '0.5rem',
+                                  boxShadow: '0 2px 8px rgba(37,99,235,0.25)',
+                                }}
+                              >
+                                <Play size={16} />
+                                Check In
+                              </button>
+                            )}
+                          </>
+                        )}
+
+                        {/* Notes (shown to both roles) */}
+                        {assignment.notes && (
+                          <div
+                            style={{
+                              fontSize: '0.875rem',
+                              color: '#374151',
+                              marginTop: '0.75rem',
+                              padding: '0.75rem',
+                              backgroundColor: '#f9fafb',
+                              borderRadius: '6px',
+                              border: '1px solid #e5e7eb',
+                              display: 'flex',
+                              alignItems: 'start',
+                              gap: '0.5rem',
+                            }}
+                          >
+                            <FileText size={16} color="#6b7280" style={{ marginTop: '2px', flexShrink: 0 }} />
+                            <span style={{ fontStyle: 'italic' }}>"{assignment.notes}"</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div
+                  style={{
+                    padding: '2rem',
+                    textAlign: 'center',
+                    color: '#9ca3af',
+                  }}
+                >
+                  <User size={32} color="#d1d5db" style={{ margin: '0 auto 0.5rem' }} />
+                  <p style={{ fontSize: '0.875rem', margin: 0 }}>
+                    No technicians assigned yet
+                  </p>
+                </div>
+              )}
             </div>
           </div>
+
 
           {/* Desktop: Client & Site - 2 Column Grid */}
           <div className="desktop-header" style={{ padding: '0 2rem', marginBottom: '1rem' }}>
@@ -2110,7 +2112,7 @@ export default function JobDetailPage() {
                       const dateB = new Date(b.started_at || 0).getTime();
                       return dateB - dateA;
                     })
-                    .map((assignment, index) => (
+                    .map((assignment) => (
                       <div
                         key={assignment.id}
                         style={{
@@ -2210,7 +2212,7 @@ export default function JobDetailPage() {
                               whiteSpace: 'nowrap',
                             }}
                           >
-                            {getDuration(assignment.started_at, assignment.completed_at)}
+                            {getDuration(assignment.started_at || '', assignment.completed_at || '')}
                           </div>
                         )}
                       </div>
@@ -3006,127 +3008,129 @@ export default function JobDetailPage() {
         </main>
 
         {/* Assign Technician Modal */}
-        {showAssignModal && (
-          <div
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'rgba(0,0,0,0.5)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 50,
-              padding: '1rem',
-            }}
-            onClick={() => setShowAssignModal(false)}
-          >
+        {
+          showAssignModal && (
             <div
               style={{
-                backgroundColor: 'white',
-                borderRadius: '16px',
-                padding: '1.5rem',
-                maxWidth: '400px',
-                width: '100%',
-                boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 50,
+                padding: '1rem',
               }}
-              onClick={(e) => e.stopPropagation()}
+              onClick={() => setShowAssignModal(false)}
             >
-              <h2
+              <div
                 style={{
-                  fontSize: '1.25rem',
-                  fontWeight: '700',
-                  marginBottom: '1rem',
-                  color: '#1f2937',
-                }}
-              >
-                Assign Technician
-              </h2>
-              <select
-                value={selectedUserId}
-                onChange={(e) => setSelectedUserId(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.875rem',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  minHeight: '48px',
-                  marginBottom: '1rem',
-                  boxSizing: 'border-box',
                   backgroundColor: 'white',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
+                  borderRadius: '16px',
+                  padding: '1.5rem',
+                  maxWidth: '400px',
+                  width: '100%',
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
                 }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#EF7722';
-                  e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#e5e7eb';
-                  e.target.style.boxShadow = 'none';
-                }}
+                onClick={(e) => e.stopPropagation()}
               >
-                <option value="">Select a technician...</option>
-                {users.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.full_name || user.email} ({user.role})
-                  </option>
-                ))}
-              </select>
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
-                <button
-                  onClick={handleAssignTechnician}
-                  disabled={!selectedUserId}
+                <h2
                   style={{
-                    flex: 1,
-                    padding: '0.875rem',
-                    background: selectedUserId
-                      ? 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)'
-                      : '#d1d5db',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    fontWeight: '600',
-                    cursor: selectedUserId ? 'pointer' : 'not-allowed',
-                    minHeight: '48px',
-                    boxShadow: selectedUserId
-                      ? '0 2px 8px rgba(239,119,34,0.25)'
-                      : 'none',
+                    fontSize: '1.25rem',
+                    fontWeight: '700',
+                    marginBottom: '1rem',
+                    color: '#1f2937',
                   }}
                 >
-                  Assign
-                </button>
-                <button
-                  onClick={() => {
-                    setShowAssignModal(false);
-                    setSelectedUserId('');
-                  }}
+                  Assign Technician
+                </h2>
+                <select
+                  value={selectedUserId}
+                  onChange={(e) => setSelectedUserId(e.target.value)}
                   style={{
-                    flex: 1,
+                    width: '100%',
                     padding: '0.875rem',
-                    backgroundColor: 'white',
-                    color: '#6b7280',
                     border: '2px solid #e5e7eb',
                     borderRadius: '8px',
                     fontSize: '1rem',
-                    fontWeight: '600',
-                    cursor: 'pointer',
                     minHeight: '48px',
+                    marginBottom: '1rem',
+                    boxSizing: 'border-box',
+                    backgroundColor: 'white',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#EF7722';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#e5e7eb';
+                    e.target.style.boxShadow = 'none';
                   }}
                 >
-                  Cancel
-                </button>
+                  <option value="">Select a technician...</option>
+                  {users.map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.full_name || user.email} ({user.role})
+                    </option>
+                  ))}
+                </select>
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <button
+                    onClick={handleAssignTechnician}
+                    disabled={!selectedUserId}
+                    style={{
+                      flex: 1,
+                      padding: '0.875rem',
+                      background: selectedUserId
+                        ? 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)'
+                        : '#d1d5db',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontSize: '1rem',
+                      fontWeight: '600',
+                      cursor: selectedUserId ? 'pointer' : 'not-allowed',
+                      minHeight: '48px',
+                      boxShadow: selectedUserId
+                        ? '0 2px 8px rgba(239,119,34,0.25)'
+                        : 'none',
+                    }}
+                  >
+                    Assign
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowAssignModal(false);
+                      setSelectedUserId('');
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: '0.875rem',
+                      backgroundColor: 'white',
+                      color: '#6b7280',
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '8px',
+                      fontSize: '1rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      minHeight: '48px',
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )
+        }
 
         <BottomNav activeTab="jobs" />
-      </div>
-    </ProtectedRoute>
+      </div >
+    </ProtectedRoute >
   );
 }

@@ -12,6 +12,9 @@ module.exports = {
         center: true,
         padding: '1rem',
       },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
       colors: {
         primary: {
           DEFAULT: '#EF7722', // Vibrant orange from flag

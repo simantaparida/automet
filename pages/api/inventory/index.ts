@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
 import { withOnboardedAuth, requireRole } from '@/lib/auth-middleware';
@@ -140,7 +139,7 @@ export default async function handler(
 
       // Filter for low stock items
       const lowStockItems: InventoryItemRow[] = items.filter((item) => {
-        const quantity = Number(item.quantity) || 0;
+        const quantity = Number(item.quantity_available) || 0;
         const reorderLevel = Number(item.reorder_level) || 0;
         return quantity <= reorderLevel;
       });

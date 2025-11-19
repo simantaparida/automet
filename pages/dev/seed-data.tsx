@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useRouter } from 'next/router';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 interface SeedResult {
@@ -9,7 +8,6 @@ interface SeedResult {
 }
 
 export default function SeedDataPage() {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<SeedResult[]>([]);
   const [error, setError] = useState<string | null>(null);

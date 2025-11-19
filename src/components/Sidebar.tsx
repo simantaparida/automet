@@ -1,12 +1,14 @@
 import { useRouter } from 'next/router';
-import { Home, Briefcase, Users, MapPin, Wrench, Package, User } from 'lucide-react';
+import { Home, Briefcase, Users, MapPin, Wrench, Package, User, Users2 } from 'lucide-react';
+import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
 
 interface SidebarProps {
-  activeTab?: 'home' | 'jobs' | 'clients' | 'sites' | 'assets' | 'inventory' | 'profile';
+  activeTab?: 'home' | 'jobs' | 'clients' | 'sites' | 'assets' | 'inventory' | 'profile' | 'team';
 }
 
 export default function Sidebar({ activeTab = 'home' }: SidebarProps) {
   const router = useRouter();
+  const { activeRole } = useRoleSwitch();
 
   const isActive = (tab: string) => activeTab === tab;
 
@@ -19,6 +21,12 @@ export default function Sidebar({ activeTab = 'home' }: SidebarProps) {
     { id: 'inventory', label: 'Inventory', icon: Package, path: '/inventory' },
     { id: 'profile', label: 'Profile', icon: User, path: '/profile' },
   ];
+
+  // Add Team link for owners and coordinators
+  if (activeRole === 'owner' || activeRole === 'coordinator') {
+    // Insert after Clients (index 2)
+    navItems.splice(2, 0, { id: 'team', label: 'Team', icon: Users2, path: '/team' });
+  }
 
   return (
     <>

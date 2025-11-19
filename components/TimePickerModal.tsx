@@ -16,7 +16,9 @@ const TimePickerModal: React.FC<TimePickerModalProps> = ({
   title = 'Select Time',
 }) => {
   const parseInitialTime = (time: string) => {
-    const [hours24, minutes] = time.split(':').map(Number);
+    const parts = time.split(':').map(Number);
+    const hours24 = parts[0] ?? 9;
+    const minutes = parts[1] ?? 0;
     const period = hours24 >= 12 ? 'PM' : 'AM';
     const hours12 = hours24 === 0 ? 12 : hours24 > 12 ? hours24 - 12 : hours24;
     return { hours: hours12, minutes, period };

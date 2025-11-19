@@ -31,7 +31,11 @@
       "Bash(cat:*)",
       "Bash(psql \"$DATABASE_URL\" -f migrations/20251112_001_create_user_invites.sql)",
       "Bash(npm run build)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(awk:*)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(npx prettier --check pages/jobs/[id].tsx)",
+      "Bash(npx --yes @babel/parser@latest --help)"
     ],
     "deny": [],
     "ask": []

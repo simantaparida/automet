@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { withOnboardedAuth, requireRole } from '@/lib/auth-middleware';
 import { logError } from '@/lib/logger';

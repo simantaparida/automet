@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSupabaseAdmin } from '@/lib/supabase-server';
 import { withOnboardedAuth } from '@/lib/auth-middleware';
-import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import type { Database } from '@/types/database';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
@@ -33,7 +32,7 @@ export default async function handler(
     return; // Response already sent by middleware
   }
 
-  const { user } = authResult;
+  const { user, supabase } = authResult;
   const orgId = user.org_id;
 
   const supabaseAdmin = getSupabaseAdmin();
@@ -108,10 +107,7 @@ export default async function handler(
 
     // 3. Check what the authenticated API returns (respects RLS)
     try {
-      const supabaseClient = createServerSupabaseClient<Database>({
-        req,
-        res,
-      }) as unknown as SupabaseClient<Database>;
+      const supabaseClient = supabase as unknown as SupabaseClient<Database>;
 
       // Get session to verify authentication
       const { data: session, error: sessionError } = await supabaseClient.auth.getSession();

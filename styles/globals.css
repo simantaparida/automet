@@ -77,3 +77,16 @@ input[type='radio']:checked::after {
 input[type='checkbox'] {
   accent-color: #ef7722;
 }
+
+/* Desktop/Mobile responsive utilities */
+@layer utilities {
+  .desktop-header {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .desktop-header {
+      display: block;
+    }
+  }
+}

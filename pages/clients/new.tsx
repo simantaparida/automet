@@ -4,6 +4,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import BottomNav from '@/components/BottomNav';
 import Sidebar from '@/components/Sidebar';
 import TopHeader from '@/components/TopHeader';
+import RoleBadge from '@/components/RoleBadge';
 import { ArrowLeft, Building2, Mail, Phone, MapPin, FileText, Save } from 'lucide-react';
 
 export default function NewClientPage() {
@@ -56,512 +57,179 @@ export default function NewClientPage() {
 
   return (
     <ProtectedRoute>
-      <style jsx>{`
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-        .client-form-container {
-          padding-bottom: 80px;
-        }
-        .main-content {
-          padding: 1rem;
-        }
-        .mobile-header {
-          display: block;
-        }
-        .desktop-header {
-          display: none;
-        }
-        @media (min-width: 768px) {
-          .client-form-container {
-            margin-left: 260px;
-            padding-bottom: 0;
-            padding-top: 64px;
-          }
-          .main-content {
-            padding: 2rem;
-            max-width: 600px;
-            margin: 0 auto;
-          }
-          .mobile-header {
-            display: none;
-          }
-          .desktop-header {
-            display: block;
-          }
-        }
-      `}</style>
-
-      <div
-        className="client-form-container"
-        style={{
-          minHeight: '100vh',
-          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
-          fontFamily: 'system-ui, -apple-system, sans-serif',
-        }}
-      >
+      <div className="min-h-screen bg-white font-sans">
         {/* Desktop Sidebar */}
         <Sidebar activeTab="clients" />
 
-        {/* Desktop Top Header */}
-        <div className="desktop-header">
+        {/* Desktop Top Header with Glassmorphism */}
+        <div className="desktop-header fixed top-0 left-0 right-0 z-30 backdrop-blur-md bg-white/80 border-b border-primary/10">
           <TopHeader />
         </div>
 
-        {/* Mobile Header */}
-        <header
-          className="mobile-header"
-          style={{
-            background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-            color: 'white',
-            padding: '1rem',
-            position: 'sticky',
-            top: 0,
-            zIndex: 20,
-            boxShadow: '0 2px 10px rgba(239,119,34,0.2)',
-          }}
-        >
-          <div
-            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}
-          >
+        {/* Desktop Role Badge */}
+        <div className="desktop-header">
+          <RoleBadge />
+        </div>
+
+        {/* Main Content */}
+        <main className="ml-0 md:ml-[260px] pt-16 md:pt-20 pb-20 md:pb-8 px-4 md:px-8">
+          <div className="max-w-2xl mx-auto">
+            {/* Back Button */}
             <button
               onClick={() => router.back()}
-              style={{
-                backgroundColor: 'transparent',
-                color: 'white',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '0.25rem',
-                minHeight: '44px',
-                minWidth: '44px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '8px',
-                transition: 'background-color 0.2s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.2)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-              }}
+              className="mb-4 flex items-center gap-2 text-[13px] font-semibold text-gray-600 hover:text-primary transition-colors"
             >
-              <ArrowLeft size={24} />
+              <ArrowLeft size={16} />
+              <span>Back to Clients</span>
             </button>
-            <h1 style={{ fontSize: '1.25rem', fontWeight: '700', margin: 0 }}>
-              New Client
-            </h1>
-          </div>
-        </header>
 
-        {/* Form */}
-        <main className="main-content">
-          <div
-            style={{
-              backgroundColor: 'white',
-              padding: '1.5rem',
-              borderRadius: '12px',
-              boxShadow: '0 10px 40px rgba(0,0,0,0.08)',
-              border: '1px solid rgba(239,119,34,0.1)',
-            }}
-          >
-            {/* Header Icon */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.75rem',
-                marginBottom: '1.5rem',
-              }}
-            >
-              <div
-                style={{
-                  width: '48px',
-                  height: '48px',
-                  background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
-                  borderRadius: '10px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '2px solid rgba(239,119,34,0.2)',
-                }}
-              >
-                <Building2 size={24} color="#EF7722" />
-              </div>
-              <div>
-                <h1
-                  style={{
-                    fontSize: '1.5rem',
-                    fontWeight: '700',
-                    color: '#111827',
-                    margin: 0,
-                  }}
-                >
-                  Create New Client
-                </h1>
-                <p
-                  style={{
-                    fontSize: '0.875rem',
-                    color: '#6b7280',
-                    margin: '0.25rem 0 0 0',
-                  }}
-                >
-                  Add a new client to your organization
-                </p>
-              </div>
+            {/* Page Header */}
+            <div className="mb-6">
+              <h1 className="text-2xl font-bold text-gray-900 mb-1">Create New Client</h1>
+              <p className="text-[15px] text-gray-500">
+                Add a new client to your organization
+              </p>
             </div>
 
-            {/* Error Message */}
-            {error && (
-              <div
-                style={{
-                  padding: '0.75rem',
-                  marginBottom: '1.5rem',
-                  backgroundColor: '#fee2e2',
-                  color: '#991b1b',
-                  borderRadius: '8px',
-                  fontSize: '0.875rem',
-                  border: '1px solid #fecaca',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                }}
-              >
-                <span>⚠️</span>
-                <span>{error}</span>
-              </div>
-            )}
+            {/* Form Card */}
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              {/* Error Message */}
+              {error && (
+                <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-md flex items-start gap-2 text-[13px] text-red-900">
+                  <span className="text-base">⚠️</span>
+                  <span>{error}</span>
+                </div>
+              )}
 
-            <form onSubmit={handleSubmit}>
-              {/* Name */}
-              <div style={{ marginBottom: '1.25rem' }}>
-                <label
-                  style={{
-                    display: 'block',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    marginBottom: '0.5rem',
-                    color: '#374151',
-                  }}
-                >
-                  Client Name *
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  required
-                  value={formData.name}
-                  onChange={handleChange}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    minHeight: '48px',
-                    boxSizing: 'border-box',
-                    transition: 'border-color 0.2s, box-shadow 0.2s',
-                    outline: 'none',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#EF7722';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#d1d5db';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                  placeholder="e.g., ABC Corporation"
-                />
-              </div>
+              <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Name */}
+                <div>
+                  <label className="block text-[13px] font-semibold text-gray-700 mb-2">
+                    Client Name <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                      <Building2 size={18} />
+                    </div>
+                    <input
+                      type="text"
+                      name="name"
+                      required
+                      value={formData.name}
+                      onChange={handleChange}
+                      className="w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-md text-[14px] outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                      placeholder="e.g., ABC Corporation"
+                    />
+                  </div>
+                </div>
 
-              {/* Email */}
-              <div style={{ marginBottom: '1.25rem' }}>
-                <label
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    marginBottom: '0.5rem',
-                    color: '#374151',
-                  }}
-                >
-                  <Mail size={16} color="#6b7280" />
-                  Contact Email
-                </label>
-                <input
-                  type="email"
-                  name="contact_email"
-                  value={formData.contact_email}
-                  onChange={handleChange}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    minHeight: '48px',
-                    boxSizing: 'border-box',
-                    transition: 'border-color 0.2s, box-shadow 0.2s',
-                    outline: 'none',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#EF7722';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#d1d5db';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                  placeholder="contact@example.com"
-                />
-              </div>
+                {/* Email */}
+                <div>
+                  <label className="flex items-center gap-2 text-[13px] font-semibold text-gray-700 mb-2">
+                    <Mail size={14} className="text-gray-500" />
+                    Contact Email
+                  </label>
+                  <input
+                    type="email"
+                    name="contact_email"
+                    value={formData.contact_email}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-md text-[14px] outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    placeholder="contact@example.com"
+                  />
+                </div>
 
-              {/* Phone */}
-              <div style={{ marginBottom: '1.25rem' }}>
-                <label
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    marginBottom: '0.5rem',
-                    color: '#374151',
-                  }}
-                >
-                  <Phone size={16} color="#6b7280" />
-                  Contact Phone
-                </label>
-                <input
-                  type="tel"
-                  name="contact_phone"
-                  value={formData.contact_phone}
-                  onChange={handleChange}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    minHeight: '48px',
-                    boxSizing: 'border-box',
-                    transition: 'border-color 0.2s, box-shadow 0.2s',
-                    outline: 'none',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#EF7722';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#d1d5db';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                  placeholder="+91 98765 43210"
-                />
-              </div>
+                {/* Phone */}
+                <div>
+                  <label className="flex items-center gap-2 text-[13px] font-semibold text-gray-700 mb-2">
+                    <Phone size={14} className="text-gray-500" />
+                    Contact Phone
+                  </label>
+                  <input
+                    type="tel"
+                    name="contact_phone"
+                    value={formData.contact_phone}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-md text-[14px] outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    placeholder="+91 98765 43210"
+                  />
+                </div>
 
-              {/* Address */}
-              <div style={{ marginBottom: '1.25rem' }}>
-                <label
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    marginBottom: '0.5rem',
-                    color: '#374151',
-                  }}
-                >
-                  <MapPin size={16} color="#6b7280" />
-                  Address
-                </label>
-                <textarea
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  rows={3}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    boxSizing: 'border-box',
-                    fontFamily: 'inherit',
-                    resize: 'vertical',
-                    transition: 'border-color 0.2s, box-shadow 0.2s',
-                    outline: 'none',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#EF7722';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#d1d5db';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                  placeholder="Complete address..."
-                />
-              </div>
+                {/* Address */}
+                <div>
+                  <label className="flex items-center gap-2 text-[13px] font-semibold text-gray-700 mb-2">
+                    <MapPin size={14} className="text-gray-500" />
+                    Address
+                  </label>
+                  <textarea
+                    name="address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    rows={3}
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-md text-[14px] outline-none resize-y transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    placeholder="Complete address..."
+                  />
+                </div>
 
-              {/* Notes */}
-              <div style={{ marginBottom: '1.5rem' }}>
-                <label
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    marginBottom: '0.5rem',
-                    color: '#374151',
-                  }}
-                >
-                  <FileText size={16} color="#6b7280" />
-                  Notes
-                </label>
-                <textarea
-                  name="notes"
-                  value={formData.notes}
-                  onChange={handleChange}
-                  rows={4}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    boxSizing: 'border-box',
-                    fontFamily: 'inherit',
-                    resize: 'vertical',
-                    transition: 'border-color 0.2s, box-shadow 0.2s',
-                    outline: 'none',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#EF7722';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#d1d5db';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                  placeholder="Additional information about the client..."
-                />
-              </div>
+                {/* Notes */}
+                <div>
+                  <label className="flex items-center gap-2 text-[13px] font-semibold text-gray-700 mb-2">
+                    <FileText size={14} className="text-gray-500" />
+                    Notes
+                  </label>
+                  <textarea
+                    name="notes"
+                    value={formData.notes}
+                    onChange={handleChange}
+                    rows={4}
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-md text-[14px] outline-none resize-y transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    placeholder="Additional information about the client..."
+                  />
+                </div>
 
-              {/* Action Buttons */}
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.75rem',
-                }}
-              >
-                <button
-                  type="submit"
-                  disabled={saving}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem 1.5rem',
-                    background: saving
-                      ? '#9ca3af'
-                      : 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    fontWeight: '600',
-                    cursor: saving ? 'not-allowed' : 'pointer',
-                    minHeight: '48px',
-                    transition: 'all 0.2s',
-                    boxShadow: saving
-                      ? 'none'
-                      : '0 2px 8px rgba(239,119,34,0.25)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.5rem',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!saving) {
-                      e.currentTarget.style.transform = 'translateY(-1px)';
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!saving) {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
-                    }
-                  }}
-                >
-                  {saving ? (
-                    <>
-                      <div
-                        style={{
-                          width: '16px',
-                          height: '16px',
-                          border: '2px solid rgba(255,255,255,0.3)',
-                          borderTopColor: 'white',
-                          borderRadius: '50%',
-                          animation: 'spin 0.8s linear infinite',
-                        }}
-                      />
-                      <span>Creating...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Save size={18} />
-                      <span>Create Client</span>
-                    </>
-                  )}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => router.back()}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem 1.5rem',
-                    backgroundColor: 'white',
-                    color: '#6b7280',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    minHeight: '48px',
-                    transition: 'all 0.2s',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.5rem',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = '#EF7722';
-                    e.currentTarget.style.color = '#EF7722';
-                    e.currentTarget.style.boxShadow = '0 0 0 1px rgba(239,119,34,0.2)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = '#e5e7eb';
-                    e.currentTarget.style.color = '#6b7280';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
-                >
-                  <ArrowLeft size={18} />
-                  <span>Cancel</span>
-                </button>
-              </div>
-            </form>
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row-reverse gap-3 pt-2">
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="flex-1 sm:flex-initial sm:min-w-[140px] bg-gradient-to-br from-primary to-primary-600 text-white border-none rounded-md px-4 py-2.5 text-[13px] font-semibold cursor-pointer flex items-center justify-center gap-2 shadow-sm shadow-primary/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:enabled:-translate-y-0.5 hover:enabled:shadow-md hover:enabled:shadow-primary/35"
+                  >
+                    {saving ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span>Creating...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Save size={16} />
+                        <span>Create Client</span>
+                      </>
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => router.back()}
+                    disabled={saving}
+                    className="flex-1 sm:flex-initial sm:min-w-[140px] bg-white text-gray-700 border-2 border-gray-300 rounded-md px-4 py-2.5 text-[13px] font-semibold cursor-pointer flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:enabled:border-primary hover:enabled:text-primary"
+                  >
+                    <ArrowLeft size={16} />
+                    <span>Cancel</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Help Text */}
+            <div className="mt-4 p-4 bg-gray-50 rounded-md border border-gray-200">
+              <p className="text-[13px] text-gray-600 leading-relaxed">
+                <strong className="text-gray-700">Tip:</strong> Make sure to enter accurate contact details.
+                This information will be used when creating jobs and sending notifications.
+              </p>
+            </div>
           </div>
         </main>
 
+        {/* Bottom Navigation - Only visible on mobile */}
         <BottomNav activeTab="clients" />
       </div>
     </ProtectedRoute>

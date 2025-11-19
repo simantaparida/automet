@@ -503,12 +503,12 @@ export default async function handler(
           .from('inventory_items')
           .insert({
             org_id: item.org_id,
-            item_name: item.name,
-            category: 'General',
+            name: item.name,
             sku: item.sku,
-            unit_of_measure: item.unit,
-            quantity_available: item.quantity,
+            unit: item.unit,
+            quantity: item.quantity,
             reorder_level: item.reorder_level,
+            is_serialized: item.is_serialized,
           } as any)
           .select('id')
           .single();

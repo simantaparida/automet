@@ -288,14 +288,14 @@ export default function SeedDataPage() {
 
       // Create inventory items
       const inventoryItems = [
-        { item_name: 'Fire Extinguisher Refill - CO2 (5kg)', category: 'Fire Safety', sku: 'FE-CO2-5KG', unit_of_measure: 'kg', quantity_available: 50, reorder_level: 10, unit_cost: 150 },
-        { item_name: 'Fire Extinguisher Refill - DCP (9kg)', category: 'Fire Safety', sku: 'FE-DCP-9KG', unit_of_measure: 'kg', quantity_available: 35, reorder_level: 10, unit_cost: 200 },
-        { item_name: 'HVAC Air Filter (20x25x5)', category: 'HVAC', sku: 'HVAC-FILTER-20X25', unit_of_measure: 'piece', quantity_available: 25, reorder_level: 5, unit_cost: 500 },
-        { item_name: 'Generator Engine Oil (15W40) 5L', category: 'Generator', sku: 'GEN-OIL-15W40', unit_of_measure: 'liter', quantity_available: 40, reorder_level: 10, unit_cost: 800 },
-        { item_name: 'UPS Battery 12V 100Ah', category: 'UPS', sku: 'UPS-BATT-12V100', unit_of_measure: 'piece', quantity_available: 8, reorder_level: 2, unit_cost: 3500 },
-        { item_name: 'Safety Gloves (Pair)', category: 'Safety Equipment', sku: 'SAFETY-GLOVES', unit_of_measure: 'pair', quantity_available: 50, reorder_level: 10, unit_cost: 100 },
-        { item_name: 'Safety Goggles', category: 'Safety Equipment', sku: 'SAFETY-GOGGLES', unit_of_measure: 'piece', quantity_available: 20, reorder_level: 5, unit_cost: 250 },
-        { item_name: 'Multimeter (Digital)', category: 'Tools', sku: 'TOOL-MULTIMETER', unit_of_measure: 'piece', quantity_available: 5, reorder_level: 1, unit_cost: 1500 },
+        { name: 'Fire Extinguisher Refill - CO2 (5kg)', sku: 'FE-CO2-5KG', unit: 'kg', quantity: 50, reorder_level: 10, is_serialized: false },
+        { name: 'Fire Extinguisher Refill - DCP (9kg)', sku: 'FE-DCP-9KG', unit: 'kg', quantity: 35, reorder_level: 10, is_serialized: false },
+        { name: 'HVAC Air Filter (20x25x5)', sku: 'HVAC-FILTER-20X25', unit: 'piece', quantity: 25, reorder_level: 5, is_serialized: false },
+        { name: 'Generator Engine Oil (15W40) 5L', sku: 'GEN-OIL-15W40', unit: 'liter', quantity: 40, reorder_level: 10, is_serialized: false },
+        { name: 'UPS Battery 12V 100Ah', sku: 'UPS-BATT-12V100', unit: 'piece', quantity: 8, reorder_level: 2, is_serialized: true },
+        { name: 'Safety Gloves (Pair)', sku: 'SAFETY-GLOVES', unit: 'pair', quantity: 50, reorder_level: 10, is_serialized: false },
+        { name: 'Safety Goggles', sku: 'SAFETY-GOGGLES', unit: 'piece', quantity: 20, reorder_level: 5, is_serialized: false },
+        { name: 'Multimeter (Digital)', sku: 'TOOL-MULTIMETER', unit: 'piece', quantity: 5, reorder_level: 1, is_serialized: false },
       ];
 
       const inventoryIds: string[] = [];
@@ -313,10 +313,10 @@ export default function SeedDataPage() {
             inventoryIds.push(data.id);
           } else {
             const errorData = await response.json();
-            inventoryErrors.push(`${item.item_name}: ${errorData.error || 'Failed'}`);
+            inventoryErrors.push(`${item.name}: ${errorData.error || 'Failed'}`);
           }
         } catch (err) {
-          inventoryErrors.push(`${item.item_name}: ${err instanceof Error ? err.message : 'Unknown error'}`);
+          inventoryErrors.push(`${item.name}: ${err instanceof Error ? err.message : 'Unknown error'}`);
         }
       }
 

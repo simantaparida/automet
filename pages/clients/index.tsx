@@ -5,8 +5,9 @@ import BottomNav from '@/components/BottomNav';
 import Sidebar from '@/components/Sidebar';
 import TopHeader from '@/components/TopHeader';
 import RoleBadge from '@/components/RoleBadge';
+import EmptyState from '@/components/EmptyState';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
-import { Plus, Building2, Phone, Mail, MapPin, Search } from 'lucide-react';
+import { Plus, Building2, Phone, Mail, MapPin, ChevronRight } from 'lucide-react';
 
 interface Client {
   id: string;
@@ -21,29 +22,11 @@ export default function ClientsPage() {
   const router = useRouter();
   const { apiFetch, activeRole } = useRoleSwitch();
   const [clients, setClients] = useState<Client[]>([]);
-  const [filteredClients, setFilteredClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchClients();
-  }, [activeRole]); // Refetch when role changes
-
-  useEffect(() => {
-    if (searchTerm.trim() === '') {
-      setFilteredClients(clients);
-    } else {
-      const filtered = clients.filter(
-        (client) =>
-          client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          client.contact_email
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          client.contact_phone.includes(searchTerm)
-      );
-      setFilteredClients(filtered);
-    }
-  }, [searchTerm, clients]);
+  }, [activeRole]);
 
   const fetchClients = async () => {
     setLoading(true);
@@ -52,7 +35,9 @@ export default function ClientsPage() {
       if (response.ok) {
         const data = await response.json();
         setClients(data);
-        setFilteredClients(data);
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('Failed to fetch clients:', response.status, errorData);
       }
     } catch (error) {
       console.error('Error fetching clients:', error);
@@ -63,426 +48,116 @@ export default function ClientsPage() {
 
   return (
     <ProtectedRoute>
-      <style jsx>{`
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-        .clients-container {
-          padding-bottom: 80px;
-        }
-        .main-content {
-          padding: 1rem;
-        }
-        .mobile-header {
-          display: block;
-        }
-        .desktop-header {
-          display: none;
-        }
-        .fab-button {
-          bottom: 5rem;
-        }
-        @media (min-width: 768px) {
-          .clients-container {
-            margin-left: 260px;
-            padding-bottom: 0;
-            padding-top: 64px;
-          }
-          .main-content {
-            padding: 2rem;
-          }
-          .mobile-header {
-            display: none;
-          }
-          .desktop-header {
-            display: block;
-          }
-          .fab-button {
-            bottom: 2rem;
-          }
-        }
-      `}</style>
-
-      <div
-        className="clients-container"
-        style={{
-          minHeight: '100vh',
-          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
-          fontFamily: 'system-ui, -apple-system, sans-serif',
-        }}
-      >
+      <div className="min-h-screen bg-white font-sans">
         {/* Desktop Sidebar */}
         <Sidebar activeTab="clients" />
 
-        {/* Desktop Top Header */}
-        <div className="desktop-header">
+        {/* Desktop Top Header with Glassmorphism */}
+        <div className="desktop-header fixed top-0 left-0 right-0 z-30 backdrop-blur-md bg-white/80 border-b border-primary/10">
           <TopHeader />
         </div>
 
-        {/* Desktop Role Badge - Shows when role is switched */}
+        {/* Desktop Role Badge */}
         <div className="desktop-header">
           <RoleBadge />
         </div>
 
-        {/* Mobile Header */}
-        <header
-          className="mobile-header"
-          style={{
-            background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-            color: 'white',
-            padding: '1rem',
-            position: 'sticky',
-            top: 0,
-            zIndex: 20,
-            boxShadow: '0 2px 10px rgba(239,119,34,0.2)',
-          }}
-        >
-          <h1
-            style={{
-              fontSize: '1.25rem',
-              fontWeight: '700',
-              margin: '0 0 0.5rem 0',
-            }}
-          >
-            Clients
-          </h1>
-          <p style={{ fontSize: '0.875rem', margin: 0, opacity: 0.9 }}>
-            {filteredClients.length}{' '}
-            {filteredClients.length === 1 ? 'client' : 'clients'}
-          </p>
-        </header>
-
-        {/* Search Bar */}
-        <div
-          style={{
-            backgroundColor: 'white',
-            padding: '1rem',
-            borderBottom: '1px solid rgba(239,119,34,0.1)',
-            position: 'sticky',
-            top: '66px',
-            zIndex: 19,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-          }}
-        >
-          <div style={{ position: 'relative' }}>
-            <Search
-              size={20}
-              style={{
-                position: 'absolute',
-                left: '0.75rem',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: '#6b7280',
-                pointerEvents: 'none',
-              }}
-            />
-            <input
-              type="text"
-              placeholder="Search clients by name, email, or phone..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.75rem 0.75rem 0.75rem 2.75rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                fontSize: '1rem',
-                minHeight: '48px',
-                boxSizing: 'border-box',
-                transition: 'border-color 0.2s, box-shadow 0.2s',
-                outline: 'none',
-              }}
-              onFocus={(e) => {
-                e.target.style.borderColor = '#EF7722';
-                e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = '#d1d5db';
-                e.target.style.boxShadow = 'none';
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Clients List */}
-        <main className="main-content">
+        {/* Main Content */}
+        <main className="ml-0 md:ml-[260px] pt-16 md:pt-20 pb-20 md:pb-0 px-4 md:px-8 max-w-[1400px] mx-auto">
           {loading ? (
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                minHeight: '200px',
-              }}
-            >
-              <div
-                style={{
-                  width: '48px',
-                  height: '48px',
-                  border: '4px solid #ffe8d6',
-                  borderTopColor: '#EF7722',
-                  borderRadius: '50%',
-                  animation: 'spin 1s linear infinite',
-                }}
-              ></div>
-            </div>
-          ) : filteredClients.length === 0 ? (
-            <div
-              style={{
-                backgroundColor: 'white',
-                padding: '3rem 2rem',
-                borderRadius: '12px',
-                textAlign: 'center',
-                boxShadow: '0 10px 40px rgba(0,0,0,0.08)',
-                border: '1px solid rgba(239,119,34,0.1)',
-                maxWidth: '500px',
-                margin: '2rem auto',
-              }}
-            >
-              <div
-                style={{
-                  width: '80px',
-                  height: '80px',
-                  margin: '0 auto 1.5rem',
-                  background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '3px solid rgba(239,119,34,0.2)',
-                }}
-              >
-                <Building2 size={40} color="#EF7722" />
-              </div>
-              <h2
-                style={{
-                  fontSize: '1.5rem',
-                  fontWeight: '700',
-                  color: '#111827',
-                  margin: '0 0 0.5rem 0',
-                }}
-              >
-                {searchTerm
-                  ? 'No clients found'
-                  : 'No clients yet'}
-              </h2>
-              <p
-                style={{
-                  fontSize: '0.875rem',
-                  color: '#6b7280',
-                  margin: '0 0 1.5rem 0',
-                }}
-              >
-                {searchTerm
-                  ? 'Try adjusting your search terms'
-                  : 'Get started by adding your first client'}
-              </p>
-              {!searchTerm && (
-                <button
-                  onClick={() => router.push('/clients/new')}
-                  style={{
-                    padding: '0.75rem 1.5rem',
-                    background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    minHeight: '48px',
-                    transition: 'all 0.2s',
-                    boxShadow: '0 2px 8px rgba(239,119,34,0.25)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
-                  }}
-                >
-                  Create First Client
-                </button>
-              )}
+            <div className="flex justify-center items-center min-h-[400px]">
+              <div className="w-12 h-12 border-4 border-primary-100 border-t-primary rounded-full animate-spin"></div>
             </div>
           ) : (
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr',
-                gap: '1rem',
-              }}
-            >
-              {filteredClients.map((client) => (
-                <button
-                  key={client.id}
-                  onClick={() => router.push(`/clients/${client.id}`)}
-                  style={{
-                    backgroundColor: 'white',
-                    padding: '1.25rem',
-                    borderRadius: '12px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                    border: '1px solid rgba(239,119,34,0.1)',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    transition: 'all 0.2s',
-                    minHeight: '100px',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 10px 40px rgba(0,0,0,0.12)';
-                    e.currentTarget.style.borderColor = 'rgba(239,119,34,0.2)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
-                    e.currentTarget.style.borderColor = 'rgba(239,119,34,0.1)';
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'start',
-                      marginBottom: '0.75rem',
-                    }}
+            <>
+              {/* Page Header */}
+              <div className="mb-6 flex justify-between items-center flex-wrap gap-3">
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900 mb-1">Clients</h1>
+                  <p className="text-[15px] text-gray-500">
+                    {clients.length} {clients.length === 1 ? 'client' : 'clients'} in your organization
+                  </p>
+                </div>
+                {activeRole !== 'technician' && (
+                  <button
+                    onClick={() => router.push('/clients/new')}
+                    className="bg-gradient-to-br from-primary to-primary-600 text-white border-none rounded-md px-4 py-2 text-[13px] font-semibold cursor-pointer flex items-center gap-2 shadow-sm shadow-primary/20 transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-primary/35"
                   >
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.75rem',
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: '48px',
-                          height: '48px',
-                          background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
-                          borderRadius: '10px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          border: '2px solid rgba(239,119,34,0.2)',
-                          flexShrink: 0,
-                        }}
-                      >
-                        <Building2 size={24} color="#EF7722" />
-                      </div>
-                      <h3
-                        style={{
-                          fontSize: '1.125rem',
-                          fontWeight: '700',
-                          color: '#111827',
-                          margin: 0,
-                        }}
-                      >
-                        {client.name}
-                      </h3>
-                    </div>
-                  </div>
+                    <Plus size={18} /> Add Client
+                  </button>
+                )}
+              </div>
 
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '0.5rem',
-                      paddingLeft: '3.5rem',
-                    }}
-                  >
-                    {client.contact_phone && (
-                      <div
-                        style={{
-                          fontSize: '0.875rem',
-                          color: '#6b7280',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.5rem',
-                        }}
+              {/* Clients Grid */}
+              {clients.length === 0 ? (
+                <div className="bg-white p-4 rounded-lg border border-gray-200">
+                  <EmptyState
+                    icon={<Building2 size={48} className="text-gray-300" />}
+                    title="No clients yet"
+                    description="Get started by adding your first client"
+                  />
+                  {activeRole !== 'technician' && (
+                    <div className="flex justify-center mt-4">
+                      <button
+                        onClick={() => router.push('/clients/new')}
+                        className="bg-gradient-to-br from-primary to-primary-600 text-white border-none rounded-md px-6 py-3 text-[14px] font-semibold cursor-pointer flex items-center gap-2 shadow-sm shadow-primary/20 transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-primary/35"
                       >
-                        <Phone size={16} color="#6b7280" />
-                        <span>{client.contact_phone}</span>
+                        <Plus size={18} /> Create First Client
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {clients.map((client) => (
+                    <button
+                      key={client.id}
+                      onClick={() => router.push(`/clients/${client.id}`)}
+                      className="bg-white p-4 rounded-lg border border-gray-200 cursor-pointer text-left transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-md hover:shadow-primary/15"
+                    >
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className="w-12 h-12 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg flex items-center justify-center flex-shrink-0 border border-primary/20">
+                          <Building2 size={24} className="text-primary" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2 mb-1">
+                            <h3 className="text-[15px] font-bold text-gray-900 truncate">
+                              {client.name}
+                            </h3>
+                            <ChevronRight size={16} className="text-gray-400 flex-shrink-0 mt-0.5" />
+                          </div>
+                        </div>
                       </div>
-                    )}
-                    {client.contact_email && (
-                      <div
-                        style={{
-                          fontSize: '0.875rem',
-                          color: '#6b7280',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.5rem',
-                        }}
-                      >
-                        <Mail size={16} color="#6b7280" />
-                        <span>{client.contact_email}</span>
+
+                      <div className="space-y-1.5 pl-[60px]">
+                        {client.contact_phone && (
+                          <div className="flex items-center gap-2 text-[13px] text-gray-500">
+                            <Phone size={14} className="flex-shrink-0" />
+                            <span className="truncate">{client.contact_phone}</span>
+                          </div>
+                        )}
+                        {client.contact_email && (
+                          <div className="flex items-center gap-2 text-[13px] text-gray-500">
+                            <Mail size={14} className="flex-shrink-0" />
+                            <span className="truncate">{client.contact_email}</span>
+                          </div>
+                        )}
+                        {client.address && (
+                          <div className="flex items-start gap-2 text-[13px] text-gray-500">
+                            <MapPin size={14} className="flex-shrink-0 mt-0.5" />
+                            <span className="line-clamp-2 leading-snug">{client.address}</span>
+                          </div>
+                        )}
                       </div>
-                    )}
-                    {client.address && (
-                      <div
-                        style={{
-                          fontSize: '0.875rem',
-                          color: '#6b7280',
-                          display: 'flex',
-                          alignItems: 'start',
-                          gap: '0.5rem',
-                        }}
-                      >
-                        <MapPin
-                          size={16}
-                          color="#6b7280"
-                          style={{ marginTop: '2px', flexShrink: 0 }}
-                        />
-                        <span style={{ lineHeight: '1.5' }}>{client.address}</span>
-                      </div>
-                    )}
-                  </div>
-                </button>
-              ))}
-            </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </main>
 
-        {/* FAB Button - Hide for technicians */}
-        {activeRole !== 'technician' && (
-          <button
-            onClick={() => router.push('/clients/new')}
-            className="fab-button"
-            style={{
-              position: 'fixed',
-              right: '1rem',
-              width: '56px',
-              height: '56px',
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-              color: 'white',
-              border: 'none',
-              fontSize: '1.75rem',
-              fontWeight: '300',
-              cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(239,119,34,0.3)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 10,
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'scale(1.1)';
-              e.currentTarget.style.boxShadow = '0 6px 16px rgba(239,119,34,0.4)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'scale(1)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
-            }}
-          >
-            <Plus size={28} />
-          </button>
-        )}
-
+        {/* Bottom Navigation - Only visible on mobile */}
         <BottomNav activeTab="clients" />
       </div>
     </ProtectedRoute>

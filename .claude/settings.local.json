@@ -35,7 +35,8 @@
       "Bash(awk:*)",
       "Bash(npx tsc --noEmit)",
       "Bash(npx prettier --check pages/jobs/[id].tsx)",
-      "Bash(npx --yes @babel/parser@latest --help)"
+      "Bash(npx --yes @babel/parser@latest --help)",
+      "Bash(psql:*)"
     ],
     "deny": [],
     "ask": []

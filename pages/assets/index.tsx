@@ -5,17 +5,9 @@ import BottomNav from '@/components/BottomNav';
 import Sidebar from '@/components/Sidebar';
 import TopHeader from '@/components/TopHeader';
 import RoleBadge from '@/components/RoleBadge';
+import EmptyState from '@/components/EmptyState';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
-import {
-  Plus,
-  Package,
-  Building2,
-  MapPin,
-  Search,
-  Filter,
-  CheckCircle2,
-  AlertTriangle,
-} from 'lucide-react';
+import { Plus, Package, Building2, MapPin, ChevronRight, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 interface Asset {
   id: string;
@@ -50,52 +42,16 @@ export default function AssetsPage() {
   const router = useRouter();
   const { apiFetch, activeRole } = useRoleSwitch();
   const [assets, setAssets] = useState<Asset[]>([]);
-  const [filteredAssets, setFilteredAssets] = useState<Asset[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [sites, setSites] = useState<Site[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
   const [selectedClientId, setSelectedClientId] = useState('');
   const [selectedSiteId, setSelectedSiteId] = useState('');
 
   useEffect(() => {
     fetchData();
-  }, [activeRole]); // Refetch when role changes
+  }, [activeRole]);
 
-  useEffect(() => {
-    let filtered = assets;
-
-    // Filter by client if selected
-    if (selectedClientId) {
-      filtered = filtered.filter(
-        (asset) => asset.site?.client?.id === selectedClientId
-      );
-    }
-
-    // Filter by site if selected
-    if (selectedSiteId) {
-      filtered = filtered.filter((asset) => asset.site?.id === selectedSiteId || asset.site_id === selectedSiteId);
-    }
-
-    // Filter by search term
-    if (searchTerm.trim() !== '') {
-      filtered = filtered.filter(
-        (asset) =>
-          asset.asset_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (asset.model && asset.model.toLowerCase().includes(searchTerm.toLowerCase())) ||
-          (asset.serial_number &&
-            asset.serial_number
-              .toLowerCase()
-              .includes(searchTerm.toLowerCase())) ||
-          asset.site?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          asset.site?.client?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    setFilteredAssets(filtered);
-  }, [searchTerm, selectedClientId, selectedSiteId, assets]);
-
-  // Update sites list when client changes
   useEffect(() => {
     if (selectedClientId) {
       fetchSites(selectedClientId);
@@ -115,36 +71,22 @@ export default function AssetsPage() {
 
       if (assetsResponse.ok) {
         const assetsData = await assetsResponse.json();
-        console.log('Assets data received:', assetsData);
-        
-        // If assets don't have nested site/client data, fetch sites separately and merge
         let assetsWithSiteData = assetsData;
-        
-        // Check if any assets are missing site data
+
         const assetsNeedingSiteData = assetsData.filter(
           (asset: Asset) => !asset.site?.name || !asset.site?.client?.name
         );
-        
+
         if (assetsNeedingSiteData.length > 0) {
-          // Fetch all sites
           try {
             const sitesResponse = await apiFetch('/api/sites');
             if (sitesResponse.ok) {
               const sitesData = await sitesResponse.json();
-              
-              // Create a map of site_id -> site data
-              const sitesMap = new Map(
-                sitesData.map((site: any) => [site.id, site])
-              );
-              
-              // Merge site data into assets
+              const sitesMap = new Map(sitesData.map((site: any) => [site.id, site]));
+
               assetsWithSiteData = assetsData.map((asset: Asset) => {
-                // If asset already has complete site data, return as is
-                if (asset.site?.name && asset.site?.client?.name) {
-                  return asset;
-                }
-                
-                // Otherwise, look up site data from the map
+                if (asset.site?.name && asset.site?.client?.name) return asset;
+
                 const siteId = asset.site_id || asset.site?.id;
                 if (siteId && sitesMap.has(siteId)) {
                   const site = sitesMap.get(siteId) as any;
@@ -153,15 +95,12 @@ export default function AssetsPage() {
                     site: {
                       id: site.id,
                       name: site.name,
-                      client: site.client ? {
-                        id: site.client.id,
-                        name: site.client.name,
-                      } : undefined,
+                      client: site.client
+                        ? { id: site.client.id, name: site.client.name }
+                        : undefined,
                     },
                   };
                 }
-                
-                // Return asset as is if we can't find site data
                 return asset;
               });
             }
@@ -169,13 +108,11 @@ export default function AssetsPage() {
             console.error('Error fetching sites for assets:', error);
           }
         }
-        
+
         setAssets(assetsWithSiteData);
-        setFilteredAssets(assetsWithSiteData);
       } else {
-        const errorData = await assetsResponse.json().catch(() => ({}));
-        console.error('Assets API error:', errorData);
-        alert(`Failed to load assets: ${errorData.error || 'Unknown error'}`);
+        const errorData = await assetsResponse.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('Failed to fetch assets:', assetsResponse.status, errorData);
       }
 
       if (clientsResponse.ok) {
@@ -201,7 +138,6 @@ export default function AssetsPage() {
     }
   };
 
-  // Helper function to extract warranty_expiry from metadata if it exists
   const getWarrantyExpiry = (asset: Asset): string | null => {
     if (asset.metadata && typeof asset.metadata === 'object' && 'warranty_expiry' in asset.metadata) {
       return asset.metadata.warranty_expiry as string | null;
@@ -214,600 +150,166 @@ export default function AssetsPage() {
     return new Date(warrantyDate) < new Date();
   };
 
+  const filteredAssets = assets.filter((asset) => {
+    if (selectedClientId && asset.site?.client?.id !== selectedClientId) return false;
+    if (selectedSiteId && asset.site?.id !== selectedSiteId && asset.site_id !== selectedSiteId) return false;
+    return true;
+  });
+
   return (
     <ProtectedRoute>
-      <style jsx>{`
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-        .assets-container {
-          padding-bottom: 80px;
-        }
-        .main-content {
-          padding: 1rem;
-        }
-        .mobile-header {
-          display: block;
-        }
-        .desktop-header {
-          display: none;
-        }
-        .fab-button {
-          bottom: 5rem;
-        }
-        @media (min-width: 768px) {
-          .assets-container {
-            margin-left: 260px;
-            padding-bottom: 0;
-            padding-top: 64px;
-          }
-          .main-content {
-            padding: 2rem;
-          }
-          .mobile-header {
-            display: none;
-          }
-          .desktop-header {
-            display: block;
-          }
-          .fab-button {
-            bottom: 2rem;
-          }
-        }
-      `}</style>
-
-      <div
-        className="assets-container"
-        style={{
-          minHeight: '100vh',
-          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
-          fontFamily: 'system-ui, -apple-system, sans-serif',
-        }}
-      >
-        {/* Desktop Sidebar */}
+      <div className="min-h-screen bg-white font-sans">
         <Sidebar activeTab="assets" />
 
-        {/* Desktop Top Header */}
-        <div className="desktop-header">
+        <div className="desktop-header fixed top-0 left-0 right-0 z-30 backdrop-blur-md bg-white/80 border-b border-primary/10">
           <TopHeader />
         </div>
 
-        {/* Desktop Role Badge - Shows when role is switched */}
         <div className="desktop-header">
           <RoleBadge />
         </div>
 
-        {/* Mobile Header */}
-        <header
-          className="mobile-header"
-          style={{
-            background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-            color: 'white',
-            padding: '1rem',
-            position: 'sticky',
-            top: 0,
-            zIndex: 20,
-            boxShadow: '0 2px 10px rgba(239,119,34,0.2)',
-          }}
-        >
-          <h1
-            style={{
-              fontSize: '1.25rem',
-              fontWeight: '700',
-              margin: '0 0 0.5rem 0',
-            }}
-          >
-            Assets
-          </h1>
-          <p style={{ fontSize: '0.875rem', margin: 0, opacity: 0.9 }}>
-            {filteredAssets.length}{' '}
-            {filteredAssets.length === 1 ? 'asset' : 'assets'}
-          </p>
-        </header>
-
-        {/* Search & Filter Bar */}
-        <div
-          style={{
-            backgroundColor: 'white',
-            padding: '1rem',
-            borderBottom: '1px solid rgba(239,119,34,0.1)',
-            position: 'sticky',
-            top: '66px',
-            zIndex: 19,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-          }}
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {/* Search Input */}
-            <div style={{ position: 'relative' }}>
-              <Search
-                size={20}
-                style={{
-                  position: 'absolute',
-                  left: '0.75rem',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: '#6b7280',
-                  pointerEvents: 'none',
-                }}
-              />
-              <input
-                type="text"
-                placeholder="Search assets by type, model, serial number, site..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 0.75rem 0.75rem 2.75rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  minHeight: '48px',
-                  boxSizing: 'border-box',
-                  transition: 'border-color 0.2s, box-shadow 0.2s',
-                  outline: 'none',
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#EF7722';
-                  e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#d1d5db';
-                  e.target.style.boxShadow = 'none';
-                }}
-              />
-            </div>
-
-            {/* Filters */}
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '0.75rem',
-              }}
-            >
-              {/* Client Filter */}
-              <div style={{ position: 'relative' }}>
-                <Filter
-                  size={20}
-                  style={{
-                    position: 'absolute',
-                    left: '0.75rem',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    color: '#6b7280',
-                    pointerEvents: 'none',
-                    zIndex: 1,
-                  }}
-                />
-                <select
-                  value={selectedClientId}
-                  onChange={(e) => {
-                    setSelectedClientId(e.target.value);
-                    setSelectedSiteId('');
-                  }}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem 0.75rem 0.75rem 2.75rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '8px',
-                    fontSize: '0.875rem',
-                    minHeight: '48px',
-                    boxSizing: 'border-box',
-                    backgroundColor: 'white',
-                    cursor: 'pointer',
-                    appearance: 'none',
-                    transition: 'border-color 0.2s, box-shadow 0.2s',
-                    outline: 'none',
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#EF7722';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#d1d5db';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                >
-                  <option value="">All Clients</option>
-                  {clients.map((client) => (
-                    <option key={client.id} value={client.id}>
-                      {client.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Site Filter */}
-              <div style={{ position: 'relative' }}>
-                <MapPin
-                  size={20}
-                  style={{
-                    position: 'absolute',
-                    left: '0.75rem',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    color: '#6b7280',
-                    pointerEvents: 'none',
-                    zIndex: 1,
-                  }}
-                />
-                <select
-                  value={selectedSiteId}
-                  onChange={(e) => setSelectedSiteId(e.target.value)}
-                  disabled={!selectedClientId}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem 0.75rem 0.75rem 2.75rem',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '8px',
-                    fontSize: '0.875rem',
-                    minHeight: '48px',
-                    boxSizing: 'border-box',
-                    backgroundColor: !selectedClientId ? '#f9fafb' : 'white',
-                    cursor: selectedClientId ? 'pointer' : 'not-allowed',
-                    appearance: 'none',
-                    transition: 'border-color 0.2s, box-shadow 0.2s',
-                    outline: 'none',
-                    opacity: selectedClientId ? 1 : 0.6,
-                  }}
-                  onFocus={(e) => {
-                    if (selectedClientId) {
-                      e.target.style.borderColor = '#EF7722';
-                      e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
-                    }
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#d1d5db';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                >
-                  <option value="">
-                    {selectedClientId ? 'All Sites' : 'Select client first'}
-                  </option>
-                  {sites.map((site) => (
-                    <option key={site.id} value={site.id}>
-                      {site.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Assets List */}
-        <main className="main-content">
+        <main className="ml-0 md:ml-[260px] pt-16 md:pt-20 pb-20 md:pb-0 px-4 md:px-8 max-w-[1400px] mx-auto">
           {loading ? (
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                minHeight: '200px',
-              }}
-            >
-              <div
-                style={{
-                  width: '48px',
-                  height: '48px',
-                  border: '4px solid #ffe8d6',
-                  borderTopColor: '#EF7722',
-                  borderRadius: '50%',
-                  animation: 'spin 1s linear infinite',
-                }}
-              ></div>
-            </div>
-          ) : filteredAssets.length === 0 ? (
-            <div
-              style={{
-                backgroundColor: 'white',
-                padding: '3rem 2rem',
-                borderRadius: '12px',
-                textAlign: 'center',
-                boxShadow: '0 10px 40px rgba(0,0,0,0.08)',
-                border: '1px solid rgba(239,119,34,0.1)',
-                maxWidth: '500px',
-                margin: '2rem auto',
-              }}
-            >
-              <div
-                style={{
-                  width: '80px',
-                  height: '80px',
-                  margin: '0 auto 1.5rem',
-                  background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '3px solid rgba(239,119,34,0.2)',
-                }}
-              >
-                <Package size={40} color="#EF7722" />
-              </div>
-              <h2
-                style={{
-                  fontSize: '1.5rem',
-                  fontWeight: '700',
-                  color: '#111827',
-                  margin: '0 0 0.5rem 0',
-                }}
-              >
-                {searchTerm || selectedClientId || selectedSiteId
-                  ? 'No assets found'
-                  : 'No assets yet'}
-              </h2>
-              <p
-                style={{
-                  fontSize: '0.875rem',
-                  color: '#6b7280',
-                  margin: '0 0 1.5rem 0',
-                }}
-              >
-                {searchTerm || selectedClientId || selectedSiteId
-                  ? 'Try adjusting your search or filter terms'
-                  : 'Get started by adding your first asset'}
-              </p>
-              {!searchTerm && !selectedClientId && !selectedSiteId && (
-                <button
-                  onClick={() => router.push('/assets/new')}
-                  style={{
-                    padding: '0.75rem 1.5rem',
-                    background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    minHeight: '48px',
-                    transition: 'all 0.2s',
-                    boxShadow: '0 2px 8px rgba(239,119,34,0.25)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
-                  }}
-                >
-                  Create First Asset
-                </button>
-              )}
+            <div className="flex justify-center items-center min-h-[400px]">
+              <div className="w-12 h-12 border-4 border-primary-100 border-t-primary rounded-full animate-spin"></div>
             </div>
           ) : (
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr',
-                gap: '1rem',
-              }}
-            >
-              {filteredAssets.map((asset) => (
-                <button
-                  key={asset.id}
-                  onClick={() => router.push(`/assets/${asset.id}`)}
-                  style={{
-                    backgroundColor: 'white',
-                    padding: '1.25rem',
-                    borderRadius: '12px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                    border: '1px solid rgba(239,119,34,0.1)',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    transition: 'all 0.2s',
-                    minHeight: '140px',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 10px 40px rgba(0,0,0,0.12)';
-                    e.currentTarget.style.borderColor = 'rgba(239,119,34,0.2)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
-                    e.currentTarget.style.borderColor = 'rgba(239,119,34,0.1)';
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'start',
-                      marginBottom: '0.75rem',
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.75rem',
-                        flex: 1,
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: '48px',
-                          height: '48px',
-                          background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
-                          borderRadius: '10px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          border: '2px solid rgba(239,119,34,0.2)',
-                          flexShrink: 0,
-                        }}
-                      >
-                        <Package size={24} color="#EF7722" />
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <h3
-                          style={{
-                            fontSize: '1.125rem',
-                            fontWeight: '700',
-                            color: '#111827',
-                            margin: '0 0 0.25rem 0',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          {asset.asset_type} - {asset.model}
-                        </h3>
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.5rem',
-                            fontSize: '0.8125rem',
-                            color: '#6b7280',
-                          }}
-                        >
-                          <Building2 size={14} color="#6b7280" />
-                          <span
-                            style={{
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                            }}
-                          >
-                            {asset.site?.client?.name || 'Unknown Client'}
-                          </span>
-                          <span style={{ margin: '0 0.25rem' }}>→</span>
-                          <MapPin size={14} color="#6b7280" />
-                          <span
-                            style={{
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                            }}
-                          >
-                            {asset.site?.name || 'Unknown Site'}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+            <>
+              <div className="mb-6 flex justify-between items-start flex-wrap gap-3">
+                <div className="flex-1">
+                  <h1 className="text-2xl font-bold text-gray-900 mb-1">Assets</h1>
+                  <p className="text-[15px] text-gray-500">
+                    {filteredAssets.length} {filteredAssets.length === 1 ? 'asset' : 'assets'} in your organization
+                  </p>
+                </div>
 
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '0.5rem',
-                      paddingLeft: '3.5rem',
-                    }}
-                  >
-                    {asset.serial_number && (
-                      <div
-                        style={{
-                          fontSize: '0.875rem',
-                          color: '#6b7280',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.5rem',
-                        }}
+                <div className="flex items-center gap-3 flex-wrap">
+                  {clients.length > 0 && (
+                    <select
+                      value={selectedClientId}
+                      onChange={(e) => setSelectedClientId(e.target.value)}
+                      className="px-3 py-2 border border-gray-300 rounded-md text-[13px] outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 bg-white"
+                    >
+                      <option value="">All Clients</option>
+                      {clients.map((client) => (
+                        <option key={client.id} value={client.id}>
+                          {client.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+
+                  {selectedClientId && sites.length > 0 && (
+                    <select
+                      value={selectedSiteId}
+                      onChange={(e) => setSelectedSiteId(e.target.value)}
+                      className="px-3 py-2 border border-gray-300 rounded-md text-[13px] outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 bg-white"
+                    >
+                      <option value="">All Sites</option>
+                      {sites.map((site) => (
+                        <option key={site.id} value={site.id}>
+                          {site.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+
+                  {activeRole !== 'technician' && (
+                    <button
+                      onClick={() => router.push('/assets/new')}
+                      className="bg-gradient-to-br from-primary to-primary-600 text-white border-none rounded-md px-4 py-2 text-[13px] font-semibold cursor-pointer flex items-center gap-2 shadow-sm shadow-primary/20 transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-primary/35"
+                    >
+                      <Plus size={18} /> Add Asset
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {filteredAssets.length === 0 ? (
+                <div className="bg-white p-4 rounded-lg border border-gray-200">
+                  <EmptyState
+                    icon={<Package size={48} className="text-gray-300" />}
+                    title={selectedClientId || selectedSiteId ? "No assets found" : "No assets yet"}
+                    description={selectedClientId || selectedSiteId ? "Try selecting different filters" : "Get started by adding your first asset"}
+                  />
+                  {!selectedClientId && !selectedSiteId && activeRole !== 'technician' && (
+                    <div className="flex justify-center mt-4">
+                      <button
+                        onClick={() => router.push('/assets/new')}
+                        className="bg-gradient-to-br from-primary to-primary-600 text-white border-none rounded-md px-6 py-3 text-[14px] font-semibold cursor-pointer flex items-center gap-2 shadow-sm shadow-primary/20 transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-primary/35"
                       >
-                        <span style={{ fontWeight: '600' }}>S/N:</span>
-                        <span>{asset.serial_number}</span>
-                      </div>
-                    )}
-                    {(() => {
-                      const warrantyExpiry = getWarrantyExpiry(asset);
-                      return warrantyExpiry && (
-                        <div
-                          style={{
-                            fontSize: '0.8125rem',
-                            color: isWarrantyExpired(warrantyExpiry)
-                              ? '#ef4444'
-                              : '#10b981',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.5rem',
-                            fontWeight: '500',
-                          }}
-                        >
-                          {isWarrantyExpired(warrantyExpiry) ? (
+                        <Plus size={18} /> Create First Asset
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {filteredAssets.map((asset) => {
+                    const warrantyExpiry = getWarrantyExpiry(asset);
+                    const isExpired = isWarrantyExpired(warrantyExpiry);
+
+                    return (
+                      <button
+                        key={asset.id}
+                        onClick={() => router.push(`/assets/${asset.id}`)}
+                        className="bg-white p-4 rounded-lg border border-gray-200 cursor-pointer text-left transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-md hover:shadow-primary/15"
+                      >
+                        <div className="flex items-start gap-3 mb-3">
+                          <div className="w-12 h-12 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg flex items-center justify-center flex-shrink-0 border border-primary/20">
+                            <Package size={24} className="text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2 mb-1">
+                              <h3 className="text-[15px] font-bold text-gray-900 truncate capitalize">
+                                {asset.asset_type.replace(/_/g, ' ')}
+                              </h3>
+                              <ChevronRight size={16} className="text-gray-400 flex-shrink-0 mt-0.5" />
+                            </div>
+                            {asset.model && (
+                              <div className="text-[13px] text-gray-600 truncate">
+                                {asset.model}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="space-y-1.5 pl-[60px]">
+                          {asset.serial_number && (
+                            <div className="text-[13px] text-gray-500">
+                              <span className="font-medium">S/N:</span> {asset.serial_number}
+                            </div>
+                          )}
+                          {asset.site && (
                             <>
-                              <AlertTriangle size={16} color="#ef4444" />
-                              <span>
-                                Warranty expired:{' '}
-                                {new Date(warrantyExpiry).toLocaleDateString(
-                                  'en-IN',
-                                  {
-                                    day: 'numeric',
-                                    month: 'short',
-                                    year: 'numeric',
-                                  }
-                                )}
-                              </span>
-                            </>
-                          ) : (
-                            <>
-                              <CheckCircle2 size={16} color="#10b981" />
-                              <span>
-                                Warranty until:{' '}
-                                {new Date(warrantyExpiry).toLocaleDateString(
-                                  'en-IN',
-                                  {
-                                    day: 'numeric',
-                                    month: 'short',
-                                    year: 'numeric',
-                                  }
-                                )}
-                              </span>
+                              <div className="flex items-center gap-1.5 text-[13px] text-gray-500">
+                                <MapPin size={14} className="flex-shrink-0" />
+                                <span className="truncate">{asset.site.name}</span>
+                              </div>
+                              {asset.site.client && (
+                                <div className="flex items-center gap-1.5 text-[13px] text-gray-500">
+                                  <Building2 size={14} className="flex-shrink-0" />
+                                  <span className="truncate">{asset.site.client.name}</span>
+                                </div>
+                              )}
                             </>
                           )}
+                          {warrantyExpiry && (
+                            <div className={`flex items-center gap-1.5 text-[11px] font-medium ${isExpired ? 'text-red-600' : 'text-green-600'}`}>
+                              {isExpired ? <AlertTriangle size={12} /> : <CheckCircle2 size={12} />}
+                              <span>Warranty: {new Date(warrantyExpiry).toLocaleDateString()}</span>
+                            </div>
+                          )}
                         </div>
-                      );
-                    })()}
-                  </div>
-                </button>
-              ))}
-            </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </>
           )}
         </main>
-
-        {/* FAB Button - Hide for technicians */}
-        {activeRole !== 'technician' && (
-          <button
-            onClick={() => router.push('/assets/new')}
-            className="fab-button"
-          style={{
-            position: 'fixed',
-            right: '1rem',
-            width: '56px',
-            height: '56px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-            color: 'white',
-            border: 'none',
-            fontSize: '1.75rem',
-            fontWeight: '300',
-            cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(239,119,34,0.3)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 10,
-            transition: 'all 0.2s',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.1)';
-            e.currentTarget.style.boxShadow = '0 6px 16px rgba(239,119,34,0.4)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
-          }}
-          >
-            <Plus size={28} />
-          </button>
-        )}
 
         <BottomNav activeTab="more" />
       </div>

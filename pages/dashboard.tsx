@@ -216,16 +216,25 @@ export default function DashboardPage() {
         if (kpisRes.ok) {
           const kpisData = await kpisRes.json();
           setKpis(kpisData);
+        } else {
+          const errorData = await kpisRes.json().catch(() => ({ error: 'Unknown error' }));
+          console.error('Failed to fetch KPIs:', kpisRes.status, errorData);
         }
 
         if (alertsRes.ok) {
           const alertsData = await alertsRes.json();
           setAlerts(alertsData.alerts || []);
+        } else {
+          const errorData = await alertsRes.json().catch(() => ({ error: 'Unknown error' }));
+          console.error('Failed to fetch alerts:', alertsRes.status, errorData);
         }
 
         if (techniciansRes.ok) {
           const techniciansData = await techniciansRes.json();
           setTechnicians(techniciansData.technicians || []);
+        } else {
+          const errorData = await techniciansRes.json().catch(() => ({ error: 'Unknown error' }));
+          console.error('Failed to fetch technicians:', techniciansRes.status, errorData);
         }
 
         if (timelineRes.ok) {
@@ -244,14 +253,27 @@ export default function DashboardPage() {
           setInProgressJobs(inProgress);
           setUnassignedJobs(timelineData.unassigned || []);
           setAtRiskJobs(timelineData.at_risk || []);
+        } else {
+          const errorData = await timelineRes.json().catch(() => ({ error: 'Unknown error' }));
+          console.error('Failed to fetch jobs timeline:', timelineRes.status, errorData);
         }
 
         if (activityRes.ok) {
           const activityData = await activityRes.json();
           setActivities(activityData.activities || []);
+        } else {
+          const errorData = await activityRes.json().catch(() => ({ error: 'Unknown error' }));
+          console.error('Failed to fetch activity:', activityRes.status, errorData);
         }
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
+        // Log more detailed error information for debugging
+        if (error instanceof Error) {
+          console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+          });
+        }
       } finally {
         setLoading(false);
       }

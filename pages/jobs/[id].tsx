@@ -98,7 +98,7 @@ export default function JobDetailPage() {
       const response = await apiFetch(`/api/jobs/${id}`);
       if (response.ok) {
         const data = await response.json();
-        setJob(data);
+        setJob(data.job);
       } else {
         console.error('Failed to fetch job details');
         toast.error('Failed to load job details');
@@ -137,8 +137,8 @@ export default function JobDetailPage() {
       });
 
       if (response.ok) {
-        const updatedJob = await response.json();
-        setJob(updatedJob);
+        // Refetch the complete job data with all related data
+        await fetchJob();
         toast.success(`Job marked as ${newStatus.replace('_', ' ')}`);
       } else {
         throw new Error('Failed to update status');

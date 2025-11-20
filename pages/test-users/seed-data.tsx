@@ -5,11 +5,7 @@ import TopHeader from '@/components/TopHeader';
 import RoleBadge from '@/components/RoleBadge';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
 
-interface SeedResult {
-  entity: string;
-  created: number;
-  errors: string[];
-}
+
 
 export default function SeedTestDataPage() {
   const [loading, setLoading] = useState(false);

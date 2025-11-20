@@ -10,7 +10,7 @@ export default function DebugTestUsersPage() {
   const { user } = useAuth();
   const { actualRole, activeRole, apiFetch } = useRoleSwitch();
   const [userProfile, setUserProfile] = useState<any>(null);
-  const [orgData, setOrgData] = useState<any>(null);
+
   const [clientsCount, setClientsCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -329,8 +329,8 @@ export default function DebugTestUsersPage() {
                           backgroundColor: diagnostics.summary?.hasDataInDatabase && diagnostics.summary?.hasDataViaRLS
                             ? '#d1fae5'
                             : diagnostics.summary?.hasDataInDatabase && !diagnostics.summary?.hasDataViaRLS
-                            ? '#fef3c7'
-                            : '#fee2e2',
+                              ? '#fef3c7'
+                              : '#fee2e2',
                           borderRadius: '6px',
                           marginBottom: '1rem',
                         }}
@@ -339,8 +339,8 @@ export default function DebugTestUsersPage() {
                           <strong>Recommendation:</strong> {diagnostics.summary?.recommendation}
                         </p>
                         <p style={{ fontSize: '0.875rem', color: '#111827', margin: 0 }}>
-                          Data in DB: {diagnostics.summary?.hasDataInDatabase ? 'Yes' : 'No'} | 
-                          Data via RLS: {diagnostics.summary?.hasDataViaRLS ? 'Yes' : 'No'} | 
+                          Data in DB: {diagnostics.summary?.hasDataInDatabase ? 'Yes' : 'No'} |
+                          Data via RLS: {diagnostics.summary?.hasDataViaRLS ? 'Yes' : 'No'} |
                           RLS Error: {diagnostics.summary?.hasRLSError ? 'Yes' : 'No'}
                         </p>
                       </div>

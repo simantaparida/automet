@@ -29,7 +29,7 @@ export default function CompanyOnboarding() {
 
   // Format time for display (24h to 12h)
   const formatTimeDisplay = (time24: string) => {
-    const [hours24, minutes] = time24.split(':').map(Number);
+    const [hours24 = 0, minutes = 0] = time24.split(':').map(Number);
     const period = hours24 >= 12 ? 'PM' : 'AM';
     const hours12 = hours24 === 0 ? 12 : hours24 > 12 ? hours24 - 12 : hours24;
     return `${hours12.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${period}`;
@@ -274,7 +274,7 @@ export default function CompanyOnboarding() {
             onMouseLeave={(e) => (e.currentTarget.style.color = '#6b7280')}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
+              <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
             Back
           </button>

@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import { Home, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
@@ -12,7 +11,6 @@ interface BreadcrumbProps {
 }
 
 export default function Breadcrumb({ items }: BreadcrumbProps) {
-  const router = useRouter();
 
   return (
     <nav

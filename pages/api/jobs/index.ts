@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { withOnboardedAuth, requireRole, getEffectiveRole } from '@/lib/auth-middleware';
+import { withOnboardedAuth, requireRole, getEffectiveRole, type OnboardedApiRequest } from '@/lib/auth-middleware';
 import { logError, logWarn } from '@/lib/logger';
 import type { Database } from '@/types/database';
 
@@ -296,7 +296,7 @@ export default async function handler(
 async function handleGetJobs(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: { id: string; email: string; org_id: string; role: 'owner' | 'coordinator' | 'technician'; activeRole?: 'owner' | 'coordinator' | 'technician' },
+  user: OnboardedApiRequest['user'],
   supabase: any
 ) {
   try {
@@ -354,7 +354,7 @@ async function handleGetJobs(
 
     // Post-process filtering based on effective role
     let jobs = normalizeJobResults(data);
-    
+
     // Technicians only see jobs where they are assigned
     if (effectiveRole === 'technician') {
       jobs = jobs.filter((job) =>

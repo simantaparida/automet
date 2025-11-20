@@ -70,7 +70,7 @@ export default function SitesPage() {
 
                 const clientId = (site as any).client_id;
                 if (clientId && clientsMap.has(clientId)) {
-                  const client = clientsMap.get(clientId);
+                  const client = clientsMap.get(clientId) as Client;
                   return {
                     ...site,
                     client_id: clientId,

@@ -64,7 +64,7 @@ export default function CreateTestUsersPage() {
       }
 
       // Map the API response to our results format
-      const userResults: CreateResult[] = testUsers.map((user, index) => {
+      const userResults: CreateResult[] = testUsers.map((user) => {
         const apiResult = data.results?.find((r: any) => r.email === user.email);
         return {
           user,
@@ -209,8 +209,8 @@ export default function CreateTestUsersPage() {
                       ...(user.role === 'owner'
                         ? { backgroundColor: '#ddd6fe', color: '#5b21b6' }
                         : user.role === 'coordinator'
-                        ? { backgroundColor: '#dbeafe', color: '#1e40af' }
-                        : { backgroundColor: '#d1fae5', color: '#065f46' }),
+                          ? { backgroundColor: '#dbeafe', color: '#1e40af' }
+                          : { backgroundColor: '#d1fae5', color: '#065f46' }),
                     }}
                   >
                     {user.role}

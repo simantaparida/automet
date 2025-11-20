@@ -9,7 +9,6 @@ import EmptyState from '@/components/EmptyState';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
 import {
   Plus,
-  Building2,
   MapPin,
   Clock,
   AlertCircle,
@@ -47,7 +46,7 @@ export default function JobsPage() {
   const [filterPriority, setFilterPriority] = useState<string>(() => (priority as string) || '');
   const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set());
   const [isSelectMode, setIsSelectMode] = useState(false);
-  const [showBulkMenu, setShowBulkMenu] = useState(false);
+
   const [bulkActionLoading, setBulkActionLoading] = useState(false);
 
   // Sync URL with filters
@@ -95,12 +94,7 @@ export default function JobsPage() {
     }
   };
 
-  const clearFilters = () => {
-    setActiveTab('all');
-    setFilterPriority('');
-  };
 
-  const hasActiveFilters = activeTab !== 'all' || filterPriority;
 
   // Selection handlers
   const toggleSelectMode = () => {
@@ -143,7 +137,7 @@ export default function JobsPage() {
 
       await Promise.all(promises);
       setSelectedJobs(new Set());
-      setShowBulkMenu(false);
+
       fetchJobs(); // Refresh the list
     } catch (error) {
       console.error('Error updating jobs:', error);
@@ -169,7 +163,7 @@ export default function JobsPage() {
 
       await Promise.all(promises);
       setSelectedJobs(new Set());
-      setShowBulkMenu(false);
+
       fetchJobs(); // Refresh the list
     } catch (error) {
       console.error('Error deleting jobs:', error);

@@ -99,7 +99,7 @@ export default function ProfilePage() {
         if (jobsResponse.ok) {
           const jobsData = await jobsResponse.json();
           const jobs = jobsData.jobs || jobsData || [];
-          
+
           // Filter jobs assigned to this user
           const assignedJobs = jobs.filter((job: any) => {
             if (job.assignments && Array.isArray(job.assignments)) {
@@ -120,7 +120,7 @@ export default function ProfilePage() {
         if (jobsResponse.ok) {
           const jobsData = await jobsResponse.json();
           const jobs = jobsData.jobs || jobsData || [];
-          
+
           setStats({
             jobsAssigned: jobs.length,
             jobsCompleted: jobs.filter((j: any) => j.status === 'completed').length,
@@ -148,33 +148,33 @@ export default function ProfilePage() {
   const getRoleConfig = (role: string) => {
     switch (role?.toLowerCase()) {
       case 'owner':
-        return { 
-          bg: '#fef3c7', 
-          color: '#d97706', 
+        return {
+          bg: '#fef3c7',
+          color: '#d97706',
           border: '#fbbf24',
           label: 'Owner',
           icon: Shield,
         };
       case 'coordinator':
-        return { 
-          bg: '#dbeafe', 
-          color: '#1e40af', 
+        return {
+          bg: '#dbeafe',
+          color: '#1e40af',
           border: '#3b82f6',
           label: 'Coordinator',
           icon: Shield,
         };
       case 'technician':
-        return { 
-          bg: '#d1fae5', 
-          color: '#065f46', 
+        return {
+          bg: '#d1fae5',
+          color: '#065f46',
           border: '#10b981',
           label: 'Technician',
           icon: Shield,
         };
       default:
-        return { 
-          bg: '#f3f4f6', 
-          color: '#374151', 
+        return {
+          bg: '#f3f4f6',
+          color: '#374151',
           border: '#9ca3af',
           label: 'User',
           icon: Shield,
@@ -199,10 +199,10 @@ export default function ProfilePage() {
   };
 
   const getInitials = () => {
-    const name = getDisplayName();
+    const name = getDisplayName() || 'User';
     const parts = name.split(' ');
     if (parts.length >= 2) {
-      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+      return ((parts[0]?.[0] || '') + (parts[parts.length - 1]?.[0] || '')).toUpperCase();
     }
     return name.substring(0, 2).toUpperCase();
   };

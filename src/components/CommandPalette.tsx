@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import {
   Search,
@@ -9,11 +9,7 @@ import {
   Package,
   Home,
   Plus,
-  X,
-  FileText,
-  Settings,
-  Calendar,
-  TrendingUp,
+  X
 } from 'lucide-react';
 
 interface Command {

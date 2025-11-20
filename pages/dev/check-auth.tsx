@@ -46,10 +46,10 @@ export default function CheckAuthPage() {
         .from('users')
         .select('id, email, org_id, role, full_name, created_at')
         .eq('id', user.id)
-        .maybeSingle();
+        .maybeSingle<UserProfile>();
 
       if (profileError) throw profileError;
-      setProfile(profileData as UserProfile);
+      setProfile(profileData);
 
       // Fetch database counts
       if (profileData?.org_id) {
@@ -297,8 +297,8 @@ export default function CheckAuthPage() {
                           ...(profile.role === 'owner'
                             ? { backgroundColor: '#ddd6fe', color: '#5b21b6' }
                             : profile.role === 'coordinator'
-                            ? { backgroundColor: '#dbeafe', color: '#1e40af' }
-                            : { backgroundColor: '#d1fae5', color: '#065f46' }),
+                              ? { backgroundColor: '#dbeafe', color: '#1e40af' }
+                              : { backgroundColor: '#d1fae5', color: '#065f46' }),
                         }}
                       >
                         {profile.role}

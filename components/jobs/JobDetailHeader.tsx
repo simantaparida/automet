@@ -10,8 +10,7 @@ import {
     Edit,
     Trash2,
     CheckCircle,
-    ArrowLeft,
-    Timer
+    ArrowLeft
 } from 'lucide-react';
 
 interface JobDetailHeaderProps {
@@ -135,18 +134,18 @@ export default function JobDetailHeader({
             </button>
 
             {/* Glassmorphism Header Card */}
-            <div className="bg-gradient-to-br from-white via-white to-gray-50 rounded-2xl border border-gray-200/60 shadow-xl shadow-gray-200/50 overflow-hidden backdrop-blur-sm">
+            <div className="bg-gradient-to-br from-white via-white to-gray-50 rounded-2xl border border-gray-200/60 shadow-lg shadow-gray-200/40 overflow-hidden backdrop-blur-sm">
                 {/* Priority Banner */}
                 {priorityConfig.pulse && (
                     <div className={`h-1.5 bg-gradient-to-r ${statusConfig.gradient} animate-pulse`}></div>
                 )}
 
-                <div className="p-6 md:p-8">
+                <div className="p-4 md:p-6">
                     {/* Title & Priority Row */}
-                    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
+                    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
                         <div className="flex-1">
-                            <div className="flex items-start gap-3 mb-3">
-                                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
+                            <div className="flex items-start gap-3 mb-2">
+                                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
                                     {job.title}
                                 </h1>
                                 <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${priorityConfig.bg} ${priorityConfig.color} shadow-sm`}>
@@ -158,12 +157,6 @@ export default function JobDetailHeader({
                                 <p className="text-gray-600 text-base leading-relaxed max-w-3xl">
                                     {job.description}
                                 </p>
-                            )}
-                            {job.created_at && (
-                                <div className="flex items-center gap-2 mt-3 text-sm text-gray-500">
-                                    <Timer size={14} />
-                                    <span>Created {getTimeAgo(job.created_at)}</span>
-                                </div>
                             )}
                         </div>
 
@@ -189,27 +182,27 @@ export default function JobDetailHeader({
                     </div>
 
                     {/* Status & Meta Info Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         {/* Status */}
-                        <div className="flex items-center gap-4 p-4 bg-white/80 rounded-xl border border-gray-200/60 shadow-sm">
-                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${statusConfig.bg} ${statusConfig.color} shadow-sm`}>
-                                <StatusIcon size={24} strokeWidth={2.5} />
+                        <div className="flex items-center gap-3 p-3 bg-white/80 rounded-xl border border-gray-200/60 shadow-sm">
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${statusConfig.bg} ${statusConfig.color} shadow-sm`}>
+                                <StatusIcon size={20} strokeWidth={2.5} />
                             </div>
                             <div>
-                                <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Status</div>
-                                <div className={`text-base font-bold ${statusConfig.color}`}>
+                                <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5">Status</div>
+                                <div className={`text-sm font-bold ${statusConfig.color}`}>
                                     {statusConfig.label}
                                 </div>
                             </div>
                         </div>
 
                         {/* Scheduled */}
-                        <div className="flex items-center gap-4 p-4 bg-white/80 rounded-xl border border-gray-200/60 shadow-sm">
-                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${isOverdue ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'} shadow-sm`}>
-                                <Calendar size={24} strokeWidth={2.5} />
+                        <div className="flex items-center gap-3 p-3 bg-white/80 rounded-xl border border-gray-200/60 shadow-sm">
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isOverdue ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'} shadow-sm`}>
+                                <Calendar size={20} strokeWidth={2.5} />
                             </div>
                             <div>
-                                <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Scheduled</div>
+                                <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5">Scheduled</div>
                                 <div className={`text-sm font-bold ${isOverdue ? 'text-red-600' : 'text-gray-900'}`}>
                                     {formatDateShort(job.scheduled_at)}
                                 </div>
@@ -221,12 +214,12 @@ export default function JobDetailHeader({
 
                         {/* Due Date or Completed */}
                         {job.completed_at ? (
-                            <div className="flex items-center gap-4 p-4 bg-white/80 rounded-xl border border-gray-200/60 shadow-sm">
-                                <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-emerald-50 text-emerald-600 shadow-sm">
-                                    <CheckCircle2 size={24} strokeWidth={2.5} />
+                            <div className="flex items-center gap-3 p-3 bg-white/80 rounded-xl border border-gray-200/60 shadow-sm">
+                                <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-emerald-50 text-emerald-600 shadow-sm">
+                                    <CheckCircle2 size={20} strokeWidth={2.5} />
                                 </div>
                                 <div>
-                                    <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Completed</div>
+                                    <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5">Completed</div>
                                     <div className="text-sm font-bold text-emerald-600">
                                         {formatDateShort(job.completed_at)}
                                     </div>
@@ -236,12 +229,12 @@ export default function JobDetailHeader({
                                 </div>
                             </div>
                         ) : job.due_date ? (
-                            <div className="flex items-center gap-4 p-4 bg-white/80 rounded-xl border border-gray-200/60 shadow-sm">
-                                <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-amber-50 text-amber-600 shadow-sm">
-                                    <Clock size={24} strokeWidth={2.5} />
+                            <div className="flex items-center gap-3 p-3 bg-white/80 rounded-xl border border-gray-200/60 shadow-sm">
+                                <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-50 text-amber-600 shadow-sm">
+                                    <Clock size={20} strokeWidth={2.5} />
                                 </div>
                                 <div>
-                                    <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Due Date</div>
+                                    <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5">Due Date</div>
                                     <div className="text-sm font-bold text-gray-900">
                                         {formatDateShort(job.due_date)}
                                     </div>
@@ -252,8 +245,8 @@ export default function JobDetailHeader({
                             </div>
                         ) : null}
 
-                        {/* Action Buttons */}
-                        {activeRole !== 'technician' && (
+                        {/* Action Buttons - Only for Technicians */}
+                        {activeRole === 'technician' && (
                             <div className="flex items-center justify-center md:justify-end gap-3">
                                 {job.status === 'scheduled' && (
                                     <button

@@ -337,6 +337,48 @@ export type Database = {
         };
         Relationships: [];
       };
+      job_tasks: {
+        Row: {
+          id: string;
+          job_id: string;
+          org_id: string;
+          title: string;
+          description: string | null;
+          is_completed: boolean;
+          completed_at: string | null;
+          completed_by: string | null;
+          display_order: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          job_id: string;
+          org_id: string;
+          title: string;
+          description?: string | null;
+          is_completed?: boolean;
+          completed_at?: string | null;
+          completed_by?: string | null;
+          display_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          job_id?: string;
+          org_id?: string;
+          title?: string;
+          description?: string | null;
+          is_completed?: boolean;
+          completed_at?: string | null;
+          completed_by?: string | null;
+          display_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       jobs: {
         Row: {
           id: string;

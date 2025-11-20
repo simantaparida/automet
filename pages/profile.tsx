@@ -278,615 +278,188 @@ export default function ProfilePage() {
 
   return (
     <ProtectedRoute>
-      <style jsx>{`
-        .profile-container {
-          padding-bottom: 80px;
-        }
-        .main-content {
-          padding: 1rem;
-        }
-        .mobile-header {
-          display: block;
-        }
-        .desktop-header {
-          display: none;
-        }
-        @media (min-width: 768px) {
-          .profile-container {
-            margin-left: 260px;
-            padding-bottom: 0;
-            padding-top: 64px;
-          }
-          .main-content {
-            padding: 2rem;
-            max-width: 800px;
-            margin: 0 auto;
-          }
-          .mobile-header {
-            display: none;
-          }
-          .desktop-header {
-            display: block;
-          }
-        }
-      `}</style>
-
-      <div
-        className="profile-container"
-        style={{
-          minHeight: '100vh',
-          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
-          fontFamily: 'system-ui, -apple-system, sans-serif',
-        }}
-      >
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 pb-20 md:pb-0 md:pt-16 md:ml-[260px] font-sans">
         {/* Desktop Sidebar */}
         <Sidebar activeTab="profile" />
 
         {/* Desktop Top Header */}
-        <div className="desktop-header">
+        <div className="hidden md:block">
           <TopHeader />
         </div>
 
         {/* Desktop Role Badge */}
-        <div className="desktop-header">
+        <div className="hidden md:block">
           <RoleBadge />
         </div>
 
         {/* Desktop Breadcrumb */}
-        <div
-          className="desktop-header"
-          style={{
-            position: 'sticky',
-            top: '64px',
-            zIndex: 19,
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-          }}
-        >
+        <div className="hidden md:block sticky top-16 z-10 shadow-sm">
           <Breadcrumb items={[{ label: 'Profile' }]} />
         </div>
 
         {/* Mobile Header */}
-        <header
-          className="mobile-header"
-          style={{
-            background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-            color: 'white',
-            padding: '1rem',
-            position: 'sticky',
-            top: 0,
-            zIndex: 20,
-            boxShadow: '0 2px 10px rgba(239,119,34,0.2)',
-          }}
-        >
-          <h1
-            style={{
-              fontSize: '1.25rem',
-              fontWeight: '700',
-              margin: 0,
-            }}
-          >
-            Profile
-          </h1>
+        <header className="md:hidden sticky top-0 z-20 bg-gradient-to-br from-primary-500 to-primary-600 text-white p-4 shadow-lg shadow-primary-500/20">
+          <h1 className="text-xl font-bold m-0">Profile</h1>
         </header>
 
         {/* Main Content */}
-        <main className="main-content">
+        <main className="p-4 md:p-8 max-w-3xl mx-auto">
           {/* User Info Card */}
-          <div
-            style={{
-              backgroundColor: 'white',
-              padding: '2rem',
-              borderRadius: '12px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-              border: '1px solid rgba(239,119,34,0.1)',
-              marginBottom: '1rem',
-              position: 'relative',
-            }}
-          >
+          <div className="bg-white p-8 rounded-xl shadow-sm border border-orange-100 relative mb-6">
             {/* Edit Profile Button */}
             <button
               onClick={() => setShowEditModal(true)}
-              style={{
-                position: 'absolute',
-                top: '1rem',
-                right: '1rem',
-                padding: '0.5rem 1rem',
-                background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                boxShadow: '0 2px 6px rgba(239,119,34,0.3)',
-                transition: 'all 0.2s',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-1px)';
-                e.currentTarget.style.boxShadow = '0 4px 10px rgba(239,119,34,0.4)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 6px rgba(239,119,34,0.3)';
-              }}
+              className="absolute top-4 right-4 px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-600 text-white border-none rounded-lg text-sm font-semibold cursor-pointer shadow-lg shadow-primary-500/20 hover:-translate-y-0.5 hover:shadow-primary-500/30 transition-all flex items-center gap-2"
             >
               <Settings size={16} />
-              Edit Profile
+              <span className="hidden sm:inline">Edit Profile</span>
             </button>
+
             {/* Avatar */}
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                marginBottom: '1.5rem',
-              }}
-            >
+            <div className="flex justify-center mb-6">
               {profile?.profile_photo_url ? (
                 <img
                   src={profile.profile_photo_url}
                   alt={getDisplayName()}
-                  style={{
-                    width: '100px',
-                    height: '100px',
-                    borderRadius: '50%',
-                    objectFit: 'cover',
-                    border: '4px solid white',
-                    boxShadow: '0 4px 12px rgba(239,119,34,0.3)',
-                  }}
+                  className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-xl shadow-orange-500/20"
                 />
               ) : (
-                <div
-                  style={{
-                    width: '100px',
-                    height: '100px',
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '2.5rem',
-                    fontWeight: '700',
-                    color: 'white',
-                    boxShadow: '0 4px 12px rgba(239,119,34,0.3)',
-                    border: '4px solid white',
-                  }}
-                >
+                <div className="w-28 h-28 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-4xl font-bold text-white shadow-xl shadow-primary-500/20 border-4 border-white">
                   {getInitials()}
                 </div>
               )}
             </div>
 
             {/* User Details */}
-            <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-              <h2
-                style={{
-                  fontSize: '1.5rem',
-                  fontWeight: '700',
-                  marginBottom: '0.5rem',
-                  color: '#111827',
-                }}
-              >
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold mb-2 text-gray-900">
                 {getDisplayName()}
               </h2>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.5rem',
-                  marginBottom: '0.75rem',
-                }}
-              >
-                <Mail size={16} color="#6b7280" />
-                <p
-                  style={{
-                    fontSize: '0.875rem',
-                    color: '#6b7280',
-                    margin: 0,
-                  }}
-                >
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <Mail size={16} className="text-gray-500" />
+                <p className="text-sm text-gray-500 m-0">
                   {profile?.email || user?.email}
                 </p>
               </div>
-              <div
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  backgroundColor: roleConfig.bg,
-                  color: roleConfig.color,
-                  padding: '0.5rem 1rem',
-                  borderRadius: '999px',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  border: `2px solid ${roleConfig.border}40`,
-                }}
-              >
-                <RoleIcon size={14} />
-                <span>{roleConfig.label}</span>
-              </div>
-              {isRoleSwitched && (
+
+              <div className="flex flex-col items-center gap-3">
                 <div
-                  style={{
-                    marginTop: '0.75rem',
-                    padding: '0.5rem 1rem',
-                    backgroundColor: '#eff6ff',
-                    border: '1px solid #93c5fd',
-                    borderRadius: '8px',
-                    fontSize: '0.75rem',
-                    color: '#1e40af',
-                    display: 'inline-block',
-                  }}
+                  className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold border ${roleConfig.bg === '#fef3c7' ? 'bg-amber-100 text-amber-700 border-amber-200' :
+                      roleConfig.bg === '#dbeafe' ? 'bg-blue-100 text-blue-800 border-blue-200' :
+                        roleConfig.bg === '#d1fae5' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
+                          'bg-gray-100 text-gray-700 border-gray-200'
+                    }`}
                 >
-                  Viewing as: {getRoleConfig(activeRole).label}
+                  <RoleIcon size={14} />
+                  <span>{roleConfig.label}</span>
                 </div>
-              )}
+
+                {isRoleSwitched && (
+                  <div className="px-3 py-1 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-700 font-medium">
+                    Viewing as: {getRoleConfig(activeRole).label}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Account Info */}
-            <div
-              style={{
-                borderTop: '1px solid #f3f4f6',
-                paddingTop: '1.5rem',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '1rem',
-              }}
-            >
+            <div className="border-t border-gray-100 pt-6 flex flex-col gap-4">
               {profile?.created_at && (
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.75rem',
-                  }}
-                >
-                  <div
-                    style={{
-                      width: '40px',
-                      height: '40px',
-                      background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
-                      borderRadius: '8px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      border: '2px solid rgba(239,119,34,0.2)',
-                    }}
-                  >
-                    <Calendar size={20} color="#EF7722" />
+                <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-orange-50/50 transition-colors">
+                  <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center border border-orange-100">
+                    <Calendar size={20} className="text-primary-500" />
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <p
-                      style={{
-                        fontSize: '0.75rem',
-                        color: '#9ca3af',
-                        margin: 0,
-                        fontWeight: '500',
-                      }}
-                    >
+                  <div className="flex-1">
+                    <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-0.5">
                       Member Since
                     </p>
-                    <p
-                      style={{
-                        fontSize: '1rem',
-                        fontWeight: '600',
-                        color: '#111827',
-                        margin: '0.25rem 0 0 0',
-                      }}
-                    >
+                    <p className="text-base font-semibold text-gray-900 m-0">
                       {formatDate(profile.created_at)}
                     </p>
                   </div>
                 </div>
               )}
+
               {/* Phone Number */}
-              {profile?.contact_phone && (
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.75rem',
-                  }}
-                >
-                  <div
-                    style={{
-                      width: '40px',
-                      height: '40px',
-                      background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
-                      borderRadius: '8px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      border: '2px solid rgba(239,119,34,0.2)',
-                    }}
-                  >
-                    <Phone size={20} color="#EF7722" />
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <p
-                      style={{
-                        fontSize: '0.75rem',
-                        color: '#9ca3af',
-                        margin: 0,
-                        fontWeight: '500',
-                      }}
-                    >
-                      Phone Number
-                    </p>
-                    <p
-                      style={{
-                        fontSize: '1rem',
-                        fontWeight: '600',
-                        color: '#111827',
-                        margin: '0.25rem 0 0 0',
-                      }}
-                    >
-                      {profile.contact_phone}
-                    </p>
-                  </div>
+              <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-orange-50/50 transition-colors">
+                <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center border border-orange-100">
+                  <Phone size={20} className="text-primary-500" />
                 </div>
-              )}
+                <div className="flex-1">
+                  <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-0.5">
+                    Phone Number
+                  </p>
+                  <p className="text-base font-semibold text-gray-900 m-0">
+                    {profile?.contact_phone || 'Not provided'}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Activity Stats */}
           {stats && (
-            <div
-              style={{
-                backgroundColor: 'white',
-                borderRadius: '12px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                border: '1px solid rgba(239,119,34,0.1)',
-                marginBottom: '1rem',
-                padding: '1.5rem',
-              }}
-            >
-              <h3
-                style={{
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '1rem',
-                }}
-              >
+            <div className="bg-white rounded-xl shadow-sm border border-orange-100 mb-6 p-6">
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">
                 Activity Summary
               </h3>
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-                  gap: '1rem',
-                }}
-              >
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {actualRole === 'technician' ? (
                   <>
-                    <div
-                      style={{
-                        padding: '1rem',
-                        backgroundColor: '#eff6ff',
-                        borderRadius: '10px',
-                        border: '1px solid #93c5fd',
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.5rem',
-                          marginBottom: '0.5rem',
-                        }}
-                      >
-                        <Briefcase size={18} color="#2563eb" />
-                        <span
-                          style={{
-                            fontSize: '0.75rem',
-                            color: '#6b7280',
-                            fontWeight: '500',
-                          }}
-                        >
-                          Assigned
-                        </span>
+                    <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Briefcase size={18} className="text-blue-600" />
+                        <span className="text-xs text-gray-500 font-medium">Assigned</span>
                       </div>
-                      <div
-                        style={{
-                          fontSize: '1.5rem',
-                          fontWeight: '700',
-                          color: '#1e40af',
-                        }}
-                      >
+                      <div className="text-2xl font-bold text-blue-800">
                         {stats.jobsAssigned}
                       </div>
                     </div>
-                    <div
-                      style={{
-                        padding: '1rem',
-                        backgroundColor: '#fffbeb',
-                        borderRadius: '10px',
-                        border: '1px solid #fbbf24',
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.5rem',
-                          marginBottom: '0.5rem',
-                        }}
-                      >
-                        <Clock size={18} color="#f59e0b" />
-                        <span
-                          style={{
-                            fontSize: '0.75rem',
-                            color: '#6b7280',
-                            fontWeight: '500',
-                          }}
-                        >
-                          In Progress
-                        </span>
+                    <div className="p-4 bg-amber-50 rounded-xl border border-amber-100">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Clock size={18} className="text-amber-500" />
+                        <span className="text-xs text-gray-500 font-medium">In Progress</span>
                       </div>
-                      <div
-                        style={{
-                          fontSize: '1.5rem',
-                          fontWeight: '700',
-                          color: '#d97706',
-                        }}
-                      >
+                      <div className="text-2xl font-bold text-amber-700">
                         {stats.jobsInProgress}
                       </div>
                     </div>
-                    <div
-                      style={{
-                        padding: '1rem',
-                        backgroundColor: '#f0fdf4',
-                        borderRadius: '10px',
-                        border: '1px solid #86efac',
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.5rem',
-                          marginBottom: '0.5rem',
-                        }}
-                      >
-                        <CheckCircle2 size={18} color="#10b981" />
-                        <span
-                          style={{
-                            fontSize: '0.75rem',
-                            color: '#6b7280',
-                            fontWeight: '500',
-                          }}
-                        >
-                          Completed
-                        </span>
+                    <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                      <div className="flex items-center gap-2 mb-2">
+                        <CheckCircle2 size={18} className="text-emerald-500" />
+                        <span className="text-xs text-gray-500 font-medium">Completed</span>
                       </div>
-                      <div
-                        style={{
-                          fontSize: '1.5rem',
-                          fontWeight: '700',
-                          color: '#065f46',
-                        }}
-                      >
+                      <div className="text-2xl font-bold text-emerald-800">
                         {stats.jobsCompleted}
                       </div>
                     </div>
                   </>
                 ) : (
                   <>
-                    <div
-                      style={{
-                        padding: '1rem',
-                        backgroundColor: '#eff6ff',
-                        borderRadius: '10px',
-                        border: '1px solid #93c5fd',
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.5rem',
-                          marginBottom: '0.5rem',
-                        }}
-                      >
-                        <TrendingUp size={18} color="#2563eb" />
-                        <span
-                          style={{
-                            fontSize: '0.75rem',
-                            color: '#6b7280',
-                            fontWeight: '500',
-                          }}
-                        >
-                          Total Jobs
-                        </span>
+                    <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                      <div className="flex items-center gap-2 mb-2">
+                        <TrendingUp size={18} className="text-blue-600" />
+                        <span className="text-xs text-gray-500 font-medium">Total Jobs</span>
                       </div>
-                      <div
-                        style={{
-                          fontSize: '1.5rem',
-                          fontWeight: '700',
-                          color: '#1e40af',
-                        }}
-                      >
+                      <div className="text-2xl font-bold text-blue-800">
                         {stats.jobsAssigned}
                       </div>
                     </div>
-                    <div
-                      style={{
-                        padding: '1rem',
-                        backgroundColor: '#fffbeb',
-                        borderRadius: '10px',
-                        border: '1px solid #fbbf24',
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.5rem',
-                          marginBottom: '0.5rem',
-                        }}
-                      >
-                        <Clock size={18} color="#f59e0b" />
-                        <span
-                          style={{
-                            fontSize: '0.75rem',
-                            color: '#6b7280',
-                            fontWeight: '500',
-                          }}
-                        >
-                          In Progress
-                        </span>
+                    <div className="p-4 bg-amber-50 rounded-xl border border-amber-100">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Clock size={18} className="text-amber-500" />
+                        <span className="text-xs text-gray-500 font-medium">In Progress</span>
                       </div>
-                      <div
-                        style={{
-                          fontSize: '1.5rem',
-                          fontWeight: '700',
-                          color: '#d97706',
-                        }}
-                      >
+                      <div className="text-2xl font-bold text-amber-700">
                         {stats.jobsInProgress}
                       </div>
                     </div>
-                    <div
-                      style={{
-                        padding: '1rem',
-                        backgroundColor: '#f0fdf4',
-                        borderRadius: '10px',
-                        border: '1px solid #86efac',
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.5rem',
-                          marginBottom: '0.5rem',
-                        }}
-                      >
-                        <CheckCircle2 size={18} color="#10b981" />
-                        <span
-                          style={{
-                            fontSize: '0.75rem',
-                            color: '#6b7280',
-                            fontWeight: '500',
-                          }}
-                        >
-                          Completed
-                        </span>
+                    <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                      <div className="flex items-center gap-2 mb-2">
+                        <CheckCircle2 size={18} className="text-emerald-500" />
+                        <span className="text-xs text-gray-500 font-medium">Completed</span>
                       </div>
-                      <div
-                        style={{
-                          fontSize: '1.5rem',
-                          fontWeight: '700',
-                          color: '#065f46',
-                        }}
-                      >
+                      <div className="text-2xl font-bold text-emerald-800">
                         {stats.jobsCompleted}
                       </div>
                     </div>
@@ -898,78 +471,23 @@ export default function ProfilePage() {
 
           {/* Organization Info */}
           {organization && (
-            <div
-              style={{
-                backgroundColor: 'white',
-                padding: '1.5rem',
-                borderRadius: '12px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                border: '1px solid rgba(239,119,34,0.1)',
-                marginBottom: '1rem',
-              }}
-            >
-              <h3
-                style={{
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  color: '#6b7280',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: '1rem',
-                }}
-              >
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-orange-100 mb-6">
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">
                 Organization
               </h3>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                }}
-              >
-                <div
-                  style={{
-                    width: '48px',
-                    height: '48px',
-                    background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
-                    borderRadius: '10px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: '2px solid rgba(239,119,34,0.2)',
-                  }}
-                >
-                  <Building2 size={24} color="#EF7722" />
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center border border-orange-100">
+                  <Building2 size={24} className="text-primary-500" />
                 </div>
-                <div style={{ flex: 1 }}>
-                  <p
-                    style={{
-                      fontSize: '0.75rem',
-                      color: '#9ca3af',
-                      margin: 0,
-                      fontWeight: '500',
-                    }}
-                  >
+                <div className="flex-1">
+                  <p className="text-xs text-gray-400 font-medium mb-1">
                     Organization Name
                   </p>
-                  <p
-                    style={{
-                      fontSize: '1.125rem',
-                      fontWeight: '700',
-                      color: '#111827',
-                      margin: '0.25rem 0 0 0',
-                    }}
-                  >
+                  <p className="text-lg font-bold text-gray-900 m-0">
                     {organization.name}
                   </p>
                   {organization.created_at && (
-                    <p
-                      style={{
-                        fontSize: '0.75rem',
-                        color: '#6b7280',
-                        margin: '0.25rem 0 0 0',
-                      }}
-                    >
+                    <p className="text-xs text-gray-500 mt-1">
                       Created {formatDate(organization.created_at)}
                     </p>
                   )}
@@ -979,72 +497,21 @@ export default function ProfilePage() {
           )}
 
           {/* Quick Links */}
-          <div
-            style={{
-              backgroundColor: 'white',
-              borderRadius: '12px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-              border: '1px solid rgba(239,119,34,0.1)',
-              marginBottom: '1rem',
-              overflow: 'hidden',
-            }}
-          >
+          <div className="bg-white rounded-xl shadow-sm border border-orange-100 mb-6 overflow-hidden divide-y divide-gray-100">
             <button
               onClick={() => router.push('/settings')}
               disabled
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '1rem 1.25rem',
-                backgroundColor: 'white',
-                border: 'none',
-                borderBottom: '1px solid #f3f4f6',
-                cursor: 'not-allowed',
-                opacity: 0.6,
-                minHeight: '64px',
-                transition: 'background-color 0.2s',
-              }}
+              className="w-full flex items-center justify-between p-4 bg-white border-none cursor-not-allowed opacity-60 min-h-[64px] hover:bg-gray-50 transition-colors"
             >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                }}
-              >
-                <div
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
-                    borderRadius: '8px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: '2px solid rgba(239,119,34,0.2)',
-                  }}
-                >
-                  <Settings size={20} color="#EF7722" />
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center border border-orange-100">
+                  <Settings size={20} className="text-primary-500" />
                 </div>
-                <span
-                  style={{
-                    fontSize: '0.9375rem',
-                    fontWeight: '600',
-                    color: '#374151',
-                  }}
-                >
+                <span className="text-sm font-semibold text-gray-700">
                   Settings
                 </span>
               </div>
-              <span
-                style={{
-                  color: '#9ca3af',
-                  fontSize: '0.75rem',
-                  fontWeight: '500',
-                }}
-              >
+              <span className="text-xs font-medium text-gray-400">
                 Coming Soon
               </span>
             </button>
@@ -1052,58 +519,17 @@ export default function ProfilePage() {
             <button
               onClick={() => router.push('/help')}
               disabled
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '1rem 1.25rem',
-                backgroundColor: 'white',
-                border: 'none',
-                cursor: 'not-allowed',
-                opacity: 0.6,
-                minHeight: '64px',
-                transition: 'background-color 0.2s',
-              }}
+              className="w-full flex items-center justify-between p-4 bg-white border-none cursor-not-allowed opacity-60 min-h-[64px] hover:bg-gray-50 transition-colors"
             >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                }}
-              >
-                <div
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
-                    borderRadius: '8px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: '2px solid rgba(239,119,34,0.2)',
-                  }}
-                >
-                  <HelpCircle size={20} color="#EF7722" />
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center border border-orange-100">
+                  <HelpCircle size={20} className="text-primary-500" />
                 </div>
-                <span
-                  style={{
-                    fontSize: '0.9375rem',
-                    fontWeight: '600',
-                    color: '#374151',
-                  }}
-                >
+                <span className="text-sm font-semibold text-gray-700">
                   Help & Support
                 </span>
               </div>
-              <span
-                style={{
-                  color: '#9ca3af',
-                  fontSize: '0.75rem',
-                  fontWeight: '500',
-                }}
-              >
+              <span className="text-xs font-medium text-gray-400">
                 Coming Soon
               </span>
             </button>
@@ -1113,75 +539,21 @@ export default function ProfilePage() {
           <button
             onClick={handleSignOut}
             disabled={signingOut}
-            style={{
-              width: '100%',
-              padding: '1rem 1.5rem',
-              background: signingOut
-                ? '#9ca3af'
-                : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '12px',
-              fontSize: '1rem',
-              fontWeight: '600',
-              cursor: signingOut ? 'not-allowed' : 'pointer',
-              minHeight: '56px',
-              boxShadow: signingOut
-                ? 'none'
-                : '0 2px 8px rgba(239,68,68,0.25)',
-              transition: 'all 0.2s',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.5rem',
-              marginBottom: '1rem',
-            }}
-            onMouseEnter={(e) => {
-              if (!signingOut) {
-                e.currentTarget.style.transform = 'translateY(-1px)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,68,68,0.3)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!signingOut) {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,68,68,0.25)';
-              }
-            }}
+            className={`w-full p-4 mb-6 border-none rounded-xl text-base font-semibold cursor-pointer min-h-[56px] flex items-center justify-center gap-2 transition-all ${signingOut
+                ? 'bg-gray-400 text-white cursor-not-allowed'
+                : 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg shadow-red-500/20 hover:-translate-y-0.5 hover:shadow-red-500/30'
+              }`}
           >
             <LogOut size={20} />
             <span>{signingOut ? 'Signing Out...' : 'Sign Out'}</span>
           </button>
 
           {/* Info */}
-          <div
-            style={{
-              padding: '1.25rem',
-              backgroundColor: 'white',
-              borderRadius: '12px',
-              border: '1px solid rgba(239,119,34,0.1)',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-            }}
-          >
-            <p
-              style={{
-                fontSize: '0.875rem',
-                color: '#EF7722',
-                margin: 0,
-                textAlign: 'center',
-                fontWeight: '600',
-              }}
-            >
+          <div className="p-5 bg-white rounded-xl border border-orange-100 shadow-sm text-center">
+            <p className="text-sm font-semibold text-primary-500 m-0">
               Automet Field Service Management
             </p>
-            <p
-              style={{
-                fontSize: '0.75rem',
-                color: '#9ca3af',
-                margin: '0.5rem 0 0 0',
-                textAlign: 'center',
-              }}
-            >
+            <p className="text-xs text-gray-400 mt-2 m-0">
               Version 2.0.0 (MVP)
             </p>
           </div>

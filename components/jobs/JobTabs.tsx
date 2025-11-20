@@ -1,25 +1,34 @@
 import React, { useState } from 'react';
 import {
     CheckSquare,
-    Package,
-    Paperclip,
     History,
-    Plus
+    Info,
+    User,
+    MapPin,
+    Wrench,
+    Phone,
+    Mail,
+    Building2,
+    Navigation
 } from 'lucide-react';
 import EmptyState from '@/components/EmptyState';
+import JobInfoCard from './JobInfoCard';
 
 interface JobTabsProps {
     job: any;
     activeRole: string | null;
+    onAddTask?: () => void;
+    onCall?: () => void;
+    onEmail?: () => void;
+    onNavigate?: () => void;
 }
 
-export default function JobTabs({ job, activeRole }: JobTabsProps) {
-    const [activeTab, setActiveTab] = useState<'tasks' | 'parts' | 'attachments' | 'history'>('tasks');
+export default function JobTabs({ job, activeRole, onAddTask, onCall, onEmail, onNavigate }: JobTabsProps) {
+    const [activeTab, setActiveTab] = useState<'overview' | 'tasks' | 'history'>('overview');
 
     const tabs = [
-        { id: 'tasks', label: 'Tasks', icon: CheckSquare, count: 0 },
-        { id: 'parts', label: 'Parts', icon: Package, count: 0 },
-        { id: 'attachments', label: 'Attachments', icon: Paperclip, count: 0 },
+        { id: 'overview', label: 'Overview', icon: Info },
+        { id: 'tasks', label: 'Tasks', icon: CheckSquare, count: job.tasks?.length || 0 },
         { id: 'history', label: 'History', icon: History, count: job.assignments?.length || 0 },
     ];
 
@@ -39,7 +48,7 @@ export default function JobTabs({ job, activeRole }: JobTabsProps) {
                         >
                             <Icon size={18} />
                             {tab.label}
-                            {tab.count > 0 && (
+                            {tab.count !== undefined && tab.count > 0 && (
                                 <span className={`ml-1 px-2 py-0.5 rounded-full text-xs ${isActive ? 'bg-orange-100 text-primary' : 'bg-gray-100 text-gray-600'
                                     }`}>
                                     {tab.count}
@@ -55,13 +64,96 @@ export default function JobTabs({ job, activeRole }: JobTabsProps) {
 
             {/* Tab Content */}
             <div className="p-6 min-h-[300px]">
+                {activeTab === 'overview' && (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {/* Customer Info */}
+                        <JobInfoCard
+                            title="Customer"
+                            icon={User}
+                            items={[
+                                {
+                                    label: 'Name',
+                                    value: job.client?.name || 'N/A',
+                                    icon: User
+                                },
+                                {
+                                    label: 'Phone',
+                                    value: job.client?.contact_phone || 'N/A',
+                                    icon: Phone,
+                                    action: job.client?.contact_phone && onCall ? {
+                                        label: 'Call',
+                                        onClick: onCall,
+                                        icon: Phone
+                                    } : undefined
+                                },
+                                {
+                                    label: 'Email',
+                                    value: job.client?.contact_email || 'N/A',
+                                    icon: Mail,
+                                    action: job.client?.contact_email && onEmail ? {
+                                        label: 'Email',
+                                        onClick: onEmail,
+                                        icon: Mail
+                                    } : undefined
+                                }
+                            ]}
+                        />
+
+                        {/* Site Info */}
+                        <JobInfoCard
+                            title="Site Location"
+                            icon={MapPin}
+                            items={[
+                                {
+                                    label: 'Site Name',
+                                    value: job.site?.name || 'N/A',
+                                    icon: Building2
+                                },
+                                {
+                                    label: 'Address',
+                                    value: job.site?.address || 'N/A',
+                                    icon: MapPin,
+                                    action: (job.site?.address || (job.site?.gps_lat && job.site?.gps_lng)) && onNavigate ? {
+                                        label: 'Navigate',
+                                        onClick: onNavigate,
+                                        icon: Navigation
+                                    } : undefined
+                                }
+                            ]}
+                        />
+
+                        {/* Asset Info */}
+                        {job.asset ? (
+                            <JobInfoCard
+                                title="Asset Details"
+                                icon={Wrench}
+                                items={[
+                                    { label: 'Type', value: job.asset.asset_type, icon: Wrench },
+                                    { label: 'Model', value: job.asset.model || 'N/A', icon: Wrench },
+                                    { label: 'Serial Number', value: job.asset.serial_number || 'N/A', icon: Wrench }
+                                ]}
+                            />
+                        ) : (
+                            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex items-center justify-center">
+                                <div className="text-center text-gray-400">
+                                    <Wrench size={32} className="mx-auto mb-2 opacity-50" />
+                                    <p className="text-sm">No asset linked</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 {activeTab === 'tasks' && (
                     <div>
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-lg font-bold text-gray-900">Task Checklist</h3>
-                            {activeRole !== 'technician' && (
-                                <button className="flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-600 transition-colors">
-                                    <Plus size={16} /> Add Task
+                            {activeRole !== 'technician' && onAddTask && (
+                                <button
+                                    onClick={onAddTask}
+                                    className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary-600 transition-colors"
+                                >
+                                    <CheckSquare size={16} /> Add Task
                                 </button>
                             )}
                         </div>
@@ -69,41 +161,7 @@ export default function JobTabs({ job, activeRole }: JobTabsProps) {
                             title="No tasks yet"
                             description="Add tasks to track progress on this job."
                             icon={<CheckSquare size={48} />}
-                            action={activeRole !== 'technician' ? { label: 'Add Task', onClick: () => { } } : undefined}
-                        />
-                    </div>
-                )}
-
-                {activeTab === 'parts' && (
-                    <div>
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-bold text-gray-900">Parts & Materials</h3>
-                            <button className="flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-600 transition-colors">
-                                <Plus size={16} /> Add Part
-                            </button>
-                        </div>
-                        <EmptyState
-                            title="No parts used"
-                            description="Record parts and materials used for this job."
-                            icon={<Package size={48} />}
-                            action={{ label: 'Add Part', onClick: () => { } }}
-                        />
-                    </div>
-                )}
-
-                {activeTab === 'attachments' && (
-                    <div>
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-bold text-gray-900">Photos & Documents</h3>
-                            <button className="flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-600 transition-colors">
-                                <Plus size={16} /> Upload
-                            </button>
-                        </div>
-                        <EmptyState
-                            title="No attachments"
-                            description="Upload photos or documents related to this job."
-                            icon={<Paperclip size={48} />}
-                            action={{ label: 'Upload File', onClick: () => { } }}
+                            action={activeRole !== 'technician' && onAddTask ? { label: 'Add Task', onClick: onAddTask } : undefined}
                         />
                     </div>
                 )}

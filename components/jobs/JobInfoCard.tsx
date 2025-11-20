@@ -21,7 +21,7 @@ interface JobInfoCardProps {
 
 export default function JobInfoCard({ title, icon: Icon, items, className = '' }: JobInfoCardProps) {
     return (
-        <div className={`bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden ${className}`}>
+        <div className={`bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden ${className}`}>
             <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2.5">
                 <Icon size={18} className="text-primary" />
                 <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide m-0">
@@ -37,7 +37,7 @@ export default function JobInfoCard({ title, icon: Icon, items, className = '' }
                             </div>
                         )}
                         <div className="flex-1 min-w-0">
-                            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-0.5">
+                            <div className="text-xs font-semibold text-gray-500 tracking-wide mb-0.5">
                                 {item.label}
                             </div>
                             <div className="text-sm font-medium text-gray-900 break-words">

@@ -5,19 +5,8 @@ import BottomNav from '@/components/BottomNav';
 import Sidebar from '@/components/Sidebar';
 import TopHeader from '@/components/TopHeader';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
-import {
-  MapPin,
-  Wrench,
-  User,
-  Phone,
-  Mail,
-  Navigation,
-  X,
-  Plus,
-  Building2
-} from 'lucide-react';
+
 import JobDetailHeader from '@/components/jobs/JobDetailHeader';
-import JobInfoCard from '@/components/jobs/JobInfoCard';
 import JobTabs from '@/components/jobs/JobTabs';
 import toast from 'react-hot-toast';
 
@@ -69,13 +58,6 @@ interface JobDetails {
   }>;
 }
 
-interface User {
-  id: string;
-  email: string;
-  full_name?: string;
-  role: string;
-}
-
 export default function JobDetailPage() {
   const router = useRouter();
   const { id } = router.query;
@@ -83,9 +65,7 @@ export default function JobDetailPage() {
   const [job, setJob] = useState<JobDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
-  const [showAssignModal, setShowAssignModal] = useState(false);
-  const [users, setUsers] = useState<User[]>([]);
-  const [selectedUserId, setSelectedUserId] = useState('');
+
 
   useEffect(() => {
     if (id) {
@@ -111,21 +91,6 @@ export default function JobDetailPage() {
     }
   };
 
-  const fetchUsers = async () => {
-    try {
-      const response = await apiFetch('/api/team');
-      if (response.ok) {
-        const data = await response.json();
-        // Filter for technicians only
-        const technicians = data.users.filter((u: User) => u.role === 'technician');
-        setUsers(technicians);
-      }
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      toast.error('Failed to load technicians');
-    }
-  };
-
   const updateJobStatus = async (newStatus: string) => {
     if (!job) return;
     setUpdating(true);
@@ -137,7 +102,6 @@ export default function JobDetailPage() {
       });
 
       if (response.ok) {
-        // Refetch the complete job data with all related data
         await fetchJob();
         toast.success(`Job marked as ${newStatus.replace('_', ' ')}`);
       } else {
@@ -171,33 +135,7 @@ export default function JobDetailPage() {
     }
   };
 
-  const handleAssign = async () => {
-    if (!selectedUserId || !job) return;
 
-    try {
-      const response = await apiFetch(`/api/jobs/${job.id}/assign`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: selectedUserId }),
-      });
-
-      if (response.ok) {
-        toast.success('Technician assigned successfully');
-        setShowAssignModal(false);
-        fetchJob(); // Refresh job data
-      } else {
-        throw new Error('Failed to assign technician');
-      }
-    } catch (error) {
-      console.error('Error assigning technician:', error);
-      toast.error('Failed to assign technician');
-    }
-  };
-
-  const openAssignModal = () => {
-    fetchUsers();
-    setShowAssignModal(true);
-  };
 
   const handleCall = () => {
     if (job?.client?.contact_phone) {
@@ -268,7 +206,7 @@ export default function JobDetailPage() {
         <div className="flex-1 flex flex-col md:pl-64 pb-20 md:pb-0">
           <TopHeader />
 
-          <main className="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full">
+          <main className="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full pt-24 md:pt-28">
             <JobDetailHeader
               job={job}
               activeRole={activeRole}
@@ -277,183 +215,18 @@ export default function JobDetailPage() {
               onDelete={handleDelete}
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Left Column: Info Cards */}
-              <div className="lg:col-span-1 space-y-6">
-                {/* Customer Info */}
-                <JobInfoCard
-                  title="Customer"
-                  icon={User}
-                  items={[
-                    {
-                      label: 'Name',
-                      value: job.client?.name || 'N/A',
-                      icon: User
-                    },
-                    {
-                      label: 'Phone',
-                      value: job.client?.contact_phone || 'N/A',
-                      icon: Phone,
-                      action: job.client?.contact_phone ? {
-                        label: 'Call',
-                        onClick: handleCall,
-                        icon: Phone
-                      } : undefined
-                    },
-                    {
-                      label: 'Email',
-                      value: job.client?.contact_email || 'N/A',
-                      icon: Mail,
-                      action: job.client?.contact_email ? {
-                        label: 'Email',
-                        onClick: handleEmail,
-                        icon: Mail
-                      } : undefined
-                    }
-                  ]}
-                />
-
-                {/* Site Info */}
-                <JobInfoCard
-                  title="Site Location"
-                  icon={MapPin}
-                  items={[
-                    {
-                      label: 'Site Name',
-                      value: job.site?.name || 'N/A',
-                      icon: Building2
-                    },
-                    {
-                      label: 'Address',
-                      value: job.site?.address || 'N/A',
-                      icon: MapPin,
-                      action: (job.site?.address || (job.site?.gps_lat && job.site?.gps_lng)) ? {
-                        label: 'Navigate',
-                        onClick: handleNavigate,
-                        icon: Navigation
-                      } : undefined
-                    }
-                  ]}
-                />
-
-                {/* Asset Info (if available) */}
-                {job.asset && (
-                  <JobInfoCard
-                    title="Asset Details"
-                    icon={Wrench}
-                    items={[
-                      { label: 'Type', value: job.asset.asset_type, icon: Wrench },
-                      { label: 'Model', value: job.asset.model || 'N/A', icon: Wrench },
-                      { label: 'Serial Number', value: job.asset.serial_number || 'N/A', icon: Wrench }
-                    ]}
-                  />
-                )}
-
-                {/* Assigned Technicians (Desktop View) */}
-                <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                  <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <User size={18} className="text-primary" />
-                      <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide m-0">
-                        Technicians
-                      </h3>
-                    </div>
-                    {activeRole !== 'technician' && (
-                      <button
-                        onClick={openAssignModal}
-                        className="flex items-center gap-1 text-xs font-bold text-primary hover:text-primary-600 uppercase tracking-wide"
-                      >
-                        <Plus size={14} /> Assign
-                      </button>
-                    )}
-                  </div>
-                  <div className="p-5">
-                    {job.assignments && job.assignments.length > 0 ? (
-                      <div className="space-y-3">
-                        {job.assignments.map((assignment) => (
-                          <div key={assignment.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
-                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-primary border border-gray-200 shadow-sm">
-                              <User size={14} />
-                            </div>
-                            <div>
-                              <div className="text-sm font-semibold text-gray-900">
-                                {assignment.user?.full_name || assignment.user?.email}
-                              </div>
-                              <div className="text-xs text-gray-500 capitalize">
-                                {assignment.user?.role}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-4 text-gray-500 text-sm">
-                        No technicians assigned
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Column: Tabs & Activity */}
-              <div className="lg:col-span-2">
-                <JobTabs job={job} activeRole={activeRole} />
-              </div>
-            </div>
+            {/* Single Column Layout with Tabs */}
+            <JobTabs
+              job={job}
+              activeRole={activeRole}
+              onAddTask={() => toast.success('Add Task feature coming soon')}
+              onCall={handleCall}
+              onEmail={handleEmail}
+              onNavigate={handleNavigate}
+            />
           </main>
         </div>
         <BottomNav />
-
-        {/* Assign Modal */}
-        {showAssignModal && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
-              <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                <h3 className="text-lg font-bold text-gray-900">Assign Technician</h3>
-                <button
-                  onClick={() => setShowAssignModal(false)}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-              <div className="p-6">
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Select Technician
-                  </label>
-                  <select
-                    value={selectedUserId}
-                    onChange={(e) => setSelectedUserId(e.target.value)}
-                    className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                  >
-                    <option value="">Select a technician...</option>
-                    {users.map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {user.full_name || user.email}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex justify-end gap-3">
-                  <button
-                    onClick={() => setShowAssignModal(false)}
-                    className="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleAssign}
-                    disabled={!selectedUserId}
-                    className="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
-                  >
-                    Assign
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </ProtectedRoute>
   );

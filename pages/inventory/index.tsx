@@ -6,15 +6,16 @@ import Sidebar from '@/components/Sidebar';
 import TopHeader from '@/components/TopHeader';
 import RoleBadge from '@/components/RoleBadge';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
+import StockBadge from '@/components/inventory/StockBadge';
+import EmptyState from '@/components/EmptyState';
 import {
   Plus,
   Package,
   Search,
   AlertTriangle,
-  CheckCircle2,
-  XCircle,
   Hash,
   Tag,
+  Filter,
 } from 'lucide-react';
 
 interface InventoryItem {
@@ -75,9 +76,15 @@ export default function InventoryPage() {
     try {
       const response = await apiFetch('/api/inventory');
       if (response.ok) {
-        const data = await response.json();
-        setInventory(data);
-        setFilteredInventory(data);
+        const text = await response.text();
+        try {
+          const data = JSON.parse(text);
+          setInventory(data);
+          setFilteredInventory(data);
+        } catch (e) {
+          console.error('Failed to parse inventory JSON:', e);
+          console.error('Raw response:', text);
+        }
       }
     } catch (error) {
       console.error('Error fetching inventory:', error);
@@ -92,521 +99,170 @@ export default function InventoryPage() {
     return quantity <= reorderLevel;
   }).length;
 
-  const getStockStatus = (item: InventoryItem) => {
-    const quantity = Number(item.quantity) || 0;
-    const reorderLevel = Number(item.reorder_level) || 0;
-    
-    if (quantity === 0) {
-      return {
-        color: '#ef4444',
-        label: 'Out of Stock',
-        icon: XCircle,
-        bgColor: '#fee2e2',
-      };
-    } else if (quantity <= reorderLevel) {
-      return {
-        color: '#f59e0b',
-        label: 'Low Stock',
-        icon: AlertTriangle,
-        bgColor: '#fef3c7',
-      };
-    } else {
-      return {
-        color: '#10b981',
-        label: 'In Stock',
-        icon: CheckCircle2,
-        bgColor: '#d1fae5',
-      };
-    }
-  };
-
   return (
     <ProtectedRoute>
-      <style jsx>{`
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-        .inventory-container {
-          padding-bottom: 80px;
-        }
-        .main-content {
-          padding: 1rem;
-        }
-        .mobile-header {
-          display: block;
-        }
-        .desktop-header {
-          display: none;
-        }
-        @media (min-width: 768px) {
-          .inventory-container {
-            margin-left: 260px;
-            padding-bottom: 0;
-            padding-top: 64px;
-          }
-          .main-content {
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-          }
-          .mobile-header {
-            display: none;
-          }
-          .desktop-header {
-            display: block;
-          }
-        }
-      `}</style>
-
-      <div
-        className="inventory-container"
-        style={{
-          minHeight: '100vh',
-          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
-          fontFamily: 'system-ui, -apple-system, sans-serif',
-        }}
-      >
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 pb-20 md:pb-0 md:pt-16 md:ml-[260px] font-sans">
         {/* Desktop Sidebar */}
         <Sidebar activeTab="inventory" />
 
         {/* Desktop Top Header */}
-        <div className="desktop-header">
+        <div className="hidden md:block">
           <TopHeader />
         </div>
 
-        {/* Desktop Role Badge - Shows when role is switched */}
-        <div className="desktop-header">
+        {/* Desktop Role Badge */}
+        <div className="hidden md:block">
           <RoleBadge />
         </div>
 
         {/* Mobile Header */}
-        <header
-          className="mobile-header"
-          style={{
-            background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-            color: 'white',
-            padding: '1rem',
-            position: 'sticky',
-            top: 0,
-            zIndex: 20,
-            boxShadow: '0 2px 10px rgba(239,119,34,0.2)',
-          }}
-        >
-          <h1
-            style={{
-              fontSize: '1.25rem',
-              fontWeight: '700',
-              margin: '0 0 0.5rem 0',
-            }}
-          >
-            Inventory
-          </h1>
-          <div
-            style={{
-              display: 'flex',
-              gap: '1rem',
-              fontSize: '0.875rem',
-              opacity: 0.95,
-            }}
-          >
+        <header className="md:hidden sticky top-0 z-20 bg-gradient-to-br from-primary-500 to-primary-600 text-white p-4 shadow-lg shadow-primary-500/20">
+          <h1 className="text-xl font-bold m-0 mb-2">Inventory</h1>
+          <div className="flex gap-4 text-sm opacity-95">
             <span>{filteredInventory.length} items</span>
             {lowStockCount > 0 && (
-              <span style={{ color: '#fef3c7', fontWeight: '600' }}>
-                <AlertTriangle size={14} style={{ display: 'inline', verticalAlign: 'middle' }} /> {lowStockCount} low stock
+              <span className="text-amber-100 font-semibold flex items-center gap-1">
+                <AlertTriangle size={14} /> {lowStockCount} low stock
               </span>
             )}
           </div>
         </header>
 
         {/* Search & Filter Bar */}
-        <div
-          style={{
-            backgroundColor: 'white',
-            padding: '1rem',
-            borderBottom: '1px solid rgba(239,119,34,0.1)',
-            position: 'sticky',
-            top: '66px',
-            zIndex: 19,
-            boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-          }}
-        >
-          <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <div className="bg-white p-4 border-b border-orange-100 sticky top-[66px] md:top-16 z-10 shadow-sm">
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-4">
             {/* Search Input */}
-            <div style={{ position: 'relative', marginBottom: '0.75rem' }}>
+            <div className="relative flex-1">
               <Search
                 size={20}
-                color="#9ca3af"
-                style={{
-                  position: 'absolute',
-                  left: '0.75rem',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  pointerEvents: 'none',
-                }}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
               />
               <input
                 type="text"
                 placeholder="Search inventory by name or SKU..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 0.75rem 0.75rem 2.75rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  minHeight: '48px',
-                  boxSizing: 'border-box',
-                  transition: 'border-color 0.2s, box-shadow 0.2s',
-                  outline: 'none',
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#EF7722';
-                  e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#d1d5db';
-                  e.target.style.boxShadow = 'none';
-                }}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl text-base focus:outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all"
               />
             </div>
 
             {/* Filters */}
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                gap: '0.75rem',
-                alignItems: 'center',
-              }}
-            >
+            <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowLowStockOnly(!showLowStockOnly)}
-                style={{
-                  padding: '0.75rem 1rem',
-                  backgroundColor: showLowStockOnly ? '#f59e0b' : 'white',
-                  color: showLowStockOnly ? 'white' : '#6b7280',
-                  border: `2px solid ${showLowStockOnly ? '#f59e0b' : '#d1d5db'}`,
-                  borderRadius: '8px',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  minHeight: '48px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  transition: 'all 0.2s',
-                  whiteSpace: 'nowrap',
-                }}
-                onMouseEnter={(e) => {
-                  if (!showLowStockOnly) {
-                    e.currentTarget.style.borderColor = '#EF7722';
-                    e.currentTarget.style.color = '#EF7722';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!showLowStockOnly) {
-                    e.currentTarget.style.borderColor = '#d1d5db';
-                    e.currentTarget.style.color = '#6b7280';
-                  }
-                }}
+                className={`px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all border ${showLowStockOnly
+                  ? 'bg-amber-500 text-white border-amber-500 shadow-lg shadow-amber-500/20'
+                  : 'bg-white text-gray-600 border-gray-300 hover:border-amber-500 hover:text-amber-500'
+                  }`}
               >
-                <AlertTriangle size={16} />
-                {showLowStockOnly ? 'Low Stock' : 'All Stock'}
+                <Filter size={16} />
+                {showLowStockOnly ? 'Low Stock Only' : 'Filter Stock'}
+                {lowStockCount > 0 && !showLowStockOnly && (
+                  <span className="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full">
+                    {lowStockCount}
+                  </span>
+                )}
+              </button>
+
+              <button
+                onClick={() => router.push('/inventory/new')}
+                className="hidden md:flex px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl text-sm font-semibold shadow-lg shadow-primary-500/20 hover:-translate-y-0.5 hover:shadow-primary-500/30 transition-all items-center gap-2 border-none cursor-pointer"
+              >
+                <Plus size={20} />
+                Add Item
               </button>
             </div>
           </div>
         </div>
 
         {/* Inventory List */}
-        <main className="main-content">
+        <main className="p-4 md:p-8 max-w-6xl mx-auto">
           {loading ? (
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                minHeight: '400px',
-              }}
-            >
-              <div
-                style={{
-                  width: '48px',
-                  height: '48px',
-                  border: '4px solid rgba(239,119,34,0.2)',
-                  borderTopColor: '#EF7722',
-                  borderRadius: '50%',
-                  animation: 'spin 0.8s linear infinite',
-                }}
-              />
+            <div className="flex justify-center items-center min-h-[400px]">
+              <div className="w-12 h-12 border-4 border-orange-200 border-t-primary-500 rounded-full animate-spin"></div>
             </div>
           ) : filteredInventory.length === 0 ? (
-            <div
-              style={{
-                backgroundColor: 'white',
-                padding: '3rem 2rem',
-                borderRadius: '12px',
-                textAlign: 'center',
-                boxShadow: '0 10px 40px rgba(0,0,0,0.08)',
-                border: '1px solid rgba(239,119,34,0.1)',
-              }}
-            >
-              <div
-                style={{
-                  width: '80px',
-                  height: '80px',
-                  margin: '0 auto 1.5rem',
-                  background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '2px solid rgba(239,119,34,0.2)',
-                }}
-              >
-                <Package size={40} color="#EF7722" />
-              </div>
-              <p
-                style={{
-                  fontSize: '1.125rem',
-                  fontWeight: '600',
-                  color: '#111827',
-                  margin: '0 0 0.5rem 0',
-                }}
-              >
-                {searchTerm || showLowStockOnly
-                  ? 'No items found'
-                  : 'No inventory items yet'}
-              </p>
-              <p
-                style={{
-                  fontSize: '0.875rem',
-                  color: '#6b7280',
-                  margin: '0 0 1.5rem 0',
-                }}
-              >
-                {searchTerm || showLowStockOnly
-                  ? 'Try adjusting your filters'
-                  : 'Start tracking your inventory by adding your first item'}
-              </p>
-              {!searchTerm && !showLowStockOnly && (
-                <button
-                  onClick={() => router.push('/inventory/new')}
-                  style={{
-                    padding: '0.75rem 1.5rem',
-                    background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    minHeight: '48px',
-                    boxShadow: '0 2px 8px rgba(239,119,34,0.25)',
-                    transition: 'all 0.2s',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
-                  }}
-                >
-                  <Plus size={20} />
-                  Add First Item
-                </button>
-              )}
-            </div>
-          ) : (
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr',
-                gap: '1rem',
-              }}
-            >
-              {filteredInventory.map((item) => {
-                const stockStatus = getStockStatus(item);
-                const StatusIcon = stockStatus.icon;
-                return (
+            <EmptyState
+              icon={<Package size={48} className="text-primary-500" />}
+              title={searchTerm || showLowStockOnly ? 'No items found' : 'No inventory items yet'}
+              description={
+                searchTerm || showLowStockOnly
+                  ? 'Try adjusting your filters or search term'
+                  : 'Start tracking your inventory by adding your first item'
+              }
+              action={
+                !searchTerm && !showLowStockOnly ? (
                   <button
-                    key={item.id}
-                    onClick={() => router.push(`/inventory/${item.id}`)}
-                    style={{
-                      backgroundColor: 'white',
-                      padding: '1.25rem',
-                      borderRadius: '12px',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                      border: '1px solid rgba(239,119,34,0.1)',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      transition: 'all 0.2s',
-                      position: 'relative',
-                      overflow: 'hidden',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.12)';
-                      e.currentTarget.style.borderColor = 'rgba(239,119,34,0.3)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
-                      e.currentTarget.style.borderColor = 'rgba(239,119,34,0.1)';
-                    }}
+                    onClick={() => router.push('/inventory/new')}
+                    className="px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl text-sm font-semibold shadow-lg shadow-primary-500/20 hover:-translate-y-0.5 hover:shadow-primary-500/30 transition-all flex items-center gap-2 border-none cursor-pointer"
                   >
-                    {/* Icon Badge */}
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: '1.25rem',
-                        right: '1.25rem',
-                        width: '48px',
-                        height: '48px',
-                        background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
-                        borderRadius: '10px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        border: '2px solid rgba(239,119,34,0.2)',
-                      }}
-                    >
-                      <Package size={24} color="#EF7722" />
-                    </div>
-
-                    {/* Item Name & SKU */}
-                    <div style={{ marginBottom: '0.75rem', paddingRight: '4rem' }}>
-                      <h3
-                        style={{
-                          fontSize: '1.125rem',
-                          fontWeight: '700',
-                          color: '#111827',
-                          margin: '0 0 0.25rem 0',
-                        }}
-                      >
-                        {item.name}
-                      </h3>
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.5rem',
-                          fontSize: '0.875rem',
-                          color: '#6b7280',
-                        }}
-                      >
-                        {item.sku && (
-                          <>
-                            <Hash size={14} />
-                            <span>{item.sku}</span>
-                          </>
-                        )}
-                        {item.is_serialized && (
-                          <>
-                            {item.sku && <span>•</span>}
-                            <Tag size={14} />
-                            <span>Serialized</span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Quantity & Status */}
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginTop: '1rem',
-                        paddingTop: '1rem',
-                        borderTop: '1px solid #f3f4f6',
-                      }}
-                    >
-                      <div>
-                        <div
-                          style={{
-                            fontSize: '1.5rem',
-                            fontWeight: '700',
-                            color: stockStatus.color,
-                            marginBottom: '0.25rem',
-                          }}
-                        >
-                          {item.quantity || 0} {item.unit || 'units'}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: '0.75rem',
-                            color: '#9ca3af',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.25rem',
-                          }}
-                        >
-                          Reorder at: {item.reorder_level || 0} {item.unit || 'units'}
-                        </div>
-                      </div>
-                      <div
-                        style={{
-                          padding: '0.5rem 1rem',
-                          backgroundColor: stockStatus.bgColor,
-                          color: stockStatus.color,
-                          borderRadius: '999px',
-                          fontSize: '0.875rem',
-                          fontWeight: '600',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.5rem',
-                          border: `1px solid ${stockStatus.color}40`,
-                        }}
-                      >
-                        <StatusIcon size={16} />
-                        {stockStatus.label}
-                      </div>
-                    </div>
-
+                    <Plus size={20} />
+                    Add First Item
                   </button>
-                );
-              })}
+                ) : undefined
+              }
+            />
+          ) : (
+            <div className="grid grid-cols-1 gap-4">
+              {filteredInventory.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => router.push(`/inventory/${item.id}`)}
+                  className="bg-white p-5 rounded-xl shadow-sm border border-orange-100 cursor-pointer hover:-translate-y-0.5 hover:shadow-md hover:border-orange-300 transition-all relative overflow-hidden group"
+                >
+                  {/* Icon Badge */}
+                  <div className="absolute top-5 right-5 w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center border border-orange-100 group-hover:bg-orange-100 transition-colors">
+                    <Package size={24} className="text-primary-500" />
+                  </div>
+
+                  {/* Item Name & SKU */}
+                  <div className="mb-4 pr-16">
+                    <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-primary-600 transition-colors">
+                      {item.name}
+                    </h3>
+                    <div className="flex items-center gap-3 text-sm text-gray-500">
+                      {item.sku && (
+                        <div className="flex items-center gap-1">
+                          <Hash size={14} />
+                          <span>{item.sku}</span>
+                        </div>
+                      )}
+                      {item.is_serialized && (
+                        <div className="flex items-center gap-1">
+                          <span className="text-gray-300">•</span>
+                          <Tag size={14} />
+                          <span>Serialized</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Quantity & Status */}
+                  <div className="flex justify-between items-end pt-4 border-t border-gray-50">
+                    <div>
+                      <div className="text-2xl font-bold text-gray-900 mb-1">
+                        {item.quantity || 0} <span className="text-sm font-medium text-gray-500">{item.unit || 'units'}</span>
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        Reorder at: {item.reorder_level || 0} {item.unit || 'units'}
+                      </div>
+                    </div>
+                    <StockBadge
+                      quantity={Number(item.quantity) || 0}
+                      reorderLevel={Number(item.reorder_level) || 0}
+                      unit={item.unit}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </main>
 
-        {/* FAB Button */}
+        {/* Mobile FAB Button */}
         <button
           onClick={() => router.push('/inventory/new')}
-          style={{
-            position: 'fixed',
-            right: '1rem',
-            bottom: '5rem',
-            width: '56px',
-            height: '56px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
-            color: 'white',
-            border: 'none',
-            cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(239,119,34,0.4)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 10,
-            transition: 'all 0.2s',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.1)';
-            e.currentTarget.style.boxShadow = '0 6px 16px rgba(239,119,34,0.5)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.4)';
-          }}
+          className="md:hidden fixed right-4 bottom-20 w-14 h-14 rounded-full bg-gradient-to-r from-primary-500 to-primary-600 text-white border-none shadow-lg shadow-primary-500/30 flex items-center justify-center z-30 hover:scale-110 active:scale-95 transition-all"
         >
           <Plus size={28} />
         </button>

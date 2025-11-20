@@ -8,6 +8,8 @@ import TopHeader from '@/components/TopHeader';
 import Breadcrumb from '@/components/Breadcrumb';
 import RoleBadge from '@/components/RoleBadge';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
+import ProfileEditModal from '@/components/ProfileEditModal';
+import toast from 'react-hot-toast';
 import {
   Building2,
   Mail,
@@ -20,6 +22,7 @@ import {
   CheckCircle2,
   Clock,
   TrendingUp,
+  Phone,
 } from 'lucide-react';
 
 interface UserProfile {
@@ -28,6 +31,7 @@ interface UserProfile {
   org_id: string;
   role: 'owner' | 'coordinator' | 'technician';
   full_name: string | null;
+  contact_phone: string | null;
   profile_photo_url: string | null;
   created_at: string | null;
 }
@@ -54,6 +58,7 @@ export default function ProfilePage() {
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [signingOut, setSigningOut] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   useEffect(() => {
     fetchProfileData();
@@ -144,6 +149,32 @@ export default function ProfilePage() {
       setSigningOut(false);
     }
   };
+
+  const handleSaveProfile = async (updatedProfile: {
+    full_name: string;
+    contact_phone: string;
+    profile_photo_url: string | null;
+  }) => {
+    try {
+      const response = await apiFetch('/api/user/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedProfile),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update profile');
+      }
+
+      // Refresh profile data
+      await fetchProfileData();
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      throw error; // Re-throw to let modal handle the error
+    }
+  };
+
 
   const getRoleConfig = (role: string) => {
     switch (role?.toLowerCase()) {
@@ -349,8 +380,42 @@ export default function ProfilePage() {
               boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
               border: '1px solid rgba(239,119,34,0.1)',
               marginBottom: '1rem',
+              position: 'relative',
             }}
           >
+            {/* Edit Profile Button */}
+            <button
+              onClick={() => setShowEditModal(true)}
+              style={{
+                position: 'absolute',
+                top: '1rem',
+                right: '1rem',
+                padding: '0.5rem 1rem',
+                background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                boxShadow: '0 2px 6px rgba(239,119,34,0.3)',
+                transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 4px 10px rgba(239,119,34,0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 6px rgba(239,119,34,0.3)';
+              }}
+            >
+              <Settings size={16} />
+              Edit Profile
+            </button>
             {/* Avatar */}
             <div
               style={{
@@ -513,6 +578,53 @@ export default function ProfilePage() {
                       }}
                     >
                       {formatDate(profile.created_at)}
+                    </p>
+                  </div>
+                </div>
+              )}
+              {/* Phone Number */}
+              {profile?.contact_phone && (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
+                      borderRadius: '8px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: '2px solid rgba(239,119,34,0.2)',
+                    }}
+                  >
+                    <Phone size={20} color="#EF7722" />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <p
+                      style={{
+                        fontSize: '0.75rem',
+                        color: '#9ca3af',
+                        margin: 0,
+                        fontWeight: '500',
+                      }}
+                    >
+                      Phone Number
+                    </p>
+                    <p
+                      style={{
+                        fontSize: '1rem',
+                        fontWeight: '600',
+                        color: '#111827',
+                        margin: '0.25rem 0 0 0',
+                      }}
+                    >
+                      {profile.contact_phone}
                     </p>
                   </div>
                 </div>
@@ -1074,6 +1186,20 @@ export default function ProfilePage() {
             </p>
           </div>
         </main>
+
+        {/* Profile Edit Modal */}
+        {profile && (
+          <ProfileEditModal
+            isOpen={showEditModal}
+            onClose={() => setShowEditModal(false)}
+            currentProfile={{
+              full_name: profile.full_name,
+              contact_phone: profile.contact_phone,
+              profile_photo_url: profile.profile_photo_url,
+            }}
+            onSave={handleSaveProfile}
+          />
+        )}
 
         {/* Bottom Navigation */}
         <BottomNav activeTab="profile" />

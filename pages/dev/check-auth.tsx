@@ -53,13 +53,38 @@ export default function CheckAuthPage() {
 
       // Fetch database counts
       if (profileData?.org_id) {
-        const [clientsRes, sitesRes, assetsRes, jobsRes, inventoryRes, usersRes] = await Promise.all([
-          supabase.from('clients').select('id', { count: 'exact', head: true }).eq('org_id', profileData.org_id),
-          supabase.from('sites').select('id', { count: 'exact', head: true }).eq('org_id', profileData.org_id),
-          supabase.from('assets').select('id', { count: 'exact', head: true }).eq('org_id', profileData.org_id),
-          supabase.from('jobs').select('id', { count: 'exact', head: true }).eq('org_id', profileData.org_id),
-          supabase.from('inventory_items').select('id', { count: 'exact', head: true }).eq('org_id', profileData.org_id),
-          supabase.from('users').select('id', { count: 'exact', head: true }).eq('org_id', profileData.org_id),
+        const [
+          clientsRes,
+          sitesRes,
+          assetsRes,
+          jobsRes,
+          inventoryRes,
+          usersRes,
+        ] = await Promise.all([
+          supabase
+            .from('clients')
+            .select('id', { count: 'exact', head: true })
+            .eq('org_id', profileData.org_id),
+          supabase
+            .from('sites')
+            .select('id', { count: 'exact', head: true })
+            .eq('org_id', profileData.org_id),
+          supabase
+            .from('assets')
+            .select('id', { count: 'exact', head: true })
+            .eq('org_id', profileData.org_id),
+          supabase
+            .from('jobs')
+            .select('id', { count: 'exact', head: true })
+            .eq('org_id', profileData.org_id),
+          supabase
+            .from('inventory_items')
+            .select('id', { count: 'exact', head: true })
+            .eq('org_id', profileData.org_id),
+          supabase
+            .from('users')
+            .select('id', { count: 'exact', head: true })
+            .eq('org_id', profileData.org_id),
         ]);
 
         setCounts({
@@ -87,7 +112,8 @@ export default function CheckAuthPage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+          background:
+            'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
         }}
       >
         <div style={{ textAlign: 'center' }}>
@@ -102,7 +128,9 @@ export default function CheckAuthPage() {
               margin: '0 auto 1rem',
             }}
           />
-          <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>Loading authentication status...</p>
+          <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+            Loading authentication status...
+          </p>
         </div>
       </div>
     );
@@ -113,7 +141,8 @@ export default function CheckAuthPage() {
       style={{
         minHeight: '100vh',
         padding: '2rem',
-        background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+        background:
+          'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
         fontFamily: 'system-ui, -apple-system, sans-serif',
       }}
     >
@@ -146,10 +175,19 @@ export default function CheckAuthPage() {
           >
             ← Back to Dashboard
           </button>
-          <h1 style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '0.5rem', color: '#111827' }}>
+          <h1
+            style={{
+              fontSize: '2rem',
+              fontWeight: '700',
+              marginBottom: '0.5rem',
+              color: '#111827',
+            }}
+          >
             Authentication Status
           </h1>
-          <p style={{ color: '#6b7280' }}>Check your current authentication state and database status</p>
+          <p style={{ color: '#6b7280' }}>
+            Check your current authentication state and database status
+          </p>
         </div>
 
         {/* Error Display */}
@@ -180,13 +218,22 @@ export default function CheckAuthPage() {
             }}
           >
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🚫</div>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: '600', color: '#92400e', marginBottom: '0.5rem' }}>
+            <h2
+              style={{
+                fontSize: '1.5rem',
+                fontWeight: '600',
+                color: '#92400e',
+                marginBottom: '0.5rem',
+              }}
+            >
               Not Logged In
             </h2>
             <p style={{ color: '#78350f', marginBottom: '1.5rem' }}>
               You need to log in to view your authentication status
             </p>
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+            <div
+              style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}
+            >
               <a
                 href="/auth/login"
                 style={{
@@ -231,25 +278,82 @@ export default function CheckAuthPage() {
                 marginBottom: '1.5rem',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                  marginBottom: '1rem',
+                }}
+              >
                 <span style={{ fontSize: '1.5rem' }}>✅</span>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', margin: 0 }}>
+                <h2
+                  style={{
+                    fontSize: '1.25rem',
+                    fontWeight: '600',
+                    color: '#111827',
+                    margin: 0,
+                  }}
+                >
                   Logged In
                 </h2>
               </div>
 
-              <div style={{ display: 'grid', gap: '0.75rem', fontSize: '0.875rem' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: '0.5rem' }}>
-                  <span style={{ fontWeight: '600', color: '#6b7280' }}>User ID:</span>
-                  <span style={{ color: '#111827', fontFamily: 'monospace', fontSize: '0.75rem' }}>{user.id}</span>
+              <div
+                style={{
+                  display: 'grid',
+                  gap: '0.75rem',
+                  fontSize: '0.875rem',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '140px 1fr',
+                    gap: '0.5rem',
+                  }}
+                >
+                  <span style={{ fontWeight: '600', color: '#6b7280' }}>
+                    User ID:
+                  </span>
+                  <span
+                    style={{
+                      color: '#111827',
+                      fontFamily: 'monospace',
+                      fontSize: '0.75rem',
+                    }}
+                  >
+                    {user.id}
+                  </span>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: '0.5rem' }}>
-                  <span style={{ fontWeight: '600', color: '#6b7280' }}>Email:</span>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '140px 1fr',
+                    gap: '0.5rem',
+                  }}
+                >
+                  <span style={{ fontWeight: '600', color: '#6b7280' }}>
+                    Email:
+                  </span>
                   <span style={{ color: '#111827' }}>{user.email}</span>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: '0.5rem' }}>
-                  <span style={{ fontWeight: '600', color: '#6b7280' }}>Session Active:</span>
-                  <span style={{ color: session ? '#10b981' : '#ef4444', fontWeight: '600' }}>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '140px 1fr',
+                    gap: '0.5rem',
+                  }}
+                >
+                  <span style={{ fontWeight: '600', color: '#6b7280' }}>
+                    Session Active:
+                  </span>
+                  <span
+                    style={{
+                      color: session ? '#10b981' : '#ef4444',
+                      fontWeight: '600',
+                    }}
+                  >
                     {session ? 'Yes' : 'No'}
                   </span>
                 </div>
@@ -267,23 +371,68 @@ export default function CheckAuthPage() {
                   marginBottom: '1.5rem',
                 }}
               >
-                <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '1rem' }}>
+                <h2
+                  style={{
+                    fontSize: '1.25rem',
+                    fontWeight: '600',
+                    color: '#111827',
+                    marginBottom: '1rem',
+                  }}
+                >
                   User Profile
                 </h2>
 
-                <div style={{ display: 'grid', gap: '0.75rem', fontSize: '0.875rem' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: '0.5rem' }}>
-                    <span style={{ fontWeight: '600', color: '#6b7280' }}>Full Name:</span>
-                    <span style={{ color: '#111827' }}>{profile.full_name || '(not set)'}</span>
+                <div
+                  style={{
+                    display: 'grid',
+                    gap: '0.75rem',
+                    fontSize: '0.875rem',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '140px 1fr',
+                      gap: '0.5rem',
+                    }}
+                  >
+                    <span style={{ fontWeight: '600', color: '#6b7280' }}>
+                      Full Name:
+                    </span>
+                    <span style={{ color: '#111827' }}>
+                      {profile.full_name || '(not set)'}
+                    </span>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: '0.5rem' }}>
-                    <span style={{ fontWeight: '600', color: '#6b7280' }}>Organization ID:</span>
-                    <span style={{ color: profile.org_id ? '#111827' : '#ef4444', fontFamily: 'monospace', fontSize: '0.75rem' }}>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '140px 1fr',
+                      gap: '0.5rem',
+                    }}
+                  >
+                    <span style={{ fontWeight: '600', color: '#6b7280' }}>
+                      Organization ID:
+                    </span>
+                    <span
+                      style={{
+                        color: profile.org_id ? '#111827' : '#ef4444',
+                        fontFamily: 'monospace',
+                        fontSize: '0.75rem',
+                      }}
+                    >
                       {profile.org_id || '⚠️ NOT SET (onboarding incomplete)'}
                     </span>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: '0.5rem' }}>
-                    <span style={{ fontWeight: '600', color: '#6b7280' }}>Role:</span>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '140px 1fr',
+                      gap: '0.5rem',
+                    }}
+                  >
+                    <span style={{ fontWeight: '600', color: '#6b7280' }}>
+                      Role:
+                    </span>
                     {profile.role ? (
                       <span
                         style={{
@@ -298,18 +447,33 @@ export default function CheckAuthPage() {
                             ? { backgroundColor: '#ddd6fe', color: '#5b21b6' }
                             : profile.role === 'coordinator'
                               ? { backgroundColor: '#dbeafe', color: '#1e40af' }
-                              : { backgroundColor: '#d1fae5', color: '#065f46' }),
+                              : {
+                                  backgroundColor: '#d1fae5',
+                                  color: '#065f46',
+                                }),
                         }}
                       >
                         {profile.role}
                       </span>
                     ) : (
-                      <span style={{ color: '#ef4444' }}>⚠️ NOT SET (onboarding incomplete)</span>
+                      <span style={{ color: '#ef4444' }}>
+                        ⚠️ NOT SET (onboarding incomplete)
+                      </span>
                     )}
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: '0.5rem' }}>
-                    <span style={{ fontWeight: '600', color: '#6b7280' }}>Created At:</span>
-                    <span style={{ color: '#111827' }}>{new Date(profile.created_at).toLocaleString()}</span>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '140px 1fr',
+                      gap: '0.5rem',
+                    }}
+                  >
+                    <span style={{ fontWeight: '600', color: '#6b7280' }}>
+                      Created At:
+                    </span>
+                    <span style={{ color: '#111827' }}>
+                      {new Date(profile.created_at).toLocaleString()}
+                    </span>
                   </div>
                 </div>
 
@@ -323,8 +487,16 @@ export default function CheckAuthPage() {
                       borderRadius: '6px',
                     }}
                   >
-                    <p style={{ color: '#92400e', fontSize: '0.875rem', margin: 0 }}>
-                      <strong>⚠️ Onboarding Incomplete:</strong> You need to complete onboarding to access dashboard features. Please create or join an organization.
+                    <p
+                      style={{
+                        color: '#92400e',
+                        fontSize: '0.875rem',
+                        margin: 0,
+                      }}
+                    >
+                      <strong>⚠️ Onboarding Incomplete:</strong> You need to
+                      complete onboarding to access dashboard features. Please
+                      create or join an organization.
                     </p>
                   </div>
                 )}
@@ -342,11 +514,24 @@ export default function CheckAuthPage() {
                   marginBottom: '1.5rem',
                 }}
               >
-                <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '1rem' }}>
+                <h2
+                  style={{
+                    fontSize: '1.25rem',
+                    fontWeight: '600',
+                    color: '#111827',
+                    marginBottom: '1rem',
+                  }}
+                >
                   Database Records
                 </h2>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                    gap: '1rem',
+                  }}
+                >
                   {Object.entries(counts).map(([key, value]) => (
                     <div
                       key={key}
@@ -358,10 +543,23 @@ export default function CheckAuthPage() {
                         textAlign: 'center',
                       }}
                     >
-                      <div style={{ fontSize: '1.75rem', fontWeight: '700', color: value > 0 ? '#10b981' : '#9ca3af', marginBottom: '0.25rem' }}>
+                      <div
+                        style={{
+                          fontSize: '1.75rem',
+                          fontWeight: '700',
+                          color: value > 0 ? '#10b981' : '#9ca3af',
+                          marginBottom: '0.25rem',
+                        }}
+                      >
                         {value}
                       </div>
-                      <div style={{ fontSize: '0.875rem', color: '#6b7280', textTransform: 'capitalize' }}>
+                      <div
+                        style={{
+                          fontSize: '0.875rem',
+                          color: '#6b7280',
+                          textTransform: 'capitalize',
+                        }}
+                      >
                         {key}
                       </div>
                     </div>
@@ -379,8 +577,15 @@ export default function CheckAuthPage() {
                       textAlign: 'center',
                     }}
                   >
-                    <p style={{ color: '#92400e', fontSize: '0.875rem', margin: '0 0 1rem 0' }}>
-                      <strong>No data found!</strong> Your organization has no records yet.
+                    <p
+                      style={{
+                        color: '#92400e',
+                        fontSize: '0.875rem',
+                        margin: '0 0 1rem 0',
+                      }}
+                    >
+                      <strong>No data found!</strong> Your organization has no
+                      records yet.
                     </p>
                     <a
                       href="/dev/seed-data"
@@ -411,7 +616,14 @@ export default function CheckAuthPage() {
                 padding: '1.5rem',
               }}
             >
-              <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '1rem' }}>
+              <h2
+                style={{
+                  fontSize: '1.25rem',
+                  fontWeight: '600',
+                  color: '#111827',
+                  marginBottom: '1rem',
+                }}
+              >
                 Quick Actions
               </h2>
 

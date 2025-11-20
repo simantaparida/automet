@@ -54,7 +54,9 @@ export default async function handler(
         console.error('Error fetching asset with joins:', assetError);
         const simpleResult = await typedClient
           .from('assets')
-          .select('id, asset_type, model, serial_number, install_date, metadata, created_at, site_id')
+          .select(
+            'id, asset_type, model, serial_number, install_date, metadata, created_at, site_id'
+          )
           .eq('id', assetId)
           .single();
 
@@ -99,18 +101,11 @@ export default async function handler(
     if (!requireRole(authResult.user, ['owner', 'coordinator'], res)) return;
 
     try {
-      const {
-        asset_type,
-        model,
-        serial_number,
-        install_date,
-        metadata,
-      } = req.body;
+      const { asset_type, model, serial_number, install_date, metadata } =
+        req.body;
 
       if (!asset_type) {
-        return res
-          .status(400)
-          .json({ error: 'asset_type is required' });
+        return res.status(400).json({ error: 'asset_type is required' });
       }
 
       const updatePayload: Database['public']['Tables']['assets']['Update'] = {
@@ -167,9 +162,11 @@ export default async function handler(
       if (error) throw error;
 
       return res.status(200).json({ message: 'Asset deleted successfully' });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error deleting asset:', error);
-      return res.status(500).json({ error: error.message });
+      return res.status(500).json({
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
     }
   }
 

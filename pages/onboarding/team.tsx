@@ -23,7 +23,13 @@ export default function TeamInvite() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
-    { id: '1', name: '', contact: '', contactType: 'phone', role: 'technician' },
+    {
+      id: '1',
+      name: '',
+      contact: '',
+      contactType: 'phone',
+      role: 'technician',
+    },
   ]);
 
   // Track page view
@@ -60,7 +66,11 @@ export default function TeamInvite() {
     }
   };
 
-  const updateTeamMember = (id: string, field: keyof TeamMember, value: string) => {
+  const updateTeamMember = (
+    id: string,
+    field: keyof TeamMember,
+    value: string
+  ) => {
     setTeamMembers(
       teamMembers.map((member) =>
         member.id === id ? { ...member, [field]: value } : member
@@ -124,7 +134,9 @@ export default function TeamInvite() {
 
       // Show any failures
       if (data.invitesFailed && data.invitesFailed.length > 0) {
-        const failedContacts = data.invitesFailed.map((f: any) => f.contact).join(', ');
+        const failedContacts = data.invitesFailed
+          .map((f: any) => f.contact)
+          .join(', ');
         setError(`Some invites failed: ${failedContacts}`);
       }
 
@@ -140,7 +152,14 @@ export default function TeamInvite() {
 
   if (authLoading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+        }}
+      >
         <div>Loading...</div>
       </div>
     );
@@ -150,7 +169,10 @@ export default function TeamInvite() {
     <>
       <Head>
         <title>Invite Your Team - Automet</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1"
+        />
       </Head>
 
       <style jsx>{`
@@ -201,7 +223,8 @@ export default function TeamInvite() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+          background:
+            'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
           position: 'relative',
           overflow: 'hidden',
@@ -215,7 +238,8 @@ export default function TeamInvite() {
             right: '-100px',
             width: '300px',
             height: '300px',
-            background: 'radial-gradient(circle, rgba(239,119,34,0.1) 0%, transparent 70%)',
+            background:
+              'radial-gradient(circle, rgba(239,119,34,0.1) 0%, transparent 70%)',
             borderRadius: '50%',
             pointerEvents: 'none',
           }}
@@ -234,12 +258,50 @@ export default function TeamInvite() {
         >
           {/* Progress indicator */}
           <div style={{ marginBottom: '1.25rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-              <span style={{ fontSize: '0.8125rem', color: '#6b7280', fontWeight: '500' }}>Step 2 of 5</span>
-              <span style={{ fontSize: '0.8125rem', color: '#EF7722', fontWeight: '600' }}>40%</span>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: '0.5rem',
+              }}
+            >
+              <span
+                style={{
+                  fontSize: '0.8125rem',
+                  color: '#6b7280',
+                  fontWeight: '500',
+                }}
+              >
+                Step 2 of 5
+              </span>
+              <span
+                style={{
+                  fontSize: '0.8125rem',
+                  color: '#EF7722',
+                  fontWeight: '600',
+                }}
+              >
+                40%
+              </span>
             </div>
-            <div style={{ width: '100%', height: '6px', backgroundColor: '#ffe8d6', borderRadius: '3px' }}>
-              <div style={{ width: '40%', height: '100%', background: 'linear-gradient(90deg, #EF7722 0%, #ff8833 100%)', borderRadius: '3px' }}></div>
+            <div
+              style={{
+                width: '100%',
+                height: '6px',
+                backgroundColor: '#ffe8d6',
+                borderRadius: '3px',
+              }}
+            >
+              <div
+                style={{
+                  width: '40%',
+                  height: '100%',
+                  background:
+                    'linear-gradient(90deg, #EF7722 0%, #ff8833 100%)',
+                  borderRadius: '3px',
+                }}
+              ></div>
             </div>
           </div>
 
@@ -264,17 +326,33 @@ export default function TeamInvite() {
             onMouseEnter={(e) => (e.currentTarget.style.color = '#EF7722')}
             onMouseLeave={(e) => (e.currentTarget.style.color = '#6b7280')}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
             Back
           </button>
 
-          <h1 className="team-title" style={{ fontWeight: '700', color: '#111827', textAlign: 'center' }}>
+          <h1
+            className="team-title"
+            style={{ fontWeight: '700', color: '#111827', textAlign: 'center' }}
+          >
             Invite your team
           </h1>
-          <p className="team-subtitle" style={{ color: '#6b7280', textAlign: 'center' }}>
-            Add technicians and coordinators. You can skip this and add them later from Settings.
+          <p
+            className="team-subtitle"
+            style={{ color: '#6b7280', textAlign: 'center' }}
+          >
+            Add technicians and coordinators. You can skip this and add them
+            later from Settings.
           </p>
 
           {error && (
@@ -304,8 +382,21 @@ export default function TeamInvite() {
                   backgroundColor: '#f9fafb',
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                  <span style={{ fontSize: '0.875rem', fontWeight: '500', color: '#6b7280' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: '0.875rem',
+                      fontWeight: '500',
+                      color: '#6b7280',
+                    }}
+                  >
                     Team Member {index + 1}
                   </span>
                   {teamMembers.length > 1 && (
@@ -321,8 +412,12 @@ export default function TeamInvite() {
                         cursor: 'pointer',
                         fontWeight: '500',
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.color = '#ff8833')}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = '#EF7722')}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.color = '#ff8833')
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.color = '#EF7722')
+                      }
                     >
                       × Remove
                     </button>
@@ -333,7 +428,9 @@ export default function TeamInvite() {
                   <input
                     type="text"
                     value={member.name}
-                    onChange={(e) => updateTeamMember(member.id, 'name', e.target.value)}
+                    onChange={(e) =>
+                      updateTeamMember(member.id, 'name', e.target.value)
+                    }
                     placeholder="Name"
                     style={{
                       width: '100%',
@@ -354,7 +451,9 @@ export default function TeamInvite() {
                   <input
                     type="text"
                     value={member.contact}
-                    onChange={(e) => updateTeamMember(member.id, 'contact', e.target.value)}
+                    onChange={(e) =>
+                      updateTeamMember(member.id, 'contact', e.target.value)
+                    }
                     placeholder="Phone (+91 98765 43210) or Email"
                     style={{
                       width: '100%',
@@ -369,7 +468,14 @@ export default function TeamInvite() {
                     onFocus={(e) => (e.target.style.borderColor = '#EF7722')}
                     onBlur={(e) => (e.target.style.borderColor = '#d1d5db')}
                   />
-                  <p style={{ fontSize: '0.625rem', color: '#6b7280', marginTop: '0.25rem', marginBottom: 0 }}>
+                  <p
+                    style={{
+                      fontSize: '0.625rem',
+                      color: '#6b7280',
+                      marginTop: '0.25rem',
+                      marginBottom: 0,
+                    }}
+                  >
                     Phone or email
                   </p>
                 </div>
@@ -377,7 +483,13 @@ export default function TeamInvite() {
                 <div>
                   <select
                     value={member.role}
-                    onChange={(e) => updateTeamMember(member.id, 'role', e.target.value as 'technician' | 'coordinator')}
+                    onChange={(e) =>
+                      updateTeamMember(
+                        member.id,
+                        'role',
+                        e.target.value as 'technician' | 'coordinator'
+                      )
+                    }
                     style={{
                       width: '100%',
                       padding: '0.5625rem 0.75rem',
@@ -436,7 +548,9 @@ export default function TeamInvite() {
                 width: '100%',
                 padding: '0.625rem',
                 marginBottom: '0.75rem',
-                background: loading ? '#9ca3af' : 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
+                background: loading
+                  ? '#9ca3af'
+                  : 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
                 color: 'white',
                 border: 'none',
                 borderRadius: '6px',
@@ -449,12 +563,14 @@ export default function TeamInvite() {
               onMouseEnter={(e) => {
                 if (!loading) {
                   e.currentTarget.style.transform = 'translateY(-1px)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
+                  e.currentTarget.style.boxShadow =
+                    '0 4px 12px rgba(239,119,34,0.3)';
                 }
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
+                e.currentTarget.style.boxShadow =
+                  '0 2px 8px rgba(239,119,34,0.25)';
               }}
             >
               {loading ? 'Sending invites...' : 'Send invites →'}
@@ -476,8 +592,15 @@ export default function TeamInvite() {
                 cursor: loading ? 'not-allowed' : 'pointer',
                 transition: 'all 0.2s',
               }}
-              onMouseEnter={(e) => !loading && (e.currentTarget.style.borderColor = '#EF7722', e.currentTarget.style.color = '#EF7722')}
-              onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#d1d5db', e.currentTarget.style.color = '#6b7280')}
+              onMouseEnter={(e) =>
+                !loading &&
+                ((e.currentTarget.style.borderColor = '#EF7722'),
+                (e.currentTarget.style.color = '#EF7722'))
+              }
+              onMouseLeave={(e) => (
+                (e.currentTarget.style.borderColor = '#d1d5db'),
+                (e.currentTarget.style.color = '#6b7280')
+              )}
             >
               Skip for now
             </button>

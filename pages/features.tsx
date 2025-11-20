@@ -424,8 +424,18 @@ export default function FeaturesPage() {
                       <div className="relative">
                         <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full"></div>
                         <div className="relative bg-gradient-to-br from-primary to-secondary text-white px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wide shadow-lg flex items-center gap-1.5 animate-pulse">
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          <svg
+                            className="w-3 h-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
                           </svg>
                           Coming Soon
                         </div>
@@ -435,9 +445,11 @@ export default function FeaturesPage() {
                     <div className="aspect-video bg-white rounded-lg shadow-lg flex items-center justify-center relative overflow-hidden">
                       {/* Shimmer Effect */}
                       <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-                      
+
                       <div className="text-center relative z-10">
-                        <div className={`text-6xl mb-4 ${feature.color} opacity-30`}>
+                        <div
+                          className={`text-6xl mb-4 ${feature.color} opacity-30`}
+                        >
                           {feature.icon}
                         </div>
                         <p className="text-sm text-gray-400 font-medium">

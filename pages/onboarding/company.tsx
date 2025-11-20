@@ -116,7 +116,10 @@ export default function CompanyOnboarding() {
       console.log('Organization created successfully:', data.organization);
 
       // Track success
-      OnboardingEvents.companyDetailsCompleted(formData.industry, formData.currency);
+      OnboardingEvents.companyDetailsCompleted(
+        formData.industry,
+        formData.currency
+      );
 
       // Clear cached form data after successful submission
       localStorage.removeItem('companyOnboardingData');
@@ -133,7 +136,14 @@ export default function CompanyOnboarding() {
 
   if (authLoading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+        }}
+      >
         <div>Loading...</div>
       </div>
     );
@@ -143,7 +153,10 @@ export default function CompanyOnboarding() {
     <>
       <Head>
         <title>Tell us about your company - Automet</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1"
+        />
       </Head>
 
       <style jsx>{`
@@ -210,7 +223,8 @@ export default function CompanyOnboarding() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+          background:
+            'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
           position: 'relative',
           overflow: 'hidden',
@@ -224,7 +238,8 @@ export default function CompanyOnboarding() {
             right: '-100px',
             width: '300px',
             height: '300px',
-            background: 'radial-gradient(circle, rgba(239,119,34,0.1) 0%, transparent 70%)',
+            background:
+              'radial-gradient(circle, rgba(239,119,34,0.1) 0%, transparent 70%)',
             borderRadius: '50%',
             pointerEvents: 'none',
           }}
@@ -243,12 +258,50 @@ export default function CompanyOnboarding() {
         >
           {/* Progress indicator */}
           <div style={{ marginBottom: '1.25rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-              <span style={{ fontSize: '0.8125rem', color: '#6b7280', fontWeight: '500' }}>Step 1 of 5</span>
-              <span style={{ fontSize: '0.8125rem', color: '#EF7722', fontWeight: '600' }}>20%</span>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: '0.5rem',
+              }}
+            >
+              <span
+                style={{
+                  fontSize: '0.8125rem',
+                  color: '#6b7280',
+                  fontWeight: '500',
+                }}
+              >
+                Step 1 of 5
+              </span>
+              <span
+                style={{
+                  fontSize: '0.8125rem',
+                  color: '#EF7722',
+                  fontWeight: '600',
+                }}
+              >
+                20%
+              </span>
             </div>
-            <div style={{ width: '100%', height: '6px', backgroundColor: '#ffe8d6', borderRadius: '3px' }}>
-              <div style={{ width: '20%', height: '100%', background: 'linear-gradient(90deg, #EF7722 0%, #ff8833 100%)', borderRadius: '3px' }}></div>
+            <div
+              style={{
+                width: '100%',
+                height: '6px',
+                backgroundColor: '#ffe8d6',
+                borderRadius: '3px',
+              }}
+            >
+              <div
+                style={{
+                  width: '20%',
+                  height: '100%',
+                  background:
+                    'linear-gradient(90deg, #EF7722 0%, #ff8833 100%)',
+                  borderRadius: '3px',
+                }}
+              ></div>
             </div>
           </div>
 
@@ -273,16 +326,31 @@ export default function CompanyOnboarding() {
             onMouseEnter={(e) => (e.currentTarget.style.color = '#EF7722')}
             onMouseLeave={(e) => (e.currentTarget.style.color = '#6b7280')}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
             Back
           </button>
 
-          <h1 className="company-title" style={{ fontWeight: '700', color: '#111827', textAlign: 'center' }}>
+          <h1
+            className="company-title"
+            style={{ fontWeight: '700', color: '#111827', textAlign: 'center' }}
+          >
             Tell us about your company
           </h1>
-          <p className="company-subtitle" style={{ color: '#6b7280', textAlign: 'center' }}>
+          <p
+            className="company-subtitle"
+            style={{ color: '#6b7280', textAlign: 'center' }}
+          >
             Set up your company profile to get started with Automet
           </p>
 
@@ -393,7 +461,15 @@ export default function CompanyOnboarding() {
               </label>
               <div className="time-selector" style={{ display: 'flex' }}>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.375rem', display: 'block', fontWeight: '500' }}>
+                  <label
+                    style={{
+                      fontSize: '0.75rem',
+                      color: '#6b7280',
+                      marginBottom: '0.375rem',
+                      display: 'block',
+                      fontWeight: '500',
+                    }}
+                  >
                     From
                   </label>
                   <div
@@ -411,18 +487,39 @@ export default function CompanyOnboarding() {
                       alignItems: 'center',
                       justifyContent: 'space-between',
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#EF7722')}
-                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#d1d5db')}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.borderColor = '#EF7722')
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.borderColor = '#d1d5db')
+                    }
                   >
-                    <span style={{ color: '#374151' }}>{formatTimeDisplay(formData.workingHoursFrom)}</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
+                    <span style={{ color: '#374151' }}>
+                      {formatTimeDisplay(formData.workingHoursFrom)}
+                    </span>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#6b7280"
+                      strokeWidth="2"
+                    >
                       <circle cx="12" cy="12" r="10" />
                       <polyline points="12 6 12 12 16 14" />
                     </svg>
                   </div>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.375rem', display: 'block', fontWeight: '500' }}>
+                  <label
+                    style={{
+                      fontSize: '0.75rem',
+                      color: '#6b7280',
+                      marginBottom: '0.375rem',
+                      display: 'block',
+                      fontWeight: '500',
+                    }}
+                  >
                     To
                   </label>
                   <div
@@ -440,11 +537,24 @@ export default function CompanyOnboarding() {
                       alignItems: 'center',
                       justifyContent: 'space-between',
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#EF7722')}
-                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#d1d5db')}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.borderColor = '#EF7722')
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.borderColor = '#d1d5db')
+                    }
                   >
-                    <span style={{ color: '#374151' }}>{formatTimeDisplay(formData.workingHoursTo)}</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
+                    <span style={{ color: '#374151' }}>
+                      {formatTimeDisplay(formData.workingHoursTo)}
+                    </span>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#6b7280"
+                      strokeWidth="2"
+                    >
                       <circle cx="12" cy="12" r="10" />
                       <polyline points="12 6 12 12 16 14" />
                     </svg>
@@ -464,10 +574,28 @@ export default function CompanyOnboarding() {
               >
                 Currency *
               </label>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '0.5rem', borderRadius: '6px', transition: 'background-color 0.2s' }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#fff8f1')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.5rem',
+                }}
+              >
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    padding: '0.5rem',
+                    borderRadius: '6px',
+                    transition: 'background-color 0.2s',
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor = '#fff8f1')
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = 'transparent')
+                  }
                 >
                   <input
                     type="radio"
@@ -483,11 +611,25 @@ export default function CompanyOnboarding() {
                       cursor: 'pointer',
                     }}
                   />
-                  <span style={{ fontSize: '0.875rem', color: '#374151' }}>Indian Rupee (₹)</span>
+                  <span style={{ fontSize: '0.875rem', color: '#374151' }}>
+                    Indian Rupee (₹)
+                  </span>
                 </label>
-                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '0.5rem', borderRadius: '6px', transition: 'background-color 0.2s' }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#fff8f1')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    padding: '0.5rem',
+                    borderRadius: '6px',
+                    transition: 'background-color 0.2s',
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor = '#fff8f1')
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = 'transparent')
+                  }
                 >
                   <input
                     type="radio"
@@ -503,11 +645,25 @@ export default function CompanyOnboarding() {
                       cursor: 'pointer',
                     }}
                   />
-                  <span style={{ fontSize: '0.875rem', color: '#374151' }}>US Dollar ($)</span>
+                  <span style={{ fontSize: '0.875rem', color: '#374151' }}>
+                    US Dollar ($)
+                  </span>
                 </label>
-                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '0.5rem', borderRadius: '6px', transition: 'background-color 0.2s' }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#fff8f1')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    padding: '0.5rem',
+                    borderRadius: '6px',
+                    transition: 'background-color 0.2s',
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor = '#fff8f1')
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = 'transparent')
+                  }
                 >
                   <input
                     type="radio"
@@ -523,7 +679,9 @@ export default function CompanyOnboarding() {
                       cursor: 'pointer',
                     }}
                   />
-                  <span style={{ fontSize: '0.875rem', color: '#374151' }}>Other</span>
+                  <span style={{ fontSize: '0.875rem', color: '#374151' }}>
+                    Other
+                  </span>
                 </label>
               </div>
             </div>
@@ -534,7 +692,9 @@ export default function CompanyOnboarding() {
               style={{
                 width: '100%',
                 padding: '0.625rem',
-                background: loading ? '#9ca3af' : 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
+                background: loading
+                  ? '#9ca3af'
+                  : 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
                 color: 'white',
                 border: 'none',
                 borderRadius: '6px',
@@ -548,12 +708,14 @@ export default function CompanyOnboarding() {
               onMouseEnter={(e) => {
                 if (!loading) {
                   e.currentTarget.style.transform = 'translateY(-1px)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
+                  e.currentTarget.style.boxShadow =
+                    '0 4px 12px rgba(239,119,34,0.3)';
                 }
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
+                e.currentTarget.style.boxShadow =
+                  '0 2px 8px rgba(239,119,34,0.25)';
               }}
             >
               {loading ? 'Creating...' : 'Save & continue →'}
@@ -575,8 +737,15 @@ export default function CompanyOnboarding() {
                 cursor: loading ? 'not-allowed' : 'pointer',
                 transition: 'all 0.2s',
               }}
-              onMouseEnter={(e) => !loading && (e.currentTarget.style.borderColor = '#EF7722', e.currentTarget.style.color = '#EF7722')}
-              onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#d1d5db', e.currentTarget.style.color = '#6b7280')}
+              onMouseEnter={(e) =>
+                !loading &&
+                ((e.currentTarget.style.borderColor = '#EF7722'),
+                (e.currentTarget.style.color = '#EF7722'))
+              }
+              onMouseLeave={(e) => (
+                (e.currentTarget.style.borderColor = '#d1d5db'),
+                (e.currentTarget.style.color = '#6b7280')
+              )}
             >
               Skip for now
             </button>

@@ -13,7 +13,9 @@ describe('ROI calculator', () => {
     expect(result.jobsPerMonth).toBe(336);
     expect(result.monthlyRevenueINR).toBe(504000);
     expect(result.netMonthlyBenefitINR).toBeGreaterThan(0);
-    expect(result.netAnnualBenefitINR).toEqual(result.netMonthlyBenefitINR * 12);
+    expect(result.netAnnualBenefitINR).toEqual(
+      result.netMonthlyBenefitINR * 12
+    );
     expect(result.roiPercent).toBeGreaterThan(0);
     expect(result.paybackMonths).toBeGreaterThan(0);
   });
@@ -23,4 +25,3 @@ describe('ROI calculator', () => {
     expect(formatCurrency(-98765)).toBe('-₹98,765');
   });
 });
-

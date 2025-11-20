@@ -29,7 +29,9 @@ export default function JoinTeam() {
   const [loading, setLoading] = useState(false);
   const [verifying, setVerifying] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [inviteDetails, setInviteDetails] = useState<InviteDetails | null>(null);
+  const [inviteDetails, setInviteDetails] = useState<InviteDetails | null>(
+    null
+  );
   const [acceptSuccess, setAcceptSuccess] = useState(false);
 
   // Track page view
@@ -63,7 +65,9 @@ export default function JoinTeam() {
         }
 
         if (data.invite.isExpired) {
-          setError('This invite has expired. Please contact your manager for a new invite.');
+          setError(
+            'This invite has expired. Please contact your manager for a new invite.'
+          );
           setVerifying(false);
           return;
         }
@@ -99,9 +103,7 @@ export default function JoinTeam() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(
-          isToken ? { token: code } : { code }
-        ),
+        body: JSON.stringify(isToken ? { token: code } : { code }),
       });
 
       const data = await response.json();
@@ -136,7 +138,14 @@ export default function JoinTeam() {
   // Show loading state
   if (authLoading || verifying) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+        }}
+      >
         <div>Verifying invite...</div>
       </div>
     );
@@ -148,7 +157,10 @@ export default function JoinTeam() {
       <>
         <Head>
           <title>Invite Accepted - Automet</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, maximum-scale=1"
+          />
         </Head>
 
         <div
@@ -189,10 +201,22 @@ export default function JoinTeam() {
               ✓
             </div>
 
-            <h1 style={{ marginBottom: '0.5rem', fontSize: '1.75rem', fontWeight: '600' }}>
+            <h1
+              style={{
+                marginBottom: '0.5rem',
+                fontSize: '1.75rem',
+                fontWeight: '600',
+              }}
+            >
               Welcome to the team!
             </h1>
-            <p style={{ color: '#6b7280', marginBottom: 0, fontSize: '0.875rem' }}>
+            <p
+              style={{
+                color: '#6b7280',
+                marginBottom: 0,
+                fontSize: '0.875rem',
+              }}
+            >
               Redirecting you to the dashboard...
             </p>
           </div>
@@ -207,7 +231,10 @@ export default function JoinTeam() {
       <>
         <Head>
           <title>Invalid Invite - Automet</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, maximum-scale=1"
+          />
         </Head>
 
         <div
@@ -248,10 +275,22 @@ export default function JoinTeam() {
               ×
             </div>
 
-            <h1 style={{ marginBottom: '0.5rem', fontSize: '1.75rem', fontWeight: '600' }}>
+            <h1
+              style={{
+                marginBottom: '0.5rem',
+                fontSize: '1.75rem',
+                fontWeight: '600',
+              }}
+            >
               Invalid or expired invite
             </h1>
-            <p style={{ color: '#6b7280', marginBottom: '2rem', fontSize: '0.875rem' }}>
+            <p
+              style={{
+                color: '#6b7280',
+                marginBottom: '2rem',
+                fontSize: '0.875rem',
+              }}
+            >
               {error}
             </p>
 
@@ -280,13 +319,19 @@ export default function JoinTeam() {
 
   // Show invite details and accept button
   const isToken = typeof code === 'string' && code.length > 10;
-  const roleDisplay = inviteDetails?.role === 'technician' ? 'Technician' : 'Coordinator';
+  const roleDisplay =
+    inviteDetails?.role === 'technician' ? 'Technician' : 'Coordinator';
 
   return (
     <>
       <Head>
-        <title>Join {inviteDetails?.organizationName || 'Team'} - Automet</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <title>
+          Join {inviteDetails?.organizationName || 'Team'} - Automet
+        </title>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1"
+        />
       </Head>
 
       <div
@@ -327,11 +372,26 @@ export default function JoinTeam() {
             👋
           </div>
 
-          <h1 style={{ marginBottom: '0.5rem', fontSize: '1.75rem', fontWeight: '600', textAlign: 'center' }}>
+          <h1
+            style={{
+              marginBottom: '0.5rem',
+              fontSize: '1.75rem',
+              fontWeight: '600',
+              textAlign: 'center',
+            }}
+          >
             You've been invited!
           </h1>
-          <p style={{ color: '#6b7280', marginBottom: '2rem', fontSize: '0.875rem', textAlign: 'center' }}>
-            {inviteDetails?.invitedBy || 'Your manager'} has invited you to join their team on Automet.
+          <p
+            style={{
+              color: '#6b7280',
+              marginBottom: '2rem',
+              fontSize: '0.875rem',
+              textAlign: 'center',
+            }}
+          >
+            {inviteDetails?.invitedBy || 'Your manager'} has invited you to join
+            their team on Automet.
           </p>
 
           {error && (
@@ -361,28 +421,70 @@ export default function JoinTeam() {
               }}
             >
               <div style={{ marginBottom: '1rem' }}>
-                <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <div
+                  style={{
+                    fontSize: '0.75rem',
+                    color: '#6b7280',
+                    marginBottom: '0.25rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
+                >
                   Organization
                 </div>
-                <div style={{ fontSize: '1.125rem', fontWeight: '600', color: '#111827' }}>
+                <div
+                  style={{
+                    fontSize: '1.125rem',
+                    fontWeight: '600',
+                    color: '#111827',
+                  }}
+                >
                   {inviteDetails.organizationName}
                 </div>
               </div>
 
               <div style={{ marginBottom: '1rem' }}>
-                <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <div
+                  style={{
+                    fontSize: '0.75rem',
+                    color: '#6b7280',
+                    marginBottom: '0.25rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
+                >
                   Your Role
                 </div>
-                <div style={{ fontSize: '1rem', fontWeight: '500', color: '#374151' }}>
+                <div
+                  style={{
+                    fontSize: '1rem',
+                    fontWeight: '500',
+                    color: '#374151',
+                  }}
+                >
                   {roleDisplay}
                 </div>
               </div>
 
               <div>
-                <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <div
+                  style={{
+                    fontSize: '0.75rem',
+                    color: '#6b7280',
+                    marginBottom: '0.25rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
+                >
                   Name
                 </div>
-                <div style={{ fontSize: '1rem', fontWeight: '500', color: '#374151' }}>
+                <div
+                  style={{
+                    fontSize: '1rem',
+                    fontWeight: '500',
+                    color: '#374151',
+                  }}
+                >
                   {inviteDetails.name}
                 </div>
               </div>
@@ -392,7 +494,14 @@ export default function JoinTeam() {
           {/* Accept button or login prompt */}
           {!user ? (
             <>
-              <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '1rem', textAlign: 'center' }}>
+              <p
+                style={{
+                  fontSize: '0.875rem',
+                  color: '#6b7280',
+                  marginBottom: '1rem',
+                  textAlign: 'center',
+                }}
+              >
                 Create an account or log in to accept this invite
               </p>
               <button
@@ -413,7 +522,10 @@ export default function JoinTeam() {
               >
                 {loading ? 'Processing...' : 'Sign up to continue'}
               </button>
-              <Link href={`/onboarding/welcome?redirect=${encodeURIComponent(`/join/${code}`)}`} style={{ textDecoration: 'none' }}>
+              <Link
+                href={`/onboarding/welcome?redirect=${encodeURIComponent(`/join/${code}`)}`}
+                style={{ textDecoration: 'none' }}
+              >
                 <button
                   style={{
                     width: '100%',
@@ -463,10 +575,25 @@ export default function JoinTeam() {
                 textAlign: 'center',
               }}
             >
-              <div style={{ fontSize: '0.75rem', color: '#0c4a6e', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <div
+                style={{
+                  fontSize: '0.75rem',
+                  color: '#0c4a6e',
+                  marginBottom: '0.5rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                }}
+              >
                 Invite Code
               </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#0c4a6e', letterSpacing: '0.15em' }}>
+              <div
+                style={{
+                  fontSize: '1.5rem',
+                  fontWeight: '700',
+                  color: '#0c4a6e',
+                  letterSpacing: '0.15em',
+                }}
+              >
                 {code}
               </div>
             </div>

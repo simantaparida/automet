@@ -30,7 +30,8 @@ export default function LandingPage() {
     name: 'Automet',
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web, iOS, Android',
-    description: 'Field service management software for AMC vendors in India. Manage technicians, track jobs, inventory management, and automate billing.',
+    description:
+      'Field service management software for AMC vendors in India. Manage technicians, track jobs, inventory management, and automate billing.',
     offers: {
       '@type': 'AggregateOffer',
       priceCurrency: 'INR',
@@ -48,7 +49,8 @@ export default function LandingPage() {
     <>
       <Head>
         <title>
-          Automet - Best Field Service Management Software for AMC Vendors in India
+          Automet - Best Field Service Management Software for AMC Vendors in
+          India
         </title>
         <meta
           name="description"
@@ -60,25 +62,43 @@ export default function LandingPage() {
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="author" content="Automet" />
-        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <meta
+          name="robots"
+          content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+        />
 
         {/* Open Graph */}
         <link rel="canonical" href={siteUrl} />
         <meta property="og:locale" content="en_IN" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="Automet" />
-        <meta property="og:title" content="Automet - Best Field Service Management Software for AMC Vendors in India" />
-        <meta property="og:description" content="Track technicians in real-time, manage jobs & inventory, automate billing. Built for Indian AMC vendors. Start your free trial today!" />
+        <meta
+          property="og:title"
+          content="Automet - Best Field Service Management Software for AMC Vendors in India"
+        />
+        <meta
+          property="og:description"
+          content="Track technicians in real-time, manage jobs & inventory, automate billing. Built for Indian AMC vendors. Start your free trial today!"
+        />
         <meta property="og:url" content={siteUrl} />
         <meta property="og:image" content={`${siteUrl}/og-image.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="Automet - Field Service Management Software" />
+        <meta
+          property="og:image:alt"
+          content="Automet - Field Service Management Software"
+        />
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Automet - Best Field Service Management Software for AMC Vendors" />
-        <meta name="twitter:description" content="Track technicians, manage jobs & inventory, automate billing. Built for Indian AMC vendors. Start free trial!" />
+        <meta
+          name="twitter:title"
+          content="Automet - Best Field Service Management Software for AMC Vendors"
+        />
+        <meta
+          name="twitter:description"
+          content="Track technicians, manage jobs & inventory, automate billing. Built for Indian AMC vendors. Start free trial!"
+        />
         <meta name="twitter:image" content={`${siteUrl}/og-image.png`} />
         <meta name="twitter:site" content="@automet_app" />
 

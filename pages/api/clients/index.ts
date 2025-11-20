@@ -133,7 +133,7 @@ export default async function handler(
             role: user.role,
           },
         });
-        
+
         // Return the error details for debugging
         return res.status(500).json({
           error: 'Failed to fetch clients',

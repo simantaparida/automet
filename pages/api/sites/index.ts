@@ -70,14 +70,14 @@ const parseSitePayload = (
     typeof payload.gps_lat === 'number'
       ? payload.gps_lat.toString()
       : typeof payload.gps_lat === 'string' && payload.gps_lat.trim() !== ''
-      ? payload.gps_lat.trim()
-      : null;
+        ? payload.gps_lat.trim()
+        : null;
   const gpsLng =
     typeof payload.gps_lng === 'number'
       ? payload.gps_lng.toString()
       : typeof payload.gps_lng === 'string' && payload.gps_lng.trim() !== ''
-      ? payload.gps_lng.trim()
-      : null;
+        ? payload.gps_lng.trim()
+        : null;
 
   // Parse metadata if provided
   let metadata: Record<string, any> | null = null;
@@ -144,9 +144,9 @@ const isSiteRow = (value: unknown): value is SiteRow => {
     'metadata' in value &&
     value.metadata !== null &&
     typeof value.metadata !== 'object'
-    ) {
-      return false;
-    }
+  ) {
+    return false;
+  }
 
   // updated_at is optional timestamp
   if (
@@ -233,15 +233,17 @@ export default async function handler(
         console.log('Retrying without client join...');
         let simpleQuery = typedClient
           .from('sites')
-          .select('id, org_id, client_id, name, address, gps_lat, gps_lng, metadata, created_at, updated_at')
+          .select(
+            'id, org_id, client_id, name, address, gps_lat, gps_lng, metadata, created_at, updated_at'
+          )
           .order('name', { ascending: true });
-        
+
         if (filters.clientId) {
           simpleQuery = simpleQuery.eq('client_id', filters.clientId);
-      }
+        }
 
         const { data: simpleData, error: simpleError } = await simpleQuery;
-        
+
         if (simpleError) {
           return res.status(500).json({
             error: 'Failed to fetch sites',
@@ -252,7 +254,7 @@ export default async function handler(
             originalError: error.message,
           });
         }
-        
+
         // Return sites without client data - frontend can fetch clients separately
         return res.status(200).json(simpleData || []);
       }
@@ -262,15 +264,17 @@ export default async function handler(
         console.log('No data returned with joins, trying without joins...');
         let simpleQuery = typedClient
           .from('sites')
-          .select('id, org_id, client_id, name, address, gps_lat, gps_lng, metadata, created_at, updated_at')
+          .select(
+            'id, org_id, client_id, name, address, gps_lat, gps_lng, metadata, created_at, updated_at'
+          )
           .order('name', { ascending: true });
-        
+
         if (filters.clientId) {
           simpleQuery = simpleQuery.eq('client_id', filters.clientId);
         }
-        
+
         const { data: simpleData, error: simpleError } = await simpleQuery;
-        
+
         if (simpleError) {
           return res.status(500).json({
             error: 'Failed to fetch sites',
@@ -278,7 +282,7 @@ export default async function handler(
             code: simpleError.code,
           });
         }
-        
+
         // Return sites without nested data
         return res.status(200).json(simpleData || []);
       }

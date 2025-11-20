@@ -26,7 +26,9 @@ export default async function handler(
     try {
       const { site_id, client_id } = req.query;
       const siteFilter =
-        typeof site_id === 'string' && site_id.trim() !== '' ? site_id : undefined;
+        typeof site_id === 'string' && site_id.trim() !== ''
+          ? site_id
+          : undefined;
       const clientFilter =
         typeof client_id === 'string' && client_id.trim() !== ''
           ? client_id
@@ -66,22 +68,24 @@ export default async function handler(
           details: error.details,
           hint: error.hint,
         });
-        
+
         // If nested join fails, try without the join
         console.log('Retrying without nested join...');
         let simpleQuery = typedClient
           .from('assets')
-          .select('id, asset_type, model, serial_number, install_date, metadata, site_id')
+          .select(
+            'id, asset_type, model, serial_number, install_date, metadata, site_id'
+          )
           .order('asset_type', { ascending: true });
-        
+
         if (siteFilter) {
           simpleQuery = simpleQuery.eq('site_id', siteFilter);
         }
-        
+
         const { data: simpleData, error: simpleError } = await simpleQuery;
-        
+
         if (simpleError) {
-          return res.status(500).json({ 
+          return res.status(500).json({
             error: simpleError.message,
             code: simpleError.code,
             details: simpleError.details,
@@ -89,7 +93,7 @@ export default async function handler(
             originalError: error.message,
           });
         }
-        
+
         // Return assets without nested data - frontend can fetch sites separately
         return res.status(200).json(simpleData || []);
       }
@@ -100,24 +104,26 @@ export default async function handler(
         // Try fetching without joins to see if assets exist
         let simpleQuery = typedClient
           .from('assets')
-          .select('id, asset_type, model, serial_number, install_date, metadata, site_id')
+          .select(
+            'id, asset_type, model, serial_number, install_date, metadata, site_id'
+          )
           .order('asset_type', { ascending: true });
-        
+
         if (siteFilter) {
           simpleQuery = simpleQuery.eq('site_id', siteFilter);
         }
-        
+
         const { data: simpleData, error: simpleError } = await simpleQuery;
-        
+
         if (simpleError) {
-          return res.status(500).json({ 
+          return res.status(500).json({
             error: simpleError.message,
             code: simpleError.code,
             details: simpleError.details,
             hint: simpleError.hint,
           });
         }
-        
+
         // Return assets without nested data
         return res.status(200).json(simpleData || []);
       }
@@ -156,10 +162,7 @@ export default async function handler(
         metadata,
       } = req.body;
 
-      if (
-        typeof site_id !== 'string' ||
-        typeof asset_type !== 'string'
-      ) {
+      if (typeof site_id !== 'string' || typeof asset_type !== 'string') {
         return res
           .status(400)
           .json({ error: 'site_id and asset_type are required' });

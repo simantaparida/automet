@@ -5,7 +5,15 @@ import BottomNav from '@/components/BottomNav';
 import Sidebar from '@/components/Sidebar';
 import TopHeader from '@/components/TopHeader';
 import RoleBadge from '@/components/RoleBadge';
-import { ArrowLeft, Building2, Mail, Phone, MapPin, FileText, Save } from 'lucide-react';
+import {
+  ArrowLeft,
+  Building2,
+  Mail,
+  Phone,
+  MapPin,
+  FileText,
+  Save,
+} from 'lucide-react';
 
 export default function NewClientPage() {
   const router = useRouter();
@@ -85,7 +93,9 @@ export default function NewClientPage() {
 
             {/* Page Header */}
             <div className="mb-6">
-              <h1 className="text-2xl font-bold text-gray-900 mb-1">Create New Client</h1>
+              <h1 className="text-2xl font-bold text-gray-900 mb-1">
+                Create New Client
+              </h1>
               <p className="text-[15px] text-gray-500">
                 Add a new client to your organization
               </p>
@@ -222,8 +232,9 @@ export default function NewClientPage() {
             {/* Help Text */}
             <div className="mt-4 p-4 bg-gray-50 rounded-md border border-gray-200">
               <p className="text-[13px] text-gray-600 leading-relaxed">
-                <strong className="text-gray-700">Tip:</strong> Make sure to enter accurate contact details.
-                This information will be used when creating jobs and sending notifications.
+                <strong className="text-gray-700">Tip:</strong> Make sure to
+                enter accurate contact details. This information will be used
+                when creating jobs and sending notifications.
               </p>
             </div>
           </div>

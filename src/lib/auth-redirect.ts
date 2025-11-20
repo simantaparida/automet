@@ -18,7 +18,9 @@ export interface UserProfile {
 /**
  * Partial user profile with only org_id (used when we only need to check onboarding status)
  */
-export type PartialUserProfile = Pick<UserProfile, 'org_id'> | { org_id: string | null };
+export type PartialUserProfile =
+  | Pick<UserProfile, 'org_id'>
+  | { org_id: string | null };
 
 /**
  * Determines the correct redirect path after authentication
@@ -57,7 +59,9 @@ export function getAuthRedirectPath(
  * @param profile - User profile from public.users table
  * @returns The path to redirect to
  */
-export function getPostSignupRedirectPath(profile: PartialUserProfile | null): string {
+export function getPostSignupRedirectPath(
+  profile: PartialUserProfile | null
+): string {
   // If user already has an org (shouldn't happen on signup, but handle it)
   if (profile?.org_id) {
     return '/dashboard';
@@ -74,7 +78,9 @@ export function getPostSignupRedirectPath(profile: PartialUserProfile | null): s
  * @param _profile - User profile from public.users table (unused, kept for API compatibility)
  * @returns The path to redirect to
  */
-export function getPostLoginRedirectPath(_profile: PartialUserProfile | null): string {
+export function getPostLoginRedirectPath(
+  _profile: PartialUserProfile | null
+): string {
   // Always go to dashboard
   // Dashboard will show setup banner if user hasn't completed onboarding
   return '/dashboard';
@@ -87,7 +93,9 @@ export function getPostLoginRedirectPath(_profile: PartialUserProfile | null): s
  * @param profile - User profile from public.users table
  * @returns The path to redirect to
  */
-export function getOAuthCallbackRedirectPath(profile: PartialUserProfile | null): string {
+export function getOAuthCallbackRedirectPath(
+  profile: PartialUserProfile | null
+): string {
   return getPostLoginRedirectPath(profile);
 }
 

@@ -1,9 +1,26 @@
 import { useRouter } from 'next/router';
-import { Home, Briefcase, Users, MapPin, Wrench, Package, User, Users2 } from 'lucide-react';
+import {
+  Home,
+  Briefcase,
+  Users,
+  MapPin,
+  Wrench,
+  Package,
+  User,
+  Users2,
+} from 'lucide-react';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
 
 interface SidebarProps {
-  activeTab?: 'home' | 'jobs' | 'clients' | 'sites' | 'assets' | 'inventory' | 'profile' | 'team';
+  activeTab?:
+    | 'home'
+    | 'jobs'
+    | 'clients'
+    | 'sites'
+    | 'assets'
+    | 'inventory'
+    | 'profile'
+    | 'team';
 }
 
 export default function Sidebar({ activeTab = 'home' }: SidebarProps) {
@@ -25,7 +42,12 @@ export default function Sidebar({ activeTab = 'home' }: SidebarProps) {
   // Add Team link for owners and coordinators
   if (activeRole === 'owner' || activeRole === 'coordinator') {
     // Insert after Clients (index 2)
-    navItems.splice(2, 0, { id: 'team', label: 'Team', icon: Users2, path: '/team' });
+    navItems.splice(2, 0, {
+      id: 'team',
+      label: 'Team',
+      icon: Users2,
+      path: '/team',
+    });
   }
 
   return (
@@ -91,7 +113,8 @@ export default function Sidebar({ activeTab = 'home' }: SidebarProps) {
                 }}
                 onMouseEnter={(e) => {
                   if (!active) {
-                    e.currentTarget.style.backgroundColor = 'rgba(239,119,34,0.1)';
+                    e.currentTarget.style.backgroundColor =
+                      'rgba(239,119,34,0.1)';
                     e.currentTarget.style.color = '#EF7722';
                   }
                 }}

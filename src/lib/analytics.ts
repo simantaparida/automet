@@ -6,10 +6,12 @@
 import { logDev } from './logger';
 
 // Analytics provider configuration
-const ANALYTICS_PROVIDER = process.env.NEXT_PUBLIC_ANALYTICS_PROVIDER || 'mixpanel';
+const ANALYTICS_PROVIDER =
+  process.env.NEXT_PUBLIC_ANALYTICS_PROVIDER || 'mixpanel';
 const MIXPANEL_TOKEN = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;
 const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-const POSTHOG_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com';
+const POSTHOG_HOST =
+  process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com';
 
 // Initialize analytics (only on client side)
 let mixpanel: any = null;
@@ -43,7 +45,10 @@ if (typeof window !== 'undefined') {
  * @param event - Event name (e.g., 'signup_completed')
  * @param properties - Event properties/metadata
  */
-export function trackEvent(event: string, properties?: Record<string, any>): void {
+export function trackEvent(
+  event: string,
+  properties?: Record<string, any>
+): void {
   const isDev = process.env.NODE_ENV === 'development';
 
   // Development mode: log to console
@@ -74,7 +79,10 @@ export function trackEvent(event: string, properties?: Record<string, any>): voi
  * @param userId - Unique user identifier
  * @param traits - User traits/properties
  */
-export function identifyUser(userId: string, traits?: Record<string, any>): void {
+export function identifyUser(
+  userId: string,
+  traits?: Record<string, any>
+): void {
   if (typeof window === 'undefined') return;
 
   const isDev = process.env.NODE_ENV === 'development';
@@ -142,11 +150,9 @@ export const OnboardingEvents = {
   signupCompleted: (method: 'email' | 'google') =>
     trackEvent('signup_completed', { method }),
 
-  signupFailed: (error: string) =>
-    trackEvent('signup_failed', { error }),
+  signupFailed: (error: string) => trackEvent('signup_failed', { error }),
 
-  companyDetailsViewed: () =>
-    trackEvent('company_details_viewed'),
+  companyDetailsViewed: () => trackEvent('company_details_viewed'),
 
   companyDetailsCompleted: (industry: string, currency: string) =>
     trackEvent('company_details_completed', { industry, currency }),
@@ -154,44 +160,62 @@ export const OnboardingEvents = {
   companyDetailsFailed: (error: string) =>
     trackEvent('company_details_failed', { error }),
 
-  teamInviteViewed: () =>
-    trackEvent('team_invite_viewed'),
+  teamInviteViewed: () => trackEvent('team_invite_viewed'),
 
-  teamInviteSent: (inviteCount: number, technicianCount: number, coordinatorCount: number) =>
-    trackEvent('team_invite_sent', { invite_count: inviteCount, technician_count: technicianCount, coordinator_count: coordinatorCount }),
+  teamInviteSent: (
+    inviteCount: number,
+    technicianCount: number,
+    coordinatorCount: number
+  ) =>
+    trackEvent('team_invite_sent', {
+      invite_count: inviteCount,
+      technician_count: technicianCount,
+      coordinator_count: coordinatorCount,
+    }),
 
-  teamInviteSkipped: () =>
-    trackEvent('team_invite_skipped'),
+  teamInviteSkipped: () => trackEvent('team_invite_skipped'),
 
   teamInviteFailed: (error: string, failedCount: number) =>
     trackEvent('team_invite_failed', { error, failed_count: failedCount }),
 
-  firstCustomerViewed: () =>
-    trackEvent('first_customer_viewed'),
+  firstCustomerViewed: () => trackEvent('first_customer_viewed'),
 
   firstCustomerCreated: (hasContactPerson: boolean, hasPhone: boolean) =>
-    trackEvent('first_customer_created', { has_contact_person: hasContactPerson, has_phone: hasPhone }),
+    trackEvent('first_customer_created', {
+      has_contact_person: hasContactPerson,
+      has_phone: hasPhone,
+    }),
 
   firstCustomerFailed: (error: string) =>
     trackEvent('first_customer_failed', { error }),
 
-  firstCustomerSkipped: () =>
-    trackEvent('first_customer_skipped'),
+  firstCustomerSkipped: () => trackEvent('first_customer_skipped'),
 
-  firstJobViewed: () =>
-    trackEvent('first_job_viewed'),
+  firstJobViewed: () => trackEvent('first_job_viewed'),
 
-  firstJobCreated: (hasTechnicianAssigned: boolean, scheduledHoursFromNow: number) =>
-    trackEvent('first_job_created', { has_technician_assigned: hasTechnicianAssigned, scheduled_hours_from_now: scheduledHoursFromNow }),
+  firstJobCreated: (
+    hasTechnicianAssigned: boolean,
+    scheduledHoursFromNow: number
+  ) =>
+    trackEvent('first_job_created', {
+      has_technician_assigned: hasTechnicianAssigned,
+      scheduled_hours_from_now: scheduledHoursFromNow,
+    }),
 
-  firstJobFailed: (error: string) =>
-    trackEvent('first_job_failed', { error }),
+  firstJobFailed: (error: string) => trackEvent('first_job_failed', { error }),
 
-  firstJobSkipped: () =>
-    trackEvent('first_job_skipped'),
+  firstJobSkipped: () => trackEvent('first_job_skipped'),
 
-  onboardingCompleted: (totalTimeSeconds?: number, teamInvitedCount?: number, firstJobCreated?: boolean) =>
-    trackEvent('onboarding_completed', { total_time_seconds: totalTimeSeconds, team_invited_count: teamInvitedCount, first_job_created: firstJobCreated }),
+  onboardingCompleted: (
+    totalTimeSeconds?: number,
+    teamInvitedCount?: number,
+    firstJobCreated?: boolean
+  ) =>
+    trackEvent('onboarding_completed', {
+      total_time_seconds: totalTimeSeconds,
+      team_invited_count: teamInvitedCount,
+      first_job_created: firstJobCreated,
+    }),
 
   // Invite acceptance events
   invitePageViewed: (codeOrToken: string) =>
@@ -201,7 +225,11 @@ export const OnboardingEvents = {
     trackEvent('invite_verified', { org_name: orgName, role }),
 
   inviteAccepted: (codeOrToken: string, role: string, orgName: string) =>
-    trackEvent('invite_accepted', { code_or_token: codeOrToken, role, org_name: orgName }),
+    trackEvent('invite_accepted', {
+      code_or_token: codeOrToken,
+      role,
+      org_name: orgName,
+    }),
 
   inviteAcceptFailed: (codeOrToken: string, error: string) =>
     trackEvent('invite_accept_failed', { code_or_token: codeOrToken, error }),
@@ -209,14 +237,30 @@ export const OnboardingEvents = {
 
 // Invite events
 export const InviteEvents = {
-  inviteSent: (inviteId: string, contactType: 'phone' | 'email', role: string) =>
-    trackEvent('invite_sent', { invite_id: inviteId, contact_type: contactType, role }),
+  inviteSent: (
+    inviteId: string,
+    contactType: 'phone' | 'email',
+    role: string
+  ) =>
+    trackEvent('invite_sent', {
+      invite_id: inviteId,
+      contact_type: contactType,
+      role,
+    }),
 
   inviteLinkClicked: (inviteId: string, source: 'sms' | 'email' | 'direct') =>
     trackEvent('invite_link_clicked', { invite_id: inviteId, source }),
 
-  inviteAccepted: (inviteId: string, acceptanceMethod: 'code' | 'link', timeToAcceptHours: number) =>
-    trackEvent('invite_accepted', { invite_id: inviteId, acceptance_method: acceptanceMethod, time_to_accept_hours: timeToAcceptHours }),
+  inviteAccepted: (
+    inviteId: string,
+    acceptanceMethod: 'code' | 'link',
+    timeToAcceptHours: number
+  ) =>
+    trackEvent('invite_accepted', {
+      invite_id: inviteId,
+      acceptance_method: acceptanceMethod,
+      time_to_accept_hours: timeToAcceptHours,
+    }),
 
   inviteExpired: (inviteId: string) =>
     trackEvent('invite_expired', { invite_id: inviteId }),
@@ -227,23 +271,24 @@ export const DashboardEvents = {
   dashboardViewed: (isFirstVisit: boolean) =>
     trackEvent('dashboard_viewed', { is_first_visit: isFirstVisit }),
 
-  quickTipsViewed: () =>
-    trackEvent('quick_tips_viewed'),
+  quickTipsViewed: () => trackEvent('quick_tips_viewed'),
 
   quickTipsItemClicked: (item: string) =>
     trackEvent('quick_tips_item_clicked', { item }),
 
-  quickTipsDismissed: () =>
-    trackEvent('quick_tips_dismissed'),
+  quickTipsDismissed: () => trackEvent('quick_tips_dismissed'),
 };
 
 // Team management events
 export const TeamEvents = {
-  teamManagementViewed: () =>
-    trackEvent('team_management_viewed'),
+  teamManagementViewed: () => trackEvent('team_management_viewed'),
 
   teamMemberRoleChanged: (userId: string, oldRole: string, newRole: string) =>
-    trackEvent('team_member_role_changed', { user_id: userId, old_role: oldRole, new_role: newRole }),
+    trackEvent('team_member_role_changed', {
+      user_id: userId,
+      old_role: oldRole,
+      new_role: newRole,
+    }),
 
   teamMemberRemoved: (userId: string, role: string) =>
     trackEvent('team_member_removed', { user_id: userId, role }),
@@ -257,15 +302,12 @@ export const TeamEvents = {
 
 // Settings events
 export const SettingsEvents = {
-  orgSettingsViewed: () =>
-    trackEvent('org_settings_viewed'),
+  orgSettingsViewed: () => trackEvent('org_settings_viewed'),
 
   orgSettingsUpdated: (fieldsChanged: string[]) =>
     trackEvent('org_settings_updated', { fields_changed: fieldsChanged }),
 
-  orgDeleteRequested: () =>
-    trackEvent('org_delete_requested'),
+  orgDeleteRequested: () => trackEvent('org_delete_requested'),
 
-  orgDeleted: () =>
-    trackEvent('org_deleted'),
+  orgDeleted: () => trackEvent('org_deleted'),
 };

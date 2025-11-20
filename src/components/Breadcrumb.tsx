@@ -11,7 +11,6 @@ interface BreadcrumbProps {
 }
 
 export default function Breadcrumb({ items }: BreadcrumbProps) {
-
   return (
     <nav
       style={{
@@ -111,4 +110,3 @@ export default function Breadcrumb({ items }: BreadcrumbProps) {
     </nav>
   );
 }
-

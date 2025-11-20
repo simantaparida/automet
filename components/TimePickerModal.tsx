@@ -55,7 +55,10 @@ const TimePickerModal: React.FC<TimePickerModalProps> = ({
     }
   }, [isOpen]);
 
-  const scrollToIndex = (ref: React.RefObject<HTMLDivElement>, index: number) => {
+  const scrollToIndex = (
+    ref: React.RefObject<HTMLDivElement>,
+    index: number
+  ) => {
     if (ref.current) {
       const itemHeight = 40;
       ref.current.scrollTop = index * itemHeight;
@@ -228,7 +231,9 @@ const TimePickerModal: React.FC<TimePickerModalProps> = ({
             {/* Minutes */}
             <div
               ref={minuteRef}
-              onScroll={() => handleScroll(minuteRef, setSelectedMinute, minutes)}
+              onScroll={() =>
+                handleScroll(minuteRef, setSelectedMinute, minutes)
+              }
               style={{
                 height: '200px',
                 overflowY: 'scroll',
@@ -272,7 +277,9 @@ const TimePickerModal: React.FC<TimePickerModalProps> = ({
             {/* Period (AM/PM) */}
             <div
               ref={periodRef}
-              onScroll={() => handleScroll(periodRef, setSelectedPeriod, periods)}
+              onScroll={() =>
+                handleScroll(periodRef, setSelectedPeriod, periods)
+              }
               style={{
                 height: '200px',
                 overflowY: 'scroll',
@@ -358,11 +365,13 @@ const TimePickerModal: React.FC<TimePickerModalProps> = ({
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-1px)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(239, 119, 34, 0.35)';
+                e.currentTarget.style.boxShadow =
+                  '0 4px 12px rgba(239, 119, 34, 0.35)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(239, 119, 34, 0.25)';
+                e.currentTarget.style.boxShadow =
+                  '0 2px 8px rgba(239, 119, 34, 0.25)';
               }}
             >
               OK

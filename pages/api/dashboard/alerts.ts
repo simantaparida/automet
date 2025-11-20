@@ -6,7 +6,11 @@ import { logError } from '@/lib/logger';
 
 type TypedClient = SupabaseClient<Database>;
 
-type AlertType = 'overdue_job' | 'stuck_job' | 'proof_missing' | 'low_inventory';
+type AlertType =
+  | 'overdue_job'
+  | 'stuck_job'
+  | 'proof_missing'
+  | 'low_inventory';
 type AlertPriority = 'high' | 'medium' | 'low';
 
 interface Alert {
@@ -51,7 +55,7 @@ export default async function handler(
     const { data: jobs, error: jobsError } = await typed
       .from('jobs')
       .select('id, status, priority, scheduled_at, completed_at')
-      .eq('org_id', user.org_id!);
+      .eq('org_id', user.org_id);
 
     if (jobsError) {
       throw jobsError;
@@ -136,5 +140,3 @@ export default async function handler(
     return res.status(500).json({ error: 'Failed to fetch dashboard alerts' });
   }
 }
-
-

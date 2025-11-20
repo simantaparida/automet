@@ -137,7 +137,8 @@ export default function NewInventoryPage() {
         className="inventory-form-container"
         style={{
           minHeight: '100vh',
-          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+          background:
+            'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
         }}
       >
@@ -162,7 +163,9 @@ export default function NewInventoryPage() {
             boxShadow: '0 2px 10px rgba(239,119,34,0.2)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div
+            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}
+          >
             <button
               onClick={() => router.back()}
               style={{
@@ -218,7 +221,8 @@ export default function NewInventoryPage() {
                 style={{
                   width: '48px',
                   height: '48px',
-                  background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
+                  background:
+                    'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
                   borderRadius: '10px',
                   display: 'flex',
                   alignItems: 'center',
@@ -497,7 +501,8 @@ export default function NewInventoryPage() {
                     }}
                     onFocus={(e) => {
                       e.target.style.borderColor = '#EF7722';
-                      e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
+                      e.target.style.boxShadow =
+                        '0 0 0 3px rgba(239,119,34,0.1)';
                     }}
                     onBlur={(e) => {
                       e.target.style.borderColor = '#d1d5db';
@@ -542,7 +547,8 @@ export default function NewInventoryPage() {
                     }}
                     onFocus={(e) => {
                       e.target.style.borderColor = '#EF7722';
-                      e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
+                      e.target.style.boxShadow =
+                        '0 0 0 3px rgba(239,119,34,0.1)';
                     }}
                     onBlur={(e) => {
                       e.target.style.borderColor = '#d1d5db';
@@ -688,13 +694,15 @@ export default function NewInventoryPage() {
                   onMouseEnter={(e) => {
                     if (!loading) {
                       e.currentTarget.style.transform = 'translateY(-1px)';
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
+                      e.currentTarget.style.boxShadow =
+                        '0 4px 12px rgba(239,119,34,0.3)';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (!loading) {
                       e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
+                      e.currentTarget.style.boxShadow =
+                        '0 2px 8px rgba(239,119,34,0.25)';
                     }
                   }}
                 >
@@ -742,7 +750,8 @@ export default function NewInventoryPage() {
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = '#EF7722';
                     e.currentTarget.style.color = '#EF7722';
-                    e.currentTarget.style.boxShadow = '0 0 0 1px rgba(239,119,34,0.2)';
+                    e.currentTarget.style.boxShadow =
+                      '0 0 0 1px rgba(239,119,34,0.2)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.borderColor = '#e5e7eb';

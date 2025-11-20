@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import type { Database } from '@/types/database';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { withOnboardedAuth, requireRole } from '@/lib/auth-middleware';
-import { logError } from '@/lib/logger';
+
 
 export default async function handler(
   req: NextApiRequest,
@@ -50,10 +50,12 @@ export default async function handler(
         console.error('Error fetching site with joins:', siteError);
         const simpleResult = await typedClient
           .from('sites')
-          .select('id, name, address, gps_lat, gps_lng, metadata, created_at, client_id')
+          .select(
+            'id, name, address, gps_lat, gps_lng, metadata, created_at, client_id'
+          )
           .eq('id', siteId)
           .single();
-        
+
         if (simpleResult.error) {
           throw simpleResult.error;
         }
@@ -90,9 +92,12 @@ export default async function handler(
           jobs: jobs || [],
         },
       });
-    } catch (error: any) {
-      logError('Error fetching site:', error);
-      return res.status(500).json({ error: error.message || 'Failed to fetch site' });
+    } catch (error) {
+      console.error('Error fetching site:', error);
+      return res.status(500).json({
+        error: 'Failed to fetch site',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      });
     }
   }
 
@@ -126,9 +131,12 @@ export default async function handler(
       if (error) throw error;
 
       return res.status(200).json(data);
-    } catch (error: any) {
-      logError('Error updating site:', error);
-      return res.status(500).json({ error: error.message || 'Failed to update site' });
+    } catch (error) {
+      console.error('Error updating site:', error);
+      return res.status(500).json({
+        error: 'Failed to update site',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      });
     }
   }
 
@@ -173,9 +181,12 @@ export default async function handler(
       if (error) throw error;
 
       return res.status(200).json({ message: 'Site deleted successfully' });
-    } catch (error: any) {
-      logError('Error deleting site:', error);
-      return res.status(500).json({ error: error.message || 'Failed to delete site' });
+    } catch (error) {
+      console.error('Error deleting site:', error);
+      return res.status(500).json({
+        error: 'Failed to delete site',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      });
     }
   }
 

@@ -45,12 +45,12 @@ export default async function handler(
 
       // Create new assignment
       const insertPayload: Database['public']['Tables']['job_assignments']['Insert'] =
-        {
-          job_id: jobId,
-          user_id,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
+      {
+        job_id: jobId,
+        user_id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
 
       const { data, error } = await supabaseAdmin
         .from('job_assignments')
@@ -69,9 +69,12 @@ export default async function handler(
       if (error) throw error;
 
       return res.status(201).json(data);
-    } catch (error: any) {
-      console.error('Error creating assignment:', error);
-      return res.status(500).json({ error: error.message });
+    } catch (error) {
+      console.error('Error fetching assignments:', error);
+      return res.status(500).json({
+        error: 'Failed to fetch assignments',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      });
     }
   }
 
@@ -95,9 +98,11 @@ export default async function handler(
       return res
         .status(200)
         .json({ message: 'Assignment removed successfully' });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error removing assignment:', error);
-      return res.status(500).json({ error: error.message });
+      return res.status(500).json({
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
     }
   }
 

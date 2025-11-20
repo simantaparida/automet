@@ -78,14 +78,19 @@ export default function InventoryDetailPage() {
       }
     } catch (error) {
       console.error('Error fetching inventory item:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to load inventory item');
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to load inventory item'
+      );
       router.push('/inventory');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleStockAdjustment = async (amount: number, type: 'add' | 'subtract') => {
+  const handleStockAdjustment = async (
+    amount: number,
+    type: 'add' | 'subtract'
+  ) => {
     if (!item) return;
 
     try {
@@ -212,9 +217,7 @@ export default function InventoryDetailPage() {
               ←
             </button>
             <div className="flex-1 min-w-0">
-              <h1 className="text-lg font-bold m-0 truncate">
-                {item.name}
-              </h1>
+              <h1 className="text-lg font-bold m-0 truncate">{item.name}</h1>
               {item.sku && (
                 <p className="text-xs m-0 mt-1 opacity-90 truncate">
                   SKU: {item.sku}
@@ -307,7 +310,10 @@ export default function InventoryDetailPage() {
 
               {quantity <= reorderLevel && quantity > 0 && (
                 <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-3 text-amber-800">
-                  <AlertTriangle size={20} className="text-amber-500 flex-shrink-0" />
+                  <AlertTriangle
+                    size={20}
+                    className="text-amber-500 flex-shrink-0"
+                  />
                   <span className="text-sm font-medium">
                     Stock is below reorder level. Consider restocking.
                   </span>
@@ -350,7 +356,9 @@ export default function InventoryDetailPage() {
                   <Layers size={20} className="text-emerald-600" />
                 </div>
                 <div className="flex-1">
-                  <div className="text-xs text-gray-500 mb-0.5">Reorder Level</div>
+                  <div className="text-xs text-gray-500 mb-0.5">
+                    Reorder Level
+                  </div>
                   <div className="text-base font-semibold text-gray-900">
                     {reorderLevel} {item.unit || 'units'}
                   </div>

@@ -42,8 +42,12 @@ export default function JobsPage() {
 
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<string>(() => (status as string) || 'all');
-  const [filterPriority, setFilterPriority] = useState<string>(() => (priority as string) || '');
+  const [activeTab, setActiveTab] = useState<string>(
+    () => (status as string) || 'all'
+  );
+  const [filterPriority, setFilterPriority] = useState<string>(
+    () => (priority as string) || ''
+  );
   const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set());
   const [isSelectMode, setIsSelectMode] = useState(false);
 
@@ -93,8 +97,6 @@ export default function JobsPage() {
       setLoading(false);
     }
   };
-
-
 
   // Selection handlers
   const toggleSelectMode = () => {
@@ -149,7 +151,11 @@ export default function JobsPage() {
 
   const handleBulkDelete = async () => {
     if (selectedJobs.size === 0) return;
-    if (!confirm(`Are you sure you want to delete ${selectedJobs.size} job(s)? This action cannot be undone.`)) {
+    if (
+      !confirm(
+        `Are you sure you want to delete ${selectedJobs.size} job(s)? This action cannot be undone.`
+      )
+    ) {
       return;
     }
 
@@ -178,7 +184,9 @@ export default function JobsPage() {
 
     const selectedJobsData = jobs.filter((job) => selectedJobs.has(job.id));
     const csv = [
-      ['Title', 'Status', 'Priority', 'Client', 'Site', 'Scheduled At'].join(','),
+      ['Title', 'Status', 'Priority', 'Client', 'Site', 'Scheduled At'].join(
+        ','
+      ),
       ...selectedJobsData.map((job) =>
         [
           `"${job.title}"`,
@@ -332,20 +340,14 @@ export default function JobsPage() {
 
         {/* Mobile Header */}
         <header className="mobile-header bg-gradient-to-br from-primary to-orange-500 text-white p-4 sticky top-0 z-20 shadow-lg shadow-primary/20">
-          <h1 className="text-xl font-bold m-0 mb-2">
-            Jobs
-          </h1>
-          <p className="text-sm m-0 opacity-90">
-            {jobs.length} total
-          </p>
+          <h1 className="text-xl font-bold m-0 mb-2">Jobs</h1>
+          <p className="text-sm m-0 opacity-90">{jobs.length} total</p>
         </header>
 
         {/* Desktop Page Header */}
         <div className="desktop-header px-8 pt-8 pb-3">
           <div className="flex justify-between items-center mb-3">
-            <h1 className="text-2xl font-bold text-gray-900 m-0">
-              Jobs
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-900 m-0">Jobs</h1>
             {activeRole !== 'technician' && (
               <button
                 onClick={() => router.push('/jobs/new')}
@@ -363,7 +365,11 @@ export default function JobsPage() {
           {/* Tabs */}
           <div className="flex gap-0 items-center">
             {[
-              { key: 'all', label: activeRole === 'technician' ? 'My Jobs' : 'All', count: tabCounts.all },
+              {
+                key: 'all',
+                label: activeRole === 'technician' ? 'My Jobs' : 'All',
+                count: tabCounts.all,
+              },
               {
                 key: 'scheduled',
                 label: 'Scheduled',
@@ -383,10 +389,11 @@ export default function JobsPage() {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`px-4 py-3 bg-transparent border-none text-[13px] whitespace-nowrap transition-all -mb-0.5 ${activeTab === tab.key
-                  ? 'text-primary font-semibold border-b-[3px] border-primary'
-                  : 'text-gray-500 font-medium border-b-[3px] border-transparent hover:text-primary'
-                  }`}
+                className={`px-4 py-3 bg-transparent border-none text-[13px] whitespace-nowrap transition-all -mb-0.5 ${
+                  activeTab === tab.key
+                    ? 'text-primary font-semibold border-b-[3px] border-primary'
+                    : 'text-gray-500 font-medium border-b-[3px] border-transparent hover:text-primary'
+                }`}
               >
                 {tab.label} {tab.count > 0 && `(${tab.count})`}
               </button>
@@ -411,12 +418,17 @@ export default function JobsPage() {
             {activeRole !== 'technician' && (
               <button
                 onClick={toggleSelectMode}
-                className={`px-3 py-2 rounded-md text-[13px] font-medium cursor-pointer flex items-center gap-1.5 transition-all whitespace-nowrap ${isSelectMode
-                  ? 'bg-primary text-white border border-primary'
-                  : 'bg-white text-primary border border-gray-300 hover:bg-orange-50'
-                  }`}
+                className={`px-3 py-2 rounded-md text-[13px] font-medium cursor-pointer flex items-center gap-1.5 transition-all whitespace-nowrap ${
+                  isSelectMode
+                    ? 'bg-primary text-white border border-primary'
+                    : 'bg-white text-primary border border-gray-300 hover:bg-orange-50'
+                }`}
               >
-                {isSelectMode ? <CheckSquare size={16} /> : <Square size={16} />}
+                {isSelectMode ? (
+                  <CheckSquare size={16} />
+                ) : (
+                  <Square size={16} />
+                )}
                 {isSelectMode ? 'Done' : 'Select'}
               </button>
             )}
@@ -438,9 +450,19 @@ export default function JobsPage() {
             boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
           }}
         >
-          <div style={{ display: 'inline-flex', padding: '0.75rem 1rem', gap: '0.5rem' }}>
+          <div
+            style={{
+              display: 'inline-flex',
+              padding: '0.75rem 1rem',
+              gap: '0.5rem',
+            }}
+          >
             {[
-              { key: 'all', label: activeRole === 'technician' ? 'My Jobs' : 'All', count: tabCounts.all },
+              {
+                key: 'all',
+                label: activeRole === 'technician' ? 'My Jobs' : 'All',
+                count: tabCounts.all,
+              },
               {
                 key: 'scheduled',
                 label: 'Scheduled',
@@ -499,8 +521,6 @@ export default function JobsPage() {
           </div>
         </div>
 
-
-
         {/* Bulk Actions Toolbar */}
         {isSelectMode && selectedJobs.size > 0 && (
           <div
@@ -518,7 +538,14 @@ export default function JobsPage() {
               boxShadow: '0 2px 8px rgba(239,119,34,0.15)',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                flex: 1,
+              }}
+            >
               <button
                 onClick={toggleSelectAll}
                 style={{
@@ -552,7 +579,8 @@ export default function JobsPage() {
                   fontWeight: '500',
                 }}
               >
-                {selectedJobs.size} job{selectedJobs.size !== 1 ? 's' : ''} selected
+                {selectedJobs.size} job{selectedJobs.size !== 1 ? 's' : ''}{' '}
+                selected
               </span>
             </div>
             <div
@@ -674,7 +702,11 @@ export default function JobsPage() {
           ) : jobs.length === 0 ? (
             <EmptyState
               title="No jobs found"
-              description={activeTab === 'all' ? 'Create your first job to get started' : `No ${activeTab.replace('_', ' ')} jobs`}
+              description={
+                activeTab === 'all'
+                  ? 'Create your first job to get started'
+                  : `No ${activeTab.replace('_', ' ')} jobs`
+              }
             />
           ) : (
             <div
@@ -696,7 +728,9 @@ export default function JobsPage() {
                       }
                     }}
                     style={{
-                      backgroundColor: selectedJobs.has(job.id) ? '#fff5ed' : '#fafafa',
+                      backgroundColor: selectedJobs.has(job.id)
+                        ? '#fff5ed'
+                        : '#fafafa',
                       padding: '1.25rem',
                       borderRadius: '12px',
                       cursor: isSelectMode ? 'default' : 'pointer',
@@ -713,13 +747,17 @@ export default function JobsPage() {
                     onMouseEnter={(e) => {
                       if (!isSelectMode) {
                         e.currentTarget.style.borderColor = '#EF7722';
-                        e.currentTarget.style.borderLeftColor = getStatusColor(job.status);
+                        e.currentTarget.style.borderLeftColor = getStatusColor(
+                          job.status
+                        );
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (!isSelectMode) {
                         e.currentTarget.style.borderColor = '#e5e7eb';
-                        e.currentTarget.style.borderLeftColor = getStatusColor(job.status);
+                        e.currentTarget.style.borderLeftColor = getStatusColor(
+                          job.status
+                        );
                       }
                     }}
                   >
@@ -738,9 +776,17 @@ export default function JobsPage() {
                         }}
                       >
                         {selectedJobs.has(job.id) ? (
-                          <CheckSquare size={24} color="#EF7722" style={{ cursor: 'pointer' }} />
+                          <CheckSquare
+                            size={24}
+                            color="#EF7722"
+                            style={{ cursor: 'pointer' }}
+                          />
                         ) : (
-                          <Square size={24} color="#6b7280" style={{ cursor: 'pointer' }} />
+                          <Square
+                            size={24}
+                            color="#6b7280"
+                            style={{ cursor: 'pointer' }}
+                          />
                         )}
                       </div>
                     )}
@@ -819,7 +865,10 @@ export default function JobsPage() {
                             flexShrink: 0,
                           }}
                         >
-                          <PriorityIcon size={20} color={priorityConfig.color} />
+                          <PriorityIcon
+                            size={20}
+                            color={priorityConfig.color}
+                          />
                         </div>
                       </div>
                     </div>
@@ -835,12 +884,18 @@ export default function JobsPage() {
                       }}
                     >
                       {job.site && (
-                        <div className="job-info-item" style={{ color: '#6b7280' }}>
+                        <div
+                          className="job-info-item"
+                          style={{ color: '#6b7280' }}
+                        >
                           <MapPin size={14} color="#6b7280" />
                           <span>{job.site.name}</span>
                         </div>
                       )}
-                      <div className="job-info-item" style={{ color: '#6b7280' }}>
+                      <div
+                        className="job-info-item"
+                        style={{ color: '#6b7280' }}
+                      >
                         <Clock size={14} color="#6b7280" />
                         <span>{formatDate(job.scheduled_at)}</span>
                       </div>

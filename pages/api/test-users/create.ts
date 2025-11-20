@@ -4,10 +4,10 @@ import { getSupabaseAdmin } from '@/lib/supabase-server';
 /**
  * POST /api/test-users/create
  * Create test login profiles for Owner, Coordinator, and Technician
- * 
+ *
  * This endpoint uses the service role key to create users in Supabase Auth
  * and corresponding entries in the public.users table.
- * 
+ *
  * ⚠️ This should only be used in development/testing environments!
  */
 export default async function handler(
@@ -30,7 +30,8 @@ export default async function handler(
   if (!supabaseAdmin) {
     return res.status(500).json({
       error: 'Server configuration error',
-      message: 'Supabase Admin client not available. Check SUPABASE_SERVICE_ROLE_KEY in environment variables.',
+      message:
+        'Supabase Admin client not available. Check SUPABASE_SERVICE_ROLE_KEY in environment variables.',
     });
   }
 
@@ -80,7 +81,9 @@ export default async function handler(
         .single();
 
       if (orgError || !newOrg) {
-        throw new Error(`Failed to create organization: ${orgError?.message || 'Unknown error'}`);
+        throw new Error(
+          `Failed to create organization: ${orgError?.message || 'Unknown error'}`
+        );
       }
 
       orgId = newOrg.id;
@@ -98,26 +101,32 @@ export default async function handler(
 
         try {
           // Use the admin client's auth.admin.createUser method
-          const { data: authUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
-            email: userData.email,
-            password: userData.password,
-            email_confirm: true, // Auto-confirm email for testing
-            user_metadata: {
-              full_name: userData.name,
-            },
-          });
+          const { data: authUser, error: createError } =
+            await supabaseAdmin.auth.admin.createUser({
+              email: userData.email,
+              password: userData.password,
+              email_confirm: true, // Auto-confirm email for testing
+              user_metadata: {
+                full_name: userData.name,
+              },
+            });
 
           if (createError || !authUser?.user) {
-            authError = new Error(createError?.message || 'Failed to create auth user');
+            authError = new Error(
+              createError?.message || 'Failed to create auth user'
+            );
           } else {
             authUserId = authUser.user.id;
           }
-        } catch (err: any) {
+        } catch (err) {
           // Fallback to REST API if client method doesn't work
           try {
-            const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '';
+            const supabaseUrl =
+              process.env.NEXT_PUBLIC_SUPABASE_URL ||
+              process.env.SUPABASE_URL ||
+              '';
             const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-            
+
             const createUserResponse = await fetch(
               `${supabaseUrl}/auth/v1/admin/users`,
               {
@@ -140,7 +149,11 @@ export default async function handler(
 
             if (!createUserResponse.ok) {
               const errorData = await createUserResponse.json();
-              authError = new Error(errorData.error?.message || errorData.message || 'Failed to create auth user');
+              authError = new Error(
+                errorData.error?.message ||
+                errorData.message ||
+                'Failed to create auth user'
+              );
             } else {
               const authUserData = await createUserResponse.json();
               if (authUserData?.id) {
@@ -149,8 +162,10 @@ export default async function handler(
                 authError = new Error('Invalid response from auth API');
               }
             }
-          } catch (fetchErr: any) {
-            authError = new Error(fetchErr.message || 'Failed to create auth user via REST API');
+          } catch (fetchErr) { // Changed from fetchErr: any
+            authError = new Error(
+              (fetchErr instanceof Error ? fetchErr.message : String(fetchErr)) || 'Failed to create auth user via REST API'
+            );
           }
         }
 
@@ -200,7 +215,7 @@ export default async function handler(
                   },
                 }
               );
-            } catch (err) {
+            } catch (err) { // Changed from err: any
               // Ignore delete errors
             }
           }
@@ -220,12 +235,12 @@ export default async function handler(
           status: 'success',
           userId: authUserId,
         });
-      } catch (error: any) {
+      } catch (error) { // Changed from error: any
         results.push({
           email: userData.email,
           role: userData.role,
           status: 'error',
-          error: error.message || 'Unknown error',
+          error: (error instanceof Error ? error.message : String(error)) || 'Unknown error',
         });
       }
     }
@@ -239,12 +254,11 @@ export default async function handler(
       organizationId: orgId,
       users: results,
     });
-  } catch (error: any) {
+  } catch (error) { // Changed from error: any
     console.error('Error creating test users:', error);
     return res.status(500).json({
       error: 'Internal server error',
-      message: error.message || 'Failed to create test users',
+      message: (error instanceof Error ? error.message : String(error)) || 'Failed to create test users',
     });
   }
 }
-

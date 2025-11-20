@@ -170,27 +170,39 @@ export default function BlogListPage() {
           name="description"
           content="Explore industry insights, best practices, and product updates for field service management and AMC operations."
         />
-        
+
         {/* Canonical URL */}
         <link rel="canonical" href={pageUrl} />
-        
+
         {/* Open Graph */}
-        <meta property="og:title" content="Blog - Automet | Industry Insights & Best Practices" />
-        <meta property="og:description" content="Explore industry insights, best practices, and product updates for field service management and AMC operations." />
+        <meta
+          property="og:title"
+          content="Blog - Automet | Industry Insights & Best Practices"
+        />
+        <meta
+          property="og:description"
+          content="Explore industry insights, best practices, and product updates for field service management and AMC operations."
+        />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={pageUrl} />
         <meta property="og:site_name" content="Automet" />
         <meta property="og:image" content={`${siteUrl}/og-image.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        
+
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@automet" />
-        <meta name="twitter:title" content="Blog - Automet | Industry Insights & Best Practices" />
-        <meta name="twitter:description" content="Explore industry insights, best practices, and product updates for field service management and AMC operations." />
+        <meta
+          name="twitter:title"
+          content="Blog - Automet | Industry Insights & Best Practices"
+        />
+        <meta
+          name="twitter:description"
+          content="Explore industry insights, best practices, and product updates for field service management and AMC operations."
+        />
         <meta name="twitter:image" content={`${siteUrl}/og-image.png`} />
-        
+
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -328,16 +340,31 @@ export default function BlogListPage() {
                   <p>
                     {searchQuery ? (
                       <>
-                        Found <span className="font-semibold text-gray-900">{filteredAndSortedPosts.length}</span>{' '}
-                        {filteredAndSortedPosts.length === 1 ? 'result' : 'results'}
+                        Found{' '}
+                        <span className="font-semibold text-gray-900">
+                          {filteredAndSortedPosts.length}
+                        </span>{' '}
+                        {filteredAndSortedPosts.length === 1
+                          ? 'result'
+                          : 'results'}
                       </>
                     ) : (
                       <>
-                        <span className="font-semibold text-gray-900">{filteredAndSortedPosts.length}</span>{' '}
-                        {filteredAndSortedPosts.length === 1 ? 'article' : 'articles'}
+                        <span className="font-semibold text-gray-900">
+                          {filteredAndSortedPosts.length}
+                        </span>{' '}
+                        {filteredAndSortedPosts.length === 1
+                          ? 'article'
+                          : 'articles'}
                         {selectedCategory !== 'all' && (
                           <span className="text-gray-500">
-                            {' '}in {categories.find((c) => c.value === selectedCategory)?.label}
+                            {' '}
+                            in{' '}
+                            {
+                              categories.find(
+                                (c) => c.value === selectedCategory
+                              )?.label
+                            }
                           </span>
                         )}
                       </>

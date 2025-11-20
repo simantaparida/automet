@@ -26,7 +26,11 @@ interface FormErrors {
   [key: string]: string;
 }
 
-export default function PreorderModal({ isOpen, onClose, defaultPlan }: PreorderModalProps) {
+export default function PreorderModal({
+  isOpen,
+  onClose,
+  defaultPlan,
+}: PreorderModalProps) {
   const [formData, setFormData] = useState<FormData>({
     contact_name: '',
     email: '',
@@ -199,7 +203,9 @@ export default function PreorderModal({ isOpen, onClose, defaultPlan }: Preorder
                 Early Access
               </span>
             </div>
-            <h2 className="text-2xl font-bold mb-1 text-center">Join the Waitlist</h2>
+            <h2 className="text-2xl font-bold mb-1 text-center">
+              Join the Waitlist
+            </h2>
             <p className="text-white/90 text-sm text-center">
               Be among the first to access Automet when we launch
             </p>
@@ -228,52 +234,108 @@ export default function PreorderModal({ isOpen, onClose, defaultPlan }: Preorder
                 <div className="bg-gray-50 rounded-lg p-2.5 border border-gray-200">
                   <div className="flex items-center gap-2">
                     <div className="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      <svg
+                        className="w-4 h-4 text-blue-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 10V3L4 14h7v7l9-11h-7z"
+                        />
                       </svg>
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="font-medium text-gray-900 text-sm truncate">First Access</p>
-                      <p className="text-xs text-gray-600 truncate">Try features early</p>
+                      <p className="font-medium text-gray-900 text-sm truncate">
+                        First Access
+                      </p>
+                      <p className="text-xs text-gray-600 truncate">
+                        Try features early
+                      </p>
                     </div>
                   </div>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-2.5 border border-gray-200">
                   <div className="flex items-center gap-2">
                     <div className="w-7 h-7 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <svg
+                        className="w-4 h-4 text-green-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
                       </svg>
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="font-medium text-gray-900 text-sm truncate">Special Offers</p>
-                      <p className="text-xs text-gray-600 truncate">Exclusive discounts</p>
+                      <p className="font-medium text-gray-900 text-sm truncate">
+                        Special Offers
+                      </p>
+                      <p className="text-xs text-gray-600 truncate">
+                        Exclusive discounts
+                      </p>
                     </div>
                   </div>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-2.5 border border-gray-200">
                   <div className="flex items-center gap-2">
                     <div className="w-7 h-7 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                      <svg
+                        className="w-4 h-4 text-purple-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"
+                        />
                       </svg>
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="font-medium text-gray-900 text-sm truncate">Priority Support</p>
-                      <p className="text-xs text-gray-600 truncate">Dedicated help</p>
+                      <p className="font-medium text-gray-900 text-sm truncate">
+                        Priority Support
+                      </p>
+                      <p className="text-xs text-gray-600 truncate">
+                        Dedicated help
+                      </p>
                     </div>
                   </div>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-2.5 border border-gray-200">
                   <div className="flex items-center gap-2">
                     <div className="w-7 h-7 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
+                      <svg
+                        className="w-4 h-4 text-orange-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"
+                        />
                       </svg>
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="font-medium text-gray-900 text-sm truncate">Shape Product</p>
-                      <p className="text-xs text-gray-600 truncate">Your feedback</p>
+                      <p className="font-medium text-gray-900 text-sm truncate">
+                        Shape Product
+                      </p>
+                      <p className="text-xs text-gray-600 truncate">
+                        Your feedback
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -467,7 +529,9 @@ export default function PreorderModal({ isOpen, onClose, defaultPlan }: Preorder
                     className="mr-2.5 mt-0.5 flex-shrink-0"
                   />
                   <div className="flex-1">
-                    <div className="font-semibold text-gray-900 text-sm">Free</div>
+                    <div className="font-semibold text-gray-900 text-sm">
+                      Free
+                    </div>
                     <div className="text-xs text-gray-600">
                       ₹0/forever • 1 site, 3 users
                     </div>
@@ -492,7 +556,9 @@ export default function PreorderModal({ isOpen, onClose, defaultPlan }: Preorder
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-gray-900 text-sm">Starter</span>
+                      <span className="font-semibold text-gray-900 text-sm">
+                        Starter
+                      </span>
                       <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary">
                         ⭐ MOST POPULAR
                       </span>
@@ -520,7 +586,9 @@ export default function PreorderModal({ isOpen, onClose, defaultPlan }: Preorder
                     className="mr-2.5 mt-0.5 flex-shrink-0"
                   />
                   <div className="flex-1">
-                    <div className="font-semibold text-gray-900 text-sm">Growth</div>
+                    <div className="font-semibold text-gray-900 text-sm">
+                      Growth
+                    </div>
                     <div className="text-xs text-gray-600">
                       ₹2,999/mo • 20 sites, 50 techs
                     </div>
@@ -544,7 +612,9 @@ export default function PreorderModal({ isOpen, onClose, defaultPlan }: Preorder
                     className="mr-2.5 mt-0.5 flex-shrink-0"
                   />
                   <div className="flex-1">
-                    <div className="font-semibold text-gray-900 text-sm">Business</div>
+                    <div className="font-semibold text-gray-900 text-sm">
+                      Business
+                    </div>
                     <div className="text-xs text-gray-600">
                       ₹9,999/mo • Unlimited sites, 200 techs
                     </div>
@@ -568,7 +638,9 @@ export default function PreorderModal({ isOpen, onClose, defaultPlan }: Preorder
                     className="mr-2.5 mt-0.5 flex-shrink-0"
                   />
                   <div className="flex-1">
-                    <div className="font-semibold text-gray-900 text-sm">Enterprise</div>
+                    <div className="font-semibold text-gray-900 text-sm">
+                      Enterprise
+                    </div>
                     <div className="text-xs text-gray-600">
                       Custom pricing • 200+ techs, dedicated support
                     </div>

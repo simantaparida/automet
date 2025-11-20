@@ -47,7 +47,10 @@ export default async function handler(
 
     // Use service role client for both operations to bypass RLS completely
     // This is necessary during onboarding before the user profile exists
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    if (
+      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      !process.env.SUPABASE_SERVICE_ROLE_KEY
+    ) {
       console.error('Missing Supabase environment variables');
       return res.status(500).json({ error: 'Server configuration error' });
     }
@@ -58,8 +61,8 @@ export default async function handler(
       {
         auth: {
           autoRefreshToken: false,
-          persistSession: false
-        }
+          persistSession: false,
+        },
       }
     );
 
@@ -109,27 +112,36 @@ export default async function handler(
     }
 
     console.log('Organization created:', org.id);
-    console.log('Creating/updating user profile:', { userId: session.user.id, orgId: org.id });
+    console.log('Creating/updating user profile:', {
+      userId: session.user.id,
+      orgId: org.id,
+    });
 
     // Create or update user profile using service role
     // Use UPSERT because user might already exist from:
     // - Previous onboarding attempts
     // - Auth triggers
     // - Database seeds
-    const fullName = session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User';
+    const fullName =
+      session.user.user_metadata?.full_name ||
+      session.user.email?.split('@')[0] ||
+      'User';
 
     const { data: insertedUser, error: userError } = await serviceRoleSupabase
       .from('users')
-      .upsert({
-        id: session.user.id,
-        email: session.user.email!,
-        full_name: fullName,
-        phone: session.user.user_metadata?.phone || null,
-        org_id: org.id,
-        role: 'owner',
-      }, {
-        onConflict: 'id'  // Update on conflict with existing user ID
-      })
+      .upsert(
+        {
+          id: session.user.id,
+          email: session.user.email!,
+          full_name: fullName,
+          phone: session.user.user_metadata?.phone || null,
+          org_id: org.id,
+          role: 'owner',
+        },
+        {
+          onConflict: 'id', // Update on conflict with existing user ID
+        }
+      )
       .select()
       .single();
 
@@ -146,8 +158,11 @@ export default async function handler(
       success: true,
       organization: org,
     });
-  } catch (error: any) {
-    console.error('Onboarding API error:', error);
-    return res.status(500).json({ error: error.message || 'Internal server error' });
+  } catch (error) {
+    console.error('Error creating organization:', error);
+    return res.status(500).json({
+      error: 'Failed to create organization',
+      details: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 }

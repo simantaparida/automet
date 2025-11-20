@@ -80,7 +80,7 @@ export default function BlogPostPage() {
         if (response.ok) {
           const data = await response.json();
           setPost(data);
-          
+
           // Fetch related articles
           fetchRelatedPosts(data);
         } else {
@@ -99,44 +99,49 @@ export default function BlogPostPage() {
     if (!post || !slug) return;
 
     // Track view (fire and forget, don't block UI)
-    fetch(`/api/blog/${slug}/view`, { method: 'POST' })
-      .catch(err => console.error('View tracking failed:', err));
+    fetch(`/api/blog/${slug}/view`, { method: 'POST' }).catch((err) =>
+      console.error('View tracking failed:', err)
+    );
   }, [post, slug]);
 
   // Fetch related articles based on category and tags
   const fetchRelatedPosts = async (currentPost: BlogPost) => {
     try {
       // Fetch posts from the same category (select only needed fields for performance)
-      const response = await fetch(`/api/blog?limit=10&category=${currentPost.category}`);
+      const response = await fetch(
+        `/api/blog?limit=10&category=${currentPost.category}`
+      );
       if (response.ok) {
         const data = await response.json();
-        
+
         // Filter out current post and calculate relevance scores
         const scoredPosts = data
           .filter((p: BlogPost) => p.slug !== currentPost.slug)
           .map((p: BlogPost) => {
             let score = 0;
-            
+
             // Same category: +2 points
             if (p.category === currentPost.category) score += 2;
-            
+
             // Matching tags: +3 points per tag
-            const matchingTags = p.tags?.filter((tag: string) => 
-              currentPost.tags?.includes(tag)
-            ) || [];
+            const matchingTags =
+              p.tags?.filter((tag: string) =>
+                currentPost.tags?.includes(tag)
+              ) || [];
             score += matchingTags.length * 3;
-            
+
             // Recent posts: +1 point if published within 90 days
             const daysSincePublished = Math.floor(
-              (new Date().getTime() - new Date(p.published_at).getTime()) / (1000 * 60 * 60 * 24)
+              (new Date().getTime() - new Date(p.published_at).getTime()) /
+                (1000 * 60 * 60 * 24)
             );
             if (daysSincePublished <= 90) score += 1;
-            
+
             return { ...p, score };
           })
           .sort((a: any, b: any) => b.score - a.score)
           .slice(0, 3); // Top 3 related posts
-        
+
         setRelatedPosts(scoredPosts);
       }
     } catch (err) {
@@ -463,10 +468,10 @@ export default function BlogPostPage() {
           name="description"
           content={post.meta_description || post.excerpt}
         />
-        
+
         {/* Canonical URL */}
         <link rel="canonical" href={`${siteUrl}/blog/${post.slug}`} />
-        
+
         {/* Open Graph */}
         <meta property="og:title" content={post.title} />
         <meta property="og:description" content={post.excerpt} />
@@ -480,11 +485,15 @@ export default function BlogPostPage() {
         />
         <meta property="article:published_time" content={post.published_at} />
         <meta property="article:author" content={post.author_name} />
-        <meta property="article:section" content={formatCategory(post.category)} />
-        {post.tags && post.tags.map((tag) => (
-          <meta property="article:tag" content={tag} key={tag} />
-        ))}
-        
+        <meta
+          property="article:section"
+          content={formatCategory(post.category)}
+        />
+        {post.tags &&
+          post.tags.map((tag) => (
+            <meta property="article:tag" content={tag} key={tag} />
+          ))}
+
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@automet" />
@@ -494,9 +503,9 @@ export default function BlogPostPage() {
           name="twitter:image"
           content={post.cover_image_url || `${siteUrl}/og-image.png`}
         />
-        
+
         <link rel="icon" href="/favicon.ico" />
-        
+
         {/* JSON-LD Structured Data */}
         <script
           type="application/ld+json"
@@ -579,7 +588,7 @@ export default function BlogPostPage() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             {/* Table of Contents (Mobile only - sticky at top) */}
             <TableOfContents content={post.content} variant="mobile" />
-            
+
             <div className="max-w-7xl mx-auto">
               <div className="flex gap-8 justify-center">
                 {/* Table of Contents (Desktop - Sticky Sidebar) */}
@@ -587,80 +596,62 @@ export default function BlogPostPage() {
 
                 {/* Main Content - Centered */}
                 <div className="flex-1 min-w-0 max-w-4xl mx-auto">
-              {/* Breadcrumbs */}
-              <nav className="mb-6 text-sm text-gray-600">
-                <ol className="flex items-center space-x-2">
-                  <li>
-                    <Link
-                      href="/"
-                      className="hover:text-primary transition-colors"
+                  {/* Breadcrumbs */}
+                  <nav className="mb-6 text-sm text-gray-600">
+                    <ol className="flex items-center space-x-2">
+                      <li>
+                        <Link
+                          href="/"
+                          className="hover:text-primary transition-colors"
+                        >
+                          Home
+                        </Link>
+                      </li>
+                      <li>/</li>
+                      <li>
+                        <Link
+                          href="/blog"
+                          className="hover:text-primary transition-colors"
+                        >
+                          Blog
+                        </Link>
+                      </li>
+                      <li>/</li>
+                      <li className="text-gray-900 truncate max-w-xs">
+                        {post.title}
+                      </li>
+                    </ol>
+                  </nav>
+
+                  {/* Category Badge */}
+                  <div className="mb-4">
+                    <span
+                      className={`inline-block px-3 py-1 rounded-full text-xs font-semibold border ${getCategoryColor(
+                        post.category
+                      )}`}
                     >
-                      Home
-                    </Link>
-                  </li>
-                  <li>/</li>
-                  <li>
-                    <Link
-                      href="/blog"
-                      className="hover:text-primary transition-colors"
-                    >
-                      Blog
-                    </Link>
-                  </li>
-                  <li>/</li>
-                  <li className="text-gray-900 truncate max-w-xs">
-                    {post.title}
-                  </li>
-                </ol>
-              </nav>
-
-              {/* Category Badge */}
-              <div className="mb-4">
-                <span
-                  className={`inline-block px-3 py-1 rounded-full text-xs font-semibold border ${getCategoryColor(
-                    post.category
-                  )}`}
-                >
-                  {formatCategory(post.category)}
-                </span>
-              </div>
-
-              {/* Title */}
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">
-                {post.title}
-              </h1>
-
-              {/* Meta with Reading Time */}
-              <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600 mb-6 pb-6 border-b border-gray-200">
-                <span className="font-medium">{post.author_name}</span>
-                <span>•</span>
-                <span>
-                  {formatDate(post.published_at)}
-                  {post.updated_at && post.updated_at !== post.published_at && (
-                    <span className="text-gray-500 ml-2">
-                      (Updated: {formatDate(post.updated_at)})
+                      {formatCategory(post.category)}
                     </span>
-                  )}
-                </span>
-                <span>•</span>
-                <span className="flex items-center">
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  {calculateReadingTime(post.content)} min read
-                </span>
-                {post.view_count && post.view_count > 0 && (
-                  <>
+                  </div>
+
+                  {/* Title */}
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+                    {post.title}
+                  </h1>
+
+                  {/* Meta with Reading Time */}
+                  <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600 mb-6 pb-6 border-b border-gray-200">
+                    <span className="font-medium">{post.author_name}</span>
+                    <span>•</span>
+                    <span>
+                      {formatDate(post.published_at)}
+                      {post.updated_at &&
+                        post.updated_at !== post.published_at && (
+                          <span className="text-gray-500 ml-2">
+                            (Updated: {formatDate(post.updated_at)})
+                          </span>
+                        )}
+                    </span>
                     <span>•</span>
                     <span className="flex items-center">
                       <svg
@@ -673,491 +664,520 @@ export default function BlogPostPage() {
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth={2}
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-                      {post.view_count.toLocaleString()} views
+                      {calculateReadingTime(post.content)} min read
                     </span>
-                  </>
-                )}
-              </div>
-
-              {/* Share Button */}
-              <div className="mb-8">
-                <button
-                  onClick={handleShare}
-                  className="inline-flex items-center px-4 py-2 bg-primary/10 text-primary rounded-lg font-medium hover:bg-primary/20 transition-colors duration-300 text-sm"
-                >
-                  {shareCopied ? (
-                    <>
-                      <svg
-                        className="w-4 h-4 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      Link Copied!
-                    </>
-                  ) : (
-                    <>
-                      <svg
-                        className="w-4 h-4 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-                        />
-                      </svg>
-                      Share Article
-                    </>
-                  )}
-                </button>
-              </div>
-
-              {/* Cover Image */}
-              {post.cover_image_url && (
-                <div className="mb-10 -mx-4 sm:mx-0">
-                  <img
-                    src={post.cover_image_url}
-                    alt={post.title}
-                    loading="eager"
-                    className="w-full rounded-xl shadow-xl object-cover"
-                    style={{ maxHeight: '500px' }}
-                    onError={(e) => {
-                      // Hide broken images
-                      e.currentTarget.style.display = 'none';
-                    }}
-                  />
-                </div>
-              )}
-
-              {/* Content - Professional Markdown Rendering */}
-              <div className="blog-content max-w-none">
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  components={getMarkdownComponents()}
-                  skipHtml={false}
-                  rehypePlugins={[]}
-                >
-                  {(() => {
-                    const processedContent = post.content
-                      // Fix table spacing
-                      .replace(/\n\n\|/g, '\n|')
-                      .replace(/\|\n\n\|/g, '|\n|')
-                      // Remove meta description from visible content (more comprehensive pattern)
-                      .replace(/\*\*Meta Description:\*\*\s*\n\n[^\n]+/gi, '')
-                      .replace(/\*\*Meta Description:\*\*\s*[^\n]+/gi, '')
-                      .replace(/Meta Description:\s*[^\n]+/gi, '')
-                      // Remove the first H1 if it matches the post title (to avoid duplicate title)
-                      .replace(/^#\s+([^\n]+)\n\n/, (match, title) => {
-                        // Check if this H1 matches the post title (case-insensitive)
-                        const normalizedTitle = title.toLowerCase().trim();
-                        const normalizedPostTitle = post.title
-                          .toLowerCase()
-                          .trim();
-                        if (normalizedTitle === normalizedPostTitle) {
-                          return ''; // Remove the H1
-                        }
-                        return match; // Keep it if it's different
-                      });
-                    return processedContent;
-                  })()}
-                </ReactMarkdown>
-              </div>
-
-              {/* Custom Styles for Markdown Elements */}
-              <style jsx global>{`
-                .blog-content {
-                  max-width: 100%;
-                  font-family:
-                    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
-                    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
-                    'Helvetica Neue', sans-serif;
-                  color: #374151;
-                }
-
-                /* Typography improvements */
-                .blog-content p {
-                  margin-bottom: 1.25rem;
-                  line-height: 1.75;
-                  font-size: 1.0625rem;
-                }
-
-                .blog-content h1,
-                .blog-content h2,
-                .blog-content h3,
-                .blog-content h4,
-                .blog-content h5,
-                .blog-content h6 {
-                  font-weight: 700;
-                  line-height: 1.25;
-                  margin-top: 2rem;
-                  margin-bottom: 1rem;
-                  color: #111827;
-                }
-
-                .blog-content h1:first-child,
-                .blog-content h2:first-child,
-                .blog-content h3:first-child {
-                  margin-top: 0;
-                }
-
-                .blog-content h1 {
-                  font-size: 2.25rem;
-                  margin-top: 2.5rem;
-                }
-
-                .blog-content h2 {
-                  font-size: 1.875rem;
-                  margin-top: 2rem;
-                }
-
-                .blog-content h3 {
-                  font-size: 1.5rem;
-                  margin-top: 1.75rem;
-                }
-
-                /* Lists - Professional spacing */
-                .blog-content ul,
-                .blog-content ol {
-                  margin-bottom: 1.25rem;
-                  padding-left: 1.5rem;
-                }
-
-                .blog-content li {
-                  margin-bottom: 0.5rem;
-                  line-height: 1.75;
-                  font-size: 1.0625rem;
-                }
-
-                .blog-content ul li::marker {
-                  color: #f97316;
-                }
-
-                .blog-content ol li::marker {
-                  color: #f97316;
-                  font-weight: 600;
-                }
-
-                /* Blockquotes */
-                .blog-content blockquote {
-                  margin: 1.5rem 0;
-                  padding: 1rem 1.25rem;
-                  border-left: 4px solid #f97316;
-                  background-color: #fff7ed;
-                  border-radius: 0 0.5rem 0.5rem 0;
-                  font-style: italic;
-                  color: #4b5563;
-                }
-
-                /* Code blocks */
-                .blog-content pre {
-                  margin: 1.5rem 0;
-                  padding: 1.25rem;
-                  background-color: #1f2937;
-                  color: #f9fafb;
-                  border-radius: 0.5rem;
-                  overflow-x: auto;
-                  font-size: 0.875rem;
-                  line-height: 1.6;
-                }
-
-                .blog-content code {
-                  font-family:
-                    'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono',
-                    'Source Code Pro', monospace;
-                  font-size: 0.875em;
-                }
-
-                .blog-content pre code {
-                  background: transparent;
-                  padding: 0;
-                  color: inherit;
-                  font-size: inherit;
-                }
-
-                /* Links */
-                .blog-content a {
-                  color: #ea580c;
-                  text-decoration: underline;
-                  text-underline-offset: 2px;
-                  transition: color 0.2s ease;
-                }
-
-                .blog-content a:hover {
-                  color: #c2410c;
-                }
-
-                /* Images */
-                .blog-content img {
-                  max-width: 100%;
-                  height: auto;
-                  border-radius: 0.5rem;
-                  box-shadow:
-                    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-                    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-                  margin: 2rem 0;
-                  display: block;
-                }
-
-                /* Horizontal rules */
-                .blog-content hr {
-                  margin: 2.5rem 0;
-                  border: none;
-                  border-top: 1px solid #e5e7eb;
-                }
-
-                /* Professional table styling */
-                .blog-content table {
-                  display: table !important;
-                  width: 100% !important;
-                  font-size: 0.9375rem;
-                  border-collapse: collapse !important;
-                  border-spacing: 0;
-                  margin: 2rem 0 !important;
-                  background: white;
-                }
-
-                .blog-content thead {
-                  display: table-header-group !important;
-                  background: #f9fafb !important;
-                }
-
-                .blog-content tbody {
-                  display: table-row-group !important;
-                }
-
-                .blog-content tr {
-                  display: table-row !important;
-                }
-
-                .blog-content th,
-                .blog-content td {
-                  display: table-cell !important;
-                  border: 1px solid #e5e7eb !important;
-                  padding: 0.75rem 1rem !important;
-                  vertical-align: middle !important;
-                }
-
-                .blog-content th {
-                  font-weight: 700;
-                  text-transform: uppercase;
-                  font-size: 0.75rem;
-                  letter-spacing: 0.05em;
-                  color: #111827;
-                  background-color: #f9fafb;
-                  border-bottom: 2px solid #d1d5db;
-                }
-
-                .blog-content td {
-                  color: #374151;
-                  line-height: 1.6;
-                }
-
-                .blog-content table td:first-child,
-                .blog-content table th:first-child {
-                  font-weight: 600;
-                  color: #1f2937;
-                }
-
-                .blog-content table tbody tr:nth-child(even) {
-                  background-color: #f9fafb;
-                }
-
-                .blog-content table tbody tr:hover {
-                  background-color: #f3f4f6;
-                }
-
-                /* Remove extra spacing from cell content */
-                .blog-content table td span,
-                .blog-content table th span {
-                  display: inline-block;
-                  vertical-align: middle;
-                  line-height: 1.5;
-                }
-
-                /* Nested lists */
-                .blog-content ul ul,
-                .blog-content ol ol,
-                .blog-content ul ol,
-                .blog-content ol ul {
-                  margin-top: 0.5rem;
-                  margin-bottom: 0.5rem;
-                  margin-left: 1.5rem;
-                }
-
-                /* Mobile responsive */
-                @media (max-width: 640px) {
-                  .blog-content {
-                    font-size: 1rem;
-                  }
-
-                  .blog-content h1 {
-                    font-size: 1.875rem;
-                  }
-
-                  .blog-content h2 {
-                    font-size: 1.5rem;
-                  }
-
-                  .blog-content h3 {
-                    font-size: 1.25rem;
-                  }
-
-                  .blog-content table td,
-                  .blog-content table th {
-                    padding: 0.5rem 0.75rem !important;
-                    font-size: 0.875rem;
-                  }
-                }
-              `}</style>
-
-              {/* Author Bio */}
-              <AuthorBio authorName={post.author_name} />
-
-              {/* Tags */}
-              {post.tags && post.tags.length > 0 && (
-                <div className="mt-12 pt-8 border-t border-gray-200">
-                  <h3 className="text-sm font-semibold text-gray-900 mb-3">
-                    Tags
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {post.tags.map((tag, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium border border-primary/20"
-                      >
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Related Articles */}
-              {relatedPosts.length > 0 && (
-                <div className="mt-12 pt-8 border-t border-gray-200">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                    Related Articles
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {relatedPosts.map((relatedPost) => (
-                      <Link
-                        key={relatedPost.id}
-                        href={`/blog/${relatedPost.slug}`}
-                        className="group bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden hover:border-primary/40 hover:shadow-md transition-all duration-300"
-                      >
-                        {/* Cover Image */}
-                        <div className="aspect-[16/9] bg-primary/10 relative overflow-hidden">
-                          {relatedPost.cover_image_url ? (
-                            <img
-                              src={relatedPost.cover_image_url}
-                              alt={relatedPost.title}
-                              loading="lazy"
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <svg
-                                className="w-12 h-12 text-primary/30"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
-                                />
-                              </svg>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Content */}
-                        <div className="p-4">
-                          {/* Category Badge */}
-                          <span
-                            className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold mb-2 ${getCategoryColor(
-                              relatedPost.category
-                            )}`}
+                    {post.view_count && post.view_count > 0 && (
+                      <>
+                        <span>•</span>
+                        <span className="flex items-center">
+                          <svg
+                            className="w-4 h-4 mr-1"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
                           >
-                            {formatCategory(relatedPost.category)}
-                          </span>
-
-                          {/* Title */}
-                          <h4 className="text-base font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors duration-300 line-clamp-2 leading-snug">
-                            {relatedPost.title}
-                          </h4>
-
-                          {/* Excerpt */}
-                          <p className="text-gray-600 text-xs mb-3 line-clamp-2 leading-relaxed">
-                            {relatedPost.excerpt}
-                          </p>
-
-                          {/* Meta */}
-                          <div className="flex items-center text-[10px] text-gray-500">
-                            <span className="flex items-center">
-                              <svg
-                                className="w-3 h-3 mr-0.5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                              </svg>
-                              {calculateReadingTime(relatedPost.content || relatedPost.excerpt || '')} min read
-                            </span>
-                            <span className="mx-1">•</span>
-                            <span>{formatDate(relatedPost.published_at)}</span>
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                            />
+                          </svg>
+                          {post.view_count.toLocaleString()} views
+                        </span>
+                      </>
+                    )}
                   </div>
-                </div>
-              )}
 
-              {/* CTA */}
-              <div className="mt-12 p-8 bg-primary/10 rounded-xl border-2 border-primary/20">
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                  Ready to transform your AMC business?
-                </h3>
-                <p className="text-gray-700 mb-6">
-                  Join the waitlist and get early access to Automet when we
-                  launch.
-                </p>
-                <button
-                  onClick={() => setPreorderModalOpen(true)}
-                  className="inline-block px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                >
-                  Join Waitlist
-                </button>
-              </div>
+                  {/* Share Button */}
+                  <div className="mb-8">
+                    <button
+                      onClick={handleShare}
+                      className="inline-flex items-center px-4 py-2 bg-primary/10 text-primary rounded-lg font-medium hover:bg-primary/20 transition-colors duration-300 text-sm"
+                    >
+                      {shareCopied ? (
+                        <>
+                          <svg
+                            className="w-4 h-4 mr-2"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                          Link Copied!
+                        </>
+                      ) : (
+                        <>
+                          <svg
+                            className="w-4 h-4 mr-2"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                            />
+                          </svg>
+                          Share Article
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Cover Image */}
+                  {post.cover_image_url && (
+                    <div className="mb-10 -mx-4 sm:mx-0">
+                      <img
+                        src={post.cover_image_url}
+                        alt={post.title}
+                        loading="eager"
+                        className="w-full rounded-xl shadow-xl object-cover"
+                        style={{ maxHeight: '500px' }}
+                        onError={(e) => {
+                          // Hide broken images
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  {/* Content - Professional Markdown Rendering */}
+                  <div className="blog-content max-w-none">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={getMarkdownComponents()}
+                      skipHtml={false}
+                      rehypePlugins={[]}
+                    >
+                      {(() => {
+                        const processedContent = post.content
+                          // Fix table spacing
+                          .replace(/\n\n\|/g, '\n|')
+                          .replace(/\|\n\n\|/g, '|\n|')
+                          // Remove meta description from visible content (more comprehensive pattern)
+                          .replace(
+                            /\*\*Meta Description:\*\*\s*\n\n[^\n]+/gi,
+                            ''
+                          )
+                          .replace(/\*\*Meta Description:\*\*\s*[^\n]+/gi, '')
+                          .replace(/Meta Description:\s*[^\n]+/gi, '')
+                          // Remove the first H1 if it matches the post title (to avoid duplicate title)
+                          .replace(/^#\s+([^\n]+)\n\n/, (match, title) => {
+                            // Check if this H1 matches the post title (case-insensitive)
+                            const normalizedTitle = title.toLowerCase().trim();
+                            const normalizedPostTitle = post.title
+                              .toLowerCase()
+                              .trim();
+                            if (normalizedTitle === normalizedPostTitle) {
+                              return ''; // Remove the H1
+                            }
+                            return match; // Keep it if it's different
+                          });
+                        return processedContent;
+                      })()}
+                    </ReactMarkdown>
+                  </div>
+
+                  {/* Custom Styles for Markdown Elements */}
+                  <style jsx global>{`
+                    .blog-content {
+                      max-width: 100%;
+                      font-family:
+                        -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+                        'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
+                        'Droid Sans', 'Helvetica Neue', sans-serif;
+                      color: #374151;
+                    }
+
+                    /* Typography improvements */
+                    .blog-content p {
+                      margin-bottom: 1.25rem;
+                      line-height: 1.75;
+                      font-size: 1.0625rem;
+                    }
+
+                    .blog-content h1,
+                    .blog-content h2,
+                    .blog-content h3,
+                    .blog-content h4,
+                    .blog-content h5,
+                    .blog-content h6 {
+                      font-weight: 700;
+                      line-height: 1.25;
+                      margin-top: 2rem;
+                      margin-bottom: 1rem;
+                      color: #111827;
+                    }
+
+                    .blog-content h1:first-child,
+                    .blog-content h2:first-child,
+                    .blog-content h3:first-child {
+                      margin-top: 0;
+                    }
+
+                    .blog-content h1 {
+                      font-size: 2.25rem;
+                      margin-top: 2.5rem;
+                    }
+
+                    .blog-content h2 {
+                      font-size: 1.875rem;
+                      margin-top: 2rem;
+                    }
+
+                    .blog-content h3 {
+                      font-size: 1.5rem;
+                      margin-top: 1.75rem;
+                    }
+
+                    /* Lists - Professional spacing */
+                    .blog-content ul,
+                    .blog-content ol {
+                      margin-bottom: 1.25rem;
+                      padding-left: 1.5rem;
+                    }
+
+                    .blog-content li {
+                      margin-bottom: 0.5rem;
+                      line-height: 1.75;
+                      font-size: 1.0625rem;
+                    }
+
+                    .blog-content ul li::marker {
+                      color: #f97316;
+                    }
+
+                    .blog-content ol li::marker {
+                      color: #f97316;
+                      font-weight: 600;
+                    }
+
+                    /* Blockquotes */
+                    .blog-content blockquote {
+                      margin: 1.5rem 0;
+                      padding: 1rem 1.25rem;
+                      border-left: 4px solid #f97316;
+                      background-color: #fff7ed;
+                      border-radius: 0 0.5rem 0.5rem 0;
+                      font-style: italic;
+                      color: #4b5563;
+                    }
+
+                    /* Code blocks */
+                    .blog-content pre {
+                      margin: 1.5rem 0;
+                      padding: 1.25rem;
+                      background-color: #1f2937;
+                      color: #f9fafb;
+                      border-radius: 0.5rem;
+                      overflow-x: auto;
+                      font-size: 0.875rem;
+                      line-height: 1.6;
+                    }
+
+                    .blog-content code {
+                      font-family:
+                        'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono',
+                        'Source Code Pro', monospace;
+                      font-size: 0.875em;
+                    }
+
+                    .blog-content pre code {
+                      background: transparent;
+                      padding: 0;
+                      color: inherit;
+                      font-size: inherit;
+                    }
+
+                    /* Links */
+                    .blog-content a {
+                      color: #ea580c;
+                      text-decoration: underline;
+                      text-underline-offset: 2px;
+                      transition: color 0.2s ease;
+                    }
+
+                    .blog-content a:hover {
+                      color: #c2410c;
+                    }
+
+                    /* Images */
+                    .blog-content img {
+                      max-width: 100%;
+                      height: auto;
+                      border-radius: 0.5rem;
+                      box-shadow:
+                        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                        0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                      margin: 2rem 0;
+                      display: block;
+                    }
+
+                    /* Horizontal rules */
+                    .blog-content hr {
+                      margin: 2.5rem 0;
+                      border: none;
+                      border-top: 1px solid #e5e7eb;
+                    }
+
+                    /* Professional table styling */
+                    .blog-content table {
+                      display: table !important;
+                      width: 100% !important;
+                      font-size: 0.9375rem;
+                      border-collapse: collapse !important;
+                      border-spacing: 0;
+                      margin: 2rem 0 !important;
+                      background: white;
+                    }
+
+                    .blog-content thead {
+                      display: table-header-group !important;
+                      background: #f9fafb !important;
+                    }
+
+                    .blog-content tbody {
+                      display: table-row-group !important;
+                    }
+
+                    .blog-content tr {
+                      display: table-row !important;
+                    }
+
+                    .blog-content th,
+                    .blog-content td {
+                      display: table-cell !important;
+                      border: 1px solid #e5e7eb !important;
+                      padding: 0.75rem 1rem !important;
+                      vertical-align: middle !important;
+                    }
+
+                    .blog-content th {
+                      font-weight: 700;
+                      text-transform: uppercase;
+                      font-size: 0.75rem;
+                      letter-spacing: 0.05em;
+                      color: #111827;
+                      background-color: #f9fafb;
+                      border-bottom: 2px solid #d1d5db;
+                    }
+
+                    .blog-content td {
+                      color: #374151;
+                      line-height: 1.6;
+                    }
+
+                    .blog-content table td:first-child,
+                    .blog-content table th:first-child {
+                      font-weight: 600;
+                      color: #1f2937;
+                    }
+
+                    .blog-content table tbody tr:nth-child(even) {
+                      background-color: #f9fafb;
+                    }
+
+                    .blog-content table tbody tr:hover {
+                      background-color: #f3f4f6;
+                    }
+
+                    /* Remove extra spacing from cell content */
+                    .blog-content table td span,
+                    .blog-content table th span {
+                      display: inline-block;
+                      vertical-align: middle;
+                      line-height: 1.5;
+                    }
+
+                    /* Nested lists */
+                    .blog-content ul ul,
+                    .blog-content ol ol,
+                    .blog-content ul ol,
+                    .blog-content ol ul {
+                      margin-top: 0.5rem;
+                      margin-bottom: 0.5rem;
+                      margin-left: 1.5rem;
+                    }
+
+                    /* Mobile responsive */
+                    @media (max-width: 640px) {
+                      .blog-content {
+                        font-size: 1rem;
+                      }
+
+                      .blog-content h1 {
+                        font-size: 1.875rem;
+                      }
+
+                      .blog-content h2 {
+                        font-size: 1.5rem;
+                      }
+
+                      .blog-content h3 {
+                        font-size: 1.25rem;
+                      }
+
+                      .blog-content table td,
+                      .blog-content table th {
+                        padding: 0.5rem 0.75rem !important;
+                        font-size: 0.875rem;
+                      }
+                    }
+                  `}</style>
+
+                  {/* Author Bio */}
+                  <AuthorBio authorName={post.author_name} />
+
+                  {/* Tags */}
+                  {post.tags && post.tags.length > 0 && (
+                    <div className="mt-12 pt-8 border-t border-gray-200">
+                      <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                        Tags
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                        {post.tags.map((tag, index) => (
+                          <span
+                            key={index}
+                            className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium border border-primary/20"
+                          >
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Related Articles */}
+                  {relatedPosts.length > 0 && (
+                    <div className="mt-12 pt-8 border-t border-gray-200">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-6">
+                        Related Articles
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {relatedPosts.map((relatedPost) => (
+                          <Link
+                            key={relatedPost.id}
+                            href={`/blog/${relatedPost.slug}`}
+                            className="group bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden hover:border-primary/40 hover:shadow-md transition-all duration-300"
+                          >
+                            {/* Cover Image */}
+                            <div className="aspect-[16/9] bg-primary/10 relative overflow-hidden">
+                              {relatedPost.cover_image_url ? (
+                                <img
+                                  src={relatedPost.cover_image_url}
+                                  alt={relatedPost.title}
+                                  loading="lazy"
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <svg
+                                    className="w-12 h-12 text-primary/30"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+                                    />
+                                  </svg>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Content */}
+                            <div className="p-4">
+                              {/* Category Badge */}
+                              <span
+                                className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold mb-2 ${getCategoryColor(
+                                  relatedPost.category
+                                )}`}
+                              >
+                                {formatCategory(relatedPost.category)}
+                              </span>
+
+                              {/* Title */}
+                              <h4 className="text-base font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors duration-300 line-clamp-2 leading-snug">
+                                {relatedPost.title}
+                              </h4>
+
+                              {/* Excerpt */}
+                              <p className="text-gray-600 text-xs mb-3 line-clamp-2 leading-relaxed">
+                                {relatedPost.excerpt}
+                              </p>
+
+                              {/* Meta */}
+                              <div className="flex items-center text-[10px] text-gray-500">
+                                <span className="flex items-center">
+                                  <svg
+                                    className="w-3 h-3 mr-0.5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    />
+                                  </svg>
+                                  {calculateReadingTime(
+                                    relatedPost.content ||
+                                      relatedPost.excerpt ||
+                                      ''
+                                  )}{' '}
+                                  min read
+                                </span>
+                                <span className="mx-1">•</span>
+                                <span>
+                                  {formatDate(relatedPost.published_at)}
+                                </span>
+                              </div>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* CTA */}
+                  <div className="mt-12 p-8 bg-primary/10 rounded-xl border-2 border-primary/20">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                      Ready to transform your AMC business?
+                    </h3>
+                    <p className="text-gray-700 mb-6">
+                      Join the waitlist and get early access to Automet when we
+                      launch.
+                    </p>
+                    <button
+                      onClick={() => setPreorderModalOpen(true)}
+                      className="inline-block px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                    >
+                      Join Waitlist
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

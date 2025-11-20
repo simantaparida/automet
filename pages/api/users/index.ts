@@ -38,8 +38,11 @@ export default async function handler(
     if (error) throw error;
 
     return res.status(200).json(data || []);
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error fetching users:', error);
-    return res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      error: 'Failed to fetch users',
+      details: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 }

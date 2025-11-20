@@ -36,18 +36,24 @@ export default async function handler(
     const { customerId, title, technicianId, scheduledAt } = req.body;
 
     if (!customerId || !title || !scheduledAt) {
-      return res.status(400).json({ error: 'Missing required fields: customerId, title, scheduledAt' });
+      return res.status(400).json({
+        error: 'Missing required fields: customerId, title, scheduledAt',
+      });
     }
 
     // Validate title length
     if (title.length < 1 || title.length > 200) {
-      return res.status(400).json({ error: 'Job title must be 1-200 characters' });
+      return res
+        .status(400)
+        .json({ error: 'Job title must be 1-200 characters' });
     }
 
     // Validate scheduledAt is in the future
     const scheduledDate = new Date(scheduledAt);
     if (scheduledDate < new Date()) {
-      return res.status(400).json({ error: 'Scheduled time must be in the future' });
+      return res
+        .status(400)
+        .json({ error: 'Scheduled time must be in the future' });
     }
 
     // Get user's org_id using service role (fresh data, no cache)
@@ -57,17 +63,26 @@ export default async function handler(
       .eq('id', session.user.id)
       .maybeSingle();
 
-    const userData = userResult.data as { org_id: string | null; role: string | null } | null;
+    const userData = userResult.data as {
+      org_id: string | null;
+      role: string | null;
+    } | null;
     const userError = userResult.error;
 
     if (userError || !userData?.org_id) {
-      console.error('User org check failed:', { userError, userData, userId: session.user.id });
+      console.error('User org check failed:', {
+        userError,
+        userData,
+        userId: session.user.id,
+      });
       return res.status(400).json({ error: 'User not part of organization' });
     }
 
     // Check user has permission (owner or coordinator)
     if (!['owner', 'coordinator'].includes(userData.role || '')) {
-      return res.status(403).json({ error: 'Only owners and coordinators can create jobs' });
+      return res
+        .status(403)
+        .json({ error: 'Only owners and coordinators can create jobs' });
     }
 
     // Verify customer belongs to user's org
@@ -77,7 +92,10 @@ export default async function handler(
       .eq('id', customerId)
       .maybeSingle();
 
-    const customer = customerResult.data as { id: string; org_id: string } | null;
+    const customer = customerResult.data as {
+      id: string;
+      org_id: string;
+    } | null;
     const customerError = customerResult.error;
 
     if (customerError || !customer) {
@@ -85,7 +103,9 @@ export default async function handler(
     }
 
     if (customer.org_id !== userData.org_id) {
-      return res.status(403).json({ error: 'Customer does not belong to your organization' });
+      return res
+        .status(403)
+        .json({ error: 'Customer does not belong to your organization' });
     }
 
     // If technician provided, verify they belong to org
@@ -96,7 +116,11 @@ export default async function handler(
         .eq('id', technicianId)
         .maybeSingle();
 
-      const technician = techResult.data as { id: string; org_id: string | null; role: string | null } | null;
+      const technician = techResult.data as {
+        id: string;
+        org_id: string | null;
+        role: string | null;
+      } | null;
       const techError = techResult.error;
 
       if (techError || !technician) {
@@ -104,7 +128,9 @@ export default async function handler(
       }
 
       if (technician.org_id !== userData.org_id) {
-        return res.status(403).json({ error: 'Technician does not belong to your organization' });
+        return res
+          .status(403)
+          .json({ error: 'Technician does not belong to your organization' });
       }
     }
 
@@ -167,8 +193,11 @@ export default async function handler(
         createdAt: job.created_at,
       },
     });
-  } catch (error: any) {
-    console.error('Create job API error:', error);
-    return res.status(500).json({ error: error.message || 'Internal server error' });
+  } catch (error) {
+    console.error('Error creating job:', error);
+    return res.status(500).json({
+      error: 'Failed to create job',
+      details: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 }

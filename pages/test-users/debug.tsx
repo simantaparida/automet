@@ -32,7 +32,9 @@ export default function DebugTestUsersPage() {
         setUserProfile(profile);
       } else {
         const errorData = await profileResponse.json();
-        setError(`Failed to fetch profile: ${errorData.error || 'Unknown error'}`);
+        setError(
+          `Failed to fetch profile: ${errorData.error || 'Unknown error'}`
+        );
       }
 
       // Fetch clients count using apiFetch
@@ -45,7 +47,9 @@ export default function DebugTestUsersPage() {
           try {
             const errorData = await clientsResponse.json();
             console.error('Failed to fetch clients:', errorData);
-            setError(`Failed to fetch clients: ${errorData.error || errorData.message || 'Unknown error'}`);
+            setError(
+              `Failed to fetch clients: ${errorData.error || errorData.message || 'Unknown error'}`
+            );
           } catch (parseError) {
             console.error('Failed to parse error response:', parseError);
             setError(`Failed to fetch clients: HTTP ${clientsResponse.status}`);
@@ -54,12 +58,16 @@ export default function DebugTestUsersPage() {
         }
       } catch (fetchError) {
         console.error('Error fetching clients:', fetchError);
-        setError(`Error fetching clients: ${fetchError instanceof Error ? fetchError.message : 'Unknown error'}`);
+        setError(
+          `Error fetching clients: ${fetchError instanceof Error ? fetchError.message : 'Unknown error'}`
+        );
         setClientsCount(0);
       }
     } catch (error) {
       console.error('Error fetching debug info:', error);
-      setError(error instanceof Error ? error.message : 'Unknown error occurred');
+      setError(
+        error instanceof Error ? error.message : 'Unknown error occurred'
+      );
       setClientsCount(0);
     } finally {
       setLoading(false);
@@ -76,7 +84,9 @@ export default function DebugTestUsersPage() {
         setDiagnostics(data);
       } else {
         const errorData = await response.json();
-        setError(`Failed to run diagnostics: ${errorData.error || 'Unknown error'}`);
+        setError(
+          `Failed to run diagnostics: ${errorData.error || 'Unknown error'}`
+        );
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error occurred');
@@ -124,7 +134,8 @@ export default function DebugTestUsersPage() {
         className="page-container"
         style={{
           minHeight: '100vh',
-          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+          background:
+            'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
         }}
       >
@@ -184,7 +195,13 @@ export default function DebugTestUsersPage() {
             {loading ? (
               <p>Loading...</p>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '1.5rem',
+                }}
+              >
                 {/* Auth User Info */}
                 <div
                   style={{
@@ -194,10 +211,22 @@ export default function DebugTestUsersPage() {
                     border: '1px solid #e5e7eb',
                   }}
                 >
-                  <h2 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+                  <h2
+                    style={{
+                      fontSize: '1.125rem',
+                      fontWeight: '600',
+                      marginBottom: '0.5rem',
+                    }}
+                  >
                     Auth User (from AuthContext)
                   </h2>
-                  <pre style={{ fontSize: '0.875rem', color: '#6b7280', overflow: 'auto' }}>
+                  <pre
+                    style={{
+                      fontSize: '0.875rem',
+                      color: '#6b7280',
+                      overflow: 'auto',
+                    }}
+                  >
                     {JSON.stringify(user, null, 2)}
                   </pre>
                 </div>
@@ -212,14 +241,32 @@ export default function DebugTestUsersPage() {
                       border: '1px solid #e5e7eb',
                     }}
                   >
-                    <h2 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+                    <h2
+                      style={{
+                        fontSize: '1.125rem',
+                        fontWeight: '600',
+                        marginBottom: '0.5rem',
+                      }}
+                    >
                       User Profile (from /api/user/profile)
                     </h2>
-                    <pre style={{ fontSize: '0.875rem', color: '#6b7280', overflow: 'auto' }}>
+                    <pre
+                      style={{
+                        fontSize: '0.875rem',
+                        color: '#6b7280',
+                        overflow: 'auto',
+                      }}
+                    >
                       {JSON.stringify(userProfile, null, 2)}
                     </pre>
                     {userProfile.org_id && (
-                      <p style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#111827' }}>
+                      <p
+                        style={{
+                          marginTop: '0.5rem',
+                          fontSize: '0.875rem',
+                          color: '#111827',
+                        }}
+                      >
                         <strong>Organization ID:</strong> {userProfile.org_id}
                       </p>
                     )}
@@ -231,7 +278,6 @@ export default function DebugTestUsersPage() {
                   </div>
                 )}
 
-
                 {/* Role Switch Info */}
                 <div
                   style={{
@@ -241,7 +287,13 @@ export default function DebugTestUsersPage() {
                     border: '1px solid #e5e7eb',
                   }}
                 >
-                  <h2 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+                  <h2
+                    style={{
+                      fontSize: '1.125rem',
+                      fontWeight: '600',
+                      marginBottom: '0.5rem',
+                    }}
+                  >
                     Role Switch Info
                   </h2>
                   <p style={{ fontSize: '0.875rem', color: '#111827' }}>
@@ -256,32 +308,82 @@ export default function DebugTestUsersPage() {
                 <div
                   style={{
                     padding: '1rem',
-                    backgroundColor: clientsCount !== null && clientsCount > 0 ? '#d1fae5' : clientsCount === 0 ? '#fee2e2' : '#f9fafb',
+                    backgroundColor:
+                      clientsCount !== null && clientsCount > 0
+                        ? '#d1fae5'
+                        : clientsCount === 0
+                          ? '#fee2e2'
+                          : '#f9fafb',
                     borderRadius: '8px',
                     border: `1px solid ${clientsCount !== null && clientsCount > 0 ? '#10b981' : clientsCount === 0 ? '#ef4444' : '#e5e7eb'}`,
                   }}
                 >
-                  <h2 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+                  <h2
+                    style={{
+                      fontSize: '1.125rem',
+                      fontWeight: '600',
+                      marginBottom: '0.5rem',
+                    }}
+                  >
                     Data Visibility
                   </h2>
                   <p style={{ fontSize: '0.875rem', color: '#111827' }}>
-                    <strong>Clients Count:</strong> {clientsCount !== null ? clientsCount : 'Loading...'}
+                    <strong>Clients Count:</strong>{' '}
+                    {clientsCount !== null ? clientsCount : 'Loading...'}
                   </p>
                   {clientsCount === 0 && !loading && (
                     <div style={{ marginTop: '0.5rem' }}>
-                      <p style={{ fontSize: '0.875rem', color: '#991b1b', marginBottom: '0.5rem' }}>
+                      <p
+                        style={{
+                          fontSize: '0.875rem',
+                          color: '#991b1b',
+                          marginBottom: '0.5rem',
+                        }}
+                      >
                         ⚠️ No clients found in your organization.
                       </p>
-                      <p style={{ fontSize: '0.875rem', color: '#991b1b', marginBottom: '0.5rem' }}>
-                        <strong>Solution:</strong> Go to <a href="/test-users/seed-data" style={{ color: '#3b82f6', textDecoration: 'underline' }}>/test-users/seed-data</a> and click "Seed Test Data" to create data for your organization.
+                      <p
+                        style={{
+                          fontSize: '0.875rem',
+                          color: '#991b1b',
+                          marginBottom: '0.5rem',
+                        }}
+                      >
+                        <strong>Solution:</strong> Go to{' '}
+                        <a
+                          href="/test-users/seed-data"
+                          style={{
+                            color: '#3b82f6',
+                            textDecoration: 'underline',
+                          }}
+                        >
+                          /test-users/seed-data
+                        </a>{' '}
+                        and click "Seed Test Data" to create data for your
+                        organization.
                       </p>
                       <p style={{ fontSize: '0.875rem', color: '#991b1b' }}>
-                        Your Organization ID: <code style={{ backgroundColor: '#fee2e2', padding: '0.125rem 0.25rem', borderRadius: '4px' }}>{userProfile?.org_id || 'Unknown'}</code>
+                        Your Organization ID:{' '}
+                        <code
+                          style={{
+                            backgroundColor: '#fee2e2',
+                            padding: '0.125rem 0.25rem',
+                            borderRadius: '4px',
+                          }}
+                        >
+                          {userProfile?.org_id || 'Unknown'}
+                        </code>
                       </p>
                     </div>
                   )}
                   {error && (
-                    <p style={{ fontSize: '0.875rem', color: '#991b1b', marginTop: '0.5rem' }}>
+                    <p
+                      style={{
+                        fontSize: '0.875rem',
+                        color: '#991b1b',
+                        marginTop: '0.5rem',
+                      }}
+                    >
                       Error: {error}
                     </p>
                   )}
@@ -297,7 +399,14 @@ export default function DebugTestUsersPage() {
                     marginTop: '1rem',
                   }}
                 >
-                  <h2 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem', color: '#111827' }}>
+                  <h2
+                    style={{
+                      fontSize: '1.125rem',
+                      fontWeight: '600',
+                      marginBottom: '0.5rem',
+                      color: '#111827',
+                    }}
+                  >
                     Advanced Diagnostics
                   </h2>
                   <button
@@ -305,7 +414,9 @@ export default function DebugTestUsersPage() {
                     disabled={diagnosticsLoading}
                     style={{
                       padding: '0.5rem 1rem',
-                      backgroundColor: diagnosticsLoading ? '#9ca3af' : '#3b82f6',
+                      backgroundColor: diagnosticsLoading
+                        ? '#9ca3af'
+                        : '#3b82f6',
                       color: 'white',
                       border: 'none',
                       borderRadius: '6px',
@@ -315,37 +426,74 @@ export default function DebugTestUsersPage() {
                       marginBottom: '1rem',
                     }}
                   >
-                    {diagnosticsLoading ? 'Running Diagnostics...' : 'Run Diagnostics'}
+                    {diagnosticsLoading
+                      ? 'Running Diagnostics...'
+                      : 'Run Diagnostics'}
                   </button>
 
                   {diagnostics && (
                     <div style={{ marginTop: '1rem' }}>
-                      <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '0.5rem', color: '#111827' }}>
+                      <h3
+                        style={{
+                          fontSize: '1rem',
+                          fontWeight: '600',
+                          marginBottom: '0.5rem',
+                          color: '#111827',
+                        }}
+                      >
                         Summary
                       </h3>
                       <div
                         style={{
                           padding: '0.75rem',
-                          backgroundColor: diagnostics.summary?.hasDataInDatabase && diagnostics.summary?.hasDataViaRLS
-                            ? '#d1fae5'
-                            : diagnostics.summary?.hasDataInDatabase && !diagnostics.summary?.hasDataViaRLS
-                              ? '#fef3c7'
-                              : '#fee2e2',
+                          backgroundColor:
+                            diagnostics.summary?.hasDataInDatabase &&
+                            diagnostics.summary?.hasDataViaRLS
+                              ? '#d1fae5'
+                              : diagnostics.summary?.hasDataInDatabase &&
+                                  !diagnostics.summary?.hasDataViaRLS
+                                ? '#fef3c7'
+                                : '#fee2e2',
                           borderRadius: '6px',
                           marginBottom: '1rem',
                         }}
                       >
-                        <p style={{ fontSize: '0.875rem', color: '#111827', margin: '0 0 0.5rem 0' }}>
-                          <strong>Recommendation:</strong> {diagnostics.summary?.recommendation}
+                        <p
+                          style={{
+                            fontSize: '0.875rem',
+                            color: '#111827',
+                            margin: '0 0 0.5rem 0',
+                          }}
+                        >
+                          <strong>Recommendation:</strong>{' '}
+                          {diagnostics.summary?.recommendation}
                         </p>
-                        <p style={{ fontSize: '0.875rem', color: '#111827', margin: 0 }}>
-                          Data in DB: {diagnostics.summary?.hasDataInDatabase ? 'Yes' : 'No'} |
-                          Data via RLS: {diagnostics.summary?.hasDataViaRLS ? 'Yes' : 'No'} |
-                          RLS Error: {diagnostics.summary?.hasRLSError ? 'Yes' : 'No'}
+                        <p
+                          style={{
+                            fontSize: '0.875rem',
+                            color: '#111827',
+                            margin: 0,
+                          }}
+                        >
+                          Data in DB:{' '}
+                          {diagnostics.summary?.hasDataInDatabase
+                            ? 'Yes'
+                            : 'No'}{' '}
+                          | Data via RLS:{' '}
+                          {diagnostics.summary?.hasDataViaRLS ? 'Yes' : 'No'} |
+                          RLS Error:{' '}
+                          {diagnostics.summary?.hasRLSError ? 'Yes' : 'No'}
                         </p>
                       </div>
 
-                      <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '0.5rem', color: '#111827' }}>
+                      <h3
+                        style={{
+                          fontSize: '1rem',
+                          fontWeight: '600',
+                          marginBottom: '0.5rem',
+                          color: '#111827',
+                        }}
+                      >
                         Data in Database (Admin)
                       </h3>
                       <pre
@@ -358,10 +506,22 @@ export default function DebugTestUsersPage() {
                           maxHeight: '200px',
                         }}
                       >
-                        {JSON.stringify(diagnostics.checks?.dataInDatabase, null, 2)}
+                        {JSON.stringify(
+                          diagnostics.checks?.dataInDatabase,
+                          null,
+                          2
+                        )}
                       </pre>
 
-                      <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '0.5rem', marginTop: '1rem', color: '#111827' }}>
+                      <h3
+                        style={{
+                          fontSize: '1rem',
+                          fontWeight: '600',
+                          marginBottom: '0.5rem',
+                          marginTop: '1rem',
+                          color: '#111827',
+                        }}
+                      >
                         Session Info
                       </h3>
                       <pre
@@ -377,7 +537,15 @@ export default function DebugTestUsersPage() {
                         {JSON.stringify(diagnostics.checks?.session, null, 2)}
                       </pre>
 
-                      <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '0.5rem', marginTop: '1rem', color: '#111827' }}>
+                      <h3
+                        style={{
+                          fontSize: '1rem',
+                          fontWeight: '600',
+                          marginBottom: '0.5rem',
+                          marginTop: '1rem',
+                          color: '#111827',
+                        }}
+                      >
                         User Profile
                       </h3>
                       <pre
@@ -390,30 +558,57 @@ export default function DebugTestUsersPage() {
                           maxHeight: '150px',
                         }}
                       >
-                        {JSON.stringify(diagnostics.checks?.userProfile, null, 2)}
+                        {JSON.stringify(
+                          diagnostics.checks?.userProfile,
+                          null,
+                          2
+                        )}
                       </pre>
 
                       {diagnostics.checks?.rlsTest && (
                         <>
-                          <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '0.5rem', marginTop: '1rem', color: '#111827' }}>
+                          <h3
+                            style={{
+                              fontSize: '1rem',
+                              fontWeight: '600',
+                              marginBottom: '0.5rem',
+                              marginTop: '1rem',
+                              color: '#111827',
+                            }}
+                          >
                             RLS Test
                           </h3>
                           <pre
                             style={{
                               padding: '0.75rem',
-                              backgroundColor: diagnostics.checks.rlsTest.orgIdMatches ? '#d1fae5' : '#fee2e2',
+                              backgroundColor: diagnostics.checks.rlsTest
+                                .orgIdMatches
+                                ? '#d1fae5'
+                                : '#fee2e2',
                               borderRadius: '6px',
                               fontSize: '0.75rem',
                               overflow: 'auto',
                               maxHeight: '150px',
                             }}
                           >
-                            {JSON.stringify(diagnostics.checks.rlsTest, null, 2)}
+                            {JSON.stringify(
+                              diagnostics.checks.rlsTest,
+                              null,
+                              2
+                            )}
                           </pre>
                         </>
                       )}
 
-                      <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '0.5rem', marginTop: '1rem', color: '#111827' }}>
+                      <h3
+                        style={{
+                          fontSize: '1rem',
+                          fontWeight: '600',
+                          marginBottom: '0.5rem',
+                          marginTop: '1rem',
+                          color: '#111827',
+                        }}
+                      >
                         Data via RLS (Authenticated)
                       </h3>
                       <pre
@@ -426,7 +621,11 @@ export default function DebugTestUsersPage() {
                           maxHeight: '300px',
                         }}
                       >
-                        {JSON.stringify(diagnostics.checks?.dataViaRLS, null, 2)}
+                        {JSON.stringify(
+                          diagnostics.checks?.dataViaRLS,
+                          null,
+                          2
+                        )}
                       </pre>
                     </div>
                   )}
@@ -442,15 +641,44 @@ export default function DebugTestUsersPage() {
                     marginTop: '1rem',
                   }}
                 >
-                  <h2 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1e40af' }}>
+                  <h2
+                    style={{
+                      fontSize: '1.125rem',
+                      fontWeight: '600',
+                      marginBottom: '0.5rem',
+                      color: '#1e40af',
+                    }}
+                  >
                     Instructions
                   </h2>
-                  <ol style={{ fontSize: '0.875rem', color: '#1e40af', paddingLeft: '1.5rem' }}>
-                    <li>Make sure you're logged in with a test user (owner@automet.test, coordinator@automet.test, or technician@automet.test)</li>
-                    <li>Verify that the Organization ID matches the test organization</li>
-                    <li>Click "Run Diagnostics" to see detailed information about data visibility</li>
-                    <li>If data exists in DB but not via RLS, check RLS policies and session</li>
-                    <li>If no data exists, go to /test-users/seed-data and create data</li>
+                  <ol
+                    style={{
+                      fontSize: '0.875rem',
+                      color: '#1e40af',
+                      paddingLeft: '1.5rem',
+                    }}
+                  >
+                    <li>
+                      Make sure you're logged in with a test user
+                      (owner@automet.test, coordinator@automet.test, or
+                      technician@automet.test)
+                    </li>
+                    <li>
+                      Verify that the Organization ID matches the test
+                      organization
+                    </li>
+                    <li>
+                      Click "Run Diagnostics" to see detailed information about
+                      data visibility
+                    </li>
+                    <li>
+                      If data exists in DB but not via RLS, check RLS policies
+                      and session
+                    </li>
+                    <li>
+                      If no data exists, go to /test-users/seed-data and create
+                      data
+                    </li>
                   </ol>
                 </div>
               </div>
@@ -461,4 +689,3 @@ export default function DebugTestUsersPage() {
     </ProtectedRoute>
   );
 }
-

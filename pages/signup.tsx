@@ -39,7 +39,9 @@ export default function SignupPage() {
 
   // No automatic redirect - allow users to come back to signup page during onboarding
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -83,16 +85,22 @@ export default function SignupPage() {
 
       // Show user-friendly error messages
       if (error.message.includes('Email signups are disabled')) {
-        setError('Email signups are currently disabled. Please use Google sign-in or contact support.');
+        setError(
+          'Email signups are currently disabled. Please use Google sign-in or contact support.'
+        );
       } else if (
         error.message.toLowerCase().includes('already registered') ||
         error.message.toLowerCase().includes('already exists') ||
         error.message.toLowerCase().includes('user already exists')
       ) {
         // User already exists - redirect to welcome/login
-        setError('An account with this email already exists. Redirecting to sign in...');
+        setError(
+          'An account with this email already exists. Redirecting to sign in...'
+        );
         setTimeout(() => {
-          router.push('/onboarding/welcome?message=Account already exists. Please sign in.');
+          router.push(
+            '/onboarding/welcome?message=Account already exists. Please sign in.'
+          );
         }, 2000);
       } else {
         setError(error.message);
@@ -113,7 +121,9 @@ export default function SignupPage() {
           .eq('id', data.user.id)
           .maybeSingle(); // Use maybeSingle() instead of single() to handle no rows
 
-        const userData = userCheckResult.data as { org_id: string | null } | null;
+        const userData = userCheckResult.data as {
+          org_id: string | null;
+        } | null;
 
         // Use centralized post-signup redirect logic
         const redirectPath = getPostSignupRedirectPath(userData);
@@ -149,7 +159,10 @@ export default function SignupPage() {
       <>
         <Head>
           <title>Check Your Email - Automet</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, maximum-scale=1"
+          />
         </Head>
         <div
           style={{
@@ -199,8 +212,9 @@ export default function SignupPage() {
               Check your email!
             </h2>
             <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>
-              We've sent a confirmation link to <strong>{formData.email}</strong>.
-              Please check your inbox and click the link to verify your account.
+              We've sent a confirmation link to{' '}
+              <strong>{formData.email}</strong>. Please check your inbox and
+              click the link to verify your account.
             </p>
             <a
               href="/onboarding/welcome"
@@ -217,11 +231,13 @@ export default function SignupPage() {
               }}
               onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
                 e.currentTarget.style.transform = 'translateY(-1px)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
+                e.currentTarget.style.boxShadow =
+                  '0 4px 12px rgba(239,119,34,0.3)';
               }}
               onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
+                e.currentTarget.style.boxShadow =
+                  '0 2px 8px rgba(239,119,34,0.25)';
               }}
             >
               Back to Sign In
@@ -236,7 +252,10 @@ export default function SignupPage() {
     <>
       <Head>
         <title>Create Your Account - Automet</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1"
+        />
       </Head>
 
       <style jsx>{`
@@ -294,7 +313,8 @@ export default function SignupPage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+          background:
+            'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
           position: 'relative',
           overflow: 'hidden',
@@ -309,7 +329,8 @@ export default function SignupPage() {
             right: '-100px',
             width: '300px',
             height: '300px',
-            background: 'radial-gradient(circle, rgba(239,119,34,0.1) 0%, transparent 70%)',
+            background:
+              'radial-gradient(circle, rgba(239,119,34,0.1) 0%, transparent 70%)',
             borderRadius: '50%',
             pointerEvents: 'none',
           }}
@@ -495,12 +516,30 @@ export default function SignupPage() {
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
                       <line x1="1" y1="1" x2="23" y2="23"></line>
                     </svg>
                   ) : (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                       <circle cx="12" cy="12" r="3"></circle>
                     </svg>
@@ -557,15 +596,35 @@ export default function SignupPage() {
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}
-                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                  aria-label={
+                    showConfirmPassword ? 'Hide password' : 'Show password'
+                  }
                 >
                   {showConfirmPassword ? (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
                       <line x1="1" y1="1" x2="23" y2="23"></line>
                     </svg>
                   ) : (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                       <circle cx="12" cy="12" r="3"></circle>
                     </svg>
@@ -616,7 +675,9 @@ export default function SignupPage() {
                   value={formData.phoneNumber}
                   onChange={(e) => {
                     // Only allow digits and limit to 10 characters
-                    const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                    const value = e.target.value
+                      .replace(/\D/g, '')
+                      .slice(0, 10);
                     setFormData({ ...formData, phoneNumber: value });
                   }}
                   maxLength={10}
@@ -634,13 +695,28 @@ export default function SignupPage() {
                   onBlur={(e) => (e.target.style.borderColor = '#d1d5db')}
                 />
               </div>
-              <p style={{ fontSize: '0.7rem', color: '#6b7280', marginTop: '0.25rem', marginBottom: 0 }}>
+              <p
+                style={{
+                  fontSize: '0.7rem',
+                  color: '#6b7280',
+                  marginTop: '0.25rem',
+                  marginBottom: 0,
+                }}
+              >
                 Enter 10-digit mobile number
               </p>
             </div>
 
-            <p style={{ fontSize: '0.7rem', color: '#9ca3af', textAlign: 'center', marginBottom: '1rem' }}>
-              By creating an account, you agree to our Terms of Service and Privacy Policy
+            <p
+              style={{
+                fontSize: '0.7rem',
+                color: '#9ca3af',
+                textAlign: 'center',
+                marginBottom: '1rem',
+              }}
+            >
+              By creating an account, you agree to our Terms of Service and
+              Privacy Policy
             </p>
 
             <button
@@ -649,7 +725,9 @@ export default function SignupPage() {
               style={{
                 width: '100%',
                 padding: '0.625rem',
-                background: loading ? '#9ca3af' : 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
+                background: loading
+                  ? '#9ca3af'
+                  : 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
                 color: 'white',
                 border: 'none',
                 borderRadius: '6px',
@@ -663,12 +741,14 @@ export default function SignupPage() {
               onMouseEnter={(e) => {
                 if (!loading) {
                   e.currentTarget.style.transform = 'translateY(-1px)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
+                  e.currentTarget.style.boxShadow =
+                    '0 4px 12px rgba(239,119,34,0.3)';
                 }
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
+                e.currentTarget.style.boxShadow =
+                  '0 2px 8px rgba(239,119,34,0.25)';
               }}
             >
               {loading ? 'Creating account...' : 'Sign up with Email'}

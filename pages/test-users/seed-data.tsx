@@ -5,8 +5,6 @@ import TopHeader from '@/components/TopHeader';
 import RoleBadge from '@/components/RoleBadge';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
 
-
-
 export default function SeedTestDataPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{
@@ -47,7 +45,9 @@ export default function SeedTestDataPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || data.error || 'Failed to seed test data');
+        throw new Error(
+          data.message || data.error || 'Failed to seed test data'
+        );
       }
 
       setResult(data);
@@ -97,7 +97,8 @@ export default function SeedTestDataPage() {
         className="page-container"
         style={{
           minHeight: '100vh',
-          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+          background:
+            'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
         }}
       >
@@ -153,17 +154,26 @@ export default function SeedTestDataPage() {
             >
               Seed Test Data
             </h1>
-            <p style={{ color: '#6b7280', marginBottom: '2rem', fontSize: '1rem' }}>
-              This page will create dummy data for <strong>your current organization</strong>. It will create:
+            <p
+              style={{
+                color: '#6b7280',
+                marginBottom: '2rem',
+                fontSize: '1rem',
+              }}
+            >
+              This page will create dummy data for{' '}
+              <strong>your current organization</strong>. It will create:
               <br />• 5 Clients
               <br />• 12 Sites
               <br />• 15 Assets
-              <br />• 12 Jobs (with various statuses and priorities, some assigned to technician)
+              <br />• 12 Jobs (with various statuses and priorities, some
+              assigned to technician)
               <br />• 10 Inventory Items
               <br />
               <br />
               <strong style={{ color: '#EF7722' }}>⚠️ Important:</strong>
-              <br />• Data will be created for the organization you're currently logged into.
+              <br />• Data will be created for the organization you're currently
+              logged into.
               <br />• You must be logged in to use this feature.
               <br />• After seeding, refresh the pages to see the data.
             </p>
@@ -268,43 +278,92 @@ export default function SeedTestDataPage() {
                     <div
                       style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+                        gridTemplateColumns:
+                          'repeat(auto-fit, minmax(150px, 1fr))',
                         gap: '0.75rem',
                       }}
                     >
                       <div>
-                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Clients</div>
-                        <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#EF7722' }}>
+                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                          Clients
+                        </div>
+                        <div
+                          style={{
+                            fontSize: '1.5rem',
+                            fontWeight: '700',
+                            color: '#EF7722',
+                          }}
+                        >
                           {result.summary.clients}
                         </div>
                       </div>
                       <div>
-                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Sites</div>
-                        <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#EF7722' }}>
+                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                          Sites
+                        </div>
+                        <div
+                          style={{
+                            fontSize: '1.5rem',
+                            fontWeight: '700',
+                            color: '#EF7722',
+                          }}
+                        >
                           {result.summary.sites}
                         </div>
                       </div>
                       <div>
-                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Assets</div>
-                        <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#EF7722' }}>
+                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                          Assets
+                        </div>
+                        <div
+                          style={{
+                            fontSize: '1.5rem',
+                            fontWeight: '700',
+                            color: '#EF7722',
+                          }}
+                        >
                           {result.summary.assets}
                         </div>
                       </div>
                       <div>
-                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Jobs</div>
-                        <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#EF7722' }}>
+                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                          Jobs
+                        </div>
+                        <div
+                          style={{
+                            fontSize: '1.5rem',
+                            fontWeight: '700',
+                            color: '#EF7722',
+                          }}
+                        >
                           {result.summary.jobs}
                         </div>
                       </div>
                       <div>
-                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Inventory</div>
-                        <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#EF7722' }}>
+                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                          Inventory
+                        </div>
+                        <div
+                          style={{
+                            fontSize: '1.5rem',
+                            fontWeight: '700',
+                            color: '#EF7722',
+                          }}
+                        >
                           {result.summary.inventory}
                         </div>
                       </div>
                       <div>
-                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>Total</div>
-                        <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#EF7722' }}>
+                        <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                          Total
+                        </div>
+                        <div
+                          style={{
+                            fontSize: '1.5rem',
+                            fontWeight: '700',
+                            color: '#EF7722',
+                          }}
+                        >
                           {result.summary.total}
                         </div>
                       </div>
@@ -347,24 +406,44 @@ export default function SeedTestDataPage() {
                           }}
                         >
                           <div>
-                            <div style={{ fontWeight: '600', color: '#111827', textTransform: 'capitalize' }}>
+                            <div
+                              style={{
+                                fontWeight: '600',
+                                color: '#111827',
+                                textTransform: 'capitalize',
+                              }}
+                            >
                               {entity}
                             </div>
-                            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
+                            <div
+                              style={{
+                                fontSize: '0.875rem',
+                                color: '#6b7280',
+                                marginTop: '0.25rem',
+                              }}
+                            >
                               {data.created} created
                             </div>
                           </div>
                           <span
                             style={{
                               padding: '0.25rem 0.75rem',
-                              backgroundColor: data.errors.length === 0 ? '#d1fae5' : '#fee2e2',
-                              color: data.errors.length === 0 ? '#065f46' : '#991b1b',
+                              backgroundColor:
+                                data.errors.length === 0
+                                  ? '#d1fae5'
+                                  : '#fee2e2',
+                              color:
+                                data.errors.length === 0
+                                  ? '#065f46'
+                                  : '#991b1b',
                               borderRadius: '4px',
                               fontSize: '0.75rem',
                               fontWeight: '600',
                             }}
                           >
-                            {data.errors.length === 0 ? '✓ Success' : `✗ ${data.errors.length} error(s)`}
+                            {data.errors.length === 0
+                              ? '✓ Success'
+                              : `✗ ${data.errors.length} error(s)`}
                           </span>
                         </div>
                         {data.errors.length > 0 && (
@@ -404,54 +483,113 @@ export default function SeedTestDataPage() {
                       borderRadius: '6px',
                     }}
                   >
-                    <p style={{ color: '#1e40af', margin: 0, fontWeight: '600' }}>
+                    <p
+                      style={{ color: '#1e40af', margin: 0, fontWeight: '600' }}
+                    >
                       ✓ Test data created successfully!
                     </p>
                     {result.organizationName && (
-                      <p style={{ marginTop: '0.5rem', color: '#1e40af', fontSize: '0.875rem' }}>
-                        <strong>Organization:</strong> {result.organizationName} ({result.organizationSlug || result.organizationId})
+                      <p
+                        style={{
+                          marginTop: '0.5rem',
+                          color: '#1e40af',
+                          fontSize: '0.875rem',
+                        }}
+                      >
+                        <strong>Organization:</strong> {result.organizationName}{' '}
+                        ({result.organizationSlug || result.organizationId})
                         <br />
                         <strong>User:</strong> {result.userEmail || 'Unknown'}
                       </p>
                     )}
-                    <p style={{ marginTop: '0.75rem', color: '#1e40af', fontSize: '0.875rem' }}>
+                    <p
+                      style={{
+                        marginTop: '0.75rem',
+                        color: '#1e40af',
+                        fontSize: '0.875rem',
+                      }}
+                    >
                       <strong>Next Steps:</strong>
                       <br />• Refresh the pages to see the newly created data
-                      <br />• If you don't see the data, check that you're logged in with the correct account
+                      <br />• If you don't see the data, check that you're
+                      logged in with the correct account
                     </p>
-                    <ul style={{ marginTop: '0.75rem', paddingLeft: '1.5rem', color: '#1e40af' }}>
+                    <ul
+                      style={{
+                        marginTop: '0.75rem',
+                        paddingLeft: '1.5rem',
+                        color: '#1e40af',
+                      }}
+                    >
                       <li>
-                        <a href="/jobs" style={{ color: '#3b82f6', textDecoration: 'underline' }}>
+                        <a
+                          href="/jobs"
+                          style={{
+                            color: '#3b82f6',
+                            textDecoration: 'underline',
+                          }}
+                        >
                           View Jobs
                         </a>{' '}
-                        - See jobs with different statuses (some assigned to technician)
+                        - See jobs with different statuses (some assigned to
+                        technician)
                       </li>
                       <li>
-                        <a href="/clients" style={{ color: '#3b82f6', textDecoration: 'underline' }}>
+                        <a
+                          href="/clients"
+                          style={{
+                            color: '#3b82f6',
+                            textDecoration: 'underline',
+                          }}
+                        >
                           View Clients
                         </a>{' '}
                         - See all test clients
                       </li>
                       <li>
-                        <a href="/sites" style={{ color: '#3b82f6', textDecoration: 'underline' }}>
+                        <a
+                          href="/sites"
+                          style={{
+                            color: '#3b82f6',
+                            textDecoration: 'underline',
+                          }}
+                        >
                           View Sites
                         </a>{' '}
                         - Browse test sites
                       </li>
                       <li>
-                        <a href="/assets" style={{ color: '#3b82f6', textDecoration: 'underline' }}>
+                        <a
+                          href="/assets"
+                          style={{
+                            color: '#3b82f6',
+                            textDecoration: 'underline',
+                          }}
+                        >
                           View Assets
                         </a>{' '}
                         - See all test assets
                       </li>
                       <li>
-                        <a href="/inventory" style={{ color: '#3b82f6', textDecoration: 'underline' }}>
+                        <a
+                          href="/inventory"
+                          style={{
+                            color: '#3b82f6',
+                            textDecoration: 'underline',
+                          }}
+                        >
                           View Inventory
                         </a>{' '}
                         - Check inventory items
                       </li>
                       <li>
-                        <a href="/test-users/debug" style={{ color: '#3b82f6', textDecoration: 'underline' }}>
+                        <a
+                          href="/test-users/debug"
+                          style={{
+                            color: '#3b82f6',
+                            textDecoration: 'underline',
+                          }}
+                        >
                           Debug Page
                         </a>{' '}
                         - Check your current user and organization
@@ -467,4 +605,3 @@ export default function SeedTestDataPage() {
     </ProtectedRoute>
   );
 }
-

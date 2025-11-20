@@ -25,7 +25,8 @@ export default function Navigation() {
       // Create overlay element
       const overlay = document.createElement('div');
       overlay.id = 'mobile-menu-overlay';
-      overlay.className = 'fixed left-0 right-0 bottom-0 bg-black/50 backdrop-blur-sm z-40';
+      overlay.className =
+        'fixed left-0 right-0 bottom-0 bg-black/50 backdrop-blur-sm z-40';
       overlay.style.top = '80px';
       overlay.onclick = () => setMobileMenuOpen(false);
       document.body.appendChild(overlay);
@@ -179,35 +180,35 @@ export default function Navigation() {
           }`}
         >
           <div className="flex flex-col space-y-4 px-4 py-4">
-              {navLinks.map((link) => {
-                const isExternal = link.href.startsWith('/');
-                const Component = isExternal ? Link : 'a';
-                const props = isExternal
-                  ? { href: link.href, onClick: () => setMobileMenuOpen(false) }
-                  : {
-                      href: link.href,
-                      onClick: () => setMobileMenuOpen(false),
-                    };
+            {navLinks.map((link) => {
+              const isExternal = link.href.startsWith('/');
+              const Component = isExternal ? Link : 'a';
+              const props = isExternal
+                ? { href: link.href, onClick: () => setMobileMenuOpen(false) }
+                : {
+                    href: link.href,
+                    onClick: () => setMobileMenuOpen(false),
+                  };
 
-                return (
-                  <Component
-                    key={link.href}
-                    {...props}
-                    className="text-gray-700 hover:text-primary font-medium transition-colors duration-300"
-                  >
-                    {link.label}
-                  </Component>
-                );
-              })}
-              <Link
-                href="/onboarding/welcome"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-all duration-300 text-center shadow-md block"
-              >
-                Get started
-              </Link>
-            </div>
+              return (
+                <Component
+                  key={link.href}
+                  {...props}
+                  className="text-gray-700 hover:text-primary font-medium transition-colors duration-300"
+                >
+                  {link.label}
+                </Component>
+              );
+            })}
+            <Link
+              href="/onboarding/welcome"
+              onClick={() => setMobileMenuOpen(false)}
+              className="px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-all duration-300 text-center shadow-md block"
+            >
+              Get started
+            </Link>
           </div>
+        </div>
       </div>
     </nav>
   );

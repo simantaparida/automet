@@ -25,7 +25,7 @@ export default function Welcome() {
   useEffect(() => {
     trackPageView('/onboarding/welcome');
     setIsMounted(true);
-    
+
     // Restore "keep me logged in" preference from localStorage
     if (typeof window !== 'undefined') {
       const savedPreference = localStorage.getItem('automet_keep_me_logged_in');
@@ -71,7 +71,14 @@ export default function Welcome() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+        }}
+      >
         <div>Loading...</div>
       </div>
     );
@@ -81,17 +88,32 @@ export default function Welcome() {
     <>
       <Head>
         <title>Welcome to Automet - Field Service Management Made Simple</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1"
+        />
       </Head>
 
       <style jsx>{`
         @keyframes slideInLeft {
-          from { opacity: 0; transform: translateX(-30px); }
-          to { opacity: 1; transform: translateX(0); }
+          from {
+            opacity: 0;
+            transform: translateX(-30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
         }
         @keyframes slideInRight {
-          from { opacity: 0; transform: translateX(30px); }
-          to { opacity: 1; transform: translateX(0); }
+          from {
+            opacity: 0;
+            transform: translateX(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
         }
         .slide-left {
           animation: slideInLeft 0.8s ease-out forwards;
@@ -99,7 +121,7 @@ export default function Welcome() {
         .slide-right {
           animation: slideInRight 0.8s ease-out forwards;
         }
-        
+
         /* Custom checkbox styling with white checkmark */
         #keepMeLoggedIn {
           appearance: none;
@@ -114,12 +136,12 @@ export default function Welcome() {
           position: relative;
           transition: all 0.2s;
         }
-        
+
         #keepMeLoggedIn:checked {
-          background-color: #EF7722;
-          border-color: #EF7722;
+          background-color: #ef7722;
+          border-color: #ef7722;
         }
-        
+
         #keepMeLoggedIn:checked::after {
           content: '';
           position: absolute;
@@ -131,11 +153,11 @@ export default function Welcome() {
           border-width: 0 2px 2px 0;
           transform: rotate(45deg);
         }
-        
+
         #keepMeLoggedIn:hover {
-          border-color: #EF7722;
+          border-color: #ef7722;
         }
-        
+
         #keepMeLoggedIn:focus {
           outline: 2px solid rgba(239, 119, 34, 0.3);
           outline-offset: 2px;
@@ -204,7 +226,8 @@ export default function Welcome() {
       <div
         style={{
           minHeight: '100vh',
-          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+          background:
+            'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
           position: 'relative',
           overflow: 'hidden',
@@ -218,7 +241,8 @@ export default function Welcome() {
             right: '-100px',
             width: '300px',
             height: '300px',
-            background: 'radial-gradient(circle, rgba(239,119,34,0.1) 0%, transparent 70%)',
+            background:
+              'radial-gradient(circle, rgba(239,119,34,0.1) 0%, transparent 70%)',
             borderRadius: '50%',
             pointerEvents: 'none',
           }}
@@ -253,7 +277,8 @@ export default function Welcome() {
                 style={{
                   fontSize: '1.5rem',
                   fontWeight: '800',
-                  background: 'linear-gradient(135deg, #EF7722 0%, #ff9a56 100%)',
+                  background:
+                    'linear-gradient(135deg, #EF7722 0%, #ff9a56 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
@@ -429,15 +454,35 @@ export default function Welcome() {
                         alignItems: 'center',
                         justifyContent: 'center',
                       }}
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      aria-label={
+                        showPassword ? 'Hide password' : 'Show password'
+                      }
                     >
                       {showPassword ? (
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
                           <line x1="1" y1="1" x2="23" y2="23"></line>
                         </svg>
                       ) : (
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                           <circle cx="12" cy="12" r="3"></circle>
                         </svg>
@@ -482,7 +527,9 @@ export default function Welcome() {
                   style={{
                     width: '100%',
                     padding: '0.625rem',
-                    background: authLoading ? '#9ca3af' : 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
+                    background: authLoading
+                      ? '#9ca3af'
+                      : 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
                     color: 'white',
                     border: 'none',
                     borderRadius: '6px',
@@ -491,17 +538,21 @@ export default function Welcome() {
                     cursor: authLoading ? 'not-allowed' : 'pointer',
                     marginBottom: '0.875rem',
                     transition: 'all 0.2s',
-                    boxShadow: authLoading ? 'none' : '0 2px 8px rgba(239,119,34,0.25)',
+                    boxShadow: authLoading
+                      ? 'none'
+                      : '0 2px 8px rgba(239,119,34,0.25)',
                   }}
                   onMouseOver={(e) => {
                     if (!authLoading) {
                       e.currentTarget.style.transform = 'translateY(-1px)';
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
+                      e.currentTarget.style.boxShadow =
+                        '0 4px 12px rgba(239,119,34,0.3)';
                     }
                   }}
                   onMouseOut={(e) => {
                     e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
+                    e.currentTarget.style.boxShadow =
+                      '0 2px 8px rgba(239,119,34,0.25)';
                   }}
                 >
                   {authLoading ? 'Signing in...' : 'Log in'}
@@ -517,9 +568,13 @@ export default function Welcome() {
                   fontSize: '0.75rem',
                 }}
               >
-                <div style={{ flex: 1, height: '1px', backgroundColor: '#e5e7eb' }}></div>
+                <div
+                  style={{ flex: 1, height: '1px', backgroundColor: '#e5e7eb' }}
+                ></div>
                 <span style={{ padding: '0 0.75rem' }}>OR</span>
-                <div style={{ flex: 1, height: '1px', backgroundColor: '#e5e7eb' }}></div>
+                <div
+                  style={{ flex: 1, height: '1px', backgroundColor: '#e5e7eb' }}
+                ></div>
               </div>
 
               <button
@@ -553,7 +608,12 @@ export default function Welcome() {
                   e.currentTarget.style.borderColor = '#d1d5db';
                 }}
               >
-                <svg width="16" height="16" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 18 18"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
                   <path
                     d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"
                     fill="#4285F4"
@@ -582,7 +642,13 @@ export default function Welcome() {
                   borderRadius: '6px',
                 }}
               >
-                <p style={{ fontSize: '0.8125rem', color: '#6b7280', margin: '0 0 0.5rem 0' }}>
+                <p
+                  style={{
+                    fontSize: '0.8125rem',
+                    color: '#6b7280',
+                    margin: '0 0 0.5rem 0',
+                  }}
+                >
                   Don't have an account?
                 </p>
                 <Link href="/signup" style={{ textDecoration: 'none' }}>

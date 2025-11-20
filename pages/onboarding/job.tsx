@@ -95,7 +95,10 @@ export default function CreateJob() {
 
           console.log('[Job Page] Customer query result:', customerResult);
 
-          const customerData = customerResult.data as Array<{ id: string; name: string }> | null;
+          const customerData = customerResult.data as Array<{
+            id: string;
+            name: string;
+          }> | null;
           const customerError = customerResult.error;
 
           if (customerError) {
@@ -106,7 +109,10 @@ export default function CreateJob() {
             console.log('[Job Page] Found customers:', customerData);
             setCustomers(customerData);
             // Pre-select the first customer (most recent = just created)
-            setFormData(prev => ({ ...prev, customerId: customerData[0]!.id }));
+            setFormData((prev) => ({
+              ...prev,
+              customerId: customerData[0]!.id,
+            }));
           } else {
             console.warn('[Job Page] No customers found');
           }
@@ -118,11 +124,14 @@ export default function CreateJob() {
             .select('id, full_name')
             .eq('org_id', orgId)
             .eq('role', 'technician')
-            .order('full_name', { ascending: true});
+            .order('full_name', { ascending: true });
 
           console.log('[Job Page] Technician query result:', techResult);
 
-          const techData = techResult.data as Array<{ id: string; full_name: string }> | null;
+          const techData = techResult.data as Array<{
+            id: string;
+            full_name: string;
+          }> | null;
           const techError = techResult.error;
 
           if (techError) {
@@ -155,10 +164,12 @@ export default function CreateJob() {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const dateStr = tomorrow.toISOString().split('T')[0]!;
-    setFormData(prev => ({ ...prev, scheduledDate: dateStr }));
+    setFormData((prev) => ({ ...prev, scheduledDate: dateStr }));
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -191,7 +202,9 @@ export default function CreateJob() {
       }
 
       // Combine date and time into ISO string
-      const scheduledAt = new Date(`${formData.scheduledDate}T${formData.scheduledTime}:00`).toISOString();
+      const scheduledAt = new Date(
+        `${formData.scheduledDate}T${formData.scheduledTime}:00`
+      ).toISOString();
 
       const response = await fetch('/api/onboarding/create-job', {
         method: 'POST',
@@ -215,8 +228,11 @@ export default function CreateJob() {
       console.log('Job created:', data);
 
       // Track success - calculate hours from now
-      const scheduledTime = new Date(`${formData.scheduledDate}T${formData.scheduledTime}:00`);
-      const hoursFromNow = (scheduledTime.getTime() - Date.now()) / (1000 * 60 * 60);
+      const scheduledTime = new Date(
+        `${formData.scheduledDate}T${formData.scheduledTime}:00`
+      );
+      const hoursFromNow =
+        (scheduledTime.getTime() - Date.now()) / (1000 * 60 * 60);
 
       OnboardingEvents.firstJobCreated(
         !!formData.technicianId,
@@ -245,7 +261,14 @@ export default function CreateJob() {
 
   if (authLoading || loadingData) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+        }}
+      >
         <div>Loading...</div>
       </div>
     );
@@ -255,7 +278,10 @@ export default function CreateJob() {
     <>
       <Head>
         <title>Create First Job - Automet</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1"
+        />
       </Head>
 
       <style jsx>{`
@@ -306,7 +332,8 @@ export default function CreateJob() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+          background:
+            'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
           position: 'relative',
           overflow: 'hidden',
@@ -320,7 +347,8 @@ export default function CreateJob() {
             right: '-100px',
             width: '300px',
             height: '300px',
-            background: 'radial-gradient(circle, rgba(239,119,34,0.1) 0%, transparent 70%)',
+            background:
+              'radial-gradient(circle, rgba(239,119,34,0.1) 0%, transparent 70%)',
             borderRadius: '50%',
             pointerEvents: 'none',
           }}
@@ -339,12 +367,50 @@ export default function CreateJob() {
         >
           {/* Progress indicator */}
           <div style={{ marginBottom: '1.25rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-              <span style={{ fontSize: '0.8125rem', color: '#6b7280', fontWeight: '500' }}>Step 4 of 5</span>
-              <span style={{ fontSize: '0.8125rem', color: '#EF7722', fontWeight: '600' }}>80%</span>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: '0.5rem',
+              }}
+            >
+              <span
+                style={{
+                  fontSize: '0.8125rem',
+                  color: '#6b7280',
+                  fontWeight: '500',
+                }}
+              >
+                Step 4 of 5
+              </span>
+              <span
+                style={{
+                  fontSize: '0.8125rem',
+                  color: '#EF7722',
+                  fontWeight: '600',
+                }}
+              >
+                80%
+              </span>
             </div>
-            <div style={{ width: '100%', height: '6px', backgroundColor: '#ffe8d6', borderRadius: '3px' }}>
-              <div style={{ width: '80%', height: '100%', background: 'linear-gradient(90deg, #EF7722 0%, #ff8833 100%)', borderRadius: '3px' }}></div>
+            <div
+              style={{
+                width: '100%',
+                height: '6px',
+                backgroundColor: '#ffe8d6',
+                borderRadius: '3px',
+              }}
+            >
+              <div
+                style={{
+                  width: '80%',
+                  height: '100%',
+                  background:
+                    'linear-gradient(90deg, #EF7722 0%, #ff8833 100%)',
+                  borderRadius: '3px',
+                }}
+              ></div>
             </div>
           </div>
 
@@ -369,16 +435,31 @@ export default function CreateJob() {
             onMouseEnter={(e) => (e.currentTarget.style.color = '#EF7722')}
             onMouseLeave={(e) => (e.currentTarget.style.color = '#6b7280')}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
             Back
           </button>
 
-          <h1 className="job-title" style={{ fontWeight: '700', color: '#111827', textAlign: 'center' }}>
+          <h1
+            className="job-title"
+            style={{ fontWeight: '700', color: '#111827', textAlign: 'center' }}
+          >
             Create your first job
           </h1>
-          <p className="job-subtitle" style={{ color: '#6b7280', textAlign: 'center' }}>
+          <p
+            className="job-subtitle"
+            style={{ color: '#6b7280', textAlign: 'center' }}
+          >
             Schedule a job and optionally assign it to a technician.
           </p>
 
@@ -532,13 +613,27 @@ export default function CreateJob() {
                 ))}
               </select>
               {technicians.length === 0 && (
-                <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem', marginBottom: 0 }}>
+                <p
+                  style={{
+                    fontSize: '0.75rem',
+                    color: '#6b7280',
+                    marginTop: '0.25rem',
+                    marginBottom: 0,
+                  }}
+                >
                   No technicians yet. You can assign later.
                 </p>
               )}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '1rem',
+                marginBottom: '2rem',
+              }}
+            >
               <div>
                 <label
                   htmlFor="scheduledDate"
@@ -617,25 +712,34 @@ export default function CreateJob() {
                 width: '100%',
                 padding: '0.625rem',
                 marginBottom: '0.75rem',
-                background: loading || customers.length === 0 ? '#9ca3af' : 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
+                background:
+                  loading || customers.length === 0
+                    ? '#9ca3af'
+                    : 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
                 color: 'white',
                 border: 'none',
                 borderRadius: '6px',
                 fontSize: '0.9375rem',
                 fontWeight: '600',
-                cursor: loading || customers.length === 0 ? 'not-allowed' : 'pointer',
+                cursor:
+                  loading || customers.length === 0 ? 'not-allowed' : 'pointer',
                 transition: 'all 0.2s',
-                boxShadow: loading || customers.length === 0 ? 'none' : '0 2px 8px rgba(239,119,34,0.25)',
+                boxShadow:
+                  loading || customers.length === 0
+                    ? 'none'
+                    : '0 2px 8px rgba(239,119,34,0.25)',
               }}
               onMouseEnter={(e) => {
                 if (!loading && customers.length > 0) {
                   e.currentTarget.style.transform = 'translateY(-1px)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
+                  e.currentTarget.style.boxShadow =
+                    '0 4px 12px rgba(239,119,34,0.3)';
                 }
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
+                e.currentTarget.style.boxShadow =
+                  '0 2px 8px rgba(239,119,34,0.25)';
               }}
             >
               {loading ? 'Creating job...' : 'Create job →'}
@@ -657,8 +761,15 @@ export default function CreateJob() {
                 cursor: loading ? 'not-allowed' : 'pointer',
                 transition: 'all 0.2s',
               }}
-              onMouseEnter={(e) => !loading && (e.currentTarget.style.borderColor = '#EF7722', e.currentTarget.style.color = '#EF7722')}
-              onMouseLeave={(e) => (e.currentTarget.style.borderColor = '#d1d5db', e.currentTarget.style.color = '#6b7280')}
+              onMouseEnter={(e) =>
+                !loading &&
+                ((e.currentTarget.style.borderColor = '#EF7722'),
+                (e.currentTarget.style.color = '#EF7722'))
+              }
+              onMouseLeave={(e) => (
+                (e.currentTarget.style.borderColor = '#d1d5db'),
+                (e.currentTarget.style.color = '#6b7280')
+              )}
             >
               Skip for now
             </button>

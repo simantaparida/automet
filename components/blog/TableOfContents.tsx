@@ -30,13 +30,13 @@ export default function TableOfContents({
   // Extract headings from markdown content
   useEffect(() => {
     const wordCount = content.split(/\s+/).length;
-    
+
     // Only show ToC for long articles
     if (wordCount < minWords) return;
 
     const headingRegex = /^(#{2,3})\s+(.+)$/gm;
     const matches = [...content.matchAll(headingRegex)];
-    
+
     const extractedHeadings: TOCItem[] = matches
       .filter((match) => match[1] && match[2]) // Ensure capture groups exist
       .map((match) => {
@@ -46,7 +46,7 @@ export default function TableOfContents({
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, '-')
           .replace(/^-|-$/g, '');
-        
+
         return { id, text, level };
       });
 
@@ -84,7 +84,8 @@ export default function TableOfContents({
   const scrollToHeading = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      const top = element.getBoundingClientRect().top + window.pageYOffset - 100;
+      const top =
+        element.getBoundingClientRect().top + window.pageYOffset - 100;
       window.scrollTo({ top, behavior: 'smooth' });
       setIsOpen(false); // Close mobile menu after click
     }
@@ -149,8 +150,18 @@ export default function TableOfContents({
             className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-900 hover:bg-gray-50 transition-colors"
           >
             <span className="flex items-center gap-2">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
               </svg>
               Table of Contents
             </span>
@@ -160,7 +171,12 @@ export default function TableOfContents({
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </button>
 
@@ -195,4 +211,3 @@ export default function TableOfContents({
     </>
   );
 }
-

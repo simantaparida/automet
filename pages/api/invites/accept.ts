@@ -34,7 +34,9 @@ export default async function handler(
 
     // Must provide either code or token
     if (!code && !token) {
-      return res.status(400).json({ error: 'Must provide either code or token' });
+      return res
+        .status(400)
+        .json({ error: 'Must provide either code or token' });
     }
 
     // Validate format
@@ -72,7 +74,9 @@ export default async function handler(
     const { data: invite, error: inviteError } = await query.single();
 
     if (inviteError || !invite) {
-      return res.status(404).json({ error: 'Invite not found or already used' });
+      return res
+        .status(404)
+        .json({ error: 'Invite not found or already used' });
     }
 
     // Check if expired
@@ -95,7 +99,8 @@ export default async function handler(
 
     if (existingUser?.org_id) {
       return res.status(400).json({
-        error: 'You are already part of an organization. Contact support to switch organizations.',
+        error:
+          'You are already part of an organization. Contact support to switch organizations.',
       });
     }
 
@@ -110,7 +115,9 @@ export default async function handler(
 
     if (userError) {
       console.error('User update error:', userError);
-      return res.status(500).json({ error: 'Failed to accept invite: ' + userError.message });
+      return res
+        .status(500)
+        .json({ error: 'Failed to accept invite: ' + userError.message });
     }
 
     // Mark invite as accepted
@@ -133,8 +140,11 @@ export default async function handler(
       role: invite.role,
       redirectTo: '/dashboard',
     });
-  } catch (error: any) {
-    console.error('Accept invite API error:', error);
-    return res.status(500).json({ error: error.message || 'Internal server error' });
+  } catch (error) {
+    console.error('Error accepting invite:', error);
+    return res.status(500).json({
+      error: 'Failed to accept invite',
+      details: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 }

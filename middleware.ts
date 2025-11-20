@@ -7,7 +7,7 @@ import type { NextRequest } from 'next/server';
  */
 export function middleware(request: NextRequest) {
   const isLandingOnly = process.env.NEXT_PUBLIC_LANDING_ONLY === 'true';
-  
+
   // If not in landing-only mode, allow all requests
   if (!isLandingOnly) {
     return NextResponse.next();
@@ -51,8 +51,9 @@ export function middleware(request: NextRequest) {
 
   // Check if current path is a landing page
   const isLandingPage =
-    landingPages.some((page) => pathname === page || pathname.startsWith(`${page}/`)) ||
-    landingApiRoutes.some((route) => pathname.startsWith(route));
+    landingPages.some(
+      (page) => pathname === page || pathname.startsWith(`${page}/`)
+    ) || landingApiRoutes.some((route) => pathname.startsWith(route));
 
   // If not a landing page in landing-only mode, redirect to home
   if (!isLandingPage) {
@@ -78,4 +79,3 @@ export const config = {
     '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };
-

@@ -19,14 +19,24 @@ interface RoleSwitchProps {
 }
 
 export default function RoleSwitch({ className }: RoleSwitchProps) {
-  const { actualRole, activeRole, availableRoles, switchRole, resetRole, isLoading } = useRoleSwitch();
+  const {
+    actualRole,
+    activeRole,
+    availableRoles,
+    switchRole,
+    resetRole,
+    isLoading,
+  } = useRoleSwitch();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -64,7 +74,11 @@ export default function RoleSwitch({ className }: RoleSwitchProps) {
   };
 
   return (
-    <div ref={dropdownRef} className={className} style={{ position: 'relative' }}>
+    <div
+      ref={dropdownRef}
+      className={className}
+      style={{ position: 'relative' }}
+    >
       <button
         onClick={() => setIsOpen(!isOpen)}
         style={{
@@ -83,12 +97,18 @@ export default function RoleSwitch({ className }: RoleSwitchProps) {
           whiteSpace: 'nowrap',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = isRoleSwitched ? '#fff5ed' : '#f9fafb';
+          e.currentTarget.style.backgroundColor = isRoleSwitched
+            ? '#fff5ed'
+            : '#f9fafb';
           e.currentTarget.style.borderColor = '#EF7722';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = isRoleSwitched ? '#fff5ed' : 'transparent';
-          e.currentTarget.style.borderColor = isRoleSwitched ? '#EF7722' : '#e5e7eb';
+          e.currentTarget.style.backgroundColor = isRoleSwitched
+            ? '#fff5ed'
+            : 'transparent';
+          e.currentTarget.style.borderColor = isRoleSwitched
+            ? '#EF7722'
+            : '#e5e7eb';
         }}
         aria-label="Switch role"
         aria-expanded={isOpen}
@@ -123,7 +143,8 @@ export default function RoleSwitch({ className }: RoleSwitchProps) {
             backgroundColor: 'white',
             border: '1px solid #e5e7eb',
             borderRadius: '8px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)',
+            boxShadow:
+              '0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)',
             zIndex: 1000,
             padding: '0.5rem',
           }}
@@ -256,4 +277,3 @@ export default function RoleSwitch({ className }: RoleSwitchProps) {
     </div>
   );
 }
-

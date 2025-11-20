@@ -7,7 +7,15 @@ import TopHeader from '@/components/TopHeader';
 import RoleBadge from '@/components/RoleBadge';
 import EmptyState from '@/components/EmptyState';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
-import { Plus, Package, Building2, MapPin, ChevronRight, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import {
+  Plus,
+  Package,
+  Building2,
+  MapPin,
+  ChevronRight,
+  AlertTriangle,
+  CheckCircle2,
+} from 'lucide-react';
 
 interface Asset {
   id: string;
@@ -82,7 +90,9 @@ export default function AssetsPage() {
             const sitesResponse = await apiFetch('/api/sites');
             if (sitesResponse.ok) {
               const sitesData = await sitesResponse.json();
-              const sitesMap = new Map(sitesData.map((site: any) => [site.id, site]));
+              const sitesMap = new Map(
+                sitesData.map((site: any) => [site.id, site])
+              );
 
               assetsWithSiteData = assetsData.map((asset: Asset) => {
                 if (asset.site?.name && asset.site?.client?.name) return asset;
@@ -111,8 +121,14 @@ export default function AssetsPage() {
 
         setAssets(assetsWithSiteData);
       } else {
-        const errorData = await assetsResponse.json().catch(() => ({ error: 'Unknown error' }));
-        console.error('Failed to fetch assets:', assetsResponse.status, errorData);
+        const errorData = await assetsResponse
+          .json()
+          .catch(() => ({ error: 'Unknown error' }));
+        console.error(
+          'Failed to fetch assets:',
+          assetsResponse.status,
+          errorData
+        );
       }
 
       if (clientsResponse.ok) {
@@ -139,7 +155,11 @@ export default function AssetsPage() {
   };
 
   const getWarrantyExpiry = (asset: Asset): string | null => {
-    if (asset.metadata && typeof asset.metadata === 'object' && 'warranty_expiry' in asset.metadata) {
+    if (
+      asset.metadata &&
+      typeof asset.metadata === 'object' &&
+      'warranty_expiry' in asset.metadata
+    ) {
       return asset.metadata.warranty_expiry as string | null;
     }
     return null;
@@ -151,8 +171,14 @@ export default function AssetsPage() {
   };
 
   const filteredAssets = assets.filter((asset) => {
-    if (selectedClientId && asset.site?.client?.id !== selectedClientId) return false;
-    if (selectedSiteId && asset.site?.id !== selectedSiteId && asset.site_id !== selectedSiteId) return false;
+    if (selectedClientId && asset.site?.client?.id !== selectedClientId)
+      return false;
+    if (
+      selectedSiteId &&
+      asset.site?.id !== selectedSiteId &&
+      asset.site_id !== selectedSiteId
+    )
+      return false;
     return true;
   });
 
@@ -178,9 +204,13 @@ export default function AssetsPage() {
             <>
               <div className="mb-6 flex justify-between items-start flex-wrap gap-3">
                 <div className="flex-1">
-                  <h1 className="text-2xl font-bold text-gray-900 mb-1">Assets</h1>
+                  <h1 className="text-2xl font-bold text-gray-900 mb-1">
+                    Assets
+                  </h1>
                   <p className="text-[15px] text-gray-500">
-                    {filteredAssets.length} {filteredAssets.length === 1 ? 'asset' : 'assets'} in your organization
+                    {filteredAssets.length}{' '}
+                    {filteredAssets.length === 1 ? 'asset' : 'assets'} in your
+                    organization
                   </p>
                 </div>
 
@@ -230,19 +260,29 @@ export default function AssetsPage() {
                 <div className="bg-white p-4 rounded-lg border border-gray-200">
                   <EmptyState
                     icon={<Package size={48} className="text-gray-300" />}
-                    title={selectedClientId || selectedSiteId ? "No assets found" : "No assets yet"}
-                    description={selectedClientId || selectedSiteId ? "Try selecting different filters" : "Get started by adding your first asset"}
+                    title={
+                      selectedClientId || selectedSiteId
+                        ? 'No assets found'
+                        : 'No assets yet'
+                    }
+                    description={
+                      selectedClientId || selectedSiteId
+                        ? 'Try selecting different filters'
+                        : 'Get started by adding your first asset'
+                    }
                   />
-                  {!selectedClientId && !selectedSiteId && activeRole !== 'technician' && (
-                    <div className="flex justify-center mt-4">
-                      <button
-                        onClick={() => router.push('/assets/new')}
-                        className="bg-gradient-to-br from-primary to-primary-600 text-white border-none rounded-md px-6 py-3 text-[14px] font-semibold cursor-pointer flex items-center gap-2 shadow-sm shadow-primary/20 transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-primary/35"
-                      >
-                        <Plus size={18} /> Create First Asset
-                      </button>
-                    </div>
-                  )}
+                  {!selectedClientId &&
+                    !selectedSiteId &&
+                    activeRole !== 'technician' && (
+                      <div className="flex justify-center mt-4">
+                        <button
+                          onClick={() => router.push('/assets/new')}
+                          className="bg-gradient-to-br from-primary to-primary-600 text-white border-none rounded-md px-6 py-3 text-[14px] font-semibold cursor-pointer flex items-center gap-2 shadow-sm shadow-primary/20 transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-primary/35"
+                        >
+                          <Plus size={18} /> Create First Asset
+                        </button>
+                      </div>
+                    )}
                 </div>
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -265,7 +305,10 @@ export default function AssetsPage() {
                               <h3 className="text-[15px] font-bold text-gray-900 truncate capitalize">
                                 {asset.asset_type.replace(/_/g, ' ')}
                               </h3>
-                              <ChevronRight size={16} className="text-gray-400 flex-shrink-0 mt-0.5" />
+                              <ChevronRight
+                                size={16}
+                                className="text-gray-400 flex-shrink-0 mt-0.5"
+                              />
                             </div>
                             {asset.model && (
                               <div className="text-[13px] text-gray-600 truncate">
@@ -278,27 +321,44 @@ export default function AssetsPage() {
                         <div className="space-y-1.5 pl-[60px]">
                           {asset.serial_number && (
                             <div className="text-[13px] text-gray-500">
-                              <span className="font-medium">S/N:</span> {asset.serial_number}
+                              <span className="font-medium">S/N:</span>{' '}
+                              {asset.serial_number}
                             </div>
                           )}
                           {asset.site && (
                             <>
                               <div className="flex items-center gap-1.5 text-[13px] text-gray-500">
                                 <MapPin size={14} className="flex-shrink-0" />
-                                <span className="truncate">{asset.site.name}</span>
+                                <span className="truncate">
+                                  {asset.site.name}
+                                </span>
                               </div>
                               {asset.site.client && (
                                 <div className="flex items-center gap-1.5 text-[13px] text-gray-500">
-                                  <Building2 size={14} className="flex-shrink-0" />
-                                  <span className="truncate">{asset.site.client.name}</span>
+                                  <Building2
+                                    size={14}
+                                    className="flex-shrink-0"
+                                  />
+                                  <span className="truncate">
+                                    {asset.site.client.name}
+                                  </span>
                                 </div>
                               )}
                             </>
                           )}
                           {warrantyExpiry && (
-                            <div className={`flex items-center gap-1.5 text-[11px] font-medium ${isExpired ? 'text-red-600' : 'text-green-600'}`}>
-                              {isExpired ? <AlertTriangle size={12} /> : <CheckCircle2 size={12} />}
-                              <span>Warranty: {new Date(warrantyExpiry).toLocaleDateString()}</span>
+                            <div
+                              className={`flex items-center gap-1.5 text-[11px] font-medium ${isExpired ? 'text-red-600' : 'text-green-600'}`}
+                            >
+                              {isExpired ? (
+                                <AlertTriangle size={12} />
+                              ) : (
+                                <CheckCircle2 size={12} />
+                              )}
+                              <span>
+                                Warranty:{' '}
+                                {new Date(warrantyExpiry).toLocaleDateString()}
+                              </span>
                             </div>
                           )}
                         </div>

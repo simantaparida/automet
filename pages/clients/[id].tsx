@@ -133,15 +133,40 @@ export default function ClientDetailPage() {
   const getStatusConfig = (status: string) => {
     switch (status) {
       case 'scheduled':
-        return { color: '#3b82f6', bg: '#eff6ff', icon: Calendar, label: 'Scheduled' };
+        return {
+          color: '#3b82f6',
+          bg: '#eff6ff',
+          icon: Calendar,
+          label: 'Scheduled',
+        };
       case 'in_progress':
-        return { color: '#f59e0b', bg: '#fffbeb', icon: Play, label: 'In Progress' };
+        return {
+          color: '#f59e0b',
+          bg: '#fffbeb',
+          icon: Play,
+          label: 'In Progress',
+        };
       case 'completed':
-        return { color: '#10b981', bg: '#f0fdf4', icon: CheckCircle2, label: 'Completed' };
+        return {
+          color: '#10b981',
+          bg: '#f0fdf4',
+          icon: CheckCircle2,
+          label: 'Completed',
+        };
       case 'cancelled':
-        return { color: '#ef4444', bg: '#fef2f2', icon: XCircle, label: 'Cancelled' };
+        return {
+          color: '#ef4444',
+          bg: '#fef2f2',
+          icon: XCircle,
+          label: 'Cancelled',
+        };
       default:
-        return { color: '#6b7280', bg: '#f9fafb', icon: AlertCircle, label: status };
+        return {
+          color: '#6b7280',
+          bg: '#f9fafb',
+          icon: AlertCircle,
+          label: status,
+        };
     }
   };
 
@@ -178,7 +203,8 @@ export default function ClientDetailPage() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+            background:
+              'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           }}
         >
           <div
@@ -215,7 +241,8 @@ export default function ClientDetailPage() {
             flexDirection: 'column',
             gap: '1rem',
             padding: '1rem',
-            background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+            background:
+              'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           }}
         >
           <p style={{ fontSize: '1.125rem', color: '#6b7280' }}>
@@ -280,7 +307,8 @@ export default function ClientDetailPage() {
         className="detail-container"
         style={{
           minHeight: '100vh',
-          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+          background:
+            'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
         }}
       >
@@ -541,7 +569,8 @@ export default function ClientDetailPage() {
                 style={{
                   width: '56px',
                   height: '56px',
-                  background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
+                  background:
+                    'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
                   borderRadius: '12px',
                   display: 'flex',
                   alignItems: 'center',
@@ -857,7 +886,8 @@ export default function ClientDetailPage() {
                   onClick={() => router.push(`/sites/new?client_id=${id}`)}
                   style={{
                     padding: '0.5rem 0.75rem',
-                    background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
+                    background:
+                      'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
                     color: 'white',
                     border: 'none',
                     borderRadius: '8px',
@@ -901,7 +931,8 @@ export default function ClientDetailPage() {
                       e.currentTarget.style.backgroundColor = '#f3f4f6';
                       e.currentTarget.style.borderColor = '#d1d5db';
                       e.currentTarget.style.transform = 'translateY(-1px)';
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+                      e.currentTarget.style.boxShadow =
+                        '0 4px 12px rgba(0,0,0,0.08)';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = '#f9fafb';
@@ -953,7 +984,11 @@ export default function ClientDetailPage() {
                               gap: '0.375rem',
                             }}
                           >
-                            <MapPin size={14} color="#6b7280" style={{ marginTop: '2px', flexShrink: 0 }} />
+                            <MapPin
+                              size={14}
+                              color="#6b7280"
+                              style={{ marginTop: '2px', flexShrink: 0 }}
+                            />
                             <span>{site.address}</span>
                           </div>
                         )}
@@ -970,17 +1005,20 @@ export default function ClientDetailPage() {
                   color: '#9ca3af',
                 }}
               >
-                <MapPin size={32} color="#d1d5db" style={{ margin: '0 auto 0.5rem' }} />
-                <p style={{ fontSize: '0.875rem', margin: 0 }}>
-                  No sites yet
-                </p>
+                <MapPin
+                  size={32}
+                  color="#d1d5db"
+                  style={{ margin: '0 auto 0.5rem' }}
+                />
+                <p style={{ fontSize: '0.875rem', margin: 0 }}>No sites yet</p>
                 {activeRole !== 'technician' && (
                   <button
                     onClick={() => router.push(`/sites/new?client_id=${id}`)}
                     style={{
                       marginTop: '1rem',
                       padding: '0.625rem 1rem',
-                      background: 'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
+                      background:
+                        'linear-gradient(135deg, #EF7722 0%, #ff8833 100%)',
                       color: 'white',
                       border: 'none',
                       borderRadius: '8px',
@@ -1049,7 +1087,8 @@ export default function ClientDetailPage() {
                         e.currentTarget.style.backgroundColor = '#f3f4f6';
                         e.currentTarget.style.borderColor = '#d1d5db';
                         e.currentTarget.style.transform = 'translateY(-1px)';
-                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+                        e.currentTarget.style.boxShadow =
+                          '0 4px 12px rgba(0,0,0,0.08)';
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.backgroundColor = '#f9fafb';
@@ -1167,10 +1206,12 @@ export default function ClientDetailPage() {
                   color: '#9ca3af',
                 }}
               >
-                <Calendar size={32} color="#d1d5db" style={{ margin: '0 auto 0.5rem' }} />
-                <p style={{ fontSize: '0.875rem', margin: 0 }}>
-                  No jobs yet
-                </p>
+                <Calendar
+                  size={32}
+                  color="#d1d5db"
+                  style={{ margin: '0 auto 0.5rem' }}
+                />
+                <p style={{ fontSize: '0.875rem', margin: 0 }}>No jobs yet</p>
               </div>
             )}
           </div>

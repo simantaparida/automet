@@ -30,7 +30,7 @@ export default async function handler(
 
     if (orgError) {
       console.error('Error fetching organization:', orgError);
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: 'Failed to fetch organization',
         message: orgError.message,
       });
@@ -43,10 +43,9 @@ export default async function handler(
     return res.status(200).json(organization);
   } catch (error) {
     console.error('Error in organizations API:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
       message: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 }
-

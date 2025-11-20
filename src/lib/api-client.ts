@@ -11,7 +11,7 @@ export async function apiRequest(
   activeRole?: UserRole | null
 ): Promise<Response> {
   const headers = new Headers(options.headers || {});
-  
+
   // Add Content-Type if not present and body is provided
   if (options.body && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json');
@@ -27,4 +27,3 @@ export async function apiRequest(
     headers,
   });
 }
-

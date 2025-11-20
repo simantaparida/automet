@@ -5,7 +5,7 @@ import { withOnboardedAuth } from '@/lib/auth-middleware';
 /**
  * POST /api/test-users/seed-data
  * Create dummy data (clients, sites, assets, jobs, inventory) for the authenticated user's organization
- * 
+ *
  * ⚠️ This should only be used in development/testing environments!
  * This endpoint uses the authenticated user's organization, so data will be visible to that user.
  */
@@ -38,7 +38,8 @@ export default async function handler(
   if (!supabaseAdmin) {
     return res.status(500).json({
       error: 'Server configuration error',
-      message: 'Supabase Admin client not available. Check SUPABASE_SERVICE_ROLE_KEY in environment variables.',
+      message:
+        'Supabase Admin client not available. Check SUPABASE_SERVICE_ROLE_KEY in environment variables.',
     });
   }
 
@@ -63,7 +64,8 @@ export default async function handler(
       .select('id, role, email')
       .eq('org_id', orgId);
 
-    const technicianId = testUsers?.find((u) => u.role === 'technician')?.id || null;
+    const technicianId =
+      testUsers?.find((u) => u.role === 'technician')?.id || null;
 
     const results = {
       clients: { created: 0, errors: [] as string[] },
@@ -80,7 +82,8 @@ export default async function handler(
         name: 'ABC Manufacturing Ltd',
         contact_email: 'contact@abcmfg.com',
         contact_phone: '+91-22-12345678',
-        address: 'Plot 45, Industrial Area, Andheri East, Mumbai, Maharashtra 400069',
+        address:
+          'Plot 45, Industrial Area, Andheri East, Mumbai, Maharashtra 400069',
       },
       {
         org_id: orgId,
@@ -127,25 +130,75 @@ export default async function handler(
           clientIds.push(data.id);
           results.clients.created++;
         }
-      } catch (err: any) {
-        results.clients.errors.push(`${client.name}: ${err.message || 'Unknown error'}`);
+      } catch (err) {
+        results.clients.errors.push(
+          `${client.name}: ${err instanceof Error ? err.message : 'Unknown error'}`
+        );
       }
     }
 
     // 2. Create Sites
     const sites = [
-      { clientIndex: 0, name: 'Factory Building A', address: 'Plot 45, Industrial Area, Andheri East, Mumbai 400069' },
-      { clientIndex: 0, name: 'Factory Building B', address: 'Plot 46, Industrial Area, Andheri East, Mumbai 400069' },
-      { clientIndex: 0, name: 'Administrative Block', address: 'Plot 45, Industrial Area, Andheri East, Mumbai 400069' },
-      { clientIndex: 1, name: 'Office Tower - Floors 1-5', address: 'MG Road, Bangalore 560001' },
-      { clientIndex: 1, name: 'Office Tower - Floors 6-10', address: 'MG Road, Bangalore 560001' },
-      { clientIndex: 2, name: 'Main Hospital Building', address: 'SG Highway, Ahmedabad 380015' },
-      { clientIndex: 2, name: 'OPD Block', address: 'SG Highway, Ahmedabad 380015' },
-      { clientIndex: 2, name: 'Emergency Wing', address: 'SG Highway, Ahmedabad 380015' },
-      { clientIndex: 3, name: 'Tech Park Building 1', address: 'IT Park, Chennai 600089' },
-      { clientIndex: 3, name: 'Tech Park Building 2', address: 'IT Park, Chennai 600089' },
-      { clientIndex: 4, name: 'Main Mall Building', address: 'Connaught Place, New Delhi 110001' },
-      { clientIndex: 4, name: 'Parking Complex', address: 'Connaught Place, New Delhi 110001' },
+      {
+        clientIndex: 0,
+        name: 'Factory Building A',
+        address: 'Plot 45, Industrial Area, Andheri East, Mumbai 400069',
+      },
+      {
+        clientIndex: 0,
+        name: 'Factory Building B',
+        address: 'Plot 46, Industrial Area, Andheri East, Mumbai 400069',
+      },
+      {
+        clientIndex: 0,
+        name: 'Administrative Block',
+        address: 'Plot 45, Industrial Area, Andheri East, Mumbai 400069',
+      },
+      {
+        clientIndex: 1,
+        name: 'Office Tower - Floors 1-5',
+        address: 'MG Road, Bangalore 560001',
+      },
+      {
+        clientIndex: 1,
+        name: 'Office Tower - Floors 6-10',
+        address: 'MG Road, Bangalore 560001',
+      },
+      {
+        clientIndex: 2,
+        name: 'Main Hospital Building',
+        address: 'SG Highway, Ahmedabad 380015',
+      },
+      {
+        clientIndex: 2,
+        name: 'OPD Block',
+        address: 'SG Highway, Ahmedabad 380015',
+      },
+      {
+        clientIndex: 2,
+        name: 'Emergency Wing',
+        address: 'SG Highway, Ahmedabad 380015',
+      },
+      {
+        clientIndex: 3,
+        name: 'Tech Park Building 1',
+        address: 'IT Park, Chennai 600089',
+      },
+      {
+        clientIndex: 3,
+        name: 'Tech Park Building 2',
+        address: 'IT Park, Chennai 600089',
+      },
+      {
+        clientIndex: 4,
+        name: 'Main Mall Building',
+        address: 'Connaught Place, New Delhi 110001',
+      },
+      {
+        clientIndex: 4,
+        name: 'Parking Complex',
+        address: 'Connaught Place, New Delhi 110001',
+      },
     ];
 
     const siteIds: string[] = [];
@@ -158,7 +211,7 @@ export default async function handler(
             org_id: orgId,
             client_id: clientIds[site.clientIndex]!,
             name: site.name,
-            address: site.address!,
+            address: site.address,
           })
           .select('id')
           .single();
@@ -169,28 +222,105 @@ export default async function handler(
           siteIds.push(data.id);
           results.sites.created++;
         }
-      } catch (err: any) {
-        results.sites.errors.push(`${site.name}: ${err.message || 'Unknown error'}`);
+      } catch (err) {
+        results.sites.errors.push(
+          `${site.name}: ${err instanceof Error ? err.message : 'Unknown error'}`
+        );
       }
     }
 
     // 3. Create Assets
     const assets = [
-      { siteIndex: 0, asset_type: 'fire_extinguisher', model: 'ABC CO2-5KG', serial_number: 'FE2023-001' },
-      { siteIndex: 0, asset_type: 'fire_extinguisher', model: 'ABC CO2-5KG', serial_number: 'FE2023-002' },
-      { siteIndex: 0, asset_type: 'hvac', model: 'Daikin VRV-IV', serial_number: 'HVAC-2022-A1' },
-      { siteIndex: 1, asset_type: 'fire_extinguisher', model: 'DCP-9KG', serial_number: 'FE2023-003' },
-      { siteIndex: 1, asset_type: 'generator', model: 'Cummins 250KVA', serial_number: 'GEN-2021-B1' },
-      { siteIndex: 3, asset_type: 'hvac', model: 'Carrier 30RB', serial_number: 'HVAC-2020-T1' },
-      { siteIndex: 4, asset_type: 'hvac', model: 'Carrier 30RB', serial_number: 'HVAC-2020-T2' },
-      { siteIndex: 5, asset_type: 'fire_extinguisher', model: 'CO2-4.5KG', serial_number: 'FE2023-H1' },
-      { siteIndex: 5, asset_type: 'ups', model: 'APC Smart-UPS 10KVA', serial_number: 'UPS-2022-H1' },
-      { siteIndex: 6, asset_type: 'generator', model: 'Kirloskar 500KVA', serial_number: 'GEN-2021-H1' },
-      { siteIndex: 7, asset_type: 'fire_extinguisher', model: 'ABC CO2-5KG', serial_number: 'FE2023-H2' },
-      { siteIndex: 8, asset_type: 'hvac', model: 'LG Multi-V', serial_number: 'HVAC-2023-TP1' },
-      { siteIndex: 9, asset_type: 'ups', model: 'APC Smart-UPS 5KVA', serial_number: 'UPS-2023-TP1' },
-      { siteIndex: 10, asset_type: 'hvac', model: 'Daikin VRV-IV', serial_number: 'HVAC-2021-M1' },
-      { siteIndex: 11, asset_type: 'fire_extinguisher', model: 'DCP-9KG', serial_number: 'FE2023-P1' },
+      {
+        siteIndex: 0,
+        asset_type: 'fire_extinguisher',
+        model: 'ABC CO2-5KG',
+        serial_number: 'FE2023-001',
+      },
+      {
+        siteIndex: 0,
+        asset_type: 'fire_extinguisher',
+        model: 'ABC CO2-5KG',
+        serial_number: 'FE2023-002',
+      },
+      {
+        siteIndex: 0,
+        asset_type: 'hvac',
+        model: 'Daikin VRV-IV',
+        serial_number: 'HVAC-2022-A1',
+      },
+      {
+        siteIndex: 1,
+        asset_type: 'fire_extinguisher',
+        model: 'DCP-9KG',
+        serial_number: 'FE2023-003',
+      },
+      {
+        siteIndex: 1,
+        asset_type: 'generator',
+        model: 'Cummins 250KVA',
+        serial_number: 'GEN-2021-B1',
+      },
+      {
+        siteIndex: 3,
+        asset_type: 'hvac',
+        model: 'Carrier 30RB',
+        serial_number: 'HVAC-2020-T1',
+      },
+      {
+        siteIndex: 4,
+        asset_type: 'hvac',
+        model: 'Carrier 30RB',
+        serial_number: 'HVAC-2020-T2',
+      },
+      {
+        siteIndex: 5,
+        asset_type: 'fire_extinguisher',
+        model: 'CO2-4.5KG',
+        serial_number: 'FE2023-H1',
+      },
+      {
+        siteIndex: 5,
+        asset_type: 'ups',
+        model: 'APC Smart-UPS 10KVA',
+        serial_number: 'UPS-2022-H1',
+      },
+      {
+        siteIndex: 6,
+        asset_type: 'generator',
+        model: 'Kirloskar 500KVA',
+        serial_number: 'GEN-2021-H1',
+      },
+      {
+        siteIndex: 7,
+        asset_type: 'fire_extinguisher',
+        model: 'ABC CO2-5KG',
+        serial_number: 'FE2023-H2',
+      },
+      {
+        siteIndex: 8,
+        asset_type: 'hvac',
+        model: 'LG Multi-V',
+        serial_number: 'HVAC-2023-TP1',
+      },
+      {
+        siteIndex: 9,
+        asset_type: 'ups',
+        model: 'APC Smart-UPS 5KVA',
+        serial_number: 'UPS-2023-TP1',
+      },
+      {
+        siteIndex: 10,
+        asset_type: 'hvac',
+        model: 'Daikin VRV-IV',
+        serial_number: 'HVAC-2021-M1',
+      },
+      {
+        siteIndex: 11,
+        asset_type: 'fire_extinguisher',
+        model: 'DCP-9KG',
+        serial_number: 'FE2023-P1',
+      },
     ];
 
     const assetIds: string[] = [];
@@ -202,9 +332,9 @@ export default async function handler(
           .insert({
             org_id: orgId,
             site_id: siteIds[asset.siteIndex]!,
-            asset_type: asset.asset_type!,
-            model: asset.model!,
-            serial_number: asset.serial_number!,
+            asset_type: asset.asset_type,
+            model: asset.model,
+            serial_number: asset.serial_number,
           } as any)
           .select('id')
           .single();
@@ -215,8 +345,10 @@ export default async function handler(
           assetIds.push(data.id);
           results.assets.created++;
         }
-      } catch (err: any) {
-        results.assets.errors.push(`${asset.model}: ${err.message || 'Unknown error'}`);
+      } catch (err) {
+        results.assets.errors.push(
+          `${asset.model}: ${err instanceof Error ? err.message : 'Unknown error'}`
+        );
       }
     }
 
@@ -231,7 +363,9 @@ export default async function handler(
         description: 'Check pressure gauge, seal integrity, refill if needed',
         priority: 'high' as const,
         status: 'scheduled' as const,
-        scheduled_at: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+        scheduled_at: new Date(
+          now.getTime() - 10 * 24 * 60 * 60 * 1000
+        ).toISOString(),
         assignTechnician: true,
       },
       {
@@ -239,10 +373,13 @@ export default async function handler(
         siteIndex: 0,
         assetIndex: 2,
         title: 'HVAC Quarterly Maintenance',
-        description: 'Filter cleaning, refrigerant check, thermostat calibration',
+        description:
+          'Filter cleaning, refrigerant check, thermostat calibration',
         priority: 'medium' as const,
         status: 'in_progress' as const,
-        scheduled_at: new Date(now.getTime() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+        scheduled_at: new Date(
+          now.getTime() - 8 * 24 * 60 * 60 * 1000
+        ).toISOString(),
         assignTechnician: true,
       },
       {
@@ -253,7 +390,9 @@ export default async function handler(
         description: 'Compressor failure - emergency replacement required',
         priority: 'urgent' as const,
         status: 'scheduled' as const,
-        scheduled_at: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+        scheduled_at: new Date(
+          now.getTime() - 5 * 24 * 60 * 60 * 1000
+        ).toISOString(),
         assignTechnician: false,
       },
       {
@@ -286,7 +425,9 @@ export default async function handler(
         description: 'Refill CO2 extinguisher',
         priority: 'medium' as const,
         status: 'scheduled' as const,
-        scheduled_at: new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+        scheduled_at: new Date(
+          now.getTime() + 2 * 24 * 60 * 60 * 1000
+        ).toISOString(),
         assignTechnician: true,
       },
       {
@@ -297,7 +438,9 @@ export default async function handler(
         description: 'Replace air filters',
         priority: 'low' as const,
         status: 'scheduled' as const,
-        scheduled_at: new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+        scheduled_at: new Date(
+          now.getTime() + 5 * 24 * 60 * 60 * 1000
+        ).toISOString(),
         assignTechnician: false,
       },
       {
@@ -308,8 +451,12 @@ export default async function handler(
         description: 'Test battery backup duration',
         priority: 'medium' as const,
         status: 'completed' as const,
-        scheduled_at: new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-        completed_at: new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+        scheduled_at: new Date(
+          now.getTime() - 15 * 24 * 60 * 60 * 1000
+        ).toISOString(),
+        completed_at: new Date(
+          now.getTime() - 14 * 24 * 60 * 60 * 1000
+        ).toISOString(),
         assignTechnician: true,
       },
       {
@@ -320,7 +467,9 @@ export default async function handler(
         description: 'Monthly safety walkthrough',
         priority: 'low' as const,
         status: 'scheduled' as const,
-        scheduled_at: new Date(now.getTime() + 10 * 24 * 60 * 60 * 1000).toISOString(),
+        scheduled_at: new Date(
+          now.getTime() + 10 * 24 * 60 * 60 * 1000
+        ).toISOString(),
         assignTechnician: false,
       },
       {
@@ -331,7 +480,9 @@ export default async function handler(
         description: 'Verify new HVAC unit installation',
         priority: 'high' as const,
         status: 'scheduled' as const,
-        scheduled_at: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+        scheduled_at: new Date(
+          now.getTime() + 3 * 24 * 60 * 60 * 1000
+        ).toISOString(),
         assignTechnician: true,
       },
       {
@@ -342,7 +493,9 @@ export default async function handler(
         description: 'Monthly HVAC maintenance for mall complex',
         priority: 'medium' as const,
         status: 'scheduled' as const,
-        scheduled_at: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        scheduled_at: new Date(
+          now.getTime() + 7 * 24 * 60 * 60 * 1000
+        ).toISOString(),
         assignTechnician: false,
       },
       {
@@ -353,7 +506,9 @@ export default async function handler(
         description: 'Quarterly fire safety equipment audit',
         priority: 'high' as const,
         status: 'scheduled' as const,
-        scheduled_at: new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+        scheduled_at: new Date(
+          now.getTime() + 14 * 24 * 60 * 60 * 1000
+        ).toISOString(),
         assignTechnician: true,
       },
     ];
@@ -368,12 +523,15 @@ export default async function handler(
             org_id: orgId,
             client_id: clientIds[job.clientIndex]!,
             site_id: siteIds[job.siteIndex]!,
-            asset_id: job.assetIndex !== null && assetIds[job.assetIndex] ? assetIds[job.assetIndex] : null,
-            title: job.title!,
-            description: job.description!,
+            asset_id:
+              job.assetIndex !== null && assetIds[job.assetIndex]
+                ? assetIds[job.assetIndex]
+                : null,
+            title: job.title,
+            description: job.description,
             priority: job.priority as any,
             status: job.status as any,
-            scheduled_at: job.scheduled_at!,
+            scheduled_at: job.scheduled_at,
             completed_at: job.completed_at || null,
           } as any)
           .select('id')
@@ -391,13 +549,15 @@ export default async function handler(
               .from('job_assignments')
               .insert({
                 job_id: data.id,
-                user_id: technicianId!,
+                user_id: technicianId,
               } as any)
               .select();
           }
         }
-      } catch (err: any) {
-        results.jobs.errors.push(`${job.title}: ${err.message || 'Unknown error'}`);
+      } catch (err) {
+        results.jobs.errors.push(
+          `${job.title}: ${err instanceof Error ? err.message : 'Unknown error'}`
+        );
       }
     }
 
@@ -518,8 +678,10 @@ export default async function handler(
         } else if (data) {
           results.inventory.created++;
         }
-      } catch (err: any) {
-        results.inventory.errors.push(`${item.name}: ${err.message || 'Unknown error'}`);
+      } catch (err) {
+        results.inventory.errors.push(
+          `${item.name}: ${err instanceof Error ? err.message : 'Unknown error'}`
+        );
       }
     }
 
@@ -530,7 +692,10 @@ export default async function handler(
       results.jobs.created +
       results.inventory.created;
 
-    const totalErrors = Object.values(results).reduce((sum, r) => sum + r.errors.length, 0);
+    const totalErrors = Object.values(results).reduce(
+      (sum, r) => sum + r.errors.length,
+      0
+    );
 
     return res.status(200).json({
       success: true,
@@ -549,12 +714,11 @@ export default async function handler(
         total: totalCreated,
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error seeding test data:', error);
     return res.status(500).json({
       error: 'Internal server error',
-      message: error.message || 'Failed to seed test data',
+      message: error instanceof Error ? error.message : 'Failed to seed test data',
     });
   }
 }
-

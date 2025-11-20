@@ -7,7 +7,14 @@ import TopHeader from '@/components/TopHeader';
 import RoleBadge from '@/components/RoleBadge';
 import EmptyState from '@/components/EmptyState';
 import { useRoleSwitch } from '@/contexts/RoleSwitchContext';
-import { Plus, Building2, Phone, Mail, MapPin, ChevronRight } from 'lucide-react';
+import {
+  Plus,
+  Building2,
+  Phone,
+  Mail,
+  MapPin,
+  ChevronRight,
+} from 'lucide-react';
 
 interface Client {
   id: string;
@@ -36,7 +43,9 @@ export default function ClientsPage() {
         const data = await response.json();
         setClients(data);
       } else {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        const errorData = await response
+          .json()
+          .catch(() => ({ error: 'Unknown error' }));
         console.error('Failed to fetch clients:', response.status, errorData);
       }
     } catch (error) {
@@ -73,9 +82,13 @@ export default function ClientsPage() {
               {/* Page Header */}
               <div className="mb-6 flex justify-between items-center flex-wrap gap-3">
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900 mb-1">Clients</h1>
+                  <h1 className="text-2xl font-bold text-gray-900 mb-1">
+                    Clients
+                  </h1>
                   <p className="text-[15px] text-gray-500">
-                    {clients.length} {clients.length === 1 ? 'client' : 'clients'} in your organization
+                    {clients.length}{' '}
+                    {clients.length === 1 ? 'client' : 'clients'} in your
+                    organization
                   </p>
                 </div>
                 {activeRole !== 'technician' && (
@@ -124,7 +137,10 @@ export default function ClientsPage() {
                             <h3 className="text-[15px] font-bold text-gray-900 truncate">
                               {client.name}
                             </h3>
-                            <ChevronRight size={16} className="text-gray-400 flex-shrink-0 mt-0.5" />
+                            <ChevronRight
+                              size={16}
+                              className="text-gray-400 flex-shrink-0 mt-0.5"
+                            />
                           </div>
                         </div>
                       </div>
@@ -133,19 +149,28 @@ export default function ClientsPage() {
                         {client.contact_phone && (
                           <div className="flex items-center gap-2 text-[13px] text-gray-500">
                             <Phone size={14} className="flex-shrink-0" />
-                            <span className="truncate">{client.contact_phone}</span>
+                            <span className="truncate">
+                              {client.contact_phone}
+                            </span>
                           </div>
                         )}
                         {client.contact_email && (
                           <div className="flex items-center gap-2 text-[13px] text-gray-500">
                             <Mail size={14} className="flex-shrink-0" />
-                            <span className="truncate">{client.contact_email}</span>
+                            <span className="truncate">
+                              {client.contact_email}
+                            </span>
                           </div>
                         )}
                         {client.address && (
                           <div className="flex items-start gap-2 text-[13px] text-gray-500">
-                            <MapPin size={14} className="flex-shrink-0 mt-0.5" />
-                            <span className="line-clamp-2 leading-snug">{client.address}</span>
+                            <MapPin
+                              size={14}
+                              className="flex-shrink-0 mt-0.5"
+                            />
+                            <span className="line-clamp-2 leading-snug">
+                              {client.address}
+                            </span>
                           </div>
                         )}
                       </div>

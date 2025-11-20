@@ -245,7 +245,8 @@ export default function EditJobPage() {
         className="edit-container"
         style={{
           minHeight: '100vh',
-          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+          background:
+            'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
         }}
       >
@@ -265,8 +266,8 @@ export default function EditJobPage() {
             top: '64px',
             zIndex: 19,
             boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-        }}
-      >
+          }}
+        >
           <Breadcrumb
             items={[
               { label: 'Jobs', href: '/jobs' },

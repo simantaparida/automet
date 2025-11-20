@@ -66,7 +66,6 @@ export default function JobDetailPage() {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
 
-
   useEffect(() => {
     if (id) {
       fetchJob();
@@ -116,7 +115,12 @@ export default function JobDetailPage() {
   };
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this job? This action cannot be undone.')) return;
+    if (
+      !confirm(
+        'Are you sure you want to delete this job? This action cannot be undone.'
+      )
+    )
+      return;
 
     try {
       const response = await apiFetch(`/api/jobs/${id}`, {
@@ -135,8 +139,6 @@ export default function JobDetailPage() {
     }
   };
 
-
-
   const handleCall = () => {
     if (job?.client?.contact_phone) {
       window.location.href = `tel:${job.client.contact_phone}`;
@@ -151,9 +153,15 @@ export default function JobDetailPage() {
 
   const handleNavigate = () => {
     if (job?.site?.gps_lat && job?.site?.gps_lng) {
-      window.open(`https://www.google.com/maps/dir/?api=1&destination=${job.site.gps_lat},${job.site.gps_lng}`, '_blank');
+      window.open(
+        `https://www.google.com/maps/dir/?api=1&destination=${job.site.gps_lat},${job.site.gps_lng}`,
+        '_blank'
+      );
     } else if (job?.site?.address) {
-      window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(job.site.address)}`, '_blank');
+      window.open(
+        `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(job.site.address)}`,
+        '_blank'
+      );
     }
   };
 
@@ -183,7 +191,9 @@ export default function JobDetailPage() {
             <TopHeader />
             <main className="flex-1 p-6 flex items-center justify-center">
               <div className="text-center">
-                <h2 className="text-xl font-bold text-gray-900">Job not found</h2>
+                <h2 className="text-xl font-bold text-gray-900">
+                  Job not found
+                </h2>
                 <button
                   onClick={() => router.push('/jobs')}
                   className="mt-4 text-primary hover:underline"

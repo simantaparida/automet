@@ -9,10 +9,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: [
-    ['line'],
-    ['html', { open: 'never' }],
-  ],
+  reporter: [['line'], ['html', { open: 'never' }]],
   use: {
     baseURL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
     trace: 'retain-on-failure',

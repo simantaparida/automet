@@ -69,7 +69,7 @@ export default async function handler(
         )
       `
       )
-      .eq('org_id', user.org_id!)
+      .eq('org_id', user.org_id)
       .in('status', ['scheduled', 'in_progress'])
       .order('scheduled_at', { ascending: true, nullsFirst: false })
       .limit(50);
@@ -88,7 +88,7 @@ export default async function handler(
     const { data: allSites, error: sitesError } = await typed
       .from('sites')
       .select('id, name')
-      .eq('org_id', user.org_id!);
+      .eq('org_id', user.org_id);
 
     if (sitesError) {
       logError('Error fetching sites', sitesError);
@@ -103,10 +103,12 @@ export default async function handler(
     }
 
     if (upcomingJobs) {
-      for (const job of upcomingJobs as any[]) {
+      for (const job of upcomingJobs as unknown as any[]) {
         // Filter for technician: only show if assigned
         if (effectiveRole === 'technician') {
-          const isAssigned = job.job_assignments?.some((a: any) => a.user_id === user.id);
+          const isAssigned = job.job_assignments?.some(
+            (a: { user_id: string }) => a.user_id === user.id
+          );
           if (!isAssigned) continue;
         }
 
@@ -126,32 +128,38 @@ export default async function handler(
         }
 
         const assignments = job.job_assignments as
-          | { user_id: string; started_at: string | null; user: { id: string; full_name: string | null; email: string } }[]
+          | {
+            user_id: string;
+            started_at: string | null;
+            user: { id: string; full_name: string | null; email: string };
+          }[]
           | null;
 
         const primaryAssignment =
           assignments && assignments.length > 0 ? assignments[0] : null;
 
         // Get site data from the map
-        const siteData = job.site_id && sitesMap.has(job.site_id)
-          ? sitesMap.get(job.site_id)!
-          : null;
+        const siteData =
+          job.site_id && sitesMap.has(job.site_id)
+            ? sitesMap.get(job.site_id)!
+            : null;
 
         upcoming.push({
           id: job.id,
           title: job.title,
           scheduled_at: job.scheduled_at,
           site: siteData,
-          assignee: primaryAssignment && primaryAssignment.user
-            ? {
-              id: primaryAssignment.user.id,
-              name:
-                primaryAssignment.user.full_name ||
-                primaryAssignment.user.email?.split('@')[0] ||
-                'Unknown',
-              started_at: primaryAssignment.started_at || undefined,
-            }
-            : null,
+          assignee:
+            primaryAssignment && primaryAssignment.user
+              ? {
+                id: primaryAssignment.user.id,
+                name:
+                  primaryAssignment.user.full_name ||
+                  primaryAssignment.user.email?.split('@')[0] ||
+                  'Unknown',
+                started_at: primaryAssignment.started_at || undefined,
+              }
+              : null,
           eta_status: eta,
         });
 
@@ -172,7 +180,11 @@ export default async function handler(
           }
         }
 
-        if (eta !== 'on-time' || job.priority === 'high' || job.priority === 'urgent') {
+        if (
+          eta !== 'on-time' ||
+          job.priority === 'high' ||
+          job.priority === 'urgent'
+        ) {
           // Determine risk reason
           let riskReason = '';
           if (eta === 'late') {
@@ -207,5 +219,3 @@ export default async function handler(
     return res.status(500).json({ error: 'Failed to fetch jobs timeline' });
   }
 }
-
-

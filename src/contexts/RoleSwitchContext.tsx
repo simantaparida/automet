@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from 'react';
 import { useAuth } from './AuthContext';
 
 export type UserRole = 'owner' | 'coordinator' | 'technician';
@@ -14,7 +20,9 @@ interface RoleSwitchContextType {
   apiFetch: (url: string, options?: RequestInit) => Promise<Response>;
 }
 
-const RoleSwitchContext = createContext<RoleSwitchContextType | undefined>(undefined);
+const RoleSwitchContext = createContext<RoleSwitchContextType | undefined>(
+  undefined
+);
 
 const STORAGE_KEY = 'automet_active_role';
 
@@ -23,7 +31,7 @@ const STORAGE_KEY = 'automet_active_role';
  */
 function getAvailableRoles(actualRole: UserRole | null): UserRole[] {
   if (!actualRole) return [];
-  
+
   switch (actualRole) {
     case 'owner':
       return ['owner', 'coordinator', 'technician'];
@@ -39,14 +47,21 @@ function getAvailableRoles(actualRole: UserRole | null): UserRole[] {
 /**
  * Validate that a role switch is allowed (no privilege escalation)
  */
-function canSwitchToRole(actualRole: UserRole | null, targetRole: UserRole): boolean {
+function canSwitchToRole(
+  actualRole: UserRole | null,
+  targetRole: UserRole
+): boolean {
   if (!actualRole) return false;
-  
+
   const availableRoles = getAvailableRoles(actualRole);
   return availableRoles.includes(targetRole);
 }
 
-export function RoleSwitchProvider({ children }: { children: React.ReactNode }) {
+export function RoleSwitchProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { user, loading: authLoading } = useAuth();
   const [actualRole, setActualRole] = useState<UserRole | null>(null);
   const [activeRole, setActiveRole] = useState<UserRole | null>(null);
@@ -70,15 +85,21 @@ export function RoleSwitchProvider({ children }: { children: React.ReactNode }) 
       if (response.ok) {
         const profile = await response.json();
         const role = profile.role as UserRole | null;
-        
+
         setActualRole(role);
-        
+
         // Restore active role from localStorage if valid
         if (typeof window !== 'undefined') {
-          const storedActiveRole = localStorage.getItem(STORAGE_KEY) as UserRole | null;
-          
+          const storedActiveRole = localStorage.getItem(
+            STORAGE_KEY
+          ) as UserRole | null;
+
           // Validate stored role is still allowed
-          if (storedActiveRole && role && canSwitchToRole(role, storedActiveRole)) {
+          if (
+            storedActiveRole &&
+            role &&
+            canSwitchToRole(role, storedActiveRole)
+          ) {
             setActiveRole(storedActiveRole);
           } else {
             // Default to actual role if stored role is invalid
@@ -107,32 +128,37 @@ export function RoleSwitchProvider({ children }: { children: React.ReactNode }) 
   /**
    * Switch to a different role (role impersonation)
    */
-  const switchRole = useCallback((role: UserRole) => {
-    if (!actualRole) {
-      console.error('Cannot switch role: actual role not loaded');
-      return;
-    }
+  const switchRole = useCallback(
+    (role: UserRole) => {
+      if (!actualRole) {
+        console.error('Cannot switch role: actual role not loaded');
+        return;
+      }
 
-    // Validate that the switch is allowed
-    if (!canSwitchToRole(actualRole, role)) {
-      console.error(`Cannot switch to ${role}: privilege escalation not allowed`);
-      return;
-    }
+      // Validate that the switch is allowed
+      if (!canSwitchToRole(actualRole, role)) {
+        console.error(
+          `Cannot switch to ${role}: privilege escalation not allowed`
+        );
+        return;
+      }
 
-    setActiveRole(role);
-    
-    // Persist to localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEY, role);
-    }
-  }, [actualRole]);
+      setActiveRole(role);
+
+      // Persist to localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEY, role);
+      }
+    },
+    [actualRole]
+  );
 
   /**
    * Reset to actual role
    */
   const resetRole = useCallback(() => {
     setActiveRole(actualRole);
-    
+
     // Clear localStorage
     if (typeof window !== 'undefined') {
       localStorage.removeItem(STORAGE_KEY);
@@ -143,24 +169,27 @@ export function RoleSwitchProvider({ children }: { children: React.ReactNode }) 
    * Wrapper for fetch that includes active role header
    * Use this for all API requests to ensure role switching works
    */
-  const apiFetch = useCallback((url: string, options: RequestInit = {}): Promise<Response> => {
-    const headers = new Headers(options.headers || {});
-    
-    // Add Content-Type if not present and body is provided
-    if (options.body && !headers.has('Content-Type')) {
-      headers.set('Content-Type', 'application/json');
-    }
+  const apiFetch = useCallback(
+    (url: string, options: RequestInit = {}): Promise<Response> => {
+      const headers = new Headers(options.headers || {});
 
-    // Add active role header if role is switched
-    if (activeRole && activeRole !== actualRole) {
-      headers.set('X-Active-Role', activeRole);
-    }
+      // Add Content-Type if not present and body is provided
+      if (options.body && !headers.has('Content-Type')) {
+        headers.set('Content-Type', 'application/json');
+      }
 
-    return fetch(url, {
-      ...options,
-      headers,
-    });
-  }, [activeRole, actualRole]);
+      // Add active role header if role is switched
+      if (activeRole && activeRole !== actualRole) {
+        headers.set('X-Active-Role', activeRole);
+      }
+
+      return fetch(url, {
+        ...options,
+        headers,
+      });
+    },
+    [activeRole, actualRole]
+  );
 
   // Fetch user role when user changes or on mount
   useEffect(() => {
@@ -205,4 +234,3 @@ export function useRoleSwitch() {
   }
   return context;
 }
-

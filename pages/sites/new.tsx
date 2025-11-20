@@ -130,7 +130,9 @@ export default function NewSitePage() {
 
             {/* Page Header */}
             <div className="mb-6">
-              <h1 className="text-2xl font-bold text-gray-900 mb-1">Create New Site</h1>
+              <h1 className="text-2xl font-bold text-gray-900 mb-1">
+                Create New Site
+              </h1>
               <p className="text-[15px] text-gray-500">
                 Add a new site location for a client
               </p>
@@ -284,8 +286,9 @@ export default function NewSitePage() {
             {/* Help Text */}
             <div className="mt-4 p-4 bg-gray-50 rounded-md border border-gray-200">
               <p className="text-[13px] text-gray-600 leading-relaxed">
-                <strong className="text-gray-700">Tip:</strong> GPS coordinates help technicians locate sites accurately.
-                You can find coordinates using Google Maps or your device's GPS.
+                <strong className="text-gray-700">Tip:</strong> GPS coordinates
+                help technicians locate sites accurately. You can find
+                coordinates using Google Maps or your device's GPS.
               </p>
             </div>
           </div>

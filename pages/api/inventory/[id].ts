@@ -5,7 +5,8 @@ import { withOnboardedAuth } from '@/lib/auth-middleware';
 import { logError } from '@/lib/logger';
 
 type InventoryItemRow = Database['public']['Tables']['inventory_items']['Row'];
-type InventoryItemUpdate = Database['public']['Tables']['inventory_items']['Update'];
+type InventoryItemUpdate =
+  Database['public']['Tables']['inventory_items']['Update'];
 
 type ParsedUpdatePayload = any;
 
@@ -32,8 +33,18 @@ const isInventoryItemRow = (value: unknown): value is InventoryItemRow => {
 
   // More lenient validation - allow numeric types to be strings (from database)
   // PostgreSQL numeric types can be returned as strings
-  const quantityNum = typeof quantity === 'number' ? quantity : (typeof quantity === 'string' ? Number(quantity) : null);
-  const reorderLevelNum = typeof reorder_level === 'number' ? reorder_level : (typeof reorder_level === 'string' ? Number(reorder_level) : null);
+  const quantityNum =
+    typeof quantity === 'number'
+      ? quantity
+      : typeof quantity === 'string'
+        ? Number(quantity)
+        : null;
+  const reorderLevelNum =
+    typeof reorder_level === 'number'
+      ? reorder_level
+      : typeof reorder_level === 'string'
+        ? Number(reorder_level)
+        : null;
 
   return (
     typeof id === 'string' &&
@@ -41,10 +52,13 @@ const isInventoryItemRow = (value: unknown): value is InventoryItemRow => {
     typeof name === 'string' &&
     (typeof sku === 'string' || sku === null) &&
     (typeof unit === 'string' || unit === null) &&
-    (quantityNum !== null && !isNaN(quantityNum) || quantity === null) &&
-    (reorderLevelNum !== null && !isNaN(reorderLevelNum) || reorder_level === null) &&
+    ((quantityNum !== null && !isNaN(quantityNum)) || quantity === null) &&
+    ((reorderLevelNum !== null && !isNaN(reorderLevelNum)) ||
+      reorder_level === null) &&
     typeof is_serialized === 'boolean' &&
-    (typeof updated_at === 'string' || updated_at === null || updated_at instanceof Date) &&
+    (typeof updated_at === 'string' ||
+      updated_at === null ||
+      updated_at instanceof Date) &&
     (typeof created_at === 'string' || created_at instanceof Date)
   );
 };
@@ -69,8 +83,7 @@ const parseUpdatePayload = (
     return { ok: false, message: 'Invalid payload format.' };
   }
 
-  const itemName =
-    typeof payload.name === 'string' ? payload.name.trim() : '';
+  const itemName = typeof payload.name === 'string' ? payload.name.trim() : '';
 
   if (!itemName) {
     return {
@@ -91,7 +104,8 @@ const parseUpdatePayload = (
 
   const quantity = toNullableNumber(payload.quantity);
   const reorderLevel = toNullableNumber(payload.reorder_level);
-  const isSerialized = typeof payload.is_serialized === 'boolean' ? payload.is_serialized : false;
+  const isSerialized =
+    typeof payload.is_serialized === 'boolean' ? payload.is_serialized : false;
 
   return {
     ok: true,
@@ -139,7 +153,7 @@ export default async function handler(
 
       if (itemError) {
         logError('Error fetching inventory item:', itemError);
-        return res.status(500).json({ 
+        return res.status(500).json({
           error: 'Failed to fetch inventory item',
           message: itemError.message,
           code: itemError.code,

@@ -39,7 +39,9 @@ export default function CreateTestUsersPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || data.error || 'Failed to create test users');
+        throw new Error(
+          data.message || data.error || 'Failed to create test users'
+        );
       }
 
       setResult(data);
@@ -89,7 +91,8 @@ export default function CreateTestUsersPage() {
         className="page-container"
         style={{
           minHeight: '100vh',
-          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+          background:
+            'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
         }}
       >
@@ -145,9 +148,16 @@ export default function CreateTestUsersPage() {
             >
               Create Test Login Profiles
             </h1>
-            <p style={{ color: '#6b7280', marginBottom: '2rem', fontSize: '1rem' }}>
-              This page will create test users for Owner, Coordinator, and Technician roles
-              with predefined passwords. <strong>Only available in development mode.</strong>
+            <p
+              style={{
+                color: '#6b7280',
+                marginBottom: '2rem',
+                fontSize: '1rem',
+              }}
+            >
+              This page will create test users for Owner, Coordinator, and
+              Technician roles with predefined passwords.{' '}
+              <strong>Only available in development mode.</strong>
             </p>
 
             {/* Test Users Info */}
@@ -170,7 +180,13 @@ export default function CreateTestUsersPage() {
               >
                 Test Users to be Created:
               </h2>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem',
+                }}
+              >
                 <div
                   style={{
                     display: 'flex',
@@ -190,7 +206,13 @@ export default function CreateTestUsersPage() {
                       owner@automet.test
                     </div>
                   </div>
-                  <div style={{ fontSize: '0.875rem', fontFamily: 'monospace', color: '#EF7722' }}>
+                  <div
+                    style={{
+                      fontSize: '0.875rem',
+                      fontFamily: 'monospace',
+                      color: '#EF7722',
+                    }}
+                  >
                     TestOwner123!
                   </div>
                 </div>
@@ -213,7 +235,13 @@ export default function CreateTestUsersPage() {
                       coordinator@automet.test
                     </div>
                   </div>
-                  <div style={{ fontSize: '0.875rem', fontFamily: 'monospace', color: '#EF7722' }}>
+                  <div
+                    style={{
+                      fontSize: '0.875rem',
+                      fontFamily: 'monospace',
+                      color: '#EF7722',
+                    }}
+                  >
                     TestCoordinator123!
                   </div>
                 </div>
@@ -236,7 +264,13 @@ export default function CreateTestUsersPage() {
                       technician@automet.test
                     </div>
                   </div>
-                  <div style={{ fontSize: '0.875rem', fontFamily: 'monospace', color: '#EF7722' }}>
+                  <div
+                    style={{
+                      fontSize: '0.875rem',
+                      fontFamily: 'monospace',
+                      color: '#EF7722',
+                    }}
+                  >
                     TestTechnician123!
                   </div>
                 </div>
@@ -355,7 +389,9 @@ export default function CreateTestUsersPage() {
                           }}
                         >
                           <div>
-                            <div style={{ fontWeight: '600', color: '#111827' }}>
+                            <div
+                              style={{ fontWeight: '600', color: '#111827' }}
+                            >
                               {user.email} ({user.role})
                             </div>
                             {user.status === 'success' && user.password && (
@@ -366,7 +402,10 @@ export default function CreateTestUsersPage() {
                                   marginTop: '0.25rem',
                                 }}
                               >
-                                Password: <code style={{ color: '#EF7722' }}>{user.password}</code>
+                                Password:{' '}
+                                <code style={{ color: '#EF7722' }}>
+                                  {user.password}
+                                </code>
                               </div>
                             )}
                             {user.status === 'error' && (
@@ -385,14 +424,21 @@ export default function CreateTestUsersPage() {
                             style={{
                               padding: '0.25rem 0.75rem',
                               backgroundColor:
-                                user.status === 'success' ? '#d1fae5' : '#fee2e2',
-                              color: user.status === 'success' ? '#065f46' : '#991b1b',
+                                user.status === 'success'
+                                  ? '#d1fae5'
+                                  : '#fee2e2',
+                              color:
+                                user.status === 'success'
+                                  ? '#065f46'
+                                  : '#991b1b',
                               borderRadius: '4px',
                               fontSize: '0.75rem',
                               fontWeight: '600',
                             }}
                           >
-                            {user.status === 'success' ? '✓ Created' : '✗ Failed'}
+                            {user.status === 'success'
+                              ? '✓ Created'
+                              : '✗ Failed'}
                           </span>
                         </div>
                       </div>
@@ -410,14 +456,35 @@ export default function CreateTestUsersPage() {
                       borderRadius: '6px',
                     }}
                   >
-                    <p style={{ color: '#1e40af', margin: 0, fontWeight: '600' }}>
+                    <p
+                      style={{ color: '#1e40af', margin: 0, fontWeight: '600' }}
+                    >
                       ✓ Test users created successfully! You can now:
                     </p>
-                    <ul style={{ marginTop: '0.5rem', paddingLeft: '1.5rem', color: '#1e40af' }}>
+                    <ul
+                      style={{
+                        marginTop: '0.5rem',
+                        paddingLeft: '1.5rem',
+                        color: '#1e40af',
+                      }}
+                    >
                       <li>
-                        Go to <a href="/onboarding/welcome" style={{ color: '#3b82f6', textDecoration: 'underline' }}>Login Page</a> and sign in with any of the test credentials above
+                        Go to{' '}
+                        <a
+                          href="/onboarding/welcome"
+                          style={{
+                            color: '#3b82f6',
+                            textDecoration: 'underline',
+                          }}
+                        >
+                          Login Page
+                        </a>{' '}
+                        and sign in with any of the test credentials above
                       </li>
-                      <li>Test the role switch feature by logging in as Owner or Coordinator</li>
+                      <li>
+                        Test the role switch feature by logging in as Owner or
+                        Coordinator
+                      </li>
                       <li>Verify permissions by logging in as Technician</li>
                     </ul>
                   </div>
@@ -430,4 +497,3 @@ export default function CreateTestUsersPage() {
     </ProtectedRoute>
   );
 }
-

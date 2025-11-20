@@ -199,7 +199,8 @@ export default function NewAssetPage() {
         className="asset-form-container"
         style={{
           minHeight: '100vh',
-          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+          background:
+            'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
         }}
       >
@@ -282,7 +283,8 @@ export default function NewAssetPage() {
                 style={{
                   width: '48px',
                   height: '48px',
-                  background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
+                  background:
+                    'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
                   borderRadius: '10px',
                   display: 'flex',
                   alignItems: 'center',
@@ -428,7 +430,8 @@ export default function NewAssetPage() {
                   onFocus={(e) => {
                     if (formData.client_id) {
                       e.target.style.borderColor = '#EF7722';
-                      e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
+                      e.target.style.boxShadow =
+                        '0 0 0 3px rgba(239,119,34,0.1)';
                     }
                   }}
                   onBlur={(e) => {
@@ -437,7 +440,9 @@ export default function NewAssetPage() {
                   }}
                 >
                   <option value="">
-                    {formData.client_id ? 'Select a site...' : 'Select a client first'}
+                    {formData.client_id
+                      ? 'Select a site...'
+                      : 'Select a client first'}
                   </option>
                   {sites.map((site) => (
                     <option key={site.id} value={site.id}>
@@ -624,7 +629,8 @@ export default function NewAssetPage() {
                     }}
                     onFocus={(e) => {
                       e.target.style.borderColor = '#EF7722';
-                      e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
+                      e.target.style.boxShadow =
+                        '0 0 0 3px rgba(239,119,34,0.1)';
                     }}
                     onBlur={(e) => {
                       e.target.style.borderColor = '#d1d5db';
@@ -667,7 +673,8 @@ export default function NewAssetPage() {
                     }}
                     onFocus={(e) => {
                       e.target.style.borderColor = '#EF7722';
-                      e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
+                      e.target.style.boxShadow =
+                        '0 0 0 3px rgba(239,119,34,0.1)';
                     }}
                     onBlur={(e) => {
                       e.target.style.borderColor = '#d1d5db';
@@ -758,13 +765,15 @@ export default function NewAssetPage() {
                   onMouseEnter={(e) => {
                     if (!saving) {
                       e.currentTarget.style.transform = 'translateY(-1px)';
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
+                      e.currentTarget.style.boxShadow =
+                        '0 4px 12px rgba(239,119,34,0.3)';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (!saving) {
                       e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
+                      e.currentTarget.style.boxShadow =
+                        '0 2px 8px rgba(239,119,34,0.25)';
                     }
                   }}
                 >
@@ -812,7 +821,8 @@ export default function NewAssetPage() {
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = '#EF7722';
                     e.currentTarget.style.color = '#EF7722';
-                    e.currentTarget.style.boxShadow = '0 0 0 1px rgba(239,119,34,0.2)';
+                    e.currentTarget.style.boxShadow =
+                      '0 0 0 1px rgba(239,119,34,0.2)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.borderColor = '#e5e7eb';

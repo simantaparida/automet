@@ -157,14 +157,14 @@ export default function ROICalculator() {
     if (plan) {
       setSelectedPlan(plan);
       setInputs(getInitialInputs(plan));
-      
+
       // Scroll to results on mobile only when plan changes via tap
       if (typeof window !== 'undefined' && window.innerWidth < 1024) {
         setTimeout(() => {
-          resultsRef.current?.scrollIntoView({ 
-            behavior: 'smooth', 
+          resultsRef.current?.scrollIntoView({
+            behavior: 'smooth',
             block: 'start',
-            inline: 'nearest'
+            inline: 'nearest',
           });
         }, 100);
       }
@@ -343,7 +343,10 @@ export default function ROICalculator() {
           </div>
 
           {/* RIGHT - Results */}
-          <div ref={resultsRef} className="bg-white rounded-xl shadow-lg border-2 border-gray-200 p-4">
+          <div
+            ref={resultsRef}
+            className="bg-white rounded-xl shadow-lg border-2 border-gray-200 p-4"
+          >
             {/* Header with Title, Toggle, and Info Button */}
             <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-3 mb-3">
               <h3 className="text-base font-bold text-gray-900">

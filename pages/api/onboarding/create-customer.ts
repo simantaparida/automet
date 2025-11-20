@@ -36,12 +36,16 @@ export default async function handler(
     const { name, address, contactPerson, phone } = req.body;
 
     if (!name || !address) {
-      return res.status(400).json({ error: 'Missing required fields: name and address' });
+      return res
+        .status(400)
+        .json({ error: 'Missing required fields: name and address' });
     }
 
     // Validate name length
     if (name.length < 2 || name.length > 200) {
-      return res.status(400).json({ error: 'Customer name must be 2-200 characters' });
+      return res
+        .status(400)
+        .json({ error: 'Customer name must be 2-200 characters' });
     }
 
     // Get user's org_id using service role (fresh data, no cache)
@@ -51,17 +55,26 @@ export default async function handler(
       .eq('id', session.user.id)
       .maybeSingle();
 
-    const userData = userResult.data as { org_id: string | null; role: string | null } | null;
+    const userData = userResult.data as {
+      org_id: string | null;
+      role: string | null;
+    } | null;
     const userError = userResult.error;
 
     if (userError || !userData?.org_id) {
-      console.error('User org check failed:', { userError, userData, userId: session.user.id });
+      console.error('User org check failed:', {
+        userError,
+        userData,
+        userId: session.user.id,
+      });
       return res.status(400).json({ error: 'User not part of organization' });
     }
 
     // Check user has permission (owner or coordinator)
     if (!['owner', 'coordinator'].includes(userData.role || '')) {
-      return res.status(403).json({ error: 'Only owners and coordinators can create customers' });
+      return res
+        .status(403)
+        .json({ error: 'Only owners and coordinators can create customers' });
     }
 
     // Create customer (client) using service role to bypass RLS
@@ -93,8 +106,11 @@ export default async function handler(
         createdAt: customer.created_at,
       },
     });
-  } catch (error: any) {
-    console.error('Create customer API error:', error);
-    return res.status(500).json({ error: error.message || 'Internal server error' });
+  } catch (error) {
+    console.error('Error creating customer:', error);
+    return res.status(500).json({
+      error: 'Failed to create customer',
+      details: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 }

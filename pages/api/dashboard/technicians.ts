@@ -42,7 +42,7 @@ export default async function handler(
     const { data: users, error: usersError } = await typed
       .from('users')
       .select('id, email, full_name, role, org_id')
-      .eq('org_id', user.org_id!)
+      .eq('org_id', user.org_id)
       .eq('role', 'technician');
 
     if (usersError) {
@@ -87,7 +87,7 @@ export default async function handler(
           job_assignments:job_assignments ( user_id )
         `
         )
-        .eq('org_id', user.org_id!)
+        .eq('org_id', user.org_id)
         .gte('scheduled_at', startOfDay)
         .lte('scheduled_at', endOfDay)
         .in('status', ['scheduled', 'in_progress']);
@@ -100,7 +100,9 @@ export default async function handler(
 
       if (todaysJobs) {
         for (const job of todaysJobs as any[]) {
-          const assignments = job.job_assignments as { user_id: string }[] | null;
+          const assignments = job.job_assignments as
+            | { user_id: string }[]
+            | null;
           if (!assignments) continue;
 
           for (const assignment of assignments) {
@@ -115,8 +117,7 @@ export default async function handler(
       for (const tech of users) {
         const jobsToday = jobsCountByTech[tech.id] ?? 0;
 
-        const status: Technician['status'] =
-          jobsToday > 0 ? 'active' : 'idle';
+        const status: Technician['status'] = jobsToday > 0 ? 'active' : 'idle';
 
         technicians.push({
           id: tech.id,
@@ -137,5 +138,3 @@ export default async function handler(
       .json({ error: 'Failed to fetch dashboard technicians' });
   }
 }
-
-

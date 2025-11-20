@@ -102,7 +102,7 @@ async function sendViaMSG91(params: SendSMSParams): Promise<boolean> {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'authkey': MSG91_AUTH_KEY,
+        authkey: MSG91_AUTH_KEY,
       },
       body: JSON.stringify({
         sender: MSG91_SENDER_ID,
@@ -112,7 +112,7 @@ async function sendViaMSG91(params: SendSMSParams): Promise<boolean> {
           {
             message: params.message,
             to: [params.to.replace('+91', '')], // Remove +91 prefix
-          }
+          },
         ],
       }),
     });
@@ -146,14 +146,16 @@ async function sendViaExotel(params: SendSMSParams): Promise<boolean> {
   }
 
   try {
-    const auth = Buffer.from(`${EXOTEL_SID}:${EXOTEL_TOKEN}`).toString('base64');
+    const auth = Buffer.from(`${EXOTEL_SID}:${EXOTEL_TOKEN}`).toString(
+      'base64'
+    );
 
     const response = await fetch(
       `https://api.exotel.com/v1/Accounts/${EXOTEL_SID}/Sms/send.json`,
       {
         method: 'POST',
         headers: {
-          'Authorization': `Basic ${auth}`,
+          Authorization: `Basic ${auth}`,
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: new URLSearchParams({

@@ -38,17 +38,19 @@ export default async function handler(
     // Since we can't easily import without checking exports, let's check user.activeRole or user.role
     const effectiveRole = user.activeRole || user.role;
 
-    let query = typed
+    const query = typed
       .from('jobs')
-      .select(`
+      .select(
+        `
         id, 
         status, 
         priority, 
         scheduled_at, 
         completed_at,
         assignments:job_assignments(user_id)
-      `)
-      .eq('org_id', user.org_id!);
+      `
+      )
+      .eq('org_id', user.org_id);
 
     const { data: jobs, error } = await query;
 
@@ -68,14 +70,16 @@ export default async function handler(
 
     // We don't yet track proof explicitly here – keep counts at 0 but
     // structure matches what the dashboard expects.
-    let proofPending = 0;
-    let proofPendingHighPriority = 0;
+    const proofPending = 0;
+    const proofPendingHighPriority = 0;
 
     if (jobs) {
       for (const job of jobs) {
         // Filter for technician: only count if assigned
         if (effectiveRole === 'technician') {
-          const isAssigned = (job as any).assignments?.some((a: any) => a.user_id === user.id);
+          const isAssigned = (job as any).assignments?.some(
+            (a: { user_id: string }) => a.user_id === user.id
+          );
           if (!isAssigned) continue;
         }
 
@@ -91,7 +95,9 @@ export default async function handler(
         } else if (job.status === 'in_progress') {
           inProgress += 1;
 
-          const startedAt = job.scheduled_at ? new Date(job.scheduled_at) : null;
+          const startedAt = job.scheduled_at
+            ? new Date(job.scheduled_at)
+            : null;
           if (startedAt) {
             const diffHours =
               (now.getTime() - startedAt.getTime()) / (1000 * 60 * 60);
@@ -111,7 +117,7 @@ export default async function handler(
       const { data: unassignedJobs, error: unassignedError } = await typed
         .from('jobs')
         .select('id')
-        .eq('org_id', user.org_id!)
+        .eq('org_id', user.org_id)
         .in('status', ['scheduled', 'in_progress'])
         .not('id', 'in', typed.from('job_assignments').select('job_id'));
 
@@ -142,5 +148,3 @@ export default async function handler(
     return res.status(500).json({ error: 'Failed to fetch dashboard KPIs' });
   }
 }
-
-

@@ -1,7 +1,7 @@
 /**
  * Blog XML Sitemap
  * Route: /blog-sitemap.xml
- * 
+ *
  * This page generates an XML sitemap for all published blog posts.
  * It runs on the server side (getServerSideProps) to generate dynamic content.
  */
@@ -45,7 +45,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     }
 
     const baseUrl = 'https://automet.in';
-    
+
     // Generate XML sitemap
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -61,7 +61,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   </url>
   
   <!-- Blog Posts -->
-${(posts as BlogPost[] || [])
+${((posts as BlogPost[]) || [])
   .map((post) => {
     const lastmod = new Date(post.published_at).toISOString();
     return `  <url>
@@ -76,14 +76,17 @@ ${(posts as BlogPost[] || [])
 
     // Set headers and send XML
     res.setHeader('Content-Type', 'application/xml; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+    res.setHeader(
+      'Cache-Control',
+      'public, s-maxage=3600, stale-while-revalidate=86400'
+    );
     res.write(sitemap);
     res.end();
 
     return { props: {} };
   } catch (error) {
     console.error('Sitemap generation error:', error);
-    
+
     // Return minimal sitemap on error
     res.setHeader('Content-Type', 'application/xml');
     res.write(`<?xml version="1.0" encoding="UTF-8"?>
@@ -95,8 +98,7 @@ ${(posts as BlogPost[] || [])
   </url>
 </urlset>`);
     res.end();
-    
+
     return { props: {} };
   }
 };
-

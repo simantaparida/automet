@@ -28,7 +28,10 @@ export default function Footer() {
         if (toastTimeoutRef.current) {
           clearTimeout(toastTimeoutRef.current);
         }
-        toastTimeoutRef.current = setTimeout(() => setToastVisible(false), 2000);
+        toastTimeoutRef.current = setTimeout(
+          () => setToastVisible(false),
+          2000
+        );
         return;
       } catch (error) {
         // Fallback to mailto below

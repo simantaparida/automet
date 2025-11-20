@@ -1,7 +1,7 @@
 /**
  * Blog XML Sitemap Generator
  * Route: /api/blog-sitemap.xml
- * 
+ *
  * Generates an XML sitemap for all published blog posts
  * to help search engines discover and index content faster.
  */
@@ -36,7 +36,7 @@ export default async function handler(
     }
 
     const baseUrl = 'https://automet.in';
-    
+
     // Generate XML sitemap
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -54,7 +54,7 @@ export default async function handler(
   </url>
   
   <!-- Blog Posts -->
-${(posts as BlogPost[] || [])
+${((posts as BlogPost[]) || [])
   .map((post) => {
     const lastmod = new Date(post.published_at).toISOString();
     return `  <url>
@@ -69,12 +69,14 @@ ${(posts as BlogPost[] || [])
 
     // Set headers for XML response
     res.setHeader('Content-Type', 'application/xml');
-    res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
-    
+    res.setHeader(
+      'Cache-Control',
+      'public, s-maxage=3600, stale-while-revalidate=86400'
+    );
+
     return res.status(200).send(sitemap);
   } catch (error) {
     console.error('Sitemap generation error:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
-

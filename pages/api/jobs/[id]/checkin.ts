@@ -76,15 +76,15 @@ export default async function handler(
         status: 'in_progress',
         updated_at: new Date().toISOString(),
       };
-      await supabaseAdmin
-        .from('jobs')
-        .update(jobUpdate)
-        .eq('id', jobId);
+      await supabaseAdmin.from('jobs').update(jobUpdate).eq('id', jobId);
     }
 
     return res.status(200).json(data);
-  } catch (error: any) {
-    console.error('Error updating check-in/out:', error);
-    return res.status(500).json({ error: error.message });
+  } catch (error) {
+    console.error('Error checking in:', error);
+    return res.status(500).json({
+      error: 'Failed to check in',
+      details: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 }

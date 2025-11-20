@@ -1,6 +1,16 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { Home, Briefcase, MoreHorizontal, Users, User, MapPin, Wrench, Package, X } from 'lucide-react';
+import {
+  Home,
+  Briefcase,
+  MoreHorizontal,
+  Users,
+  User,
+  MapPin,
+  Wrench,
+  Package,
+  X,
+} from 'lucide-react';
 
 interface BottomNavProps {
   activeTab?: 'home' | 'jobs' | 'more' | 'clients' | 'profile' | 'team';
@@ -78,7 +88,6 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
             animation: 'slideUp 0.2s ease-out',
           }}
         >
-
           {/* Menu Header */}
           <div
             style={{
@@ -135,8 +144,12 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
                 minHeight: '56px',
                 transition: 'background-color 0.2s',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#fff5ed')}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'white')}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = '#fff5ed')
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = 'white')
+              }
             >
               <div
                 style={{
@@ -188,8 +201,12 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
                 minHeight: '56px',
                 transition: 'background-color 0.2s',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#fff5ed')}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'white')}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = '#fff5ed')
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = 'white')
+              }
             >
               <div
                 style={{
@@ -241,8 +258,12 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
                 minHeight: '56px',
                 transition: 'background-color 0.2s',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#fff5ed')}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'white')}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = '#fff5ed')
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = 'white')
+              }
             >
               <div
                 style={{
@@ -315,7 +336,11 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
             minHeight: '56px',
           }}
         >
-          <Home size={24} color={isActive('home') ? '#EF7722' : '#6b7280'} strokeWidth={isActive('home') ? 2.5 : 2} />
+          <Home
+            size={24}
+            color={isActive('home') ? '#EF7722' : '#6b7280'}
+            strokeWidth={isActive('home') ? 2.5 : 2}
+          />
           <span
             style={{
               fontSize: '0.6875rem',
@@ -343,7 +368,11 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
             minHeight: '56px',
           }}
         >
-          <Briefcase size={24} color={isActive('jobs') ? '#EF7722' : '#6b7280'} strokeWidth={isActive('jobs') ? 2.5 : 2} />
+          <Briefcase
+            size={24}
+            color={isActive('jobs') ? '#EF7722' : '#6b7280'}
+            strokeWidth={isActive('jobs') ? 2.5 : 2}
+          />
           <span
             style={{
               fontSize: '0.6875rem',
@@ -371,7 +400,11 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
             minHeight: '56px',
           }}
         >
-          <MoreHorizontal size={24} color={isActive('more') ? '#EF7722' : '#6b7280'} strokeWidth={isActive('more') ? 2.5 : 2} />
+          <MoreHorizontal
+            size={24}
+            color={isActive('more') ? '#EF7722' : '#6b7280'}
+            strokeWidth={isActive('more') ? 2.5 : 2}
+          />
           <span
             style={{
               fontSize: '0.6875rem',
@@ -399,7 +432,11 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
             minHeight: '56px',
           }}
         >
-          <Users size={24} color={isActive('clients') ? '#EF7722' : '#6b7280'} strokeWidth={isActive('clients') ? 2.5 : 2} />
+          <Users
+            size={24}
+            color={isActive('clients') ? '#EF7722' : '#6b7280'}
+            strokeWidth={isActive('clients') ? 2.5 : 2}
+          />
           <span
             style={{
               fontSize: '0.6875rem',
@@ -427,7 +464,11 @@ export default function BottomNav({ activeTab = 'home' }: BottomNavProps) {
             minHeight: '56px',
           }}
         >
-          <User size={24} color={isActive('profile') ? '#EF7722' : '#6b7280'} strokeWidth={isActive('profile') ? 2.5 : 2} />
+          <User
+            size={24}
+            color={isActive('profile') ? '#EF7722' : '#6b7280'}
+            strokeWidth={isActive('profile') ? 2.5 : 2}
+          />
           <span
             style={{
               fontSize: '0.6875rem',

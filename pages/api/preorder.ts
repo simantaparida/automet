@@ -106,24 +106,25 @@ export default async function handler(
 
     // Insert waitlist entry into database
     // Using admin client if available (bypasses RLS), otherwise using public RLS policy
-    const preorderInsert: Database['public']['Tables']['preorders']['Insert'] = {
-      org_name: data.org_name || null,
-      contact_name: data.contact_name || null,
-      email: data.email.toLowerCase(),
-      phone: data.phone,
-      tech_count: data.tech_count ?? null,
-      city: data.city ?? null,
-      plan_interest: data.plan_interest ?? null,
-      payment_status: 'pending',
-      amount_paid: 0,
-      email_confirmed: true,
-      confirmation_token: null,
-      token_expires_at: null,
-      utm_source: data.utm_source ?? null,
-      utm_medium: data.utm_medium ?? null,
-      utm_campaign: data.utm_campaign ?? null,
-      referrer: data.referrer ?? null,
-    };
+    const preorderInsert: Database['public']['Tables']['preorders']['Insert'] =
+      {
+        org_name: data.org_name || null,
+        contact_name: data.contact_name || null,
+        email: data.email.toLowerCase(),
+        phone: data.phone,
+        tech_count: data.tech_count ?? null,
+        city: data.city ?? null,
+        plan_interest: data.plan_interest ?? null,
+        payment_status: 'pending',
+        amount_paid: 0,
+        email_confirmed: true,
+        confirmation_token: null,
+        token_expires_at: null,
+        utm_source: data.utm_source ?? null,
+        utm_medium: data.utm_medium ?? null,
+        utm_campaign: data.utm_campaign ?? null,
+        referrer: data.referrer ?? null,
+      };
 
     const { data: preorder, error: insertError } = await supabase
       .from('preorders')

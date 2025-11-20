@@ -90,8 +90,14 @@ export default function SitesPage() {
 
         setSites(sitesWithClientData);
       } else {
-        const errorData = await sitesResponse.json().catch(() => ({ error: 'Unknown error' }));
-        console.error('Failed to fetch sites:', sitesResponse.status, errorData);
+        const errorData = await sitesResponse
+          .json()
+          .catch(() => ({ error: 'Unknown error' }));
+        console.error(
+          'Failed to fetch sites:',
+          sitesResponse.status,
+          errorData
+        );
       }
 
       if (clientsResponse.ok) {
@@ -136,9 +142,13 @@ export default function SitesPage() {
               {/* Page Header */}
               <div className="mb-6 flex justify-between items-start flex-wrap gap-3">
                 <div className="flex-1">
-                  <h1 className="text-2xl font-bold text-gray-900 mb-1">Sites</h1>
+                  <h1 className="text-2xl font-bold text-gray-900 mb-1">
+                    Sites
+                  </h1>
                   <p className="text-[15px] text-gray-500">
-                    {filteredSites.length} {filteredSites.length === 1 ? 'site' : 'sites'} in your organization
+                    {filteredSites.length}{' '}
+                    {filteredSites.length === 1 ? 'site' : 'sites'} in your
+                    organization
                   </p>
                 </div>
 
@@ -176,8 +186,12 @@ export default function SitesPage() {
                 <div className="bg-white p-4 rounded-lg border border-gray-200">
                   <EmptyState
                     icon={<MapPin size={48} className="text-gray-300" />}
-                    title={selectedClientId ? "No sites found" : "No sites yet"}
-                    description={selectedClientId ? "Try selecting a different client" : "Get started by adding your first site"}
+                    title={selectedClientId ? 'No sites found' : 'No sites yet'}
+                    description={
+                      selectedClientId
+                        ? 'Try selecting a different client'
+                        : 'Get started by adding your first site'
+                    }
                   />
                   {!selectedClientId && activeRole !== 'technician' && (
                     <div className="flex justify-center mt-4">
@@ -207,11 +221,16 @@ export default function SitesPage() {
                             <h3 className="text-[15px] font-bold text-gray-900 truncate">
                               {site.name}
                             </h3>
-                            <ChevronRight size={16} className="text-gray-400 flex-shrink-0 mt-0.5" />
+                            <ChevronRight
+                              size={16}
+                              className="text-gray-400 flex-shrink-0 mt-0.5"
+                            />
                           </div>
                           <div className="flex items-center gap-1.5 text-[13px] text-gray-500">
                             <Building2 size={14} className="flex-shrink-0" />
-                            <span className="truncate">{site.client?.name || 'Unknown Client'}</span>
+                            <span className="truncate">
+                              {site.client?.name || 'Unknown Client'}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -219,13 +238,19 @@ export default function SitesPage() {
                       <div className="space-y-1.5 pl-[60px]">
                         {site.address && (
                           <div className="flex items-start gap-2 text-[13px] text-gray-500">
-                            <MapPin size={14} className="flex-shrink-0 mt-0.5" />
-                            <span className="line-clamp-2 leading-snug">{site.address}</span>
+                            <MapPin
+                              size={14}
+                              className="flex-shrink-0 mt-0.5"
+                            />
+                            <span className="line-clamp-2 leading-snug">
+                              {site.address}
+                            </span>
                           </div>
                         )}
                         {site.gps_lat && site.gps_lng && (
                           <div className="text-[11px] text-primary font-medium">
-                            📍 {site.gps_lat.toFixed(6)}, {site.gps_lng.toFixed(6)}
+                            📍 {site.gps_lat.toFixed(6)},{' '}
+                            {site.gps_lng.toFixed(6)}
                           </div>
                         )}
                       </div>

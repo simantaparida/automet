@@ -33,7 +33,9 @@ export interface OnboardedApiRequest extends NextApiRequest {
 /**
  * Calculate which roles a user can view as based on their actual role
  */
-function getAvailableRoles(actualRole: 'owner' | 'coordinator' | 'technician'): Array<'owner' | 'coordinator' | 'technician'> {
+function getAvailableRoles(
+  actualRole: 'owner' | 'coordinator' | 'technician'
+): Array<'owner' | 'coordinator' | 'technician'> {
   switch (actualRole) {
     case 'owner':
       return ['owner', 'coordinator', 'technician'];
@@ -70,9 +72,17 @@ function getActiveRole(
     return actualRole; // Default to actual role if no header
   }
 
-  const validRoles: Array<'owner' | 'coordinator' | 'technician'> = ['owner', 'coordinator', 'technician'];
+  const validRoles: Array<'owner' | 'coordinator' | 'technician'> = [
+    'owner',
+    'coordinator',
+    'technician',
+  ];
 
-  if (!validRoles.includes(activeRoleHeader as 'owner' | 'coordinator' | 'technician')) {
+  if (
+    !validRoles.includes(
+      activeRoleHeader as 'owner' | 'coordinator' | 'technician'
+    )
+  ) {
     return actualRole; // Invalid role, default to actual
   }
 
@@ -184,7 +194,7 @@ export async function withAuth(
 /**
  * Authentication middleware that requires completed onboarding
  * Use this for API routes that need org_id to be present
- * 
+ *
  * Returns the authenticated Supabase client that has the session properly configured
  * This ensures RLS policies can access auth.uid() correctly
  */
@@ -192,7 +202,11 @@ export async function withOnboardedAuth(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<
-  | { authenticated: true; user: OnboardedApiRequest['user']; supabase: ReturnType<typeof createServerSupabaseClient<Database>> }
+  | {
+      authenticated: true;
+      user: OnboardedApiRequest['user'];
+      supabase: ReturnType<typeof createServerSupabaseClient<Database>>;
+    }
   | { authenticated: false }
 > {
   try {
@@ -231,7 +245,7 @@ export async function withOnboardedAuth(
           (value as { org_id?: unknown }).org_id === null) &&
         (typeof (value as { role?: unknown }).role === 'string' ||
           (value as { role?: unknown }).role === null) &&
-        (typeof (value as { full_name?: unknown }).full_name === 'string')
+        typeof (value as { full_name?: unknown }).full_name === 'string'
       );
     };
 
@@ -260,7 +274,10 @@ export async function withOnboardedAuth(
     }
 
     // TypeScript now knows org_id and role are non-null
-    const actualRole = userProfile.role as 'owner' | 'coordinator' | 'technician';
+    const actualRole = userProfile.role as
+      | 'owner'
+      | 'coordinator'
+      | 'technician';
 
     // Get active role from header (role switch)
     const activeRole = getActiveRole(req, actualRole);
@@ -292,7 +309,7 @@ export async function withOnboardedAuth(
 /**
  * Role-based authorization check
  * Use after withOnboardedAuth to verify user has required role
- * 
+ *
  * IMPORTANT: For write operations, this checks the actual role, not activeRole.
  * For read operations, you can use getEffectiveRole() to get activeRole.
  */
@@ -317,6 +334,8 @@ export function requireRole(
  * Returns activeRole if set (role switch), otherwise actual role
  * Use this for read operations and data filtering
  */
-export function getEffectiveRole(user: OnboardedApiRequest['user']): 'owner' | 'coordinator' | 'technician' {
+export function getEffectiveRole(
+  user: OnboardedApiRequest['user']
+): 'owner' | 'coordinator' | 'technician' {
   return user.activeRole || user.role;
 }

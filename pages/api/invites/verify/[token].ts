@@ -45,7 +45,8 @@ export default async function handler(
     // Find invite with organization and inviter details
     const { data: invite, error } = await supabase
       .from('user_invites')
-      .select(`
+      .select(
+        `
         id,
         name,
         role,
@@ -53,7 +54,8 @@ export default async function handler(
         status,
         organizations(name),
         users!invited_by(full_name)
-      `)
+      `
+      )
       .eq('invite_token', token)
       .eq('status', 'pending')
       .single();
@@ -86,8 +88,11 @@ export default async function handler(
         isExpired: expired,
       },
     });
-  } catch (error: any) {
-    console.error('Verify invite API error:', error);
-    return res.status(500).json({ error: error.message || 'Internal server error' });
+  } catch (error) {
+    console.error('Error verifying token:', error);
+    return res.status(500).json({
+      error: 'Failed to verify token',
+      details: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 }

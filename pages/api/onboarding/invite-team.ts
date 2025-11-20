@@ -53,8 +53,15 @@ export default async function handler(
 
     // Validate invites
     for (const invite of invites) {
-      if (!invite.name || !invite.contact || !invite.contactType || !invite.role) {
-        return res.status(400).json({ error: 'Missing required invite fields' });
+      if (
+        !invite.name ||
+        !invite.contact ||
+        !invite.contactType ||
+        !invite.role
+      ) {
+        return res
+          .status(400)
+          .json({ error: 'Missing required invite fields' });
       }
 
       if (!['phone', 'email'].includes(invite.contactType)) {
@@ -85,11 +92,19 @@ export default async function handler(
       .eq('id', session.user.id)
       .maybeSingle();
 
-    const userData = userResult.data as { org_id: string | null; full_name: string; organizations: { name: string } | null } | null;
+    const userData = userResult.data as {
+      org_id: string | null;
+      full_name: string;
+      organizations: { name: string } | null;
+    } | null;
     const userError = userResult.error;
 
     if (userError || !userData?.org_id) {
-      console.error('User org check failed:', { userError, userData, userId: session.user.id });
+      console.error('User org check failed:', {
+        userError,
+        userData,
+        userId: session.user.id,
+      });
       return res.status(400).json({ error: 'User not part of organization' });
     }
 
@@ -197,11 +212,11 @@ export default async function handler(
           inviteLink,
           expiresAt,
         });
-      } catch (error: any) {
+      } catch (error) {
         console.error('Invite processing error:', error);
         invitesFailed.push({
           contact: invite.contact,
-          reason: error.message || 'Unknown error',
+          reason: error instanceof Error ? error.message : 'Unknown error',
         });
       }
     }
@@ -212,8 +227,11 @@ export default async function handler(
       inviteDetails,
       invitesFailed,
     });
-  } catch (error: any) {
-    console.error('Invite team API error:', error);
-    return res.status(500).json({ error: error.message || 'Internal server error' });
+  } catch (error) {
+    console.error('Error processing invites:', error);
+    return res.status(500).json({
+      error: 'Failed to process invites',
+      details: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 }

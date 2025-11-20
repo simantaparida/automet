@@ -139,15 +139,40 @@ export default function AssetDetailPage() {
   const getStatusConfig = (status: string) => {
     switch (status) {
       case 'scheduled':
-        return { color: '#3b82f6', bg: '#eff6ff', icon: CalendarIcon, label: 'Scheduled' };
+        return {
+          color: '#3b82f6',
+          bg: '#eff6ff',
+          icon: CalendarIcon,
+          label: 'Scheduled',
+        };
       case 'in_progress':
-        return { color: '#f59e0b', bg: '#fffbeb', icon: Play, label: 'In Progress' };
+        return {
+          color: '#f59e0b',
+          bg: '#fffbeb',
+          icon: Play,
+          label: 'In Progress',
+        };
       case 'completed':
-        return { color: '#10b981', bg: '#f0fdf4', icon: CheckCircle2, label: 'Completed' };
+        return {
+          color: '#10b981',
+          bg: '#f0fdf4',
+          icon: CheckCircle2,
+          label: 'Completed',
+        };
       case 'cancelled':
-        return { color: '#ef4444', bg: '#fef2f2', icon: XCircle, label: 'Cancelled' };
+        return {
+          color: '#ef4444',
+          bg: '#fef2f2',
+          icon: XCircle,
+          label: 'Cancelled',
+        };
       default:
-        return { color: '#6b7280', bg: '#f9fafb', icon: AlertCircle, label: status };
+        return {
+          color: '#6b7280',
+          bg: '#f9fafb',
+          icon: AlertCircle,
+          label: status,
+        };
     }
   };
 
@@ -189,7 +214,8 @@ export default function AssetDetailPage() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+            background:
+              'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           }}
         >
           <div
@@ -226,7 +252,8 @@ export default function AssetDetailPage() {
             flexDirection: 'column',
             gap: '1rem',
             padding: '1rem',
-            background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+            background:
+              'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           }}
         >
           <p style={{ fontSize: '1.125rem', color: '#6b7280' }}>
@@ -255,7 +282,9 @@ export default function AssetDetailPage() {
   }
 
   const warrantyExpiry = asset.metadata?.warranty_expiry;
-  const warrantyExpired = warrantyExpiry ? isWarrantyExpired(warrantyExpiry) : false;
+  const warrantyExpired = warrantyExpiry
+    ? isWarrantyExpired(warrantyExpiry)
+    : false;
 
   return (
     <ProtectedRoute>
@@ -294,7 +323,8 @@ export default function AssetDetailPage() {
         className="detail-container"
         style={{
           minHeight: '100vh',
-          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+          background:
+            'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
         }}
       >
@@ -324,7 +354,11 @@ export default function AssetDetailPage() {
           <Breadcrumb
             items={[
               { label: 'Assets', href: '/assets' },
-              { label: asset.model ? `${asset.asset_type} - ${asset.model}` : asset.asset_type },
+              {
+                label: asset.model
+                  ? `${asset.asset_type} - ${asset.model}`
+                  : asset.asset_type,
+              },
             ]}
           />
         </div>
@@ -378,7 +412,9 @@ export default function AssetDetailPage() {
                   whiteSpace: 'nowrap',
                 }}
               >
-                {asset.model ? `${asset.asset_type} - ${asset.model}` : asset.asset_type}
+                {asset.model
+                  ? `${asset.asset_type} - ${asset.model}`
+                  : asset.asset_type}
               </h1>
               {asset.serial_number && (
                 <p
@@ -602,7 +638,8 @@ export default function AssetDetailPage() {
                 style={{
                   width: '56px',
                   height: '56px',
-                  background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
+                  background:
+                    'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
                   borderRadius: '12px',
                   display: 'flex',
                   alignItems: 'center',
@@ -958,7 +995,11 @@ export default function AssetDetailPage() {
                             gap: '0.375rem',
                           }}
                         >
-                          <MapPin size={14} color="#6b7280" style={{ marginTop: '2px', flexShrink: 0 }} />
+                          <MapPin
+                            size={14}
+                            color="#6b7280"
+                            style={{ marginTop: '2px', flexShrink: 0 }}
+                          />
                           <span>{asset.site.address}</span>
                         </div>
                       )}
@@ -998,7 +1039,9 @@ export default function AssetDetailPage() {
                         Client
                       </div>
                       <button
-                        onClick={() => router.push(`/clients/${asset.site!.client!.id}`)}
+                        onClick={() =>
+                          router.push(`/clients/${asset.site!.client!.id}`)
+                        }
                         style={{
                           width: '100%',
                           padding: '0.75rem',
@@ -1117,7 +1160,8 @@ export default function AssetDetailPage() {
                         e.currentTarget.style.backgroundColor = '#f3f4f6';
                         e.currentTarget.style.borderColor = '#d1d5db';
                         e.currentTarget.style.transform = 'translateY(-1px)';
-                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+                        e.currentTarget.style.boxShadow =
+                          '0 4px 12px rgba(0,0,0,0.08)';
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.backgroundColor = '#f9fafb';
@@ -1235,10 +1279,12 @@ export default function AssetDetailPage() {
                   color: '#9ca3af',
                 }}
               >
-                <Package size={32} color="#d1d5db" style={{ margin: '0 auto 0.5rem' }} />
-                <p style={{ fontSize: '0.875rem', margin: 0 }}>
-                  No jobs yet
-                </p>
+                <Package
+                  size={32}
+                  color="#d1d5db"
+                  style={{ margin: '0 auto 0.5rem' }}
+                />
+                <p style={{ fontSize: '0.875rem', margin: 0 }}>No jobs yet</p>
               </div>
             )}
           </div>

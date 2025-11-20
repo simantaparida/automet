@@ -43,7 +43,8 @@ export default function RoleBadge({ className }: RoleBadgeProps) {
       }}
     >
       <span>
-        Viewing as: <strong>{ROLE_LABELS[activeRole]}</strong> (Your actual role: {ROLE_LABELS[actualRole]})
+        Viewing as: <strong>{ROLE_LABELS[activeRole]}</strong> (Your actual
+        role: {ROLE_LABELS[actualRole]})
       </span>
       <button
         onClick={resetRole}
@@ -75,4 +76,3 @@ export default function RoleBadge({ className }: RoleBadgeProps) {
     </div>
   );
 }
-

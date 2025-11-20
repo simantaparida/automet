@@ -150,10 +150,11 @@ export default function InventoryPage() {
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowLowStockOnly(!showLowStockOnly)}
-                className={`px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all border ${showLowStockOnly
-                  ? 'bg-amber-500 text-white border-amber-500 shadow-lg shadow-amber-500/20'
-                  : 'bg-white text-gray-600 border-gray-300 hover:border-amber-500 hover:text-amber-500'
-                  }`}
+                className={`px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all border ${
+                  showLowStockOnly
+                    ? 'bg-amber-500 text-white border-amber-500 shadow-lg shadow-amber-500/20'
+                    : 'bg-white text-gray-600 border-gray-300 hover:border-amber-500 hover:text-amber-500'
+                }`}
               >
                 <Filter size={16} />
                 {showLowStockOnly ? 'Low Stock Only' : 'Filter Stock'}
@@ -184,7 +185,11 @@ export default function InventoryPage() {
           ) : filteredInventory.length === 0 ? (
             <EmptyState
               icon={<Package size={48} className="text-primary-500" />}
-              title={searchTerm || showLowStockOnly ? 'No items found' : 'No inventory items yet'}
+              title={
+                searchTerm || showLowStockOnly
+                  ? 'No items found'
+                  : 'No inventory items yet'
+              }
               description={
                 searchTerm || showLowStockOnly
                   ? 'Try adjusting your filters or search term'
@@ -241,10 +246,14 @@ export default function InventoryPage() {
                   <div className="flex justify-between items-end pt-4 border-t border-gray-50">
                     <div>
                       <div className="text-2xl font-bold text-gray-900 mb-1">
-                        {item.quantity || 0} <span className="text-sm font-medium text-gray-500">{item.unit || 'units'}</span>
+                        {item.quantity || 0}{' '}
+                        <span className="text-sm font-medium text-gray-500">
+                          {item.unit || 'units'}
+                        </span>
                       </div>
                       <div className="text-xs text-gray-400">
-                        Reorder at: {item.reorder_level || 0} {item.unit || 'units'}
+                        Reorder at: {item.reorder_level || 0}{' '}
+                        {item.unit || 'units'}
                       </div>
                     </div>
                     <StockBadge

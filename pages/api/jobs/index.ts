@@ -1,6 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { withOnboardedAuth, requireRole, getEffectiveRole, type OnboardedApiRequest } from '@/lib/auth-middleware';
+import {
+  withOnboardedAuth,
+  requireRole,
+  getEffectiveRole,
+  type OnboardedApiRequest,
+} from '@/lib/auth-middleware';
 import { logError, logWarn } from '@/lib/logger';
 import type { Database } from '@/types/database';
 
@@ -274,14 +279,24 @@ export default async function handler(
 
   try {
     if (req.method === 'GET') {
-      return await handleGetJobs(req, res, user, supabase);
+      return await handleGetJobs(
+        req,
+        res,
+        user,
+        supabase as unknown as SupabaseClient<Database>
+      );
     }
 
     if (req.method === 'POST') {
       if (!requireRole(user, ['owner', 'coordinator'], res)) {
         return;
       }
-      return await handleCreateJob(req, res, user.org_id, supabase);
+      return await handleCreateJob(
+        req,
+        res,
+        user.org_id,
+        supabase as unknown as SupabaseClient<Database>
+      );
     }
 
     return res.status(405).json({ error: 'Method not allowed' });
@@ -297,16 +312,15 @@ async function handleGetJobs(
   req: NextApiRequest,
   res: NextApiResponse,
   user: OnboardedApiRequest['user'],
-  supabase: any
+  supabase: SupabaseClient<Database>
 ) {
   try {
     const effectiveRole = getEffectiveRole(user);
 
-    const typedClient = supabase as unknown as SupabaseClient<Database>;
     const filters = parseFilters(req.query);
     const rangeEnd = filters.offset + filters.limit - 1;
 
-    let query = typedClient
+    let query = supabase
       .from('jobs')
       .select(
         `
@@ -378,10 +392,9 @@ async function handleCreateJob(
   req: NextApiRequest,
   res: NextApiResponse,
   orgId: string,
-  supabase: any
+  supabase: SupabaseClient<Database>
 ) {
   try {
-    const typedClient = supabase as unknown as SupabaseClient<Database>;
     const parsed = parseJobPayload(req.body);
     if (!parsed.ok) {
       return res.status(400).json({ error: parsed.message });
@@ -393,7 +406,7 @@ async function handleCreateJob(
       status: 'scheduled' as JobStatus,
     };
 
-    const response = await typedClient
+    const response = await supabase
       .from('jobs')
       .insert(jobPayload)
       .select(

@@ -32,7 +32,8 @@ export function generateInviteToken(): string {
  * @returns Full invite URL
  */
 export function generateInviteLink(token: string, baseUrl?: string): string {
-  const url = baseUrl || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const url =
+    baseUrl || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   return `${url}/join/${token}`;
 }
 
@@ -67,7 +68,8 @@ export function formatInviteMessage(params: {
   inviterName: string;
   role: 'technician' | 'coordinator';
 }): string {
-  const roleDisplay = params.role === 'technician' ? 'Technician' : 'Coordinator';
+  const roleDisplay =
+    params.role === 'technician' ? 'Technician' : 'Coordinator';
 
   return `You've been invited to join ${params.companyName} on Automet.
 
@@ -93,6 +95,7 @@ export function isValidInviteCode(code: string): boolean {
  * @returns true if valid, false otherwise
  */
 export function isValidInviteToken(token: string): boolean {
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   return uuidRegex.test(token);
 }

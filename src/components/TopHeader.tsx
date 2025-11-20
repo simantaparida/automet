@@ -213,7 +213,13 @@ export default function TopHeader({ onSearchFocus }: TopHeaderProps) {
           >
             {user?.email?.charAt(0).toUpperCase() || 'U'}
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.125rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.125rem',
+            }}
+          >
             <span
               style={{
                 fontSize: '0.875rem',
@@ -239,4 +245,3 @@ export default function TopHeader({ onSearchFocus }: TopHeaderProps) {
     </header>
   );
 }
-

@@ -118,7 +118,7 @@ export default function NewJobPage() {
       if (response.ok) {
         const data = await response.json();
         // API might return { assets: [...] } or array directly
-        const assetsList = Array.isArray(data) ? data : (data?.assets || []);
+        const assetsList = Array.isArray(data) ? data : data?.assets || [];
         setAssets(Array.isArray(assetsList) ? assetsList : []);
       } else {
         setAssets([]);
@@ -264,7 +264,8 @@ export default function NewJobPage() {
         className="job-form-container"
         style={{
           minHeight: '100vh',
-          background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+          background:
+            'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
         }}
       >
@@ -289,7 +290,9 @@ export default function NewJobPage() {
             boxShadow: '0 2px 10px rgba(239,119,34,0.2)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div
+            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}
+          >
             <button
               onClick={() => router.push('/jobs')}
               style={{
@@ -345,7 +348,8 @@ export default function NewJobPage() {
                 style={{
                   width: '48px',
                   height: '48px',
-                  background: 'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
+                  background:
+                    'linear-gradient(135deg, #fff5ed 0%, #ffe8d6 100%)',
                   borderRadius: '10px',
                   display: 'flex',
                   alignItems: 'center',
@@ -581,7 +585,8 @@ export default function NewJobPage() {
                   onFocus={(e) => {
                     if (formData.client_id) {
                       e.target.style.borderColor = '#EF7722';
-                      e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
+                      e.target.style.boxShadow =
+                        '0 0 0 3px rgba(239,119,34,0.1)';
                     }
                   }}
                   onBlur={(e) => {
@@ -640,7 +645,8 @@ export default function NewJobPage() {
                   onFocus={(e) => {
                     if (formData.site_id) {
                       e.target.style.borderColor = '#EF7722';
-                      e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
+                      e.target.style.boxShadow =
+                        '0 0 0 3px rgba(239,119,34,0.1)';
                     }
                   }}
                   onBlur={(e) => {
@@ -786,7 +792,8 @@ export default function NewJobPage() {
                     }}
                     onFocus={(e) => {
                       e.target.style.borderColor = '#EF7722';
-                      e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
+                      e.target.style.boxShadow =
+                        '0 0 0 3px rgba(239,119,34,0.1)';
                     }}
                     onBlur={(e) => {
                       e.target.style.borderColor = '#d1d5db';
@@ -830,7 +837,8 @@ export default function NewJobPage() {
                     }}
                     onFocus={(e) => {
                       e.target.style.borderColor = '#EF7722';
-                      e.target.style.boxShadow = '0 0 0 3px rgba(239,119,34,0.1)';
+                      e.target.style.boxShadow =
+                        '0 0 0 3px rgba(239,119,34,0.1)';
                     }}
                     onBlur={(e) => {
                       e.target.style.borderColor = '#d1d5db';
@@ -876,13 +884,15 @@ export default function NewJobPage() {
                   onMouseEnter={(e) => {
                     if (!loading) {
                       e.currentTarget.style.transform = 'translateY(-1px)';
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,119,34,0.3)';
+                      e.currentTarget.style.boxShadow =
+                        '0 4px 12px rgba(239,119,34,0.3)';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (!loading) {
                       e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(239,119,34,0.25)';
+                      e.currentTarget.style.boxShadow =
+                        '0 2px 8px rgba(239,119,34,0.25)';
                     }
                   }}
                 >
@@ -930,7 +940,8 @@ export default function NewJobPage() {
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = '#EF7722';
                     e.currentTarget.style.color = '#EF7722';
-                    e.currentTarget.style.boxShadow = '0 0 0 1px rgba(239,119,34,0.2)';
+                    e.currentTarget.style.boxShadow =
+                      '0 0 0 1px rgba(239,119,34,0.2)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.borderColor = '#e5e7eb';

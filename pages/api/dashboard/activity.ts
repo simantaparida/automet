@@ -51,7 +51,7 @@ export default async function handler(
     const { data: completedJobs, error: completedError } = await typed
       .from('jobs')
       .select('id, title, completed_at')
-      .eq('org_id', user.org_id!)
+      .eq('org_id', user.org_id)
       .eq('status', 'completed')
       .not('completed_at', 'is', null)
       .order('completed_at', { ascending: false })
@@ -74,7 +74,7 @@ export default async function handler(
     const { data: createdJobs, error: createdError } = await typed
       .from('jobs')
       .select('id, title, created_at')
-      .eq('org_id', user.org_id!)
+      .eq('org_id', user.org_id)
       .order('created_at', { ascending: false })
       .limit(10);
 
@@ -85,7 +85,7 @@ export default async function handler(
           type: 'job_created',
           title: 'New job created',
           description: job.title,
-          timestamp: job.created_at as string,
+          timestamp: job.created_at,
           link: `/jobs/${job.id}`,
         });
       }
@@ -95,7 +95,7 @@ export default async function handler(
     const { data: clients, error: clientsError } = await typed
       .from('clients')
       .select('id, name, created_at')
-      .eq('org_id', user.org_id!)
+      .eq('org_id', user.org_id)
       .order('created_at', { ascending: false })
       .limit(5);
 
@@ -106,7 +106,7 @@ export default async function handler(
           type: 'client_added',
           title: 'New client added',
           description: client.name,
-          timestamp: client.created_at as string,
+          timestamp: client.created_at,
           link: `/clients/${client.id}`,
         });
       }
@@ -116,7 +116,7 @@ export default async function handler(
     const { data: technicians, error: techniciansError } = await typed
       .from('users')
       .select('id, full_name, email, created_at')
-      .eq('org_id', user.org_id!)
+      .eq('org_id', user.org_id)
       .eq('role', 'technician')
       .order('created_at', { ascending: false })
       .limit(5);
@@ -128,14 +128,15 @@ export default async function handler(
           type: 'technician_added',
           title: 'Technician joined',
           description: tech.full_name || tech.email,
-          timestamp: tech.created_at as string,
+          timestamp: tech.created_at,
         });
       }
     }
 
     // Sort all activities by timestamp desc and cap to 25
     activities.sort(
-      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
 
     return res.status(200).json({
@@ -148,5 +149,3 @@ export default async function handler(
       .json({ error: 'Failed to fetch dashboard activity' });
   }
 }
-
-

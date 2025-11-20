@@ -82,7 +82,12 @@ interface AtRiskJob {
 
 interface ActivityItem {
   id: string;
-  type: 'job_completed' | 'job_created' | 'client_added' | 'technician_added' | 'proof_uploaded';
+  type:
+    | 'job_completed'
+    | 'job_created'
+    | 'client_added'
+    | 'technician_added'
+    | 'proof_uploaded';
   title: string;
   description: string;
   timestamp: string;
@@ -113,7 +118,6 @@ export default function DashboardPage() {
   const [inProgressJobs, setInProgressJobs] = useState<TimelineJob[]>([]);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
-
   // Get greeting based on time
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -125,7 +129,10 @@ export default function DashboardPage() {
   // Get current month and year
   const getCurrentMonthYear = () => {
     const now = new Date();
-    const month = now.toLocaleString('en-US', { month: 'long', timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+    const month = now.toLocaleString('en-US', {
+      month: 'long',
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    });
     const year = now.getFullYear();
     return `${month} ${year}`;
   };
@@ -217,7 +224,9 @@ export default function DashboardPage() {
           const kpisData = await kpisRes.json();
           setKpis(kpisData);
         } else {
-          const errorData = await kpisRes.json().catch(() => ({ error: 'Unknown error' }));
+          const errorData = await kpisRes
+            .json()
+            .catch(() => ({ error: 'Unknown error' }));
           console.error('Failed to fetch KPIs:', kpisRes.status, errorData);
         }
 
@@ -225,7 +234,9 @@ export default function DashboardPage() {
           const alertsData = await alertsRes.json();
           setAlerts(alertsData.alerts || []);
         } else {
-          const errorData = await alertsRes.json().catch(() => ({ error: 'Unknown error' }));
+          const errorData = await alertsRes
+            .json()
+            .catch(() => ({ error: 'Unknown error' }));
           console.error('Failed to fetch alerts:', alertsRes.status, errorData);
         }
 
@@ -233,8 +244,14 @@ export default function DashboardPage() {
           const techniciansData = await techniciansRes.json();
           setTechnicians(techniciansData.technicians || []);
         } else {
-          const errorData = await techniciansRes.json().catch(() => ({ error: 'Unknown error' }));
-          console.error('Failed to fetch technicians:', techniciansRes.status, errorData);
+          const errorData = await techniciansRes
+            .json()
+            .catch(() => ({ error: 'Unknown error' }));
+          console.error(
+            'Failed to fetch technicians:',
+            techniciansRes.status,
+            errorData
+          );
         }
 
         if (timelineRes.ok) {
@@ -242,7 +259,9 @@ export default function DashboardPage() {
           const allJobs = timelineData.upcoming || [];
 
           // Separate jobs into categories
-          const overdue = allJobs.filter((job: TimelineJob) => job.eta_status === 'late');
+          const overdue = allJobs.filter(
+            (job: TimelineJob) => job.eta_status === 'late'
+          );
           const inProgress = allJobs.filter((job: TimelineJob) => {
             // We'll need to check job status - for now, use a simple heuristic
             return job.eta_status === 'on-time' || job.eta_status === 'at-risk';
@@ -254,16 +273,28 @@ export default function DashboardPage() {
           setUnassignedJobs(timelineData.unassigned || []);
           setAtRiskJobs(timelineData.at_risk || []);
         } else {
-          const errorData = await timelineRes.json().catch(() => ({ error: 'Unknown error' }));
-          console.error('Failed to fetch jobs timeline:', timelineRes.status, errorData);
+          const errorData = await timelineRes
+            .json()
+            .catch(() => ({ error: 'Unknown error' }));
+          console.error(
+            'Failed to fetch jobs timeline:',
+            timelineRes.status,
+            errorData
+          );
         }
 
         if (activityRes.ok) {
           const activityData = await activityRes.json();
           setActivities(activityData.activities || []);
         } else {
-          const errorData = await activityRes.json().catch(() => ({ error: 'Unknown error' }));
-          console.error('Failed to fetch activity:', activityRes.status, errorData);
+          const errorData = await activityRes
+            .json()
+            .catch(() => ({ error: 'Unknown error' }));
+          console.error(
+            'Failed to fetch activity:',
+            activityRes.status,
+            errorData
+          );
         }
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
@@ -286,7 +317,10 @@ export default function DashboardPage() {
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString('en-IN', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   };
 
   const formatRelativeTime = (dateString: string) => {
@@ -400,7 +434,10 @@ export default function DashboardPage() {
                                 }}
                                 className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors"
                               >
-                                <Building2 size={16} className="text-gray-400" />
+                                <Building2
+                                  size={16}
+                                  className="text-gray-400"
+                                />
                                 Add Client
                               </button>
                               <button
@@ -432,7 +469,6 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-
               {/* Row 1: Primary KPI Cards - Horizontal Scroll */}
               <div className="overflow-x-auto -webkit-overflow-scrolling-touch pb-2 mb-6 scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400">
                 <div className="flex gap-4 min-w-fit">
@@ -444,7 +480,9 @@ export default function DashboardPage() {
                   >
                     <div className="flex items-center gap-2 mb-2">
                       <Calendar size={18} className="text-primary" />
-                      <span className="text-xs text-gray-500 font-medium">Scheduled</span>
+                      <span className="text-xs text-gray-500 font-medium">
+                        Scheduled
+                      </span>
                     </div>
                     <p className="text-[22px] font-bold text-gray-900 m-0 leading-tight">
                       {kpis?.scheduled.count || 0}
@@ -459,16 +497,20 @@ export default function DashboardPage() {
                   >
                     <div className="flex items-center gap-2 mb-2">
                       <Wrench size={18} className="text-amber-500" />
-                      <span className="text-xs text-gray-500 font-medium">In Progress</span>
+                      <span className="text-xs text-gray-500 font-medium">
+                        In Progress
+                      </span>
                     </div>
                     <p className="text-[22px] font-bold text-gray-900 m-0 leading-tight">
                       {kpis?.in_progress.count || 0}
                     </p>
-                    {kpis?.in_progress.longest_running_hours && kpis.in_progress.longest_running_hours > 8 && (
-                      <p className="text-[11px] text-red-500 mt-1 font-medium">
-                        Longest: {Math.round(kpis.in_progress.longest_running_hours)}h
-                      </p>
-                    )}
+                    {kpis?.in_progress.longest_running_hours &&
+                      kpis.in_progress.longest_running_hours > 8 && (
+                        <p className="text-[11px] text-red-500 mt-1 font-medium">
+                          Longest:{' '}
+                          {Math.round(kpis.in_progress.longest_running_hours)}h
+                        </p>
+                      )}
                   </button>
 
                   {/* Completed */}
@@ -479,16 +521,30 @@ export default function DashboardPage() {
                   >
                     <div className="flex items-center gap-2 mb-2">
                       <CheckCircle2 size={18} className="text-emerald-500" />
-                      <span className="text-xs text-gray-500 font-medium">Completed</span>
+                      <span className="text-xs text-gray-500 font-medium">
+                        Completed
+                      </span>
                     </div>
                     <div className="flex items-baseline gap-1.5 flex-wrap">
                       <p className="text-[22px] font-bold text-gray-900 m-0 leading-tight">
                         {kpis?.completed.count || 0}
                       </p>
                       {kpis?.completed.trend !== undefined && (
-                        <div className="flex items-center gap-0.5 text-[11px]" style={{ color: kpis.completed.trend >= 0 ? '#10b981' : '#ef4444' }}>
-                          {kpis.completed.trend >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                          <span>{Math.abs(Math.round(kpis.completed.trend))}%</span>
+                        <div
+                          className="flex items-center gap-0.5 text-[11px]"
+                          style={{
+                            color:
+                              kpis.completed.trend >= 0 ? '#10b981' : '#ef4444',
+                          }}
+                        >
+                          {kpis.completed.trend >= 0 ? (
+                            <TrendingUp size={12} />
+                          ) : (
+                            <TrendingDown size={12} />
+                          )}
+                          <span>
+                            {Math.abs(Math.round(kpis.completed.trend))}%
+                          </span>
                         </div>
                       )}
                     </div>
@@ -497,33 +553,45 @@ export default function DashboardPage() {
                   {/* Overdue */}
                   <button
                     onClick={() => router.push('/jobs?status=overdue')}
-                    className={`bg-white p-3.5 rounded-lg cursor-pointer min-w-[130px] text-left transition-all flex-shrink-0 min-h-[90px] hover:-translate-y-0.5 hover:border-primary hover:shadow-md hover:shadow-primary/15 ${(kpis?.overdue.count || 0) > 0 ? 'border-2 border-red-500' : 'border border-gray-200'
-                      }`}
+                    className={`bg-white p-3.5 rounded-lg cursor-pointer min-w-[130px] text-left transition-all flex-shrink-0 min-h-[90px] hover:-translate-y-0.5 hover:border-primary hover:shadow-md hover:shadow-primary/15 ${
+                      (kpis?.overdue.count || 0) > 0
+                        ? 'border-2 border-red-500'
+                        : 'border border-gray-200'
+                    }`}
                     title="Jobs past due — action required. Click to view."
                   >
                     <div className="flex items-center gap-2 mb-2">
                       <AlertCircle size={18} className="text-red-500" />
-                      <span className="text-xs text-gray-500 font-medium">Overdue</span>
+                      <span className="text-xs text-gray-500 font-medium">
+                        Overdue
+                      </span>
                     </div>
-                    <p className={`text-[22px] font-bold m-0 leading-tight ${(kpis?.overdue.count || 0) > 0 ? 'text-red-500' : 'text-gray-900'}`}>
+                    <p
+                      className={`text-[22px] font-bold m-0 leading-tight ${(kpis?.overdue.count || 0) > 0 ? 'text-red-500' : 'text-gray-900'}`}
+                    >
                       {kpis?.overdue.count || 0}
                     </p>
                   </button>
 
                   {/* Proof Pending */}
                   <button
-                    onClick={() => router.push('/jobs?status=completed&proof_missing=true')}
+                    onClick={() =>
+                      router.push('/jobs?status=completed&proof_missing=true')
+                    }
                     className="bg-white p-3.5 rounded-lg border border-gray-200 cursor-pointer min-w-[130px] text-left transition-all flex-shrink-0 relative min-h-[90px] hover:-translate-y-0.5 hover:border-primary hover:shadow-md hover:shadow-primary/15"
                     title="Completed jobs missing proof of completion. Click to review."
                   >
-                    {kpis?.proof_pending.high_priority_count && kpis.proof_pending.high_priority_count > 0 && (
-                      <span className="absolute top-1.5 right-1.5 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-lg">
-                        {kpis.proof_pending.high_priority_count}
-                      </span>
-                    )}
+                    {kpis?.proof_pending.high_priority_count &&
+                      kpis.proof_pending.high_priority_count > 0 && (
+                        <span className="absolute top-1.5 right-1.5 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-lg">
+                          {kpis.proof_pending.high_priority_count}
+                        </span>
+                      )}
                     <div className="flex items-center gap-2 mb-2">
                       <FileCheck size={18} className="text-amber-500" />
-                      <span className="text-xs text-gray-500 font-medium">Proof Pending</span>
+                      <span className="text-xs text-gray-500 font-medium">
+                        Proof Pending
+                      </span>
                     </div>
                     <p className="text-[22px] font-bold text-gray-900 m-0 leading-tight">
                       {kpis?.proof_pending.count || 0}
@@ -539,7 +607,9 @@ export default function DashboardPage() {
                     >
                       <div className="flex items-center gap-2 mb-2">
                         <UserPlus size={18} className="text-indigo-600" />
-                        <span className="text-xs text-gray-500 font-medium">Unassigned</span>
+                        <span className="text-xs text-gray-500 font-medium">
+                          Unassigned
+                        </span>
                       </div>
                       <p className="text-[22px] font-bold text-gray-900 m-0 leading-tight">
                         {kpis?.unassigned.count || 0}
@@ -566,7 +636,10 @@ export default function DashboardPage() {
                     </button>
                   </div>
                   {overdueJobs.length === 0 ? (
-                    <EmptyState title="No overdue jobs" description="All jobs are on track! 🎉" />
+                    <EmptyState
+                      title="No overdue jobs"
+                      description="All jobs are on track! 🎉"
+                    />
                   ) : (
                     <div className="flex flex-col gap-2">
                       {overdueJobs.slice(0, 5).map((job) => (
@@ -581,14 +654,25 @@ export default function DashboardPage() {
                                 {job.title}
                               </div>
                               <div className="text-[11px] text-gray-500 leading-snug">
-                                {job.site?.name || 'No site'} • {new Date(job.scheduled_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} at {formatTime(job.scheduled_at)}
+                                {job.site?.name || 'No site'} •{' '}
+                                {new Date(job.scheduled_at).toLocaleDateString(
+                                  'en-US',
+                                  {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    year: 'numeric',
+                                  }
+                                )}{' '}
+                                at {formatTime(job.scheduled_at)}
                                 {job.assignee && ` • ${job.assignee.name}`}
                               </div>
                             </div>
                             <span className="bg-red-200 text-red-900 text-[10px] font-semibold px-1.5 py-0.5 rounded whitespace-nowrap flex-shrink-0">
                               {(() => {
                                 const days = getDaysOverdue(job.scheduled_at);
-                                return days === 0 ? 'OVERDUE' : `${days} ${days === 1 ? 'DAY' : 'DAYS'} OVERDUE`;
+                                return days === 0
+                                  ? 'OVERDUE'
+                                  : `${days} ${days === 1 ? 'DAY' : 'DAYS'} OVERDUE`;
                               })()}
                             </span>
                           </div>
@@ -613,7 +697,10 @@ export default function DashboardPage() {
                     </button>
                   </div>
                   {inProgressJobs.length === 0 ? (
-                    <EmptyState title="No jobs in progress" description="Ready to start a new job?" />
+                    <EmptyState
+                      title="No jobs in progress"
+                      description="Ready to start a new job?"
+                    />
                   ) : (
                     <div className="flex flex-col gap-2">
                       {inProgressJobs.slice(0, 5).map((job) => (
@@ -628,7 +715,16 @@ export default function DashboardPage() {
                                 {job.title}
                               </div>
                               <div className="text-[11px] text-gray-500 leading-snug">
-                                {job.site?.name || 'No site'} • {new Date(job.scheduled_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} at {formatTime(job.scheduled_at)}
+                                {job.site?.name || 'No site'} •{' '}
+                                {new Date(job.scheduled_at).toLocaleDateString(
+                                  'en-US',
+                                  {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    year: 'numeric',
+                                  }
+                                )}{' '}
+                                at {formatTime(job.scheduled_at)}
                                 {job.assignee && ` • ${job.assignee.name}`}
                               </div>
                             </div>
@@ -660,7 +756,10 @@ export default function DashboardPage() {
                     </button>
                   </div>
                   {timelineJobs.length === 0 ? (
-                    <EmptyState title="No upcoming jobs" description="Time to schedule some work!" />
+                    <EmptyState
+                      title="No upcoming jobs"
+                      description="Time to schedule some work!"
+                    />
                   ) : (
                     <div className="flex flex-col gap-2">
                       {timelineJobs.slice(0, 5).map((job) => (
@@ -679,11 +778,17 @@ export default function DashboardPage() {
                                 {job.assignee && ` • ${job.assignee.name}`}
                               </div>
                             </div>
-                            <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded whitespace-nowrap flex-shrink-0 ${job.eta_status === 'at-risk'
-                              ? 'bg-amber-200 text-amber-900'
-                              : 'bg-blue-100 text-blue-900'
-                              }`}>
-                              {new Date(job.scheduled_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            <span
+                              className={`text-[10px] font-semibold px-1.5 py-0.5 rounded whitespace-nowrap flex-shrink-0 ${
+                                job.eta_status === 'at-risk'
+                                  ? 'bg-amber-200 text-amber-900'
+                                  : 'bg-blue-100 text-blue-900'
+                              }`}
+                            >
+                              {new Date(job.scheduled_at).toLocaleDateString(
+                                'en-US',
+                                { month: 'short', day: 'numeric' }
+                              )}
                             </span>
                           </div>
                         </button>
@@ -700,47 +805,71 @@ export default function DashboardPage() {
                       Unassigned & At-risk Jobs
                     </h3>
                     <button
-                      onClick={() => router.push('/jobs?filter=unassigned_or_atrisk')}
+                      onClick={() =>
+                        router.push('/jobs?filter=unassigned_or_atrisk')
+                      }
                       className="text-[13px] text-primary font-semibold bg-transparent border-none cursor-pointer flex items-center gap-1 p-2 hover:underline"
                     >
                       View all <ChevronRight size={14} />
                     </button>
                   </div>
                   {unassignedJobs.length === 0 && atRiskJobs.length === 0 ? (
-                    <EmptyState title="All jobs assigned" description="Great job managing your team! 👏" />
+                    <EmptyState
+                      title="All jobs assigned"
+                      description="Great job managing your team! 👏"
+                    />
                   ) : (
                     <div className="flex flex-col gap-2">
-                      {[...unassignedJobs.slice(0, 3), ...atRiskJobs.slice(0, 2)].slice(0, 5).map((job) => {
-                        const isUnassigned = unassignedJobs.includes(job as AtRiskJob);
-                        return (
-                          <button
-                            key={job.id}
-                            onClick={() => router.push(`/jobs/${job.id}`)}
-                            className={`flex flex-col gap-1.5 p-2.5 rounded-md border cursor-pointer text-left transition-all ${isUnassigned
-                              ? 'bg-amber-50 border-amber-200 hover:bg-amber-100'
-                              : 'bg-red-50 border-red-200 hover:bg-red-100'
+                      {[
+                        ...unassignedJobs.slice(0, 3),
+                        ...atRiskJobs.slice(0, 2),
+                      ]
+                        .slice(0, 5)
+                        .map((job) => {
+                          const isUnassigned = unassignedJobs.includes(job);
+                          return (
+                            <button
+                              key={job.id}
+                              onClick={() => router.push(`/jobs/${job.id}`)}
+                              className={`flex flex-col gap-1.5 p-2.5 rounded-md border cursor-pointer text-left transition-all ${
+                                isUnassigned
+                                  ? 'bg-amber-50 border-amber-200 hover:bg-amber-100'
+                                  : 'bg-red-50 border-red-200 hover:bg-red-100'
                               }`}
-                          >
-                            <div className="flex items-start gap-2">
-                              <div className="flex-1 min-w-0">
-                                <div className="text-[13px] font-semibold text-gray-900 mb-1 truncate">
-                                  {job.title}
+                            >
+                              <div className="flex items-start gap-2">
+                                <div className="flex-1 min-w-0">
+                                  <div className="text-[13px] font-semibold text-gray-900 mb-1 truncate">
+                                    {job.title}
+                                  </div>
+                                  <div className="text-[11px] text-gray-500 leading-snug">
+                                    {job.site?.name || 'No site'} •{' '}
+                                    {new Date(
+                                      job.scheduled_at
+                                    ).toLocaleDateString('en-US', {
+                                      month: 'short',
+                                      day: 'numeric',
+                                      year: 'numeric',
+                                    })}{' '}
+                                    at {formatTime(job.scheduled_at)}
+                                    {!isUnassigned &&
+                                      job.risk_reason &&
+                                      ` • ${job.risk_reason}`}
+                                  </div>
                                 </div>
-                                <div className="text-[11px] text-gray-500 leading-snug">
-                                  {job.site?.name || 'No site'} • {new Date(job.scheduled_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} at {formatTime(job.scheduled_at)}
-                                  {!isUnassigned && job.risk_reason && ` • ${job.risk_reason}`}
-                                </div>
+                                <span
+                                  className={`text-[10px] font-semibold px-1.5 py-0.5 rounded whitespace-nowrap flex-shrink-0 ${
+                                    isUnassigned
+                                      ? 'bg-amber-200 text-amber-900'
+                                      : 'bg-red-200 text-red-900'
+                                  }`}
+                                >
+                                  {isUnassigned ? 'UNASSIGNED' : 'AT RISK'}
+                                </span>
                               </div>
-                              <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded whitespace-nowrap flex-shrink-0 ${isUnassigned
-                                ? 'bg-amber-200 text-amber-900'
-                                : 'bg-red-200 text-red-900'
-                                }`}>
-                                {isUnassigned ? 'UNASSIGNED' : 'AT RISK'}
-                              </span>
-                            </div>
-                          </button>
-                        );
-                      })}
+                            </button>
+                          );
+                        })}
                     </div>
                   )}
                 </div>
@@ -778,18 +907,45 @@ export default function DashboardPage() {
                         {activities.slice(0, 10).map((activity, index) => (
                           <tr
                             key={activity.id}
-                            onClick={() => activity.link && router.push(activity.link)}
-                            className={`${index < 9 ? 'border-b border-gray-100' : ''} ${activity.link ? 'cursor-pointer hover:bg-orange-50 transition-colors' : 'cursor-default'
-                              }`}
+                            onClick={() =>
+                              activity.link && router.push(activity.link)
+                            }
+                            className={`${index < 9 ? 'border-b border-gray-100' : ''} ${
+                              activity.link
+                                ? 'cursor-pointer hover:bg-orange-50 transition-colors'
+                                : 'cursor-default'
+                            }`}
                           >
                             <td className="py-2.5 px-1.5 align-middle">
                               <div className="flex items-center gap-1.5">
                                 <div className="w-7 h-7 rounded flex items-center justify-center flex-shrink-0 bg-orange-50">
-                                  {activity.type === 'job_completed' && <CheckCircle2 size={14} className="text-emerald-500" />}
-                                  {activity.type === 'job_created' && <Plus size={14} className="text-primary" />}
-                                  {activity.type === 'client_added' && <Building2 size={14} className="text-indigo-500" />}
-                                  {activity.type === 'technician_added' && <Users size={14} className="text-amber-500" />}
-                                  {activity.type === 'proof_uploaded' && <FileCheck size={14} className="text-purple-500" />}
+                                  {activity.type === 'job_completed' && (
+                                    <CheckCircle2
+                                      size={14}
+                                      className="text-emerald-500"
+                                    />
+                                  )}
+                                  {activity.type === 'job_created' && (
+                                    <Plus size={14} className="text-primary" />
+                                  )}
+                                  {activity.type === 'client_added' && (
+                                    <Building2
+                                      size={14}
+                                      className="text-indigo-500"
+                                    />
+                                  )}
+                                  {activity.type === 'technician_added' && (
+                                    <Users
+                                      size={14}
+                                      className="text-amber-500"
+                                    />
+                                  )}
+                                  {activity.type === 'proof_uploaded' && (
+                                    <FileCheck
+                                      size={14}
+                                      className="text-purple-500"
+                                    />
+                                  )}
                                 </div>
                               </div>
                             </td>
@@ -843,6 +999,6 @@ export default function DashboardPage() {
         {/* Bottom Navigation - Only visible on mobile */}
         <BottomNav activeTab="home" />
       </div>
-    </ProtectedRoute >
+    </ProtectedRoute>
   );
 }

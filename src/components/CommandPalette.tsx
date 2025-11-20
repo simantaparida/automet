@@ -9,7 +9,7 @@ import {
   Package,
   Home,
   Plus,
-  X
+  X,
 } from 'lucide-react';
 
 interface Command {
@@ -28,7 +28,10 @@ interface CommandPaletteProps {
   onClose: () => void;
 }
 
-export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
+export default function CommandPalette({
+  isOpen,
+  onClose,
+}: CommandPaletteProps) {
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -210,7 +213,9 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        setSelectedIndex((prev) => Math.min(prev + 1, filteredCommands.length - 1));
+        setSelectedIndex((prev) =>
+          Math.min(prev + 1, filteredCommands.length - 1)
+        );
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
         setSelectedIndex((prev) => Math.max(prev - 1, 0));
@@ -351,7 +356,9 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
                 color: '#6b7280',
               }}
             >
-              <p style={{ margin: 0, fontSize: '0.9375rem' }}>No commands found</p>
+              <p style={{ margin: 0, fontSize: '0.9375rem' }}>
+                No commands found
+              </p>
               <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.8125rem' }}>
                 Try a different search term
               </p>
@@ -374,7 +381,9 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
                   {category === 'search' && 'Search'}
                 </div>
                 {commands.map((command, index) => {
-                  const globalIndex = filteredCommands.findIndex((c) => c.id === command.id);
+                  const globalIndex = filteredCommands.findIndex(
+                    (c) => c.id === command.id
+                  );
                   const isSelected = globalIndex === selectedIndex;
                   const Icon = command.icon;
 
@@ -396,7 +405,9 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
                         borderRadius: '8px',
                         textAlign: 'left',
                         transition: 'all 0.15s',
-                        borderLeft: isSelected ? '3px solid #EF7722' : '3px solid transparent',
+                        borderLeft: isSelected
+                          ? '3px solid #EF7722'
+                          : '3px solid transparent',
                       }}
                       onMouseEnter={() => setSelectedIndex(globalIndex)}
                     >
@@ -474,19 +485,37 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
         >
           <div style={{ display: 'flex', gap: '1rem' }}>
             <span>
-              <kbd style={{ padding: '0.125rem 0.375rem', backgroundColor: '#f3f4f6', borderRadius: '4px' }}>
+              <kbd
+                style={{
+                  padding: '0.125rem 0.375rem',
+                  backgroundColor: '#f3f4f6',
+                  borderRadius: '4px',
+                }}
+              >
                 ↑↓
               </kbd>{' '}
               Navigate
             </span>
             <span>
-              <kbd style={{ padding: '0.125rem 0.375rem', backgroundColor: '#f3f4f6', borderRadius: '4px' }}>
+              <kbd
+                style={{
+                  padding: '0.125rem 0.375rem',
+                  backgroundColor: '#f3f4f6',
+                  borderRadius: '4px',
+                }}
+              >
                 Enter
               </kbd>{' '}
               Select
             </span>
             <span>
-              <kbd style={{ padding: '0.125rem 0.375rem', backgroundColor: '#f3f4f6', borderRadius: '4px' }}>
+              <kbd
+                style={{
+                  padding: '0.125rem 0.375rem',
+                  backgroundColor: '#f3f4f6',
+                  borderRadius: '4px',
+                }}
+              >
                 Esc
               </kbd>{' '}
               Close
@@ -519,4 +548,3 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
     </>
   );
 }
-

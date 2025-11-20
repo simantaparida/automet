@@ -108,15 +108,21 @@ export default function ProfilePage() {
           // Filter jobs assigned to this user
           const assignedJobs = jobs.filter((job: any) => {
             if (job.assignments && Array.isArray(job.assignments)) {
-              return job.assignments.some((assignment: any) => assignment.user_id === userId);
+              return job.assignments.some(
+                (assignment: any) => assignment.user_id === userId
+              );
             }
             return job.assigned_to === userId;
           });
 
           setStats({
             jobsAssigned: assignedJobs.length,
-            jobsCompleted: assignedJobs.filter((j: any) => j.status === 'completed').length,
-            jobsInProgress: assignedJobs.filter((j: any) => j.status === 'in_progress').length,
+            jobsCompleted: assignedJobs.filter(
+              (j: any) => j.status === 'completed'
+            ).length,
+            jobsInProgress: assignedJobs.filter(
+              (j: any) => j.status === 'in_progress'
+            ).length,
           });
         }
       } else {
@@ -128,9 +134,13 @@ export default function ProfilePage() {
 
           setStats({
             jobsAssigned: jobs.length,
-            jobsCompleted: jobs.filter((j: any) => j.status === 'completed').length,
-            jobsInProgress: jobs.filter((j: any) => j.status === 'in_progress').length,
-            jobsCreated: jobs.filter((j: any) => j.created_by === userId || !j.created_by).length,
+            jobsCompleted: jobs.filter((j: any) => j.status === 'completed')
+              .length,
+            jobsInProgress: jobs.filter((j: any) => j.status === 'in_progress')
+              .length,
+            jobsCreated: jobs.filter(
+              (j: any) => j.created_by === userId || !j.created_by
+            ).length,
           });
         }
       }
@@ -174,7 +184,6 @@ export default function ProfilePage() {
       throw error; // Re-throw to let modal handle the error
     }
   };
-
 
   const getRoleConfig = (role: string) => {
     switch (role?.toLowerCase()) {
@@ -233,7 +242,9 @@ export default function ProfilePage() {
     const name = getDisplayName() || 'User';
     const parts = name.split(' ');
     if (parts.length >= 2) {
-      return ((parts[0]?.[0] || '') + (parts[parts.length - 1]?.[0] || '')).toUpperCase();
+      return (
+        (parts[0]?.[0] || '') + (parts[parts.length - 1]?.[0] || '')
+      ).toUpperCase();
     }
     return name.substring(0, 2).toUpperCase();
   };
@@ -247,7 +258,8 @@ export default function ProfilePage() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
+            background:
+              'linear-gradient(135deg, #fff5ed 0%, #ffffff 50%, #fff8f1 100%)',
           }}
         >
           <div
@@ -344,11 +356,15 @@ export default function ProfilePage() {
 
               <div className="flex flex-col items-center gap-3">
                 <div
-                  className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold border ${roleConfig.bg === '#fef3c7' ? 'bg-amber-100 text-amber-700 border-amber-200' :
-                      roleConfig.bg === '#dbeafe' ? 'bg-blue-100 text-blue-800 border-blue-200' :
-                        roleConfig.bg === '#d1fae5' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
-                          'bg-gray-100 text-gray-700 border-gray-200'
-                    }`}
+                  className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold border ${
+                    roleConfig.bg === '#fef3c7'
+                      ? 'bg-amber-100 text-amber-700 border-amber-200'
+                      : roleConfig.bg === '#dbeafe'
+                        ? 'bg-blue-100 text-blue-800 border-blue-200'
+                        : roleConfig.bg === '#d1fae5'
+                          ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                          : 'bg-gray-100 text-gray-700 border-gray-200'
+                  }`}
                 >
                   <RoleIcon size={14} />
                   <span>{roleConfig.label}</span>
@@ -409,7 +425,9 @@ export default function ProfilePage() {
                     <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
                       <div className="flex items-center gap-2 mb-2">
                         <Briefcase size={18} className="text-blue-600" />
-                        <span className="text-xs text-gray-500 font-medium">Assigned</span>
+                        <span className="text-xs text-gray-500 font-medium">
+                          Assigned
+                        </span>
                       </div>
                       <div className="text-2xl font-bold text-blue-800">
                         {stats.jobsAssigned}
@@ -418,7 +436,9 @@ export default function ProfilePage() {
                     <div className="p-4 bg-amber-50 rounded-xl border border-amber-100">
                       <div className="flex items-center gap-2 mb-2">
                         <Clock size={18} className="text-amber-500" />
-                        <span className="text-xs text-gray-500 font-medium">In Progress</span>
+                        <span className="text-xs text-gray-500 font-medium">
+                          In Progress
+                        </span>
                       </div>
                       <div className="text-2xl font-bold text-amber-700">
                         {stats.jobsInProgress}
@@ -427,7 +447,9 @@ export default function ProfilePage() {
                     <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
                       <div className="flex items-center gap-2 mb-2">
                         <CheckCircle2 size={18} className="text-emerald-500" />
-                        <span className="text-xs text-gray-500 font-medium">Completed</span>
+                        <span className="text-xs text-gray-500 font-medium">
+                          Completed
+                        </span>
                       </div>
                       <div className="text-2xl font-bold text-emerald-800">
                         {stats.jobsCompleted}
@@ -439,7 +461,9 @@ export default function ProfilePage() {
                     <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
                       <div className="flex items-center gap-2 mb-2">
                         <TrendingUp size={18} className="text-blue-600" />
-                        <span className="text-xs text-gray-500 font-medium">Total Jobs</span>
+                        <span className="text-xs text-gray-500 font-medium">
+                          Total Jobs
+                        </span>
                       </div>
                       <div className="text-2xl font-bold text-blue-800">
                         {stats.jobsAssigned}
@@ -448,7 +472,9 @@ export default function ProfilePage() {
                     <div className="p-4 bg-amber-50 rounded-xl border border-amber-100">
                       <div className="flex items-center gap-2 mb-2">
                         <Clock size={18} className="text-amber-500" />
-                        <span className="text-xs text-gray-500 font-medium">In Progress</span>
+                        <span className="text-xs text-gray-500 font-medium">
+                          In Progress
+                        </span>
                       </div>
                       <div className="text-2xl font-bold text-amber-700">
                         {stats.jobsInProgress}
@@ -457,7 +483,9 @@ export default function ProfilePage() {
                     <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
                       <div className="flex items-center gap-2 mb-2">
                         <CheckCircle2 size={18} className="text-emerald-500" />
-                        <span className="text-xs text-gray-500 font-medium">Completed</span>
+                        <span className="text-xs text-gray-500 font-medium">
+                          Completed
+                        </span>
                       </div>
                       <div className="text-2xl font-bold text-emerald-800">
                         {stats.jobsCompleted}
@@ -539,10 +567,11 @@ export default function ProfilePage() {
           <button
             onClick={handleSignOut}
             disabled={signingOut}
-            className={`w-full p-4 mb-6 border-none rounded-xl text-base font-semibold cursor-pointer min-h-[56px] flex items-center justify-center gap-2 transition-all ${signingOut
+            className={`w-full p-4 mb-6 border-none rounded-xl text-base font-semibold cursor-pointer min-h-[56px] flex items-center justify-center gap-2 transition-all ${
+              signingOut
                 ? 'bg-gray-400 text-white cursor-not-allowed'
                 : 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg shadow-red-500/20 hover:-translate-y-0.5 hover:shadow-red-500/30'
-              }`}
+            }`}
           >
             <LogOut size={20} />
             <span>{signingOut ? 'Signing Out...' : 'Sign Out'}</span>

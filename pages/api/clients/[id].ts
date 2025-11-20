@@ -59,9 +59,11 @@ export default async function handler(
           jobs: jobs || [],
         },
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error fetching client:', error);
-      return res.status(500).json({ error: error.message });
+      return res.status(500).json({
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
     }
   }
 
@@ -92,9 +94,11 @@ export default async function handler(
       if (error) throw error;
 
       return res.status(200).json(data);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error updating client:', error);
-      return res.status(500).json({ error: error.message });
+      return res.status(500).json({
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
     }
   }
 
@@ -136,9 +140,11 @@ export default async function handler(
       if (error) throw error;
 
       return res.status(200).json({ message: 'Client deleted successfully' });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error deleting client:', error);
-      return res.status(500).json({ error: error.message });
+      return res.status(500).json({
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
     }
   }
 
